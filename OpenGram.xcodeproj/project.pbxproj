@@ -15,6 +15,8 @@
 		A10000010000000000000006 /* AXTextEngineProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000006 /* AXTextEngineProtocol.swift */; };
 		A10000010000000000000007 /* TextContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000007 /* TextContext.swift */; };
 		A10000010000000000000008 /* EventTapBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000008 /* EventTapBridge.swift */; };
+		A10000010000000000000009 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000010 /* HotkeyManager.swift */; };
+		B10000010000000000000001 /* HotkeyManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000001 /* HotkeyManagerTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,10 +30,30 @@
 		A20000010000000000000008 /* EventTapBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventTapBridge.swift; sourceTree = "<group>"; };
 		A20000010000000000000009 /* OpenGram.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = OpenGram.entitlements; sourceTree = "<group>"; };
 		A2000001000000000000000A /* OpenGram.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenGram.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A20000010000000000000010 /* HotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManager.swift; sourceTree = "<group>"; };
+		B20000010000000000000001 /* HotkeyManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManagerTests.swift; sourceTree = "<group>"; };
+		B2000001000000000000000A /* OpenGramTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OpenGramTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXContainerItemProxy section */
+		B30000010000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A80000010000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A50000010000000000000001;
+			remoteInfo = OpenGram;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		A30000010000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B30000010000000000000002 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -86,6 +108,7 @@
 			children = (
 				A20000010000000000000005 /* HotkeyManagerProtocol.swift */,
 				A20000010000000000000008 /* EventTapBridge.swift */,
+				A20000010000000000000010 /* HotkeyManager.swift */,
 			);
 			path = Hotkey;
 			sourceTree = "<group>";
@@ -109,6 +132,7 @@
 		A40000010000000000000008 /* OpenGramTests */ = {
 			isa = PBXGroup;
 			children = (
+				B20000010000000000000001 /* HotkeyManagerTests.swift */,
 			);
 			path = OpenGramTests;
 			sourceTree = "<group>";
@@ -117,6 +141,7 @@
 			isa = PBXGroup;
 			children = (
 				A2000001000000000000000A /* OpenGram.app */,
+				B2000001000000000000000A /* OpenGramTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -140,7 +165,32 @@
 			productReference = A2000001000000000000000A /* OpenGram.app */;
 			productType = "com.apple.product-type.application";
 		};
+		B50000010000000000000001 /* OpenGramTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B70000010000000000000001 /* Build configuration list for PBXNativeTarget "OpenGramTests" */;
+			buildPhases = (
+				B60000010000000000000001 /* Sources */,
+				B30000010000000000000002 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B40000010000000000000001 /* PBXTargetDependency */,
+			);
+			name = OpenGramTests;
+			productName = OpenGramTests;
+			productReference = B2000001000000000000000A /* OpenGramTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
+
+/* Begin PBXTargetDependency section */
+		B40000010000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A50000010000000000000001 /* OpenGram */;
+			targetProxy = B30000010000000000000001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXProject section */
 		A80000010000000000000001 /* Project object */ = {
@@ -169,6 +219,7 @@
 			projectRoot = "";
 			targets = (
 				A50000010000000000000001 /* OpenGram */,
+				B50000010000000000000001 /* OpenGramTests */,
 			);
 		};
 /* End PBXProject section */
@@ -186,6 +237,15 @@
 				A10000010000000000000006 /* AXTextEngineProtocol.swift in Sources */,
 				A10000010000000000000007 /* TextContext.swift in Sources */,
 				A10000010000000000000008 /* EventTapBridge.swift in Sources */,
+				A10000010000000000000009 /* HotkeyManager.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B60000010000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B10000010000000000000001 /* HotkeyManagerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -293,6 +353,40 @@
 			};
 			name = Release;
 		};
+		B90000010000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 0.0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.opengram.app.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OpenGram.app/Contents/MacOS/OpenGram";
+			};
+			name = Debug;
+		};
+		B90000010000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 0.0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.opengram.app.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OpenGram.app/Contents/MacOS/OpenGram";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -310,6 +404,15 @@
 			buildConfigurations = (
 				A90000010000000000000003 /* Debug */,
 				A90000010000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B70000010000000000000001 /* Build configuration list for PBXNativeTarget "OpenGramTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B90000010000000000000001 /* Debug */,
+				B90000010000000000000002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
