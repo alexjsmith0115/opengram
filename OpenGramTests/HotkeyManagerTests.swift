@@ -70,4 +70,42 @@ struct HotkeyManagerTests {
         }
         manager.uninstall()
     }
+
+    // MARK: - Health-check decision logic
+
+    @Test("healthCheckAction returns .doNothing when tap is enabled")
+    func healthCheckAction_tapEnabled_doNothing() {
+        let action = HotkeyManager.healthCheckAction(tapExists: true, isEnabled: true)
+        #expect(action == .doNothing)
+    }
+
+    @Test("healthCheckAction returns .doNothing when no tap exists")
+    func healthCheckAction_noTap_doNothing() {
+        let action = HotkeyManager.healthCheckAction(tapExists: false, isEnabled: false)
+        #expect(action == .doNothing)
+    }
+
+    @Test("healthCheckAction returns .reenable when tap exists but disabled")
+    func healthCheckAction_tapDisabled_reenable() {
+        let action = HotkeyManager.healthCheckAction(tapExists: true, isEnabled: false)
+        #expect(action == .reenable)
+    }
+
+    @Test("startHealthCheckTimer creates timer with 5s interval")
+    func startHealthCheckTimer_createsTimer() {
+        let manager = HotkeyManager()
+        manager.startHealthCheckTimer()
+        #expect(manager.healthTimer != nil)
+        #expect(manager.healthTimer?.timeInterval == 5.0)
+        manager.uninstall()
+    }
+
+    @Test("uninstall invalidates health timer")
+    func uninstall_invalidatesHealthTimer() {
+        let manager = HotkeyManager()
+        manager.startHealthCheckTimer()
+        #expect(manager.healthTimer != nil)
+        manager.uninstall()
+        #expect(manager.healthTimer == nil)
+    }
 }
