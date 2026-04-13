@@ -56,6 +56,13 @@ xcodebuild -create-xcframework \
   -headers bindings/include \
   -output "$OUT_DIR"
 
+echo "Fixing modulemap for SPM binaryTarget..."
+MODULEMAP="$OUT_DIR/macos-arm64_x86_64/Headers/module.modulemap"
+if [ -f "$OUT_DIR/macos-arm64_x86_64/Headers/harper_bridge.modulemap" ]; then
+  mv "$OUT_DIR/macos-arm64_x86_64/Headers/harper_bridge.modulemap" "$MODULEMAP"
+fi
+sed -i '' 's/^framework module harper_bridge/module harper_bridgeFFI/' "$MODULEMAP"
+
 echo "Copying Swift bindings to project..."
 mkdir -p "$SWIFT_OUT"
 cp bindings/harper_bridge.swift "$SWIFT_OUT/HarperBridge.swift"

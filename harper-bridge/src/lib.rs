@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 use harper_core::linting::{LintGroup, LintKind, Linter, Suggestion};
 use harper_core::parsers::PlainEnglish;
 use harper_core::spell::{FstDictionary, MergedDictionary, MutableDictionary};
-use harper_core::{Dialect, Document};
+use harper_core::{DictWordMetadata, Dialect, DialectFlags, Document};
 
 uniffi::setup_scaffolding!();
 
@@ -36,8 +36,10 @@ pub struct HarperChecker {
 
 struct HarperCheckerInner {
     linter: LintGroup,
+    merged_dict: Arc<MergedDictionary>,
     user_dict: MutableDictionary,
     user_words: Vec<String>,
+    dialect: Dialect,
 }
 
 // LintGroup contains Box<dyn Linter> and Lrc (non-Send types).
@@ -51,30 +53,32 @@ unsafe impl Sync for HarperCheckerInner {}
 impl HarperChecker {
     #[uniffi::constructor]
     pub fn new(dialect_abbr: String, user_words: Vec<String>) -> Self {
-        let base = FstDictionary::curated();
+        let dialect = parse_dialect(&dialect_abbr);
         let mut user_dict = MutableDictionary::new();
+        let dialect_meta = DictWordMetadata {
+            dialects: DialectFlags::all(),
+            ..Default::default()
+        };
         user_dict.extend_words(user_words.iter().map(|w| {
-            (w.chars().collect::<Vec<char>>(), Default::default())
+            (w.chars().collect::<Vec<char>>(), dialect_meta.clone())
         }));
 
-        let mut merged = MergedDictionary::new();
-        merged.add_dictionary(base);
-        merged.add_dictionary(Arc::new(user_dict.clone()));
-
-        let dialect = parse_dialect(&dialect_abbr);
+        let merged = build_merged_dict(&user_dict);
 
         Self {
             inner: Mutex::new(HarperCheckerInner {
-                linter: LintGroup::new_curated(Arc::new(merged), dialect),
+                linter: LintGroup::new_curated(merged.clone(), dialect),
+                merged_dict: merged,
                 user_dict,
                 user_words: user_words.clone(),
+                dialect,
             }),
         }
     }
 
     pub fn check(&self, text: String) -> Vec<GrammarSuggestion> {
         let mut inner = self.inner.lock().expect("HarperChecker lock poisoned");
-        let document = Document::new_curated(&text, &PlainEnglish);
+        let document = Document::new(&text, &PlainEnglish, inner.merged_dict.as_ref());
         let lints = inner.linter.lint(&document);
 
         lints
@@ -110,12 +114,22 @@ impl HarperChecker {
             .collect()
     }
 
-    /// Adds a word to the user dictionary and returns the full updated word list
-    /// for Swift to persist to dictionary.txt (D-06).
+    /// Adds a word to the user dictionary, rebuilds the linter so the word is
+    /// recognized immediately, and returns the full updated word list for Swift
+    /// to persist to dictionary.txt (D-06).
     pub fn add_to_dictionary(&self, word: String) -> Vec<String> {
         let mut inner = self.inner.lock().expect("HarperChecker lock poisoned");
-        inner.user_dict.append_word_str(&word, Default::default());
+        let dialect_meta = DictWordMetadata {
+            dialects: DialectFlags::all(),
+            ..Default::default()
+        };
+        inner.user_dict.append_word_str(&word, dialect_meta);
         inner.user_words.push(word);
+
+        let merged = build_merged_dict(&inner.user_dict);
+        inner.linter = LintGroup::new_curated(merged.clone(), inner.dialect);
+        inner.merged_dict = merged;
+
         inner.user_words.clone()
     }
 
@@ -124,6 +138,13 @@ impl HarperChecker {
         let mut inner = self.inner.lock().expect("HarperChecker lock poisoned");
         inner.linter.config.set_rule_enabled(&rule_key, enabled);
     }
+}
+
+fn build_merged_dict(user_dict: &MutableDictionary) -> Arc<MergedDictionary> {
+    let mut merged = MergedDictionary::new();
+    merged.add_dictionary(FstDictionary::curated());
+    merged.add_dictionary(Arc::new(user_dict.clone()));
+    Arc::new(merged)
 }
 
 fn parse_dialect(abbr: &str) -> Dialect {

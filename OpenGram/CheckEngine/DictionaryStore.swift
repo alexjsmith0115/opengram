@@ -19,6 +19,11 @@ struct DictionaryStore: DictionaryStoreProtocol, Sendable {
         self.fileURL = directoryURL.appendingPathComponent("dictionary.txt")
     }
 
+    init(directoryURL: URL) {
+        self.directoryURL = directoryURL
+        self.fileURL = directoryURL.appendingPathComponent("dictionary.txt")
+    }
+
     func loadWords() -> [String] {
         guard let contents = try? String(contentsOf: fileURL, encoding: .utf8) else {
             return []

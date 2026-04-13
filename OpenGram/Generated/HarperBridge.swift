@@ -523,8 +523,9 @@ fileprivate struct FfiConverterString: FfiConverter {
 public protocol HarperCheckerProtocol: AnyObject, Sendable {
     
     /**
-     * Adds a word to the user dictionary and returns the full updated word list
-     * for Swift to persist to dictionary.txt (D-06).
+     * Adds a word to the user dictionary, rebuilds the linter so the word is
+     * recognized immediately, and returns the full updated word list for Swift
+     * to persist to dictionary.txt (D-06).
      */
     func addToDictionary(word: String)  -> [String]
     
@@ -603,8 +604,9 @@ public convenience init(dialectAbbr: String, userWords: [String]) {
 
     
     /**
-     * Adds a word to the user dictionary and returns the full updated word list
-     * for Swift to persist to dictionary.txt (D-06).
+     * Adds a word to the user dictionary, rebuilds the linter so the word is
+     * recognized immediately, and returns the full updated word list for Swift
+     * to persist to dictionary.txt (D-06).
      */
 open func addToDictionary(word: String) -> [String]  {
     return try!  FfiConverterSequenceString.lift(try! rustCall() {
@@ -920,7 +922,7 @@ private let initializationResult: InitializationResult = {
     if bindings_contract_version != scaffolding_contract_version {
         return InitializationResult.contractVersionMismatch
     }
-    if (uniffi_harper_bridge_checksum_method_harperchecker_add_to_dictionary() != 63603) {
+    if (uniffi_harper_bridge_checksum_method_harperchecker_add_to_dictionary() != 12205) {
         return InitializationResult.apiChecksumMismatch
     }
     if (uniffi_harper_bridge_checksum_method_harperchecker_check() != 1881) {
