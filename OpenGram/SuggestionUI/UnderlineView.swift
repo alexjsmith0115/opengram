@@ -74,16 +74,16 @@ final class UnderlineView: NSView {
         }
     }
 
-    // MARK: - Static helpers (exposed for testability)
+    // MARK: - Static helpers (nonisolated for testability without MainActor context)
 
-    static func colorForCategory(_ category: CheckCategory) -> NSColor {
+    nonisolated static func colorForCategory(_ category: CheckCategory) -> NSColor {
         switch category {
         case .spelling: return .systemRed
         case .grammarPunctuation: return .systemBlue
         }
     }
 
-    static func isDashedForSource(_ source: SuggestionSource) -> Bool {
+    nonisolated static func isDashedForSource(_ source: SuggestionSource) -> Bool {
         switch source {
         case .harper: return false
         case .llm: return true
@@ -91,7 +91,7 @@ final class UnderlineView: NSView {
     }
 
     /// Expands an underline rect by 6pt above and below to create a larger click target.
-    static func expandedHitRect(from underlineRect: NSRect) -> NSRect {
+    nonisolated static func expandedHitRect(from underlineRect: NSRect) -> NSRect {
         NSRect(
             x: underlineRect.minX,
             y: underlineRect.minY - 6,
