@@ -58,7 +58,9 @@ struct Suggestion: Identifiable, Sendable {
     let category: CheckCategory
     let source: SuggestionSource
     let priority: UInt8
+}
 
+extension Suggestion {
     /// Creates a Suggestion from a UniFFI-generated GrammarSuggestion.
     /// Returns nil if the char offsets cannot be converted to a valid Swift string range.
     init?(from raw: GrammarSuggestion, in text: String) {
@@ -67,20 +69,24 @@ struct Suggestion: Identifiable, Sendable {
             end: Int(raw.endChar)
         ) else { return nil }
 
-        self.id = UUID()
-        self.range = range
-        self.original = String(text[range])
-        self.primaryReplacement = raw.primaryReplacement
-        self.allReplacements = raw.allReplacements
-        self.message = raw.message
-        self.priority = raw.priority
-        self.source = .harper
-
+        let category: CheckCategory
         switch raw.category {
         case .spelling:
-            self.category = .spelling
+            category = .spelling
         case .grammarPunctuation:
-            self.category = .grammarPunctuation
+            category = .grammarPunctuation
         }
+
+        self.init(
+            id: UUID(),
+            range: range,
+            original: String(text[range]),
+            primaryReplacement: raw.primaryReplacement,
+            allReplacements: raw.allReplacements,
+            message: raw.message,
+            category: category,
+            source: .harper,
+            priority: raw.priority
+        )
     }
 }
