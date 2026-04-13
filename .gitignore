@@ -3,3 +3,4 @@ planning/
 .claude/worktrees/
 .DS_Store
 harper-bridge/target/
+harper-bridge/bindings/
