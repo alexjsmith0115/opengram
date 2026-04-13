@@ -20,6 +20,12 @@ protocol AXAccessor: Sendable {
         _ value: CFTypeRef
     ) -> AXError
 
+    func copyParameterizedAttributeValue(
+        _ element: AXUIElement,
+        _ attribute: String,
+        _ parameter: CFTypeRef
+    ) -> (AXError, CFTypeRef?)
+
     func isProcessTrusted() -> Bool
     func systemWideElement() -> AXUIElement
 
@@ -53,6 +59,18 @@ final class SystemAXAccessor: AXAccessor {
         _ value: CFTypeRef
     ) -> AXError {
         AXUIElementSetAttributeValue(element, attribute as CFString, value)
+    }
+
+    func copyParameterizedAttributeValue(
+        _ element: AXUIElement,
+        _ attribute: String,
+        _ parameter: CFTypeRef
+    ) -> (AXError, CFTypeRef?) {
+        var ref: CFTypeRef?
+        let error = AXUIElementCopyParameterizedAttributeValue(
+            element, attribute as CFString, parameter, &ref
+        )
+        return (error, ref)
     }
 
     func isProcessTrusted() -> Bool {

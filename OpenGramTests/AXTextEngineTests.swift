@@ -21,6 +21,12 @@ final class MockAXAccessor: AXAccessor, @unchecked Sendable {
     var setAttributeCalls: [(attribute: String, value: CFTypeRef)] = []
     var setAttributeResult: AXError = .success
 
+    /// Maps (attribute name) -> (error, value) for copyParameterizedAttributeValue calls.
+    var parameterizedAttributeValues: [String: (AXError, CFTypeRef?)] = [:]
+
+    /// Records copyParameterizedAttributeValue calls for verification.
+    var parameterizedAttributeCalls: [(attribute: String, parameter: CFTypeRef)] = []
+
     private let dummySystemWide = AXUIElementCreateSystemWide()
 
     func copyAttributeValue(
@@ -50,6 +56,18 @@ final class MockAXAccessor: AXAccessor, @unchecked Sendable {
     ) -> AXError {
         setAttributeCalls.append((attribute: attribute, value: value))
         return setAttributeResult
+    }
+
+    func copyParameterizedAttributeValue(
+        _ element: AXUIElement,
+        _ attribute: String,
+        _ parameter: CFTypeRef
+    ) -> (AXError, CFTypeRef?) {
+        parameterizedAttributeCalls.append((attribute: attribute, parameter: parameter))
+        if let entry = parameterizedAttributeValues[attribute] {
+            return entry
+        }
+        return (.parameterizedAttributeUnsupported, nil)
     }
 
     func isProcessTrusted() -> Bool { processIsTrusted }
