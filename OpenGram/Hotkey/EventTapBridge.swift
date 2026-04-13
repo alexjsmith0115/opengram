@@ -1,16 +1,15 @@
 import CoreGraphics
 
-/// File-scope C callback function for CGEventTap.
-/// Must be a free function (not a closure or method) because CGEventTap requires @convention(c).
-/// The actual implementation is in Plan 03 -- this file establishes the contract.
-///
-/// The callback receives the HotkeyManager instance via userInfo (Unmanaged bridge).
-/// It should do minimal work: check key code + flags, then dispatch to main actor.
+/// File-scope C callback for CGEventTap.
+/// Must be a free function -- CGEventTap requires @convention(c).
+/// Does minimal work: extracts the HotkeyManager from userInfo and delegates.
 func eventTapCallback(
     _ proxy: CGEventTapProxy,
     _ type: CGEventType,
     _ event: CGEvent,
     _ userInfo: UnsafeMutableRawPointer?
 ) -> Unmanaged<CGEvent>? {
-    return Unmanaged.passUnretained(event)
+    guard let ptr = userInfo else { return Unmanaged.passUnretained(event) }
+    let manager = Unmanaged<HotkeyManager>.fromOpaque(ptr).takeUnretainedValue()
+    return manager.handle(proxy: proxy, type: type, event: event)
 }
