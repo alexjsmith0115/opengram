@@ -6,11 +6,21 @@ import Foundation
 // Properties are accessed from the callback thread + main thread in a controlled manner.
 final class HotkeyManager: HotkeyManagerProtocol, @unchecked Sendable {
 
+    enum HealthCheckAction: Equatable {
+        case doNothing
+        case reenable
+    }
+
+    static func healthCheckAction(tapExists: Bool, isEnabled: Bool) -> HealthCheckAction {
+        guard tapExists, !isEnabled else { return .doNothing }
+        return .reenable
+    }
+
     private static let kVK_ANSI_G: CGKeyCode = 0x05
 
     private(set) var eventTap: CFMachPort?
     private var runLoopSource: CFRunLoopSource?
-    private var healthTimer: Timer?
+    private(set) var healthTimer: Timer?
     private var wakeObserver: NSObjectProtocol?
 
     var onHotkeyFired: (@MainActor @Sendable () -> Void)?
@@ -114,10 +124,19 @@ final class HotkeyManager: HotkeyManagerProtocol, @unchecked Sendable {
     }
 
     func reenableTapIfNeeded() {
-        guard let tap = eventTap, !CGEvent.tapIsEnabled(tap: tap) else { return }
-        CGEvent.tapEnable(tap: tap, enable: true)
-        if !CGEvent.tapIsEnabled(tap: tap) {
-            reinstall()
+        let tapExists = eventTap != nil
+        let isEnabled = eventTap.map { CGEvent.tapIsEnabled(tap: $0) } ?? false
+        let action = Self.healthCheckAction(tapExists: tapExists, isEnabled: isEnabled)
+
+        switch action {
+        case .doNothing:
+            return
+        case .reenable:
+            guard let tap = eventTap else { return }
+            CGEvent.tapEnable(tap: tap, enable: true)
+            if !CGEvent.tapIsEnabled(tap: tap) {
+                reinstall()
+            }
         }
     }
 
