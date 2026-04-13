@@ -2,6 +2,7 @@ import Testing
 @testable import OpenGram
 
 @Suite("IconStateMachine")
+@MainActor
 struct IconStateMachineTests {
 
     @Test("Idle state returns outline checkmark symbol")
@@ -27,7 +28,7 @@ struct IconStateMachineTests {
     }
 
     @Test("Done state auto-transitions to idle after delay")
-    func doneAutoTransitionsToIdle() async throws {
+    func doneAutoTransitionsToIdle() {
         let machine = IconStateMachine()
         machine.setState(.done)
         #expect(machine.currentState == .done)
