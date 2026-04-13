@@ -4,7 +4,6 @@ import SwiftUI
 
 /// Coordinates the overlay window and suggestion popover.
 /// Owns the OverlayWindow, SuggestionPopoverPanel, TargetAppObserver, and scroll monitor.
-/// Plans 02 and 03 extend this class with popover, dismissal, and write-back.
 @MainActor
 final class OverlayController {
 
@@ -22,15 +21,25 @@ final class OverlayController {
     // internal(set) allows @testable test targets to inject state directly
 
     internal(set) var suggestions: [Suggestion] = []
-    private(set) var textContext: TextContext?
+
+    /// Parallel array of unicode scalar offsets for each suggestion in `suggestions`.
+    /// Used to shift remaining suggestions after an accept changes text length.
+    /// Index i in this array corresponds to index i in `suggestions`.
+    var suggestionScalarOffsets: [(scalarStart: Int, scalarLength: Int)] = []
+
+    /// Focused underline index for keyboard navigation (Tab/Enter). Exposed for testing.
+    var focusedIndex: Int?
+
+    internal(set) var textContext: TextContext?
     private(set) var isPopoverVisible: Bool = false
     private(set) var currentPopoverSuggestion: Suggestion?
 
-    // MARK: - Action callbacks (wired by caller -- Plan 03 wires write-back)
+    // MARK: - Action callbacks (wired by caller)
 
     var onAcceptSuggestion: (@MainActor (Suggestion) -> Void)?
     var onDismissSuggestion: (@MainActor (Suggestion) -> Void)?
     var onAddToDictionary: (@MainActor (String) -> Void)?
+    var onDismissAll: (@MainActor () -> Void)?
 
     init(accessor: any AXAccessor = SystemAXAccessor()) {
         self.accessor = accessor
@@ -38,15 +47,14 @@ final class OverlayController {
         self.popoverPanel = SuggestionPopoverPanel()
         self.targetAppObserver = TargetAppObserver()
 
-        // Wire key handler for Escape dismissal (D-13)
+        // Wire key handler -- full keyboard navigation (D-11, D-12, D-13)
         overlayWindow.keyHandler = { [weak self] event in
             guard let self else { return }
-            if event.keyCode == 53 { // Escape
-                if self.isPopoverVisible {
-                    self.closePopover()
-                } else {
-                    self.dismiss()
-                }
+            switch event.keyCode {
+            case 48: self.handleTab()
+            case 36: self.handleEnter(textContext: self.textContext)
+            case 53: self.handleEscape(textContext: self.textContext)
+            default: break
             }
         }
 
@@ -107,6 +115,15 @@ final class OverlayController {
     func show(suggestions: [Suggestion], context: TextContext) {
         self.suggestions = Array(suggestions.prefix(Self.maxDisplayedSuggestions))
         self.textContext = context
+        self.focusedIndex = nil
+
+        // Populate parallel scalar offset array so repositionAfterAccept can shift indices
+        let scalars = context.text.unicodeScalars
+        self.suggestionScalarOffsets = self.suggestions.map { s in
+            let start = scalars.distance(from: scalars.startIndex, to: s.range.lowerBound)
+            let length = scalars.distance(from: s.range.lowerBound, to: s.range.upperBound)
+            return (scalarStart: start, scalarLength: length)
+        }
 
         let screenHeight = NSScreen.main?.frame.height ?? 0
         let element = context.axElement
@@ -191,12 +208,15 @@ final class OverlayController {
         overlayWindow.contentView = nil
         underlineView = nil
         suggestions = []
+        suggestionScalarOffsets = []
+        focusedIndex = nil
         textContext = nil
         targetAppObserver.uninstall()
         if let monitor = scrollMonitor {
             NSEvent.removeMonitor(monitor)
             scrollMonitor = nil
         }
+        onDismissAll?()
     }
 
     // MARK: - Popover management
@@ -256,9 +276,198 @@ final class OverlayController {
     }
 
     func handleAcceptSuggestion(_ suggestion: Suggestion) {
-        onAcceptSuggestion?(suggestion)
+        guard let context = textContext else { return }
+        acceptSuggestion(suggestion, context: context)
+    }
+
+    // MARK: - Accept / Write-back
+
+    /// Writes the suggestion's primary replacement to the target app via AX set-range-then-replace,
+    /// then removes the accepted suggestion and repositions remaining underlines.
+    /// Fails silently (suggestion stays) if any AX call returns a non-success error (T-03-07).
+    func acceptSuggestion(_ suggestion: Suggestion, context: TextContext) {
+        guard let replacement = suggestion.primaryReplacement else { return }
+
+        // Locate this suggestion in the array
+        guard let offsetIndex = suggestions.firstIndex(where: { $0.id == suggestion.id }) else { return }
+
+        // Ensure the parallel offset array is populated (may be missing if show() wasn't called)
+        if suggestionScalarOffsets.count != suggestions.count {
+            let scalars = context.text.unicodeScalars
+            suggestionScalarOffsets = suggestions.map { s in
+                let start = scalars.distance(from: scalars.startIndex, to: s.range.lowerBound)
+                let length = scalars.distance(from: s.range.lowerBound, to: s.range.upperBound)
+                return (scalarStart: start, scalarLength: length)
+            }
+        }
+
+        let offset = suggestionScalarOffsets[offsetIndex]
+
+        // 1. Select the range in the target element
+        var cfRange = CFRange(location: offset.scalarStart, length: offset.scalarLength)
+        guard let axRange = AXValueCreate(.cfRange, &cfRange) else { return }
+
+        let selectError = accessor.setAttributeValue(
+            context.axElement,
+            kAXSelectedTextRangeAttribute,
+            axRange
+        )
+        guard selectError == .success else { return }
+
+        // 2. Replace selected text
+        let replaceError = accessor.setAttributeValue(
+            context.axElement,
+            kAXSelectedTextAttribute,
+            replacement as CFString
+        )
+        guard replaceError == .success else { return }
+
+        // 3. Close popover
         closePopover()
-        // Plan 03 replaces this stub with full AX write-back + reposition logic.
+
+        // 4. Notify caller before removing from array
+        onAcceptSuggestion?(suggestion)
+
+        // 5. Remove accepted suggestion and its offset entry
+        let replacementScalarCount = replacement.unicodeScalars.count
+        suggestions.remove(at: offsetIndex)
+        if offsetIndex < suggestionScalarOffsets.count {
+            suggestionScalarOffsets.remove(at: offsetIndex)
+        }
+
+        // 6. If no suggestions remain, dismiss overlay
+        if suggestions.isEmpty {
+            dismiss()
+            return
+        }
+
+        // 7. Reposition remaining suggestions by shifting scalar offsets
+        repositionAfterAccept(
+            acceptedStart: offset.scalarStart,
+            originalLength: offset.scalarLength,
+            replacementLength: replacementScalarCount,
+            context: context
+        )
+    }
+
+    /// Shifts scalar offsets for all remaining suggestions that start after the accepted range,
+    /// re-reads the updated element text, and redraws underlines with fresh AX bounds.
+    private func repositionAfterAccept(
+        acceptedStart: Int,
+        originalLength: Int,
+        replacementLength: Int,
+        context: TextContext
+    ) {
+        let delta = replacementLength - originalLength
+
+        // Re-read current text so we have valid content for bounds re-queries
+        let (valError, valRef) = accessor.copyAttributeValue(context.axElement, kAXValueAttribute)
+        guard valError == .success, let newText = valRef as? String else {
+            // Can't re-read — positions are now unreliable, dismiss
+            dismiss()
+            return
+        }
+
+        // Shift offsets for suggestions starting after the accepted range
+        for i in 0..<suggestionScalarOffsets.count {
+            if suggestionScalarOffsets[i].scalarStart >= acceptedStart + originalLength {
+                suggestionScalarOffsets[i] = (
+                    scalarStart: suggestionScalarOffsets[i].scalarStart + delta,
+                    scalarLength: suggestionScalarOffsets[i].scalarLength
+                )
+            }
+        }
+
+        // Update stored text context with new text
+        textContext = TextContext(
+            text: newText,
+            bundleID: context.bundleID,
+            extractionMethod: context.extractionMethod,
+            selectionRange: context.selectionRange,
+            elementBounds: context.elementBounds,
+            axElement: context.axElement
+        )
+
+        // Rebuild underline entries using shifted offsets and new AX bounds
+        guard let view = underlineView,
+              suggestionScalarOffsets.count == suggestions.count else { return }
+        let screenHeight = NSScreen.main?.frame.height ?? 0
+
+        var newEntries: [UnderlineEntry] = []
+        for (i, suggestion) in suggestions.enumerated() {
+            let scalarOffset = suggestionScalarOffsets[i]
+            // Re-build a CFRange from shifted scalar offset
+            var cfRange = CFRange(location: scalarOffset.scalarStart, length: scalarOffset.scalarLength)
+            guard let axRangeValue = AXValueCreate(.cfRange, &cfRange) else { continue }
+
+            let (boundsError, boundsRef) = accessor.copyParameterizedAttributeValue(
+                context.axElement,
+                kAXBoundsForRangeParameterizedAttribute,
+                axRangeValue
+            )
+            guard boundsError == .success, let boundsRef else { continue }
+            var cgRect = CGRect.zero
+            guard AXValueGetValue(boundsRef as! AXValue, .cgRect, &cgRect) else { continue }
+
+            let appKitRect = flipCGRect(cgRect, screenHeight: screenHeight)
+            let underlineRect = NSRect(
+                x: appKitRect.origin.x,
+                y: appKitRect.origin.y,
+                width: appKitRect.width,
+                height: 2
+            )
+            let hitRect = UnderlineView.expandedHitRect(from: underlineRect)
+
+            // Translate to window-local coordinates
+            let windowOrigin = overlayWindow.frame.origin
+            newEntries.append(UnderlineEntry(
+                underlineRect: underlineRect.offsetBy(dx: -windowOrigin.x, dy: -windowOrigin.y),
+                hitRect: hitRect.offsetBy(dx: -windowOrigin.x, dy: -windowOrigin.y),
+                suggestion: suggestion
+            ))
+        }
+
+        view.entries = newEntries
+        view.needsDisplay = true
+    }
+
+    // MARK: - Keyboard Navigation
+
+    /// Advances the focus ring to the next underline, wrapping at the end.
+    /// Closes any open popover first (Tab navigates, not opens).
+    func handleTab() {
+        if isPopoverVisible { closePopover() }
+        guard !suggestions.isEmpty else { return }
+        let next: Int
+        if let current = focusedIndex {
+            next = (current + 1) % suggestions.count
+        } else {
+            next = 0
+        }
+        focusedIndex = next
+        underlineView?.focusedIndex = next
+        underlineView?.needsDisplay = true
+    }
+
+    /// Opens the popover for the focused underline (no popover open),
+    /// or accepts the current popover suggestion (popover open).
+    func handleEnter(textContext: TextContext?) {
+        if isPopoverVisible {
+            if let suggestion = currentPopoverSuggestion, let ctx = textContext {
+                acceptSuggestion(suggestion, context: ctx)
+            }
+        } else if let index = focusedIndex, index < suggestions.count {
+            showPopover(for: suggestions[index])
+        }
+    }
+
+    /// Closes the popover if open, or dismisses the full overlay if no popover is open.
+    func handleEscape(textContext: TextContext?) {
+        if isPopoverVisible {
+            closePopover()
+        } else {
+            dismiss()
+        }
     }
 
     func handleAddToDictionary(word: String) {
