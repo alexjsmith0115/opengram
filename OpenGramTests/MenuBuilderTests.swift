@@ -1,6 +1,6 @@
 import Testing
 import AppKit
-@testable import OpenGram
+@testable import OpenGramLib
 
 @Suite("MenuBuilder")
 struct MenuBuilderTests {

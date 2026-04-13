@@ -2,7 +2,7 @@ import Testing
 @preconcurrency import ApplicationServices
 import Foundation
 
-@testable import OpenGram
+@testable import OpenGramLib
 
 /// Mock AXAccessor that returns controlled values for unit testing.
 final class MockAXAccessor: AXAccessor, @unchecked Sendable {
@@ -59,7 +59,7 @@ final class MockAXAccessor: AXAccessor, @unchecked Sendable {
 }
 
 /// Stub capability cache that records calls without disk I/O.
-final class StubCapabilityCache: AXCapabilityCacheProtocol {
+final class StubCapabilityCache: AXCapabilityCacheProtocol, @unchecked Sendable {
     private var entries: [String: Bool] = [:]
     var storeCalls: [(bundleID: String, version: String?, supported: Bool)] = []
 

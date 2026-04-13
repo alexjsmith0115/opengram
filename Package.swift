@@ -6,8 +6,13 @@ let package = Package(
     name: "OpenGram",
     platforms: [.macOS(.v14)],
     targets: [
+        .binaryTarget(
+            name: "harper_bridgeFFI",
+            path: "HarperBridge.xcframework"
+        ),
         .target(
             name: "OpenGramLib",
+            dependencies: ["harper_bridgeFFI"],
             path: "OpenGram",
             exclude: ["App/main.swift"],
             swiftSettings: [.swiftLanguageMode(.v6)]

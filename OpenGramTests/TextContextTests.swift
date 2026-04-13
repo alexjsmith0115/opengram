@@ -1,7 +1,7 @@
 import Testing
 @preconcurrency import ApplicationServices
 
-@testable import OpenGram
+@testable import OpenGramLib
 
 @Suite("TextContext struct validation")
 struct TextContextTests {

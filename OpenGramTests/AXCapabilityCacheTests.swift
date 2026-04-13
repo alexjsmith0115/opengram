@@ -1,7 +1,7 @@
 import Testing
 import Foundation
 
-@testable import OpenGram
+@testable import OpenGramLib
 
 @Suite("AXCapabilityCache in-memory operations")
 struct AXCapabilityCacheMemoryTests {

@@ -1,0 +1,86 @@
+import Foundation
+
+// MARK: - Unicode Scalar Offset Conversion
+
+extension String {
+
+    /// Converts a Harper char index (Unicode scalar position) to a Swift String.Index.
+    /// Harper's Span uses Rust `char` indices which are Unicode scalar values --
+    /// a 1:1 match with Swift's `String.unicodeScalars` view.
+    func indexFromCharOffset(_ offset: Int) -> String.Index? {
+        guard offset >= 0 else { return nil }
+        let scalars = self.unicodeScalars
+        guard offset <= scalars.count else { return nil }
+        return scalars.index(scalars.startIndex, offsetBy: offset)
+    }
+
+    /// Converts Harper Span start/end char indices to a Swift `Range<String.Index>`.
+    /// Returns nil if either index is invalid or start > end.
+    /// Snaps both bounds to grapheme cluster boundaries to prevent mid-cluster slicing
+    /// (e.g., inside a ZWJ emoji sequence like family emoji).
+    func rangeFromCharOffsets(start: Int, end: Int) -> Range<String.Index>? {
+        guard let s = indexFromCharOffset(start),
+              let e = indexFromCharOffset(end),
+              s <= e else { return nil }
+        let safeLower = self.rangeOfComposedCharacterSequence(at: s).lowerBound
+        // endIndex is past all content; snapping only applies to indices within the string
+        let safeUpper = (e == self.endIndex) ? e : self.rangeOfComposedCharacterSequence(at: e).lowerBound
+        guard safeLower <= safeUpper else { return nil }
+        return safeLower..<safeUpper
+    }
+}
+
+// MARK: - Suggestion Category (Swift-side, distinct from UniFFI-generated SuggestionCategory)
+
+enum CheckCategory: Sendable {
+    /// Harper LintKind.Spelling -- rendered red in Phase 3 (D-03)
+    case spelling
+    /// All other LintKind variants -- rendered blue in Phase 3 (D-03)
+    case grammarPunctuation
+}
+
+// MARK: - Suggestion Source
+
+enum SuggestionSource: Sendable {
+    case harper
+    case llm
+}
+
+// MARK: - Suggestion Model
+
+struct Suggestion: Identifiable, Sendable {
+    let id: UUID
+    let range: Range<String.Index>
+    let original: String
+    let primaryReplacement: String?
+    let allReplacements: [String]
+    let message: String
+    let category: CheckCategory
+    let source: SuggestionSource
+    let priority: UInt8
+
+    /// Creates a Suggestion from a UniFFI-generated GrammarSuggestion.
+    /// Returns nil if the char offsets cannot be converted to a valid Swift string range.
+    init?(from raw: GrammarSuggestion, in text: String) {
+        guard let range = text.rangeFromCharOffsets(
+            start: Int(raw.startChar),
+            end: Int(raw.endChar)
+        ) else { return nil }
+
+        self.id = UUID()
+        self.range = range
+        self.original = String(text[range])
+        self.primaryReplacement = raw.primaryReplacement
+        self.allReplacements = raw.allReplacements
+        self.message = raw.message
+        self.priority = raw.priority
+        self.source = .harper
+
+        switch raw.category {
+        case .spelling:
+            self.category = .spelling
+        case .grammarPunctuation:
+            self.category = .grammarPunctuation
+        }
+    }
+}

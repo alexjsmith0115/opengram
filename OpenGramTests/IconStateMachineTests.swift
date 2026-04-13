@@ -1,5 +1,5 @@
 import Testing
-@testable import OpenGram
+@testable import OpenGramLib
 
 @Suite("IconStateMachine")
 @MainActor
