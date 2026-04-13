@@ -1,0 +1,20 @@
+[package]
+name = "harper-bridge"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "harper_bridge"
+crate-type = ["staticlib", "cdylib"]
+
+[dependencies]
+harper-core = "=2.0.0"
+uniffi = "=0.31.0"
+
+[features]
+cli = ["uniffi/cli"]
+
+[[bin]]
+name = "uniffi-bindgen-swift"
+path = "uniffi-bindgen-swift.rs"
+required-features = ["cli"]
