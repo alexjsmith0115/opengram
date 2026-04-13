@@ -8,6 +8,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
     private var textEngine: (any AXTextEngineProtocol)?
     private var permissionGuide: PermissionGuide?
     private var harperService: (any GrammarCheckerProtocol)?
+    private var overlayController: OverlayController?
     private var lastExtractedContext: TextContext?
     private var lastSuggestions: [Suggestion] = []
 
@@ -21,11 +22,36 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         let dictionaryStore = DictionaryStore()
         let harperService = HarperService(dictionaryStore: dictionaryStore, dialect: selectedDialect)
 
+        let overlayController = OverlayController()
+
         self.statusBarController = statusBarController
         self.hotkeyManager = hotkeyManager
         self.textEngine = textEngine
         self.permissionGuide = permissionGuide
         self.harperService = harperService
+        self.overlayController = overlayController
+
+        overlayController.onAcceptSuggestion = { [weak self] suggestion in
+            self?.lastSuggestions.removeAll { $0.id == suggestion.id }
+        }
+
+        overlayController.onDismissSuggestion = { [weak self] suggestion in
+            self?.lastSuggestions.removeAll { $0.id == suggestion.id }
+        }
+
+        overlayController.onAddToDictionary = { [weak self] word in
+            guard let harperService = self?.harperService else { return }
+            Task {
+                await harperService.addToDictionary(word: word)
+            }
+        }
+
+        overlayController.onDismissAll = { [weak self] in
+            self?.statusBarController?.setState(.idle)
+            self?.statusBarController?.updateStatusText("OpenGram: Ready")
+            self?.lastSuggestions = []
+            self?.lastExtractedContext = nil
+        }
 
         hotkeyManager.onHotkeyFired = { [weak self] in
             self?.handleHotkeyFired()
@@ -45,6 +71,9 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
               let engine = textEngine,
               let harperService = harperService else { return }
 
+        // Dismiss any existing overlay before starting a new check cycle
+        overlayController?.dismiss()
+
         statusBar.setState(.checking)
         statusBar.updateStatusText("OpenGram: Checking...")
 
@@ -60,9 +89,15 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
             let suggestions = await harperService.check(text: context.text)
             await MainActor.run {
                 self.lastSuggestions = suggestions
-                print("[OpenGram] Harper found \(suggestions.count) suggestion(s)")
-                statusBar.setState(.done)
-                statusBar.updateStatusText("OpenGram: Ready")
+
+                if suggestions.isEmpty {
+                    statusBar.setState(.done)
+                    statusBar.updateStatusText("OpenGram: No issues found")
+                } else {
+                    statusBar.setState(.done)
+                    statusBar.updateStatusText("OpenGram: \(suggestions.count) suggestion(s)")
+                    self.overlayController?.show(suggestions: suggestions, context: context)
+                }
             }
         }
     }
