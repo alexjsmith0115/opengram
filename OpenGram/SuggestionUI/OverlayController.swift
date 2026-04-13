@@ -1,10 +1,10 @@
 @preconcurrency import ApplicationServices
 import AppKit
+import SwiftUI
 
-/// Coordinates the overlay window: owns the OverlayWindow, converts Suggestion ranges
-/// to screen positions via AX bounds queries, and manages the UnderlineView lifecycle.
-///
-/// Plans 02 and 03 add: popover, keyboard navigation, accept/dismiss, and write-back.
+/// Coordinates the overlay window and suggestion popover.
+/// Owns the OverlayWindow, SuggestionPopoverPanel, TargetAppObserver, and scroll monitor.
+/// Plans 02 and 03 extend this class with popover, dismissal, and write-back.
 @MainActor
 final class OverlayController {
 
@@ -13,13 +13,55 @@ final class OverlayController {
 
     private let accessor: any AXAccessor
     private let overlayWindow: OverlayWindow
-    private(set) var suggestions: [Suggestion] = []
-    private var textContext: TextContext?
+    private let popoverPanel: SuggestionPopoverPanel
+    private let targetAppObserver: TargetAppObserver
+    private var scrollMonitor: Any?
     private var underlineView: UnderlineView?
+
+    // MARK: - Public state
+    // internal(set) allows @testable test targets to inject state directly
+
+    internal(set) var suggestions: [Suggestion] = []
+    private(set) var textContext: TextContext?
+    private(set) var isPopoverVisible: Bool = false
+    private(set) var currentPopoverSuggestion: Suggestion?
+
+    // MARK: - Action callbacks (wired by caller -- Plan 03 wires write-back)
+
+    var onAcceptSuggestion: (@MainActor (Suggestion) -> Void)?
+    var onDismissSuggestion: (@MainActor (Suggestion) -> Void)?
+    var onAddToDictionary: (@MainActor (String) -> Void)?
 
     init(accessor: any AXAccessor = SystemAXAccessor()) {
         self.accessor = accessor
         self.overlayWindow = OverlayWindow()
+        self.popoverPanel = SuggestionPopoverPanel()
+        self.targetAppObserver = TargetAppObserver()
+
+        // Wire key handler for Escape dismissal (D-13)
+        overlayWindow.keyHandler = { [weak self] event in
+            guard let self else { return }
+            if event.keyCode == 53 { // Escape
+                if self.isPopoverVisible {
+                    self.closePopover()
+                } else {
+                    self.dismiss()
+                }
+            }
+        }
+
+        // Wire click-outside dismissal: mouseDown outside underlines triggers dismiss
+        overlayWindow.mouseDownHandler = { [weak self] event in
+            guard let self else { return }
+            guard let view = self.underlineView else {
+                self.dismiss()
+                return
+            }
+            let localPoint = view.convert(event.locationInWindow, from: nil)
+            if view.suggestionAt(point: localPoint) == nil {
+                self.dismiss()
+            }
+        }
     }
 
     // MARK: - Bounds queries
@@ -113,19 +155,114 @@ final class OverlayController {
         view.entries = localEntries
         view.frame = NSRect(origin: .zero, size: windowRect.size)
 
+        // Wire click-to-show-popover
+        view.onClick = { [weak self] suggestion in
+            self?.showPopover(for: suggestion)
+        }
+
         underlineView = view
         overlayWindow.contentView = view
         overlayWindow.setFrame(windowRect, display: false)
         overlayWindow.orderFront(nil)
+
+        // Install AX observer to dismiss on target app state changes
+        let pid = NSRunningApplication.runningApplications(
+            withBundleIdentifier: context.bundleID
+        ).first?.processIdentifier
+        if let pid {
+            targetAppObserver.install(pid: pid) { [weak self] in
+                self?.dismiss()
+            }
+        }
+
+        // Start scroll monitor -- RESEARCH.md A2: does not require Input Monitoring TCC.
+        // If assumption A2 is wrong, scroll dismissal silently fails. Verify manually on
+        // a clean macOS account during the Plan 03 checkpoint.
+        scrollMonitor = NSEvent.addGlobalMonitorForEvents(matching: .scrollWheel) { [weak self] _ in
+            self?.dismiss()
+        }
     }
 
-    /// Dismisses the overlay and resets all state.
+    /// Dismisses the overlay, closes any open popover, uninstalls the AX observer,
+    /// and removes the scroll monitor.
     func dismiss() {
+        closePopover()
         overlayWindow.orderOut(nil)
         overlayWindow.contentView = nil
         underlineView = nil
         suggestions = []
         textContext = nil
+        targetAppObserver.uninstall()
+        if let monitor = scrollMonitor {
+            NSEvent.removeMonitor(monitor)
+            scrollMonitor = nil
+        }
+    }
+
+    // MARK: - Popover management
+
+    /// Shows the suggestion popover panel near the given suggestion's underline.
+    /// Closes any previously open popover first (D-06: one at a time).
+    func showPopover(for suggestion: Suggestion) {
+        closePopover()
+
+        let addToDictionaryCallback: (@MainActor @Sendable () -> Void)?
+        if suggestion.category == .spelling {
+            let word = suggestion.original
+            addToDictionaryCallback = { [weak self] in self?.handleAddToDictionary(word: word) }
+        } else {
+            addToDictionaryCallback = nil
+        }
+
+        let popoverView = PopoverView(
+            suggestion: suggestion,
+            onAccept: { [weak self] in self?.handleAcceptSuggestion(suggestion) },
+            onDismiss: { [weak self] in self?.handleDismissSuggestion(suggestion) },
+            onAddToDictionary: addToDictionaryCallback
+        )
+
+        let hostingView = NSHostingView(rootView: popoverView)
+        hostingView.sizingOptions = [.preferredContentSize]
+        popoverPanel.setContent(hostingView)
+
+        let screen = overlayWindow.screen ?? NSScreen.main ?? NSScreen.screens[0]
+        let underlineRect = underlineRectForSuggestion(suggestion) ?? .zero
+        popoverPanel.showNear(underlineRect: underlineRect, on: screen)
+
+        currentPopoverSuggestion = suggestion
+        isPopoverVisible = true
+    }
+
+    /// Closes the suggestion popover panel and clears popover state.
+    func closePopover() {
+        popoverPanel.orderOut(nil)
+        currentPopoverSuggestion = nil
+        isPopoverVisible = false
+    }
+
+    // MARK: - Suggestion action handlers (internal visibility for testing)
+
+    func handleDismissSuggestion(_ suggestion: Suggestion) {
+        closePopover()
+        suggestions.removeAll { $0.id == suggestion.id }
+        if let view = underlineView {
+            view.entries.removeAll { $0.suggestion.id == suggestion.id }
+            view.needsDisplay = true
+        }
+        onDismissSuggestion?(suggestion)
+        if suggestions.isEmpty {
+            dismiss()
+        }
+    }
+
+    func handleAcceptSuggestion(_ suggestion: Suggestion) {
+        onAcceptSuggestion?(suggestion)
+        closePopover()
+        // Plan 03 replaces this stub with full AX write-back + reposition logic.
+    }
+
+    func handleAddToDictionary(word: String) {
+        onAddToDictionary?(word)
     }
 
     // MARK: - Private helpers
@@ -135,5 +272,9 @@ final class OverlayController {
         let location = scalars.distance(from: scalars.startIndex, to: suggestion.range.lowerBound)
         let length = scalars.distance(from: suggestion.range.lowerBound, to: suggestion.range.upperBound)
         return CFRange(location: location, length: length)
+    }
+
+    private func underlineRectForSuggestion(_ suggestion: Suggestion) -> NSRect? {
+        underlineView?.entries.first { $0.suggestion.id == suggestion.id }?.underlineRect
     }
 }
