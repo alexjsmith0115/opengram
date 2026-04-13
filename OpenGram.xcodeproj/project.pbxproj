@@ -17,6 +17,7 @@
 		A10000010000000000000008 /* EventTapBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000008 /* EventTapBridge.swift */; };
 		A10000010000000000000009 /* MenuBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000009 /* MenuBuilder.swift */; };
 		A1000001000000000000000A /* IconStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001000000000000000A /* IconStateMachine.swift */; };
+		A1000001000000000000000B /* PermissionGuide.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001000000000000000D /* PermissionGuide.swift */; };
 		B10000010000000000000001 /* IconStateMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000001 /* IconStateMachineTests.swift */; };
 		B10000010000000000000002 /* MenuBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000002 /* MenuBuilderTests.swift */; };
 /* End PBXBuildFile section */
@@ -43,6 +44,7 @@
 		A20000010000000000000009 /* MenuBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBuilder.swift; sourceTree = "<group>"; };
 		A2000001000000000000000A /* IconStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconStateMachine.swift; sourceTree = "<group>"; };
 		A2000001000000000000000B /* OpenGram.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = OpenGram.entitlements; sourceTree = "<group>"; };
+		A2000001000000000000000D /* PermissionGuide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionGuide.swift; sourceTree = "<group>"; };
 		A2000001000000000000000C /* OpenGram.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenGram.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B20000010000000000000001 /* IconStateMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconStateMachineTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000002 /* MenuBuilderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBuilderTests.swift; sourceTree = "<group>"; };
@@ -130,6 +132,7 @@
 		A40000010000000000000007 /* Permissions */ = {
 			isa = PBXGroup;
 			children = (
+				A2000001000000000000000D /* PermissionGuide.swift */,
 			);
 			path = Permissions;
 			sourceTree = "<group>";
@@ -241,6 +244,7 @@
 				A10000010000000000000008 /* EventTapBridge.swift in Sources */,
 				A10000010000000000000009 /* MenuBuilder.swift in Sources */,
 				A1000001000000000000000A /* IconStateMachine.swift in Sources */,
+				A1000001000000000000000B /* PermissionGuide.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
