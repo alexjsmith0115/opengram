@@ -6,6 +6,7 @@ import Foundation
 ///
 /// The dismiss callback runs on the main actor. Designed for one active observer
 /// at a time — install() implicitly uninstalls any prior observer.
+@MainActor
 final class TargetAppObserver {
     private var axObserver: AXObserver?
     private var dismissContext: DismissContext?
@@ -66,13 +67,6 @@ final class TargetAppObserver {
             unmanagedContext = nil
         }
         dismissContext = nil
-    }
-
-    deinit {
-        // Safety net: clean up if caller forgot to uninstall
-        if axObserver != nil {
-            uninstall()
-        }
     }
 }
 

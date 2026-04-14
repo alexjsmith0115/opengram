@@ -4,6 +4,7 @@ import AppKit
 @testable import OpenGramLib
 
 @Suite("TargetAppObserver lifecycle")
+@MainActor
 struct TargetAppObserverTests {
 
     @Test("init creates object without crashing")
