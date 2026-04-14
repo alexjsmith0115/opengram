@@ -34,6 +34,7 @@ final class OverlayController {
     private(set) var isPopoverVisible: Bool = false
     private(set) var currentPopoverSuggestion: Suggestion?
     private var currentAnimationState: PopoverAnimationState?
+    private var popoverGeneration: UInt = 0
 
     // MARK: - Action callbacks (wired by caller)
 
@@ -198,6 +199,7 @@ final class OverlayController {
             addToDictionaryCallback = nil
         }
 
+        popoverGeneration &+= 1
         let animState = PopoverAnimationState()
         currentAnimationState = animState
 
@@ -246,8 +248,11 @@ final class OverlayController {
         }
         currentAnimationState = nil
 
+        // Capture generation so the delayed orderOut is a no-op when a new popover opens
+        let closingGeneration = popoverGeneration
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { [weak self] in
-            self?.popoverPanel.orderOut(nil)
+            guard let self, self.popoverGeneration == closingGeneration else { return }
+            self.popoverPanel.orderOut(nil)
         }
     }
 
