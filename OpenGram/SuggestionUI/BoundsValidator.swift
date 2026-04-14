@@ -273,7 +273,9 @@ struct BoundsValidator {
 
     private func isValidRect(_ rect: CGRect) -> Bool {
         guard !rect.origin.x.isNaN, !rect.origin.y.isNaN,
-              !rect.origin.x.isInfinite, !rect.origin.y.isInfinite else { return false }
+              !rect.width.isNaN, !rect.height.isNaN,
+              !rect.origin.x.isInfinite, !rect.origin.y.isInfinite,
+              !rect.width.isInfinite, !rect.height.isInfinite else { return false }
         guard rect.width >= Self.minimumBoundsWidth,
               rect.height >= Self.minimumBoundsHeight else { return false }
         guard rect.width < Self.maximumBoundsWidth,
