@@ -394,6 +394,31 @@ struct OverlayControllerAcceptTests {
         #expect(controller.suggestions[1].id == s3.id)
     }
 
+    @Test("repositionAfterAccept updates suggestion ranges to point into new text")
+    func repositionUpdatesSuggestionRanges() {
+        let mock = MockAXAccessor()
+        mock.setAttributeResult = .success
+        mock.attributeSettable[kAXSelectedTextRangeAttribute] = (.success, true)
+        // After accepting "Ths" (3) -> "This" (4), text becomes "This is a tset"
+        mock.attributeValues[kAXValueAttribute] = (.success, "This is a tset" as CFString)
+        mock.parameterizedAttributeValues[kAXBoundsForRangeParameterizedAttribute] = (.success, makeAXRectValue())
+
+        let controller = OverlayController(accessor: mock)
+        let text = "Ths is a tset"
+        let context = makeTextContext(text: text)
+        let s1 = makeSuggestion(in: text, scalarStart: 0, scalarLength: 3, primaryReplacement: "This")
+        let s2 = makeSuggestion(in: text, scalarStart: 9, scalarLength: 4, primaryReplacement: "test")
+        controller.suggestions = [s1, s2]
+        controller.acceptSuggestion(s1, context: context)
+
+        #expect(controller.suggestions.count == 1)
+        // After +1 char shift, s2's range must be valid in the new text and extract "tset"
+        let surviving = controller.suggestions[0]
+        let newText = controller.textContext!.text
+        let extracted = String(newText[surviving.range])
+        #expect(extracted == "tset")
+    }
+
     @Test("repositionDropsSuggestionsOnBoundsFailure")
     func repositionDropsSuggestionsOnBoundsFailure() {
         let mock = MockAXAccessor()
@@ -455,6 +480,180 @@ struct OverlayControllerAcceptTests {
 
         // Suggestion must remain because the read failed
         #expect(controller.suggestions.count == 1)
+    }
+}
+
+// MARK: - Reposition Integration Tests
+
+/// Helper to extract a CFRange from an AXValue parameter recorded by MockAXAccessor.
+private func extractCFRange(from parameter: CFTypeRef) -> CFRange? {
+    guard CFGetTypeID(parameter) == AXValueGetTypeID() else { return nil }
+    var range = CFRange(location: 0, length: 0)
+    guard AXValueGetValue(parameter as! AXValue, .cfRange, &range) else { return nil }
+    return range
+}
+
+@Suite("OverlayController reposition after accept — integration")
+@MainActor
+struct OverlayControllerRepositionIntegrationTests {
+
+    @Test("bounds queries use shifted scalar offsets after accept changes text length")
+    func boundsQueriesUseShiftedOffsets() {
+        let mock = MockAXAccessor()
+        mock.setAttributeResult = .success
+        mock.attributeSettable[kAXSelectedTextRangeAttribute] = (.success, true)
+        // "Ths is a tset of grammer" -> accept "Ths"->"This" (+1 char)
+        mock.attributeValues[kAXValueAttribute] = (.success, "This is a tset of grammer" as CFString)
+        mock.parameterizedAttributeValues[kAXBoundsForRangeParameterizedAttribute] = (.success, makeAXRectValue())
+
+        let controller = OverlayController(accessor: mock)
+        let text = "Ths is a tset of grammer"
+        let context = makeTextContext(text: text)
+        // "Ths" at 0..3, "tset" at 9..13, "grammer" at 17..24
+        let s1 = makeSuggestion(in: text, scalarStart: 0, scalarLength: 3, primaryReplacement: "This")
+        let s2 = makeSuggestion(in: text, scalarStart: 9, scalarLength: 4, primaryReplacement: "test")
+        let s3 = makeSuggestion(in: text, scalarStart: 17, scalarLength: 7, primaryReplacement: "grammar")
+        controller.suggestions = [s1, s2, s3]
+
+        // Clear any parameterized calls from setup
+        mock.parameterizedAttributeCalls = []
+
+        controller.acceptSuggestion(s1, context: context)
+
+        // Filter to kAXBoundsForRangeParameterizedAttribute calls during reposition
+        let boundsCalls = mock.parameterizedAttributeCalls.filter {
+            $0.attribute == kAXBoundsForRangeParameterizedAttribute
+        }
+
+        // Extract CFRanges from the bounds queries
+        let queriedRanges = boundsCalls.compactMap { extractCFRange(from: $0.parameter) }
+
+        // s2 was at scalar 9..13, delta +1 -> should query 10..14 (location=10, length=4)
+        // s3 was at scalar 17..24, delta +1 -> should query 18..25 (location=18, length=7)
+        let s2Range = queriedRanges.first { $0.length == 4 }
+        let s3Range = queriedRanges.first { $0.length == 7 }
+
+        #expect(s2Range != nil, "Expected a bounds query for the 4-char suggestion")
+        #expect(s2Range?.location == 10, "s2 should query at shifted offset 10, got \(s2Range?.location ?? -1)")
+        #expect(s3Range != nil, "Expected a bounds query for the 7-char suggestion")
+        #expect(s3Range?.location == 18, "s3 should query at shifted offset 18, got \(s3Range?.location ?? -1)")
+    }
+
+    @Test("multi-line scenario: accept on line N shifts suggestions on lines N and below")
+    func multiLineAcceptShiftsLaterLines() {
+        let mock = MockAXAccessor()
+        mock.setAttributeResult = .success
+        mock.attributeSettable[kAXSelectedTextRangeAttribute] = (.success, true)
+
+        // 5 lines, each "Ths is a tset.\n" (15 chars per line including newline)
+        // Line 4 (0-indexed line 3): accept "Ths" -> "This" at scalar offset 45..48
+        // After accept: line 4 becomes "This is a tset.\n" (16 chars), +1 delta
+        // Line 5 suggestions (scalar 60+) must shift to 61+
+        let originalText = "Ths is a tset.\nThs is a tset.\nThs is a tset.\nThs is a tset.\nThs is a tset."
+        let newText = "Ths is a tset.\nThs is a tset.\nThs is a tset.\nThis is a tset.\nThs is a tset."
+        mock.attributeValues[kAXValueAttribute] = (.success, newText as CFString)
+
+        // Return different rects per line so we can verify entries are positioned per-line
+        var callCount = 0
+        let perLineRects: [CGRect] = [
+            CGRect(x: 100, y: 100, width: 30, height: 14),  // line 1 "Ths"
+            CGRect(x: 200, y: 100, width: 30, height: 14),  // line 1 "tset"
+            CGRect(x: 100, y: 120, width: 30, height: 14),  // line 2 "Ths"
+            CGRect(x: 200, y: 120, width: 30, height: 14),  // line 2 "tset"
+            CGRect(x: 100, y: 140, width: 30, height: 14),  // line 3 "Ths"
+            CGRect(x: 200, y: 140, width: 30, height: 14),  // line 3 "tset"
+            // line 4 "Ths" is accepted — no rect needed
+            CGRect(x: 200, y: 160, width: 30, height: 14),  // line 4 "tset"
+            CGRect(x: 100, y: 180, width: 30, height: 14),  // line 5 "Ths"
+            CGRect(x: 200, y: 180, width: 30, height: 14),  // line 5 "tset"
+        ]
+
+        // Dynamic mock: return rects in sequence
+        mock.parameterizedAttributeValues[kAXBoundsForRangeParameterizedAttribute] = (.success, makeAXRectValue(perLineRects[0]))
+
+        let controller = OverlayController(accessor: mock)
+        let context = makeTextContext(text: originalText)
+
+        // Create suggestions for "Ths" and "tset" on each of 5 lines
+        var suggestions: [Suggestion] = []
+        for line in 0..<5 {
+            let base = line * 15
+            suggestions.append(makeSuggestion(in: originalText, scalarStart: base, scalarLength: 3, primaryReplacement: "This"))
+            suggestions.append(makeSuggestion(in: originalText, scalarStart: base + 9, scalarLength: 4, primaryReplacement: "test"))
+        }
+        controller.suggestions = suggestions
+
+        // Accept "Ths" on line 4 (index 6 in suggestions array: lines 0-3 have 2 each)
+        let line4Ths = suggestions[6]
+        mock.parameterizedAttributeCalls = []
+
+        controller.acceptSuggestion(line4Ths, context: context)
+
+        // 9 surviving suggestions (10 original - 1 accepted)
+        #expect(controller.suggestions.count == 9)
+
+        // Verify scalar offsets: lines 1-3 unchanged, line 4 "tset" shifted +1, line 5 both shifted +1
+        let offsets = controller.suggestionScalarOffsets
+
+        // Lines 1-3 (6 suggestions, unchanged)
+        #expect(offsets[0].scalarStart == 0, "Line 1 'Ths' unchanged")
+        #expect(offsets[1].scalarStart == 9, "Line 1 'tset' unchanged")
+        #expect(offsets[2].scalarStart == 15, "Line 2 'Ths' unchanged")
+        #expect(offsets[3].scalarStart == 24, "Line 2 'tset' unchanged")
+        #expect(offsets[4].scalarStart == 30, "Line 3 'Ths' unchanged")
+        #expect(offsets[5].scalarStart == 39, "Line 3 'tset' unchanged")
+        // Line 4 "tset" was at 54, shifted +1 to 55
+        #expect(offsets[6].scalarStart == 55, "Line 4 'tset' shifted +1")
+        // Line 5: "Ths" was at 60 -> 61, "tset" was at 69 -> 70
+        #expect(offsets[7].scalarStart == 61, "Line 5 'Ths' shifted +1")
+        #expect(offsets[8].scalarStart == 70, "Line 5 'tset' shifted +1")
+
+        // Verify ranges extract correct substrings from new text
+        let nt = controller.textContext!.text
+        #expect(String(nt[controller.suggestions[6].range]) == "tset", "Line 4 'tset' range correct in new text")
+        #expect(String(nt[controller.suggestions[7].range]) == "Ths", "Line 5 'Ths' range correct in new text")
+        #expect(String(nt[controller.suggestions[8].range]) == "tset", "Line 5 'tset' range correct in new text")
+    }
+
+    @Test("successive accepts accumulate shifts correctly")
+    func successiveAcceptsAccumulateShifts() {
+        let mock = MockAXAccessor()
+        mock.setAttributeResult = .success
+        mock.attributeSettable[kAXSelectedTextRangeAttribute] = (.success, true)
+        mock.parameterizedAttributeValues[kAXBoundsForRangeParameterizedAttribute] = (.success, makeAXRectValue())
+
+        let controller = OverlayController(accessor: mock)
+        let text = "aa bb cc"
+        let context = makeTextContext(text: text)
+
+        let s1 = makeSuggestion(in: text, scalarStart: 0, scalarLength: 2, primaryReplacement: "AAA") // +1
+        let s2 = makeSuggestion(in: text, scalarStart: 3, scalarLength: 2, primaryReplacement: "BBBB") // +2
+        let s3 = makeSuggestion(in: text, scalarStart: 6, scalarLength: 2, primaryReplacement: "CC")   // 0
+        controller.suggestions = [s1, s2, s3]
+
+        // Accept s1: "aa"->"AAA" (+1), text becomes "AAA bb cc"
+        mock.attributeValues[kAXValueAttribute] = (.success, "AAA bb cc" as CFString)
+        controller.acceptSuggestion(s1, context: context)
+
+        #expect(controller.suggestions.count == 2)
+        // s2 was at 3, shifted +1 -> 4. s3 was at 6, shifted +1 -> 7.
+        #expect(controller.suggestionScalarOffsets[0].scalarStart == 4)
+        #expect(controller.suggestionScalarOffsets[1].scalarStart == 7)
+
+        let ctx2 = controller.textContext!
+        #expect(String(ctx2.text[controller.suggestions[0].range]) == "bb")
+        #expect(String(ctx2.text[controller.suggestions[1].range]) == "cc")
+
+        // Accept s2: "bb"->"BBBB" (+2), text becomes "AAA BBBB cc"
+        mock.attributeValues[kAXValueAttribute] = (.success, "AAA BBBB cc" as CFString)
+        controller.acceptSuggestion(controller.suggestions[0], context: ctx2)
+
+        #expect(controller.suggestions.count == 1)
+        // s3 was at 7 (after first shift), now shifted +2 -> 9
+        #expect(controller.suggestionScalarOffsets[0].scalarStart == 9)
+
+        let ctx3 = controller.textContext!
+        #expect(String(ctx3.text[controller.suggestions[0].range]) == "cc")
     }
 }
 

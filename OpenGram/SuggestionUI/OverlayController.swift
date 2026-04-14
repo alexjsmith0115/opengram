@@ -427,6 +427,34 @@ final class OverlayController {
             axElement: context.axElement
         )
 
+        // Rebuild suggestions with ranges pointing into the new text.
+        // cfRangeFor() computes AX bounds positions from suggestion.range, which are
+        // String.Index values bound to the OLD text. Without this rebuild, the AX query
+        // asks for bounds at stale character positions.
+        var rebuiltSuggestions: [Suggestion] = []
+        var rebuiltOffsets: [(scalarStart: Int, scalarLength: Int)] = []
+        for (i, suggestion) in suggestions.enumerated() {
+            let off = suggestionScalarOffsets[i]
+            guard off.scalarLength > 0,
+                  let newRange = newText.rangeFromCharOffsets(
+                      start: off.scalarStart, end: off.scalarStart + off.scalarLength)
+            else { continue }
+            rebuiltSuggestions.append(Suggestion(
+                id: suggestion.id,
+                range: newRange,
+                original: suggestion.original,
+                primaryReplacement: suggestion.primaryReplacement,
+                allReplacements: suggestion.allReplacements,
+                message: suggestion.message,
+                category: suggestion.category,
+                source: suggestion.source,
+                priority: suggestion.priority
+            ))
+            rebuiltOffsets.append(off)
+        }
+        suggestions = rebuiltSuggestions
+        suggestionScalarOffsets = rebuiltOffsets
+
         // Rebuild underline entries using BoundsValidator — drop suggestions whose re-query fails (D-12).
         // Survivor computation always runs to keep suggestions consistent with reality.
         guard suggestionScalarOffsets.count == suggestions.count else { return }
