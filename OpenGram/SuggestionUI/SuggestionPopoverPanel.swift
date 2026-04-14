@@ -1,14 +1,14 @@
 import AppKit
 
 /// Non-activating NSPanel for displaying suggestion details.
-/// Uses .hudWindow style for a floating HUD appearance without stealing focus.
+/// Borderless panel (no .hudWindow) — SwiftUI renders the full opaque card background (D-06).
 @MainActor
 final class SuggestionPopoverPanel: NSPanel {
 
     init() {
         super.init(
-            contentRect: NSRect(x: 0, y: 0, width: 300, height: 300),
-            styleMask: [.nonactivatingPanel, .hudWindow],
+            contentRect: NSRect(x: 0, y: 0, width: 320, height: 160),
+            styleMask: [.nonactivatingPanel],
             backing: .buffered,
             defer: false
         )
@@ -17,6 +17,10 @@ final class SuggestionPopoverPanel: NSPanel {
         collectionBehavior = [.canJoinAllSpaces]
         isMovableByWindowBackground = false
         becomesKeyOnlyIfNeeded = true
+        // SwiftUI renders the background via RoundedRectangle; panel is transparent beneath it.
+        backgroundColor = .clear
+        // Belt-and-suspenders: NSPanel system shadow in addition to SwiftUI shadow.
+        hasShadow = true
     }
 
     override var canBecomeKey: Bool { false }

@@ -1,148 +1,175 @@
 import SwiftUI
+import AppKit
 
-/// SwiftUI popover content for a grammar/spelling suggestion.
-/// Displays the original text, primary replacement, explanation, source badge,
-/// and action buttons. Add to Dictionary is only shown for .spelling suggestions.
+/// Drives scale+fade animation lifecycle. Owned by OverlayController so it can
+/// trigger the dismiss animation before calling orderOut(nil).
+@MainActor
+final class PopoverAnimationState: ObservableObject {
+    @Published var isVisible = false
+}
+
+/// Grammarly-style floating card for grammar/spelling suggestions.
+/// Inline diff, click-to-accept primary replacement, expandable alternatives,
+/// and scale+fade animation driven by PopoverAnimationState (D-06 through D-10, D-17).
 @MainActor
 struct PopoverView: View {
     let suggestion: Suggestion
     let onAccept: @MainActor () -> Void
+    let onAcceptAlternative: @MainActor @Sendable (String) -> Void
     let onDismiss: @MainActor () -> Void
     let onAddToDictionary: (@MainActor () -> Void)?
 
+    @ObservedObject var animationState: PopoverAnimationState
+
+    @State private var isHoveringPrimary = false
+    @State private var isAlternativesExpanded = false
+
+    init(
+        suggestion: Suggestion,
+        onAccept: @escaping @MainActor () -> Void,
+        onAcceptAlternative: @escaping @MainActor @Sendable (String) -> Void,
+        onDismiss: @escaping @MainActor () -> Void,
+        onAddToDictionary: (@MainActor () -> Void)?,
+        animationState: PopoverAnimationState = PopoverAnimationState()
+    ) {
+        self.suggestion = suggestion
+        self.onAccept = onAccept
+        self.onAcceptAlternative = onAcceptAlternative
+        self.onDismiss = onDismiss
+        self.onAddToDictionary = onAddToDictionary
+        self.animationState = animationState
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            originalRow
-            replacementHeading
-            if suggestion.allReplacements.count > 1 {
-                alternativesSection
+        ZStack {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(nsColor: .windowBackgroundColor))
+                .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
+
+            VStack(alignment: .leading, spacing: 12) {
+                inlineDiffRow
+                primaryReplacementButton
+                if suggestion.allReplacements.count > 1 {
+                    alternativesDisclosure
+                }
+                explanationText
+                footerRow
             }
-            explanationText
-            HStack {
-                sourceBadge
-                Spacer()
-            }
-            actionButtons
+            .padding(16)
         }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 16)
         .frame(minWidth: 280, maxWidth: 360)
+        .scaleEffect(animationState.isVisible ? 1.0 : 0.95)
+        .opacity(animationState.isVisible ? 1.0 : 0.0)
+        .onAppear {
+            withAnimation(.easeOut(duration: 0.15)) {
+                animationState.isVisible = true
+            }
+        }
     }
 
     // MARK: - Subviews
 
-    private var originalRow: some View {
-        HStack(alignment: .top, spacing: 4) {
-            Text("Original:")
-                .font(.system(size: 11, weight: .regular))
-                .foregroundColor(Color(nsColor: .secondaryLabelColor))
+    /// Inline diff: original with red strikethrough → green replacement (D-07)
+    private var inlineDiffRow: some View {
+        HStack(spacing: 6) {
             Text(suggestion.original)
-                .font(.system(size: 11, weight: .regular))
-                .foregroundColor(Color(nsColor: .labelColor))
-        }
-    }
-
-    private var replacementHeading: some View {
-        Group {
+                .strikethrough(true, color: .red)
+                .foregroundColor(.secondary)
+            Image(systemName: "arrow.right")
+                .font(.caption)
+                .foregroundColor(.secondary)
             if let primary = suggestion.primaryReplacement {
                 Text(primary)
+                    .foregroundColor(.green)
+            }
+        }
+        .font(.system(size: 13))
+    }
+
+    /// Click-to-accept primary replacement (D-08). Hover highlight + pointing hand cursor.
+    @ViewBuilder
+    private var primaryReplacementButton: some View {
+        if let primary = suggestion.primaryReplacement {
+            Button(action: onAccept) {
+                Text(primary)
                     .font(.system(size: 15, weight: .semibold))
-                    .foregroundColor(Color(nsColor: .labelColor))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(
+                        RoundedRectangle(cornerRadius: 6)
+                            .fill(isHoveringPrimary
+                                ? Color(nsColor: .controlAccentColor).opacity(0.15)
+                                : Color(nsColor: .controlAccentColor).opacity(0.08))
+                    )
+                    .foregroundColor(Color(nsColor: .controlAccentColor))
+            }
+            .buttonStyle(.plain)
+            .onHover { hovering in
+                isHoveringPrimary = hovering
+                if hovering { NSCursor.pointingHand.push() }
+                else { NSCursor.pop() }
             }
         }
     }
 
-    private var alternativesSection: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("Other suggestions:")
-                .font(.system(size: 11, weight: .regular))
-                .foregroundColor(Color(nsColor: .secondaryLabelColor))
-            ForEach(suggestion.allReplacements.dropFirst(), id: \.self) { replacement in
-                Text(replacement)
-                    .font(.system(size: 11, weight: .regular))
-                    .foregroundColor(Color(nsColor: .labelColor))
+    /// Expandable alternatives (D-09). Only rendered when allReplacements has > 1 item.
+    private var alternativesDisclosure: some View {
+        DisclosureGroup(
+            isExpanded: $isAlternativesExpanded,
+            content: {
+                VStack(alignment: .leading, spacing: 4) {
+                    ForEach(suggestion.allReplacements.dropFirst(), id: \.self) { alt in
+                        Button(action: { onAcceptAlternative(alt) }) {
+                            Text(alt)
+                                .font(.system(size: 12))
+                                .foregroundColor(Color(nsColor: .labelColor))
+                        }
+                        .buttonStyle(.plain)
+                        .onHover { hovering in
+                            if hovering { NSCursor.pointingHand.push() }
+                            else { NSCursor.pop() }
+                        }
+                    }
+                }
+            },
+            label: {
+                Text("\(suggestion.allReplacements.count - 1) more suggestions")
+                    .font(.system(size: 11))
+                    .foregroundColor(.secondary)
             }
-        }
+        )
     }
 
     private var explanationText: some View {
         Text(suggestion.message)
-            .font(.system(size: 13, weight: .regular))
+            .font(.system(size: 13))
             .foregroundColor(Color(nsColor: .labelColor))
             .fixedSize(horizontal: false, vertical: true)
     }
 
-    private var sourceBadge: some View {
-        HStack(spacing: 4) {
-            Image(systemName: badgeSymbol)
-                .font(.system(size: 11, weight: .regular))
-                .foregroundColor(Color(nsColor: .secondaryLabelColor))
-            Text(badgeLabel)
-                .font(.system(size: 11, weight: .regular))
-                .foregroundColor(Color(nsColor: .secondaryLabelColor))
-        }
-    }
+    /// Source badge + Dismiss + Add to Dictionary (D-10)
+    private var footerRow: some View {
+        HStack {
+            HStack(spacing: 4) {
+                Image(systemName: suggestion.source == .harper ? "checkmark.circle" : "sparkles")
+                Text(suggestion.source == .harper ? "Harper" : "AI")
+            }
+            .font(.system(size: 11))
+            .foregroundColor(.secondary)
 
-    private var badgeLabel: String {
-        switch suggestion.source {
-        case .harper: return "Harper"
-        case .llm: return "AI"
-        }
-    }
-
-    private var badgeSymbol: String {
-        switch suggestion.source {
-        case .harper: return "checkmark.circle"
-        case .llm: return "sparkles"
-        }
-    }
-
-    private var actionButtons: some View {
-        HStack(spacing: 8) {
-            Button("Accept", action: onAccept)
-                .buttonStyle(AcceptButtonStyle())
+            Spacer()
 
             Button("Dismiss", action: onDismiss)
-                .buttonStyle(DismissButtonStyle())
+                .font(.system(size: 12))
+                .foregroundColor(.secondary)
+                .buttonStyle(.plain)
 
             if let addToDictionary = onAddToDictionary {
                 Button("Add to Dictionary", action: addToDictionary)
-                    .buttonStyle(AddToDictionaryButtonStyle())
+                    .font(.system(size: 12))
+                    .foregroundColor(Color(nsColor: .labelColor))
+                    .buttonStyle(.plain)
             }
         }
-    }
-}
-
-// MARK: - Button Styles
-
-private struct AcceptButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.system(size: 13, weight: .regular))
-            .foregroundColor(.white)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(Color(nsColor: .controlAccentColor).opacity(configuration.isPressed ? 0.8 : 1.0))
-            .cornerRadius(6)
-    }
-}
-
-private struct DismissButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.system(size: 13, weight: .regular))
-            .foregroundColor(Color(nsColor: .secondaryLabelColor))
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-    }
-}
-
-private struct AddToDictionaryButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.system(size: 13, weight: .regular))
-            .foregroundColor(Color(nsColor: .labelColor))
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
     }
 }

@@ -32,6 +32,7 @@ final class OverlayController {
     internal(set) var textContext: TextContext?
     private(set) var isPopoverVisible: Bool = false
     private(set) var currentPopoverSuggestion: Suggestion?
+    private var currentAnimationState: PopoverAnimationState?
 
     // MARK: - Action callbacks (wired by caller)
 
@@ -188,11 +189,19 @@ final class OverlayController {
             addToDictionaryCallback = nil
         }
 
+        let animState = PopoverAnimationState()
+        currentAnimationState = animState
+
         let popoverView = PopoverView(
             suggestion: suggestion,
             onAccept: { [weak self] in self?.handleAcceptSuggestion(suggestion) },
+            onAcceptAlternative: { [weak self] alt in
+                guard let self, let ctx = self.textContext else { return }
+                self.acceptSuggestion(suggestion, context: ctx, replacementOverride: alt)
+            },
             onDismiss: { [weak self] in self?.handleDismissSuggestion(suggestion) },
-            onAddToDictionary: addToDictionaryCallback
+            onAddToDictionary: addToDictionaryCallback,
+            animationState: animState
         )
 
         let hostingView = NSHostingView(rootView: popoverView)
@@ -210,11 +219,28 @@ final class OverlayController {
         isPopoverVisible = true
     }
 
-    /// Closes the suggestion popover panel and clears popover state.
+    /// Closes the suggestion popover panel with a D-17 reverse scale+fade animation.
+    /// Triggers the dismiss animation, then removes the panel after 150ms.
     func closePopover() {
-        popoverPanel.orderOut(nil)
-        currentPopoverSuggestion = nil
+        guard isPopoverVisible else {
+            popoverPanel.orderOut(nil)
+            currentPopoverSuggestion = nil
+            return
+        }
         isPopoverVisible = false
+        currentPopoverSuggestion = nil
+
+        // D-17: animate scale 100%→95% + fade out before removing the panel
+        if let animState = currentAnimationState {
+            withAnimation(.easeOut(duration: 0.15)) {
+                animState.isVisible = false
+            }
+        }
+        currentAnimationState = nil
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { [weak self] in
+            self?.popoverPanel.orderOut(nil)
+        }
     }
 
     // MARK: - Suggestion action handlers (internal visibility for testing)
@@ -239,13 +265,14 @@ final class OverlayController {
 
     // MARK: - Accept / Write-back
 
-    /// Writes the suggestion's primary replacement to the target app.
+    /// Writes the suggestion's replacement to the target app.
     /// Primary path: range-targeted AX write (set selection + set selected text) per D-11.
     /// Fallback: full AXValue read/replace/write when range-targeted write is unavailable.
     /// After success: removes the accepted suggestion and repositions remaining underlines.
     /// Fails silently (suggestion stays) if AX write fails (T-03-07).
-    func acceptSuggestion(_ suggestion: Suggestion, context: TextContext) {
-        guard let replacement = suggestion.primaryReplacement else { return }
+    /// `replacementOverride` substitutes an alternative replacement string (D-09 alternative accept).
+    func acceptSuggestion(_ suggestion: Suggestion, context: TextContext, replacementOverride: String? = nil) {
+        guard let replacement = replacementOverride ?? suggestion.primaryReplacement else { return }
 
         guard let offsetIndex = suggestions.firstIndex(where: { $0.id == suggestion.id }) else { return }
 
