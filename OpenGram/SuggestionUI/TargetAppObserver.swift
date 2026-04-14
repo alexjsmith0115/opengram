@@ -9,22 +9,25 @@ import Foundation
 final class TargetAppObserver {
     private var axObserver: AXObserver?
     private var dismissContext: DismissContext?
+    /// Stores the Unmanaged reference from passRetained so we release the SAME
+    /// retain we created — never call passRetained a second time.
+    private var unmanagedContext: Unmanaged<DismissContext>?
 
     func install(pid: pid_t, onDismiss: @escaping @MainActor () -> Void) {
         uninstall()
 
         let context = DismissContext(handler: onDismiss)
         self.dismissContext = context
-        let ptr = Unmanaged.passRetained(context).toOpaque()
+        let unmanaged = Unmanaged.passRetained(context)
+        self.unmanagedContext = unmanaged
+        let ptr = unmanaged.toOpaque()
 
         var observer: AXObserver?
         AXObserverCreate(pid, { _, _, _, userData in
             guard let userData else { return }
             let ctx = Unmanaged<DismissContext>.fromOpaque(userData).takeUnretainedValue()
-            DispatchQueue.main.async {
-                MainActor.assumeIsolated {
-                    ctx.handler()
-                }
+            Task { @MainActor in
+                ctx.handler()
             }
         }, &observer)
 
@@ -58,10 +61,11 @@ final class TargetAppObserver {
             )
             axObserver = nil
         }
-        if let context = dismissContext {
-            Unmanaged.passRetained(context).release()
-            dismissContext = nil
+        if let unmanaged = unmanagedContext {
+            unmanaged.release()
+            unmanagedContext = nil
         }
+        dismissContext = nil
     }
 
     deinit {

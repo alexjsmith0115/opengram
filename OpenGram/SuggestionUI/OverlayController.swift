@@ -18,6 +18,7 @@ final class OverlayController {
     private var scrollMonitor: Any?
     private var keyMonitor: Any?
     private var underlineView: UnderlineView?
+    private var targetAppPID: pid_t?
 
     // MARK: - Public state
     // internal(set) allows @testable test targets to inject state directly
@@ -133,14 +134,21 @@ final class OverlayController {
             withBundleIdentifier: context.bundleID
         ).first?.processIdentifier
         if let pid {
+            targetAppPID = pid
             targetAppObserver.install(pid: pid) { [weak self] in
                 self?.dismiss()
             }
         }
 
-        // Start scroll monitor -- RESEARCH.md A2: does not require Input Monitoring TCC.
-        scrollMonitor = NSEvent.addGlobalMonitorForEvents(matching: .scrollWheel) { [weak self] _ in
-            self?.dismiss()
+        // Start scroll monitor filtered by target app PID (T-03-05).
+        // RESEARCH.md A2: does not require Input Monitoring TCC.
+        let targetPID = self.targetAppPID
+        scrollMonitor = NSEvent.addGlobalMonitorForEvents(matching: .scrollWheel) { [weak self] event in
+            if let targetPID,
+               let cgEvent = event.cgEvent,
+               cgEvent.getIntegerValueField(.eventTargetUnixProcessID) == Int64(targetPID) {
+                self?.dismiss()
+            }
         }
 
         // D-14: Only Escape remains as a global key monitor. Tab and Enter monitors removed.
@@ -171,6 +179,7 @@ final class OverlayController {
             NSEvent.removeMonitor(monitor)
             keyMonitor = nil
         }
+        targetAppPID = nil
         onDismissAll?()
     }
 
