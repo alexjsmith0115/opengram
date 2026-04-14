@@ -67,12 +67,13 @@ Plans:
   3. Clicking Accept in the popover replaces the flagged text in the target app via AX write-back; clicking Dismiss removes the underline without changing text; Add to Dictionary available for spelling
   4. Pressing Escape, clicking away from all suggestions, scrolling in the target app, or the target field losing focus dismisses all suggestion UI without changing text
   5. After accepting a suggestion, remaining underlines reposition using authoritative AX bounds re-query
-**Plans:** 3 plans
+**Plans:** 4 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Overlay window + underline rendering + AX bounds query infrastructure
-- [ ] 03-02-PLAN.md — Popover panel + popover content view + target app observer + dismissal triggers
-- [ ] 03-03-PLAN.md — Accept/write-back + repositioning + AppDelegate integration + manual verification
+- [x] 03-01-PLAN.md — Overlay window + underline rendering + AX bounds query infrastructure
+- [x] 03-02-PLAN.md — Popover panel + popover content view + target app observer + dismissal triggers
+- [x] 03-03-PLAN.md — Accept/write-back + repositioning + AppDelegate integration + manual verification
+- [ ] 03-04-PLAN.md — Gap closure: fix scroll dismiss + underline repositioning after accept
 
 **UI hint**: yes
 
@@ -108,7 +109,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 |-------|----------------|--------|-----------|
 | 1. Shell + Hotkey + Text Extraction | 5/5 | Complete | 2026-04-13 |
 | 2. Harper Grammar Engine | 0/3 | Planned | - |
-| 3. Suggestion UI | 0/3 | Planned | - |
+| 3. Suggestion UI | 3/4 | In Progress | - |
 | 4. LLM Style Suggestions | 0/? | Not started | - |
 | 5. Settings | 0/? | Not started | - |
 
