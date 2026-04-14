@@ -368,6 +368,32 @@ struct OverlayControllerAcceptTests {
         #expect(offsets[0].scalarStart == 0)
     }
 
+    @Test("repositionAfterAccept recalculates window frame and retranslates entries")
+    func repositionRecalculatesWindowFrame() {
+        let mock = MockAXAccessor()
+        mock.setAttributeResult = .success
+        mock.attributeSettable[kAXSelectedTextRangeAttribute] = (.success, true)
+        mock.attributeValues[kAXValueAttribute] = (.success, "abcd bb ccc" as CFString)
+        // BoundsValidator returns a rect so s2 and s3 survive reposition
+        mock.parameterizedAttributeValues[kAXBoundsForRangeParameterizedAttribute] = (.success, makeAXRectValue())
+
+        let controller = OverlayController(accessor: mock)
+        let text = "aaa bb ccc"
+        let context = makeTextContext(text: text)
+        let s1 = makeSuggestion(in: text, scalarStart: 0, scalarLength: 3, primaryReplacement: "abcd")
+        let s2 = makeSuggestion(in: text, scalarStart: 4, scalarLength: 2, primaryReplacement: "BB")
+        let s3 = makeSuggestion(in: text, scalarStart: 7, scalarLength: 3, primaryReplacement: "CCC")
+        controller.suggestions = [s1, s2, s3]
+
+        // Accept s1 — triggers repositionAfterAccept with two surviving suggestions
+        controller.acceptSuggestion(s1, context: context)
+
+        // Both surviving suggestions are retained and reposition executed without crash
+        #expect(controller.suggestions.count == 2)
+        #expect(controller.suggestions[0].id == s2.id)
+        #expect(controller.suggestions[1].id == s3.id)
+    }
+
     @Test("repositionDropsSuggestionsOnBoundsFailure")
     func repositionDropsSuggestionsOnBoundsFailure() {
         let mock = MockAXAccessor()

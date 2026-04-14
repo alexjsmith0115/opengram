@@ -431,10 +431,10 @@ final class OverlayController {
         // Survivor computation always runs to keep suggestions consistent with reality.
         guard suggestionScalarOffsets.count == suggestions.count else { return }
 
-        var newEntries: [UnderlineEntry] = []
+        // Build entries in screen coordinates first so we can compute the new window frame.
+        var screenEntries: [UnderlineEntry] = []
         var survivingSuggestions: [Suggestion] = []
         var survivingOffsets: [(scalarStart: Int, scalarLength: Int)] = []
-        let windowOrigin = overlayWindow.frame.origin
 
         for (i, suggestion) in suggestions.enumerated() {
             guard let rects = boundsValidator.validatedBoundsForRange(
@@ -448,26 +448,37 @@ final class OverlayController {
             for rect in rects {
                 let underlineRect = NSRect(x: rect.origin.x, y: rect.origin.y, width: rect.width, height: 2)
                 let hitRect = UnderlineView.expandedHitRect(from: underlineRect)
-                newEntries.append(UnderlineEntry(
-                    underlineRect: underlineRect.offsetBy(dx: -windowOrigin.x, dy: -windowOrigin.y),
-                    hitRect: hitRect.offsetBy(dx: -windowOrigin.x, dy: -windowOrigin.y),
-                    suggestion: suggestion
-                ))
+                screenEntries.append(UnderlineEntry(underlineRect: underlineRect, hitRect: hitRect, suggestion: suggestion))
             }
         }
 
         suggestions = survivingSuggestions
         suggestionScalarOffsets = survivingOffsets
 
-        if newEntries.isEmpty {
+        if screenEntries.isEmpty {
             dismiss()
             return
         }
 
+        // Recalculate window frame from new screen-coord entry union (mirrors show() pattern).
+        let unionRect = screenEntries.reduce(CGRect.null) { $0.union($1.hitRect) }
+        let padding: CGFloat = 4
+        let newWindowRect = unionRect.insetBy(dx: -padding, dy: -padding)
+
+        let localEntries = screenEntries.map { entry in
+            UnderlineEntry(
+                underlineRect: entry.underlineRect.offsetBy(dx: -newWindowRect.origin.x, dy: -newWindowRect.origin.y),
+                hitRect: entry.hitRect.offsetBy(dx: -newWindowRect.origin.x, dy: -newWindowRect.origin.y),
+                suggestion: entry.suggestion
+            )
+        }
+
         if let view = underlineView {
-            view.entries = newEntries
+            view.entries = localEntries
+            view.frame = NSRect(origin: .zero, size: newWindowRect.size)
             view.needsDisplay = true
         }
+        overlayWindow.setFrame(newWindowRect, display: false)
     }
 
     // MARK: - Keyboard Navigation
