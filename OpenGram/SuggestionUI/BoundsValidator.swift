@@ -95,8 +95,8 @@ struct BoundsValidator {
         guard let axRangeValue = AXValueCreate(.cfRange, &mutableRange) else { return nil }
 
         watchdog.beginCall(bundleID: bundleID, attribute: attribute)
+        defer { watchdog.endCall() }
         let (error, ref) = accessor.copyParameterizedAttributeValue(element, attribute, axRangeValue)
-        watchdog.endCall()
 
         guard error == .success, let ref else { return nil }
 
@@ -118,8 +118,8 @@ struct BoundsValidator {
         let axIndex = NSNumber(value: charIndex) as CFTypeRef
 
         watchdog.beginCall(bundleID: bundleID, attribute: kAXLineForIndexParameterizedAttribute)
+        defer { watchdog.endCall() }
         let (error, ref) = accessor.copyParameterizedAttributeValue(element, kAXLineForIndexParameterizedAttribute, axIndex)
-        watchdog.endCall()
 
         guard error == .success, let ref else { return nil }
         guard let lineNumber = ref as? NSNumber else { return nil }
@@ -136,8 +136,8 @@ struct BoundsValidator {
         let axLineIdx = NSNumber(value: lineNumber) as CFTypeRef
 
         watchdog.beginCall(bundleID: bundleID, attribute: kAXRangeForLineParameterizedAttribute)
+        defer { watchdog.endCall() }
         let (error, ref) = accessor.copyParameterizedAttributeValue(element, kAXRangeForLineParameterizedAttribute, axLineIdx)
-        watchdog.endCall()
 
         guard error == .success, let ref else { return nil }
         guard CFGetTypeID(ref) == AXValueGetTypeID() else { return nil }
