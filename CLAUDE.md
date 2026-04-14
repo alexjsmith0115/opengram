@@ -22,12 +22,29 @@ This project is **OpenGram**, a MacOS-specific active Grammar checker and writin
 - Every UI decision prioritizes clarity and usability.
 - Match existing patterns — don't invent new ones when established ones exist.
 
+### Build Validation
+
+- **Always validate with `xcodebuild -project OpenGram.xcodeproj -scheme OpenGram build`, not `swift build`.** The Xcode project (`project.pbxproj`) is the canonical build system. SPM is a convenience for CLI but auto-discovers files, masking missing pbxproj references.
+- When adding new source files, always add them to the Xcode project (`project.pbxproj`) — file references, group membership, and the appropriate build phase (Sources for `.swift`, Resources for `.plist`).
+- A build is not "clean" unless `xcodebuild` succeeds for both the app and test targets.
+
 ### Testing
 
 - Design all classes and functions with testability in mind. Use Dependency Injection liberally.
 - Make sure all unit, integration, and E2E tests pass before considering a task complete.
 - Every bugfix must include a regression test that would have caught the bug.
 - Update all call sites, tests, types, and docs in the same change. No partial work, no TODO/FIXME/HACK comments. If the correct approach requires more code or refactoring, that is the right approach.
+
+### Manual Validation
+
+After any feature change or UI-affecting work, use the `computer-use` MCP to visually validate the running app:
+
+1. Build and launch OpenGram (or confirm it's already running).
+2. Take a screenshot to verify the UI renders correctly — check overlay positioning, popover appearance, menu bar icon, underline rendering, etc.
+3. Interact with the app as a user would: trigger the hotkey, type text with errors, click suggestions, dismiss popovers.
+4. Compare what you see against the expected behavior for the change you made.
+
+This is not optional. Automated tests verify logic; manual validation catches visual regressions, layout bugs, and interaction issues that tests cannot. If the app can't be built or launched (e.g., missing dependencies), note the blocker — don't silently skip validation.
 
 ### Style
 
