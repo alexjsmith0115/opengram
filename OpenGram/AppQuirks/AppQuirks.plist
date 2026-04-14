@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Example entry: Pages has a small vertical offset in its AX bounds responses.
+	     Uncomment and tune after manual testing.
+
+	<key>com.apple.iWork.Pages</key>
+	<dict>
+		<key>coordinateOffsetX</key>
+		<real>0.0</real>
+		<key>coordinateOffsetY</key>
+		<real>2.0</real>
+		<key>lineHeightFactor</key>
+		<real>1.1</real>
+		<key>boundsStrategy</key>
+		<string>rangeBounds</string>
+	</dict>
+
+	-->
+</dict>
+</plist>
