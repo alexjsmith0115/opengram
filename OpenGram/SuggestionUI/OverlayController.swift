@@ -391,12 +391,19 @@ final class OverlayController {
             return
         }
 
-        // Shift offsets for suggestions starting after the accepted range
+        // Shift offsets for suggestions after the accepted range; zero out overlapping ones.
         for i in 0..<suggestionScalarOffsets.count {
-            if suggestionScalarOffsets[i].scalarStart >= acceptedStart + originalLength {
+            let off = suggestionScalarOffsets[i]
+            let overlapStart = max(off.scalarStart, acceptedStart)
+            let overlapEnd = min(off.scalarStart + off.scalarLength, acceptedStart + originalLength)
+            if overlapStart < overlapEnd {
+                suggestionScalarOffsets[i] = (scalarStart: off.scalarStart, scalarLength: 0)
+                continue
+            }
+            if off.scalarStart >= acceptedStart + originalLength {
                 suggestionScalarOffsets[i] = (
-                    scalarStart: suggestionScalarOffsets[i].scalarStart + delta,
-                    scalarLength: suggestionScalarOffsets[i].scalarLength
+                    scalarStart: off.scalarStart + delta,
+                    scalarLength: off.scalarLength
                 )
             }
         }
