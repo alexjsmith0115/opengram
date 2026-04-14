@@ -7,3 +7,4 @@ harper-bridge/bindings/
 .build/
 .swiftpm/
 OpenGram.xcodeproj/project.xcworkspace/
+HarperBridge.xcframework/
