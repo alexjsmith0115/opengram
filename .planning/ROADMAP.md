@@ -58,16 +58,22 @@ Plans:
 - [ ] 02-03-PLAN.md — AppDelegate wiring + integration tests for all GRAM requirements
 
 ### Phase 3: Suggestion UI
-**Goal**: Users see errors highlighted in the target application and can accept or dismiss individual suggestions — via inline underlines + popover for AX-direct apps, and via the floating diff panel for clipboard-mode apps (Chrome, Outlook, Word, Obsidian)
+**Goal**: Users see errors highlighted in the target application and can accept or dismiss individual suggestions — transparent overlay with colored underlines and click-to-show popover for AX-direct apps
 **Depends on**: Phase 2
 **Requirements**: UI-01, UI-02, UI-03, UI-04, UI-05, UI-06, UI-07, UI-08, UI-09, UI-10, UI-11
 **Success Criteria** (what must be TRUE):
-  1. In Chrome (clipboard mode), a floating diff panel appears after the hotkey showing original text alongside corrected text; clicking Apply pastes the corrected version back into Chrome
-  2. In Notes (AX-direct mode), colored underlines appear over the focused text field: solid red for spelling, solid blue for grammar, solid orange for punctuation
-  3. Clicking or hovering a suggestion underline shows a popover with the original text, replacement, explanation, and source badge (Harper checkmark or AI sparkle)
-  4. Clicking Accept in the popover replaces the flagged text in the target app via the appropriate write-back method; clicking Dismiss removes the underline without changing text
-  5. Pressing Escape, clicking away from all suggestions, or the target field losing focus dismisses all suggestion UI without changing text; Tab cycles through suggestions and Enter accepts the focused one
-**Plans**: TBD
+  1. In Notes (AX-direct mode), colored underlines appear over the focused text field: solid red for spelling, solid blue for grammar+punctuation (two-color scheme per D-04)
+  2. Clicking a suggestion underline shows a popover with the original text, replacement, explanation, and source badge (Harper checkmark)
+  3. Clicking Accept in the popover replaces the flagged text in the target app via AX write-back; clicking Dismiss removes the underline without changing text; Add to Dictionary available for spelling
+  4. Pressing Escape, clicking away from all suggestions, scrolling in the target app, or the target field losing focus dismisses all suggestion UI without changing text
+  5. After accepting a suggestion, remaining underlines reposition using authoritative AX bounds re-query
+**Plans:** 3 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Overlay window + underline rendering + AX bounds query infrastructure
+- [ ] 03-02-PLAN.md — Popover panel + popover content view + target app observer + dismissal triggers
+- [ ] 03-03-PLAN.md — Accept/write-back + repositioning + AppDelegate integration + manual verification
+
 **UI hint**: yes
 
 ### Phase 4: LLM Style Suggestions
@@ -102,7 +108,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 |-------|----------------|--------|-----------|
 | 1. Shell + Hotkey + Text Extraction | 5/5 | Complete | 2026-04-13 |
 | 2. Harper Grammar Engine | 0/3 | Planned | - |
-| 3. Suggestion UI | 0/? | Not started | - |
+| 3. Suggestion UI | 0/3 | Planned | - |
 | 4. LLM Style Suggestions | 0/? | Not started | - |
 | 5. Settings | 0/? | Not started | - |
 
@@ -114,6 +120,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 **Plans:** 3 plans
 
 Plans:
-- [ ] 06-01-PLAN.md — AXCallWatchdog + BoundsValidator + AppQuirksTable + UnderlineView cleanup
-- [ ] 06-02-PLAN.md — OverlayController rewrite (BoundsValidator integration, range-targeted accept, Tab/Enter removal)
-- [ ] 06-03-PLAN.md — Grammarly-style PopoverView + SuggestionPopoverPanel redesign + manual verification
+- [x] 06-01-PLAN.md — AXCallWatchdog + BoundsValidator + AppQuirksTable + UnderlineView cleanup
+- [x] 06-02-PLAN.md — OverlayController rewrite (BoundsValidator integration, range-targeted accept, Tab/Enter removal)
+- [x] 06-03-PLAN.md — Grammarly-style PopoverView + SuggestionPopoverPanel redesign + manual verification
