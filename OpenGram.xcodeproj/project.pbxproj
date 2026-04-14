@@ -58,6 +58,9 @@
 		B10000010000000000000026 /* SuggestionPopoverPanelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000026 /* SuggestionPopoverPanelTests.swift */; };
 		B10000010000000000000027 /* TargetAppObserverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000027 /* TargetAppObserverTests.swift */; };
 		B10000010000000000000028 /* UnderlineViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000028 /* UnderlineViewTests.swift */; };
+		A10000010000000000000070 /* SuggestionDiffEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000070 /* SuggestionDiffEngine.swift */; };
+		B10000010000000000000030 /* SuggestionDiffEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000030 /* SuggestionDiffEngineTests.swift */; };
+		B10000010000000000000031 /* AppQuirksTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000031 /* AppQuirksTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -125,6 +128,9 @@
 		B20000010000000000000026 /* SuggestionPopoverPanelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionPopoverPanelTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000027 /* TargetAppObserverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetAppObserverTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000028 /* UnderlineViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnderlineViewTests.swift; sourceTree = "<group>"; };
+		A20000010000000000000070 /* SuggestionDiffEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionDiffEngine.swift; sourceTree = "<group>"; };
+		B20000010000000000000030 /* SuggestionDiffEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionDiffEngineTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000031 /* AppQuirksTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppQuirksTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -228,6 +234,7 @@
 			isa = PBXGroup;
 			children = (
 				B20000010000000000000010 /* AppDelegateWiringTests.swift */,
+				B20000010000000000000031 /* AppQuirksTests.swift */,
 				B20000010000000000000005 /* AXCapabilityCacheTests.swift */,
 				B20000010000000000000004 /* AXTextEngineTests.swift */,
 				B20000010000000000000011 /* DictionaryStoreTests.swift */,
@@ -235,6 +242,7 @@
 				B20000010000000000000003 /* HotkeyManagerTests.swift */,
 				B20000010000000000000001 /* IconStateMachineTests.swift */,
 				B20000010000000000000002 /* MenuBuilderTests.swift */,
+				B20000010000000000000030 /* SuggestionDiffEngineTests.swift */,
 				B20000010000000000000013 /* SuggestionTests.swift */,
 				B4000001000000000000000A /* SuggestionUITests */,
 				B20000010000000000000006 /* TextContextTests.swift */,
@@ -271,6 +279,7 @@
 				A20000010000000000000041 /* OverlayWindow.swift */,
 				A20000010000000000000042 /* PopoverView.swift */,
 				A20000010000000000000043 /* SuggestionPopoverPanel.swift */,
+				A20000010000000000000070 /* SuggestionDiffEngine.swift */,
 				A20000010000000000000045 /* TargetAppObserver.swift */,
 				A20000010000000000000044 /* UnderlineView.swift */,
 			);
@@ -431,6 +440,7 @@
 				A10000010000000000000046 /* BoundsValidator.swift in Sources */,
 				A10000010000000000000047 /* AXCallWatchdog.swift in Sources */,
 				A10000010000000000000050 /* AppQuirksTable.swift in Sources */,
+				A10000010000000000000070 /* SuggestionDiffEngine.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -457,6 +467,8 @@
 				B10000010000000000000026 /* SuggestionPopoverPanelTests.swift in Sources */,
 				B10000010000000000000027 /* TargetAppObserverTests.swift in Sources */,
 				B10000010000000000000028 /* UnderlineViewTests.swift in Sources */,
+				B10000010000000000000030 /* SuggestionDiffEngineTests.swift in Sources */,
+				B10000010000000000000031 /* AppQuirksTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
