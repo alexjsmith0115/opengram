@@ -79,10 +79,10 @@ struct HotkeyManagerTests {
         #expect(action == .doNothing)
     }
 
-    @Test("healthCheckAction returns .doNothing when no tap exists")
-    func healthCheckAction_noTap_doNothing() {
+    @Test("healthCheckAction returns .retryInstall when no tap exists")
+    func healthCheckAction_noTap_retryInstall() {
         let action = HotkeyManager.healthCheckAction(tapExists: false, isEnabled: false)
-        #expect(action == .doNothing)
+        #expect(action == .retryInstall)
     }
 
     @Test("healthCheckAction returns .reenable when tap exists but disabled")

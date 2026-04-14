@@ -9,11 +9,13 @@ final class HotkeyManager: HotkeyManagerProtocol, @unchecked Sendable {
     enum HealthCheckAction: Equatable {
         case doNothing
         case reenable
+        case retryInstall
     }
 
     static func healthCheckAction(tapExists: Bool, isEnabled: Bool) -> HealthCheckAction {
-        guard tapExists, !isEnabled else { return .doNothing }
-        return .reenable
+        if !tapExists { return .retryInstall }
+        if !isEnabled { return .reenable }
+        return .doNothing
     }
 
     private static let kVK_ANSI_G: CGKeyCode = 0x05
@@ -34,6 +36,10 @@ final class HotkeyManager: HotkeyManagerProtocol, @unchecked Sendable {
             uninstall()
         }
 
+        let options = ["AXTrustedCheckOptionPrompt": true] as CFDictionary
+        let trusted = AXIsProcessTrustedWithOptions(options)
+        print("[HotkeyManager] AXIsProcessTrusted: \(trusted)")
+
         let selfPtr = Unmanaged.passUnretained(self).toOpaque()
         let eventMask: CGEventMask = (1 << CGEventType.keyDown.rawValue)
             | (1 << CGEventType.tapDisabledByTimeout.rawValue)
@@ -48,7 +54,12 @@ final class HotkeyManager: HotkeyManagerProtocol, @unchecked Sendable {
             userInfo: selfPtr
         )
 
-        guard let tap = eventTap else { return }
+        guard let tap = eventTap else {
+            print("[HotkeyManager] Failed to create event tap — grant Accessibility permission and it will retry automatically")
+            startHealthCheckTimer()
+            return
+        }
+        print("[HotkeyManager] Event tap created successfully")
 
         runLoopSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, tap, 0)
         CFRunLoopAddSource(CFRunLoopGetMain(), runLoopSource, .commonModes)
@@ -92,6 +103,7 @@ final class HotkeyManager: HotkeyManagerProtocol, @unchecked Sendable {
 
         if isHotkey(event) {
             Task { @MainActor in self.onHotkeyFired?() }
+            return nil
         }
 
         return Unmanaged.passUnretained(event)
@@ -110,6 +122,7 @@ final class HotkeyManager: HotkeyManagerProtocol, @unchecked Sendable {
     // MARK: - Health Check
 
     func startHealthCheckTimer() {
+        guard healthTimer == nil else { return }
         wakeObserver = NSWorkspace.shared.notificationCenter.addObserver(
             forName: NSWorkspace.didWakeNotification,
             object: nil,
@@ -131,6 +144,10 @@ final class HotkeyManager: HotkeyManagerProtocol, @unchecked Sendable {
         switch action {
         case .doNothing:
             return
+        case .retryInstall:
+            guard AXIsProcessTrusted() else { return }
+            print("[HotkeyManager] Permission granted — retrying event tap install")
+            reinstall()
         case .reenable:
             guard let tap = eventTap else { return }
             CGEvent.tapEnable(tap: tap, enable: true)
