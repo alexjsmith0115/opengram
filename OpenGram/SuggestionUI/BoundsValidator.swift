@@ -63,11 +63,11 @@ struct BoundsValidator {
         )
 
         let quirk = quirksTable.quirk(for: bundleID)
-        let strategy = quirk?.boundsStrategy ?? "rangeBounds"
+        let strategy = quirk?.boundsStrategy ?? .rangeBounds
         let lineHeightFactor = quirk?.lineHeightFactor ?? 1.0
         let threshold = lineHeight * lineHeightFactor * 1.5
 
-        if strategy != "skipMultiLine" && adjustedRect.height > threshold {
+        if strategy != .skipMultiLine && adjustedRect.height > threshold {
             if let rects = splitMultiLine(
                 element: element,
                 range: cfRange,

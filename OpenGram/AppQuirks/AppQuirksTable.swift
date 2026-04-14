@@ -1,5 +1,11 @@
 import AppKit
 
+/// Bounds query strategy for per-app AX quirks.
+enum BoundsStrategy: String, Codable {
+    case rangeBounds
+    case skipMultiLine
+}
+
 /// Per-app AX behavior configuration loaded from the bundled AppQuirks.plist.
 ///
 /// All fields are optional. A nil field means "use the default behavior."
@@ -10,8 +16,8 @@ struct AppQuirk: Codable {
     var coordinateOffsetY: CGFloat?
     /// Multiplier for estimated line height (affects multi-line detection threshold).
     var lineHeightFactor: CGFloat?
-    /// Override for the bounds query strategy: "rangeBounds" (default) or "skipMultiLine".
-    var boundsStrategy: String?
+    /// Override for the bounds query strategy.
+    var boundsStrategy: BoundsStrategy?
 }
 
 /// Loads per-app AX quirks from the bundled AppQuirks.plist and provides O(1) lookup.
