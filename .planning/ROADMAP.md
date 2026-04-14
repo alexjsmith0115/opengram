@@ -105,3 +105,15 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 3. Suggestion UI | 0/? | Not started | - |
 | 4. LLM Style Suggestions | 0/? | Not started | - |
 | 5. Settings | 0/? | Not started | - |
+
+### Phase 6: UX Polish — Underline Accuracy, Smart Text Replacement, and Grammarly-Style Popover
+
+**Goal:** Production-grade underline positioning via bounds validation pipeline with AX watchdog, range-targeted text replacement that integrates with target app undo stacks, and Grammarly-style popover card with inline diff and click-to-accept interaction
+**Requirements**: D-01, D-02, D-03, D-04, D-05, D-06, D-07, D-08, D-09, D-10, D-11, D-12, D-13, D-14, D-15, D-16, D-17, D-18, D-19
+**Depends on:** Phase 5
+**Plans:** 3 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — AXCallWatchdog + BoundsValidator + AppQuirksTable + UnderlineView cleanup
+- [ ] 06-02-PLAN.md — OverlayController rewrite (BoundsValidator integration, range-targeted accept, Tab/Enter removal)
+- [ ] 06-03-PLAN.md — Grammarly-style PopoverView + SuggestionPopoverPanel redesign + manual verification
