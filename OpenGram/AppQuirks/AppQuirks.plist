@@ -2,21 +2,28 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!-- Example entry: Pages has a small vertical offset in its AX bounds responses.
-	     Uncomment and tune after manual testing.
-
-	<key>com.apple.iWork.Pages</key>
+	<!-- Chromium-based browsers use a non-standard accessibility implementation
+	     that does not fire reliable AX value-changed notifications. TextMonitor
+	     uses polling for these apps instead (D-02). -->
+	<key>com.google.Chrome</key>
 	<dict>
-		<key>coordinateOffsetX</key>
-		<real>0.0</real>
-		<key>coordinateOffsetY</key>
-		<real>2.0</real>
-		<key>lineHeightFactor</key>
-		<real>1.1</real>
-		<key>boundsStrategy</key>
-		<string>rangeBounds</string>
+		<key>notificationUnreliable</key>
+		<true/>
 	</dict>
 
-	-->
+	<!-- VS Code is an Electron app with the same notification reliability issues
+	     as Chrome (shares the same Chromium accessibility stack). -->
+	<key>com.microsoft.VSCode</key>
+	<dict>
+		<key>notificationUnreliable</key>
+		<true/>
+	</dict>
+
+	<!-- Generic Electron shell — covers any Electron-based app not individually listed. -->
+	<key>com.github.Electron</key>
+	<dict>
+		<key>notificationUnreliable</key>
+		<true/>
+	</dict>
 </dict>
 </plist>

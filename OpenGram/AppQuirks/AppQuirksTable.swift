@@ -18,6 +18,9 @@ struct AppQuirk: Codable {
     var lineHeightFactor: CGFloat?
     /// Override for the bounds query strategy.
     var boundsStrategy: BoundsStrategy?
+    /// Pre-classifies apps known to have unreliable AX notifications (D-02).
+    /// When true, TextMonitor uses polling instead of notification-driven updates.
+    var notificationUnreliable: Bool?
 }
 
 /// Loads per-app AX quirks from the bundled AppQuirks.plist and provides O(1) lookup.

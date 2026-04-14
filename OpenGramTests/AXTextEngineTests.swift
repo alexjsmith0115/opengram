@@ -86,6 +86,7 @@ final class MockAXAccessor: AXAccessor, @unchecked Sendable {
 /// Stub capability cache that records calls without disk I/O.
 final class StubCapabilityCache: AXCapabilityCacheProtocol, @unchecked Sendable {
     private var entries: [String: Bool] = [:]
+    private var notificationEntries: [String: Bool] = [:]
     var storeCalls: [(bundleID: String, version: String?, supported: Bool)] = []
 
     func isSupported(bundleID: String, version: String?) -> Bool? {
@@ -97,6 +98,14 @@ final class StubCapabilityCache: AXCapabilityCacheProtocol, @unchecked Sendable 
         let key = bundleID + ":" + (version ?? "unknown")
         entries[key] = supported
         storeCalls.append((bundleID: bundleID, version: version, supported: supported))
+    }
+
+    func isNotificationReliable(bundleID: String) -> Bool? {
+        notificationEntries[bundleID]
+    }
+
+    func storeNotificationReliability(bundleID: String, reliable: Bool) {
+        notificationEntries[bundleID] = reliable
     }
 
     func preload(bundleID: String, version: String?, supported: Bool) {
