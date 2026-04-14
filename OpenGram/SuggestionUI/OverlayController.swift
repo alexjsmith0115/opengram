@@ -141,15 +141,11 @@ final class OverlayController {
             }
         }
 
-        // Start scroll monitor filtered by target app PID (T-03-05).
-        // RESEARCH.md A2: does not require Input Monitoring TCC.
-        let targetPID = self.targetAppPID
-        scrollMonitor = NSEvent.addGlobalMonitorForEvents(matching: .scrollWheel) { [weak self] event in
-            if let targetPID,
-               let cgEvent = event.cgEvent,
-               cgEvent.getIntegerValueField(.eventTargetUnixProcessID) == Int64(targetPID) {
-                self?.dismiss()
-            }
+        // Dismiss on any scroll: cgEvent is often nil for native Cocoa scroll events,
+        // making PID-filtered dismissal unreliable. Any scroll while visible means
+        // underline positions are stale, so unconditional dismiss is correct.
+        scrollMonitor = NSEvent.addGlobalMonitorForEvents(matching: .scrollWheel) { [weak self] _ in
+            self?.dismiss()
         }
 
         // D-14: Only Escape remains as a global key monitor. Tab and Enter monitors removed.
