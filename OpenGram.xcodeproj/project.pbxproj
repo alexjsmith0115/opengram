@@ -19,16 +19,45 @@
 		A1000001000000000000000A /* IconStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001000000000000000A /* IconStateMachine.swift */; };
 		A1000001000000000000000B /* PermissionGuide.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001000000000000000D /* PermissionGuide.swift */; };
 		A10000010000000000000011 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000010 /* HotkeyManager.swift */; };
-		B10000010000000000000001 /* IconStateMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000001 /* IconStateMachineTests.swift */; };
-		B10000010000000000000002 /* MenuBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000002 /* MenuBuilderTests.swift */; };
-		B10000010000000000000003 /* HotkeyManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000003 /* HotkeyManagerTests.swift */; };
 		A10000010000000000000020 /* AXAccessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000020 /* AXAccessor.swift */; };
 		A10000010000000000000021 /* AXCapabilityCacheProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000021 /* AXCapabilityCacheProtocol.swift */; };
 		A10000010000000000000022 /* AXTextEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000022 /* AXTextEngine.swift */; };
 		A10000010000000000000023 /* AXCapabilityCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000023 /* AXCapabilityCache.swift */; };
+		A10000010000000000000030 /* GrammarCheckerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000030 /* GrammarCheckerProtocol.swift */; };
+		A10000010000000000000031 /* Suggestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000031 /* Suggestion.swift */; };
+		A10000010000000000000032 /* DictionaryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000032 /* DictionaryStore.swift */; };
+		A10000010000000000000033 /* HarperService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000033 /* HarperService.swift */; };
+		A10000010000000000000034 /* HarperBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000034 /* HarperBridge.swift */; };
+		A10000010000000000000040 /* OverlayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000040 /* OverlayController.swift */; };
+		A10000010000000000000041 /* OverlayWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000041 /* OverlayWindow.swift */; };
+		A10000010000000000000042 /* PopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000042 /* PopoverView.swift */; };
+		A10000010000000000000043 /* SuggestionPopoverPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000043 /* SuggestionPopoverPanel.swift */; };
+		A10000010000000000000044 /* UnderlineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000044 /* UnderlineView.swift */; };
+		A10000010000000000000045 /* TargetAppObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000045 /* TargetAppObserver.swift */; };
+		A10000010000000000000046 /* BoundsValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000046 /* BoundsValidator.swift */; };
+		A10000010000000000000047 /* AXCallWatchdog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000047 /* AXCallWatchdog.swift */; };
+		A10000010000000000000050 /* AppQuirksTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000050 /* AppQuirksTable.swift */; };
+		A10000010000000000000051 /* AppQuirks.plist in Resources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000051 /* AppQuirks.plist */; };
+		A10000010000000000000060 /* HarperBridge.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000010000000000000060 /* HarperBridge.xcframework */; };
+		B10000010000000000000001 /* IconStateMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000001 /* IconStateMachineTests.swift */; };
+		B10000010000000000000002 /* MenuBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000002 /* MenuBuilderTests.swift */; };
+		B10000010000000000000003 /* HotkeyManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000003 /* HotkeyManagerTests.swift */; };
 		B10000010000000000000004 /* AXTextEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000004 /* AXTextEngineTests.swift */; };
 		B10000010000000000000005 /* AXCapabilityCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000005 /* AXCapabilityCacheTests.swift */; };
 		B10000010000000000000006 /* TextContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000006 /* TextContextTests.swift */; };
+		B10000010000000000000010 /* AppDelegateWiringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000010 /* AppDelegateWiringTests.swift */; };
+		B10000010000000000000011 /* DictionaryStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000011 /* DictionaryStoreTests.swift */; };
+		B10000010000000000000012 /* HarperServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000012 /* HarperServiceTests.swift */; };
+		B10000010000000000000013 /* SuggestionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000013 /* SuggestionTests.swift */; };
+		B10000010000000000000020 /* AXCallWatchdogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000020 /* AXCallWatchdogTests.swift */; };
+		B10000010000000000000021 /* BoundsForRangeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000021 /* BoundsForRangeTests.swift */; };
+		B10000010000000000000022 /* BoundsValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000022 /* BoundsValidatorTests.swift */; };
+		B10000010000000000000023 /* OverlayControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000023 /* OverlayControllerTests.swift */; };
+		B10000010000000000000024 /* OverlayWindowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000024 /* OverlayWindowTests.swift */; };
+		B10000010000000000000025 /* PopoverViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000025 /* PopoverViewTests.swift */; };
+		B10000010000000000000026 /* SuggestionPopoverPanelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000026 /* SuggestionPopoverPanelTests.swift */; };
+		B10000010000000000000027 /* TargetAppObserverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000027 /* TargetAppObserverTests.swift */; };
+		B10000010000000000000028 /* UnderlineViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000028 /* UnderlineViewTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,34 +85,54 @@
 		A2000001000000000000000C /* OpenGram.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenGram.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2000001000000000000000D /* PermissionGuide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionGuide.swift; sourceTree = "<group>"; };
 		A20000010000000000000010 /* HotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManager.swift; sourceTree = "<group>"; };
-		B20000010000000000000001 /* IconStateMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconStateMachineTests.swift; sourceTree = "<group>"; };
-		B20000010000000000000002 /* MenuBuilderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBuilderTests.swift; sourceTree = "<group>"; };
-		B20000010000000000000003 /* HotkeyManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManagerTests.swift; sourceTree = "<group>"; };
-		B2000001000000000000000F /* OpenGramTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OpenGramTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A20000010000000000000020 /* AXAccessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXAccessor.swift; sourceTree = "<group>"; };
 		A20000010000000000000021 /* AXCapabilityCacheProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXCapabilityCacheProtocol.swift; sourceTree = "<group>"; };
 		A20000010000000000000022 /* AXTextEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXTextEngine.swift; sourceTree = "<group>"; };
 		A20000010000000000000023 /* AXCapabilityCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXCapabilityCache.swift; sourceTree = "<group>"; };
+		A20000010000000000000030 /* GrammarCheckerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrammarCheckerProtocol.swift; sourceTree = "<group>"; };
+		A20000010000000000000031 /* Suggestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Suggestion.swift; sourceTree = "<group>"; };
+		A20000010000000000000032 /* DictionaryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryStore.swift; sourceTree = "<group>"; };
+		A20000010000000000000033 /* HarperService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarperService.swift; sourceTree = "<group>"; };
+		A20000010000000000000034 /* HarperBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarperBridge.swift; sourceTree = "<group>"; };
+		A20000010000000000000040 /* OverlayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayController.swift; sourceTree = "<group>"; };
+		A20000010000000000000041 /* OverlayWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayWindow.swift; sourceTree = "<group>"; };
+		A20000010000000000000042 /* PopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverView.swift; sourceTree = "<group>"; };
+		A20000010000000000000043 /* SuggestionPopoverPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionPopoverPanel.swift; sourceTree = "<group>"; };
+		A20000010000000000000044 /* UnderlineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnderlineView.swift; sourceTree = "<group>"; };
+		A20000010000000000000045 /* TargetAppObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetAppObserver.swift; sourceTree = "<group>"; };
+		A20000010000000000000046 /* BoundsValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoundsValidator.swift; sourceTree = "<group>"; };
+		A20000010000000000000047 /* AXCallWatchdog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXCallWatchdog.swift; sourceTree = "<group>"; };
+		A20000010000000000000050 /* AppQuirksTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppQuirksTable.swift; sourceTree = "<group>"; };
+		A20000010000000000000051 /* AppQuirks.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = AppQuirks.plist; sourceTree = "<group>"; };
+		A20000010000000000000060 /* HarperBridge.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = HarperBridge.xcframework; sourceTree = "<group>"; };
+		B20000010000000000000001 /* IconStateMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconStateMachineTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000002 /* MenuBuilderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBuilderTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000003 /* HotkeyManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManagerTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000004 /* AXTextEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXTextEngineTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000005 /* AXCapabilityCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXCapabilityCacheTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000006 /* TextContextTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextContextTests.swift; sourceTree = "<group>"; };
+		B2000001000000000000000F /* OpenGramTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OpenGramTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B20000010000000000000010 /* AppDelegateWiringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegateWiringTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000011 /* DictionaryStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryStoreTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000012 /* HarperServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarperServiceTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000013 /* SuggestionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000020 /* AXCallWatchdogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXCallWatchdogTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000021 /* BoundsForRangeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoundsForRangeTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000022 /* BoundsValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoundsValidatorTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000023 /* OverlayControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayControllerTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000024 /* OverlayWindowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayWindowTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000025 /* PopoverViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverViewTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000026 /* SuggestionPopoverPanelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionPopoverPanelTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000027 /* TargetAppObserverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetAppObserverTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000028 /* UnderlineViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnderlineViewTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
-
-/* Begin PBXContainerItemProxy section */
-		B30000010000000000000001 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A80000010000000000000001 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = A50000010000000000000001;
-			remoteInfo = OpenGram;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		A30000010000000000000001 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A10000010000000000000060 /* HarperBridge.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -97,12 +146,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		A40000010000000000000001 /* Project Root */ = {
+		A40000010000000000000001 = {
 			isa = PBXGroup;
 			children = (
 				A40000010000000000000002 /* OpenGram */,
 				A40000010000000000000008 /* OpenGramTests */,
 				A2000001000000000000000B /* OpenGram.entitlements */,
+				A20000010000000000000060 /* HarperBridge.xcframework */,
 				A40000010000000000000009 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -111,10 +161,14 @@
 			isa = PBXGroup;
 			children = (
 				A40000010000000000000003 /* App */,
-				A40000010000000000000004 /* Shell */,
+				A4000001000000000000000C /* AppQuirks */,
+				A4000001000000000000000A /* CheckEngine */,
+				A4000001000000000000000D /* Generated */,
 				A40000010000000000000005 /* Hotkey */,
-				A40000010000000000000006 /* TextEngine */,
 				A40000010000000000000007 /* Permissions */,
+				A40000010000000000000004 /* Shell */,
+				A4000001000000000000000B /* SuggestionUI */,
+				A40000010000000000000006 /* TextEngine */,
 			);
 			path = OpenGram;
 			sourceTree = "<group>";
@@ -173,11 +227,16 @@
 		A40000010000000000000008 /* OpenGramTests */ = {
 			isa = PBXGroup;
 			children = (
+				B20000010000000000000010 /* AppDelegateWiringTests.swift */,
+				B20000010000000000000005 /* AXCapabilityCacheTests.swift */,
+				B20000010000000000000004 /* AXTextEngineTests.swift */,
+				B20000010000000000000011 /* DictionaryStoreTests.swift */,
+				B20000010000000000000012 /* HarperServiceTests.swift */,
+				B20000010000000000000003 /* HotkeyManagerTests.swift */,
 				B20000010000000000000001 /* IconStateMachineTests.swift */,
 				B20000010000000000000002 /* MenuBuilderTests.swift */,
-				B20000010000000000000003 /* HotkeyManagerTests.swift */,
-				B20000010000000000000004 /* AXTextEngineTests.swift */,
-				B20000010000000000000005 /* AXCapabilityCacheTests.swift */,
+				B20000010000000000000013 /* SuggestionTests.swift */,
+				B4000001000000000000000A /* SuggestionUITests */,
 				B20000010000000000000006 /* TextContextTests.swift */,
 			);
 			path = OpenGramTests;
@@ -192,6 +251,65 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		A4000001000000000000000A /* CheckEngine */ = {
+			isa = PBXGroup;
+			children = (
+				A20000010000000000000030 /* GrammarCheckerProtocol.swift */,
+				A20000010000000000000031 /* Suggestion.swift */,
+				A20000010000000000000032 /* DictionaryStore.swift */,
+				A20000010000000000000033 /* HarperService.swift */,
+			);
+			path = CheckEngine;
+			sourceTree = "<group>";
+		};
+		A4000001000000000000000B /* SuggestionUI */ = {
+			isa = PBXGroup;
+			children = (
+				A20000010000000000000047 /* AXCallWatchdog.swift */,
+				A20000010000000000000046 /* BoundsValidator.swift */,
+				A20000010000000000000040 /* OverlayController.swift */,
+				A20000010000000000000041 /* OverlayWindow.swift */,
+				A20000010000000000000042 /* PopoverView.swift */,
+				A20000010000000000000043 /* SuggestionPopoverPanel.swift */,
+				A20000010000000000000045 /* TargetAppObserver.swift */,
+				A20000010000000000000044 /* UnderlineView.swift */,
+			);
+			path = SuggestionUI;
+			sourceTree = "<group>";
+		};
+		A4000001000000000000000C /* AppQuirks */ = {
+			isa = PBXGroup;
+			children = (
+				A20000010000000000000051 /* AppQuirks.plist */,
+				A20000010000000000000050 /* AppQuirksTable.swift */,
+			);
+			path = AppQuirks;
+			sourceTree = "<group>";
+		};
+		A4000001000000000000000D /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+				A20000010000000000000034 /* HarperBridge.swift */,
+			);
+			path = Generated;
+			sourceTree = "<group>";
+		};
+		B4000001000000000000000A /* SuggestionUITests */ = {
+			isa = PBXGroup;
+			children = (
+				B20000010000000000000020 /* AXCallWatchdogTests.swift */,
+				B20000010000000000000021 /* BoundsForRangeTests.swift */,
+				B20000010000000000000022 /* BoundsValidatorTests.swift */,
+				B20000010000000000000023 /* OverlayControllerTests.swift */,
+				B20000010000000000000024 /* OverlayWindowTests.swift */,
+				B20000010000000000000025 /* PopoverViewTests.swift */,
+				B20000010000000000000026 /* SuggestionPopoverPanelTests.swift */,
+				B20000010000000000000027 /* TargetAppObserverTests.swift */,
+				B20000010000000000000028 /* UnderlineViewTests.swift */,
+			);
+			path = SuggestionUITests;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -201,6 +319,7 @@
 			buildPhases = (
 				A60000010000000000000001 /* Sources */,
 				A30000010000000000000001 /* Frameworks */,
+				A30000010000000000000002 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -230,14 +349,6 @@
 		};
 /* End PBXNativeTarget section */
 
-/* Begin PBXTargetDependency section */
-		B40000010000000000000001 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = A50000010000000000000001 /* OpenGram */;
-			targetProxy = B30000010000000000000001 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
 /* Begin PBXProject section */
 		A80000010000000000000001 /* Project object */ = {
 			isa = PBXProject;
@@ -263,7 +374,7 @@
 				en,
 				Base,
 			);
-			mainGroup = A40000010000000000000001 /* Project Root */;
+			mainGroup = A40000010000000000000001;
 			productRefGroup = A40000010000000000000009 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -273,6 +384,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A30000010000000000000002 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000010000000000000051 /* AppQuirks.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A60000010000000000000001 /* Sources */ = {
@@ -295,6 +417,20 @@
 				A10000010000000000000021 /* AXCapabilityCacheProtocol.swift in Sources */,
 				A10000010000000000000022 /* AXTextEngine.swift in Sources */,
 				A10000010000000000000023 /* AXCapabilityCache.swift in Sources */,
+				A10000010000000000000030 /* GrammarCheckerProtocol.swift in Sources */,
+				A10000010000000000000031 /* Suggestion.swift in Sources */,
+				A10000010000000000000032 /* DictionaryStore.swift in Sources */,
+				A10000010000000000000033 /* HarperService.swift in Sources */,
+				A10000010000000000000034 /* HarperBridge.swift in Sources */,
+				A10000010000000000000040 /* OverlayController.swift in Sources */,
+				A10000010000000000000041 /* OverlayWindow.swift in Sources */,
+				A10000010000000000000042 /* PopoverView.swift in Sources */,
+				A10000010000000000000043 /* SuggestionPopoverPanel.swift in Sources */,
+				A10000010000000000000044 /* UnderlineView.swift in Sources */,
+				A10000010000000000000045 /* TargetAppObserver.swift in Sources */,
+				A10000010000000000000046 /* BoundsValidator.swift in Sources */,
+				A10000010000000000000047 /* AXCallWatchdog.swift in Sources */,
+				A10000010000000000000050 /* AppQuirksTable.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -308,6 +444,19 @@
 				B10000010000000000000004 /* AXTextEngineTests.swift in Sources */,
 				B10000010000000000000005 /* AXCapabilityCacheTests.swift in Sources */,
 				B10000010000000000000006 /* TextContextTests.swift in Sources */,
+				B10000010000000000000010 /* AppDelegateWiringTests.swift in Sources */,
+				B10000010000000000000011 /* DictionaryStoreTests.swift in Sources */,
+				B10000010000000000000012 /* HarperServiceTests.swift in Sources */,
+				B10000010000000000000013 /* SuggestionTests.swift in Sources */,
+				B10000010000000000000020 /* AXCallWatchdogTests.swift in Sources */,
+				B10000010000000000000021 /* BoundsForRangeTests.swift in Sources */,
+				B10000010000000000000022 /* BoundsValidatorTests.swift in Sources */,
+				B10000010000000000000023 /* OverlayControllerTests.swift in Sources */,
+				B10000010000000000000024 /* OverlayWindowTests.swift in Sources */,
+				B10000010000000000000025 /* PopoverViewTests.swift in Sources */,
+				B10000010000000000000026 /* SuggestionPopoverPanelTests.swift in Sources */,
+				B10000010000000000000027 /* TargetAppObserverTests.swift in Sources */,
+				B10000010000000000000028 /* UnderlineViewTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -387,6 +536,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y2WK2RX2KR;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSAccessibilityUsageDescription = "OpenGram reads and writes text in other apps to check and correct your writing.";
@@ -394,6 +544,7 @@
 				INFOPLIST_KEY_NSPrincipalClass = "";
 				MARKETING_VERSION = 0.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.opengram.app;
+				PRODUCT_MODULE_NAME = OpenGramLib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -409,6 +560,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y2WK2RX2KR;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSAccessibilityUsageDescription = "OpenGram reads and writes text in other apps to check and correct your writing.";
@@ -416,6 +568,7 @@
 				INFOPLIST_KEY_NSPrincipalClass = "";
 				MARKETING_VERSION = 0.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.opengram.app;
+				PRODUCT_MODULE_NAME = OpenGramLib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -490,7 +643,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
 	};
 	rootObject = A80000010000000000000001 /* Project object */;
 }
