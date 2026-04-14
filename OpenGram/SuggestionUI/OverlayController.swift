@@ -223,7 +223,6 @@ final class OverlayController {
     /// Triggers the dismiss animation, then removes the panel after 150ms.
     func closePopover() {
         guard isPopoverVisible else {
-            popoverPanel.orderOut(nil)
             currentPopoverSuggestion = nil
             return
         }
