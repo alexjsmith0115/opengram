@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: Shell + Hotkey + Text Extraction** - Menu bar app fires global hotkey and extracts text from the frontmost app via the correct tier
 - [ ] **Phase 2: Harper Grammar Engine** - Harper checks grammar, spelling, and punctuation via UniFFI xcframework with correct Unicode offsets
-- [ ] **Phase 3: Suggestion UI** - Transparent overlay with colored underlines and popover for AX-direct apps; floating diff panel dropped per D-01
+- [ ] **Phase 3: Suggestion UI** - Floating diff panel (primary) and inline overlay (AX apps) display and apply suggestions
 - [ ] **Phase 4: LLM Style Suggestions** - Optional LLM style/clarity suggestions merged asynchronously with Harper results
 - [ ] **Phase 5: Settings** - Full settings window wires user configuration live into the completed pipeline
 
@@ -53,27 +53,21 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [x] 02-01-PLAN.md — Rust toolchain + harper-bridge crate + xcframework build pipeline
-- [x] 02-02-PLAN.md — Swift service layer (Suggestion model, DictionaryStore, HarperService actor, Unicode conversion)
-- [x] 02-03-PLAN.md — AppDelegate wiring + integration tests for all GRAM requirements
+- [ ] 02-01-PLAN.md — Rust toolchain + harper-bridge crate + xcframework build pipeline
+- [ ] 02-02-PLAN.md — Swift service layer (Suggestion model, DictionaryStore, HarperService actor, Unicode conversion)
+- [ ] 02-03-PLAN.md — AppDelegate wiring + integration tests for all GRAM requirements
 
 ### Phase 3: Suggestion UI
-**Goal**: Users see errors highlighted in the target application and can accept or dismiss individual suggestions via inline underlines + popover for AX-direct apps. Floating diff panel dropped (D-01: no clipboard mode). Two-color underlines per D-04.
+**Goal**: Users see errors highlighted in the target application and can accept or dismiss individual suggestions — via inline underlines + popover for AX-direct apps, and via the floating diff panel for clipboard-mode apps (Chrome, Outlook, Word, Obsidian)
 **Depends on**: Phase 2
 **Requirements**: UI-01, UI-02, UI-03, UI-04, UI-05, UI-06, UI-07, UI-08, UI-09, UI-10, UI-11
 **Success Criteria** (what must be TRUE):
-  1. In Notes (AX-direct mode), colored underlines appear over the focused text field: solid red for spelling, solid blue for grammar+punctuation (two-color scheme per D-04)
-  2. Clicking a suggestion underline shows a popover with original text, replacement, explanation, source badge (Harper checkmark), and Accept/Dismiss/Add to Dictionary actions
-  3. Clicking Accept in the popover replaces the flagged text in Notes via AX write-back; clicking Dismiss removes the underline without changing text
-  4. Pressing Escape, clicking away from all suggestions, scrolling, or the target field losing focus dismisses all suggestion UI without changing text; Tab cycles through suggestions and Enter accepts the focused one
-  5. Dashed underline rendering infrastructure is in place for future LLM suggestions (Phase 4)
-**Plans:** 3 plans
-
-Plans:
-- [ ] 03-01-PLAN.md — Overlay window + underline rendering + AX bounds query infrastructure
-- [ ] 03-02-PLAN.md — Popover panel + popover content + TargetAppObserver dismissal
-- [ ] 03-03-PLAN.md — Accept/write-back + keyboard navigation + AppDelegate integration
-
+  1. In Chrome (clipboard mode), a floating diff panel appears after the hotkey showing original text alongside corrected text; clicking Apply pastes the corrected version back into Chrome
+  2. In Notes (AX-direct mode), colored underlines appear over the focused text field: solid red for spelling, solid blue for grammar, solid orange for punctuation
+  3. Clicking or hovering a suggestion underline shows a popover with the original text, replacement, explanation, and source badge (Harper checkmark or AI sparkle)
+  4. Clicking Accept in the popover replaces the flagged text in the target app via the appropriate write-back method; clicking Dismiss removes the underline without changing text
+  5. Pressing Escape, clicking away from all suggestions, or the target field losing focus dismisses all suggestion UI without changing text; Tab cycles through suggestions and Enter accepts the focused one
+**Plans**: TBD
 **UI hint**: yes
 
 ### Phase 4: LLM Style Suggestions
@@ -108,6 +102,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 |-------|----------------|--------|-----------|
 | 1. Shell + Hotkey + Text Extraction | 5/5 | Complete | 2026-04-13 |
 | 2. Harper Grammar Engine | 0/3 | Planned | - |
-| 3. Suggestion UI | 0/3 | Planned | - |
+| 3. Suggestion UI | 0/? | Not started | - |
 | 4. LLM Style Suggestions | 0/? | Not started | - |
 | 5. Settings | 0/? | Not started | - |
