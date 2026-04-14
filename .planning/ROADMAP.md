@@ -73,7 +73,7 @@ Plans:
 - [x] 03-01-PLAN.md — Overlay window + underline rendering + AX bounds query infrastructure
 - [x] 03-02-PLAN.md — Popover panel + popover content view + target app observer + dismissal triggers
 - [x] 03-03-PLAN.md — Accept/write-back + repositioning + AppDelegate integration + manual verification
-- [ ] 03-04-PLAN.md — Gap closure: fix scroll dismiss + underline repositioning after accept
+- [x] 03-04-PLAN.md — Gap closure: fix scroll dismiss + underline repositioning after accept
 
 **UI hint**: yes
 
