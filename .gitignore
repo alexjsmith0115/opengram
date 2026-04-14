@@ -4,3 +4,6 @@ planning/
 .DS_Store
 harper-bridge/target/
 harper-bridge/bindings/
+.build/
+.swiftpm/
+OpenGram.xcodeproj/project.xcworkspace/
