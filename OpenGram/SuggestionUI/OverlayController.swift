@@ -208,7 +208,7 @@ final class OverlayController {
         hostingView.sizingOptions = [.preferredContentSize]
         popoverPanel.setContent(hostingView)
 
-        let screen = overlayWindow.screen ?? NSScreen.main ?? NSScreen.screens[0]
+        guard let screen = overlayWindow.screen ?? NSScreen.main ?? NSScreen.screens.first else { return }
         let localRect = underlineRectForSuggestion(suggestion) ?? .zero
         // Convert window-local coordinates back to screen coordinates for popover positioning
         let windowOrigin = overlayWindow.frame.origin
