@@ -15,6 +15,7 @@ final class OverlayController {
     private let popoverPanel: SuggestionPopoverPanel
     private let targetAppObserver: TargetAppObserver
     private var scrollMonitor: Any?
+    private var keyMonitor: Any?
     private var underlineView: UnderlineView?
 
     // MARK: - Public state
@@ -46,17 +47,6 @@ final class OverlayController {
         self.overlayWindow = OverlayWindow()
         self.popoverPanel = SuggestionPopoverPanel()
         self.targetAppObserver = TargetAppObserver()
-
-        // Wire key handler -- full keyboard navigation (D-11, D-12, D-13)
-        overlayWindow.keyHandler = { [weak self] event in
-            guard let self else { return }
-            switch event.keyCode {
-            case 48: self.handleTab()
-            case 36: self.handleEnter(textContext: self.textContext)
-            case 53: self.handleEscape(textContext: self.textContext)
-            default: break
-            }
-        }
 
         // Wire click-outside dismissal: mouseDown outside underlines triggers dismiss
         overlayWindow.mouseDownHandler = { [weak self] event in
@@ -133,7 +123,14 @@ final class OverlayController {
             guard let cgRect = boundsForRange(suggestion, in: context.text, element: element) else {
                 continue
             }
-            let appKitRect = flipCGRect(cgRect, screenHeight: screenHeight)
+            // Sanity clamp: some apps (e.g., Notes title line) return the full line width
+            // for short ranges. If width-per-char exceeds line height, clamp to an estimate.
+            var clampedRect = cgRect
+            let charCount = max(CGFloat(suggestion.original.count), 1)
+            if clampedRect.width > clampedRect.height * charCount {
+                clampedRect.size.width = clampedRect.height * 0.7 * charCount
+            }
+            let appKitRect = flipCGRect(clampedRect, screenHeight: screenHeight)
             let underlineRect = NSRect(
                 x: appKitRect.origin.x,
                 y: appKitRect.origin.y,
@@ -198,6 +195,17 @@ final class OverlayController {
         scrollMonitor = NSEvent.addGlobalMonitorForEvents(matching: .scrollWheel) { [weak self] _ in
             self?.dismiss()
         }
+
+        // Keyboard navigation via global monitor (overlay is non-activating, can't become key)
+        keyMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            guard let self else { return }
+            switch event.keyCode {
+            case 48: self.handleTab()
+            case 36: self.handleEnter(textContext: self.textContext)
+            case 53: self.handleEscape(textContext: self.textContext)
+            default: break
+            }
+        }
     }
 
     /// Dismisses the overlay, closes any open popover, uninstalls the AX observer,
@@ -215,6 +223,10 @@ final class OverlayController {
         if let monitor = scrollMonitor {
             NSEvent.removeMonitor(monitor)
             scrollMonitor = nil
+        }
+        if let monitor = keyMonitor {
+            NSEvent.removeMonitor(monitor)
+            keyMonitor = nil
         }
         onDismissAll?()
     }
@@ -246,8 +258,11 @@ final class OverlayController {
         popoverPanel.setContent(hostingView)
 
         let screen = overlayWindow.screen ?? NSScreen.main ?? NSScreen.screens[0]
-        let underlineRect = underlineRectForSuggestion(suggestion) ?? .zero
-        popoverPanel.showNear(underlineRect: underlineRect, on: screen)
+        let localRect = underlineRectForSuggestion(suggestion) ?? .zero
+        // Convert window-local coordinates back to screen coordinates for popover positioning
+        let windowOrigin = overlayWindow.frame.origin
+        let screenRect = localRect.offsetBy(dx: windowOrigin.x, dy: windowOrigin.y)
+        popoverPanel.showNear(underlineRect: screenRect, on: screen)
 
         currentPopoverSuggestion = suggestion
         isPopoverVisible = true
@@ -303,24 +318,27 @@ final class OverlayController {
 
         let offset = suggestionScalarOffsets[offsetIndex]
 
-        // 1. Select the range in the target element
-        var cfRange = CFRange(location: offset.scalarStart, length: offset.scalarLength)
-        guard let axRange = AXValueCreate(.cfRange, &cfRange) else { return }
+        // Read the current full text from the target element
+        let (readError, readRef) = accessor.copyAttributeValue(context.axElement, kAXValueAttribute)
+        guard readError == .success, let currentText = readRef as? String else { return }
 
-        let selectError = accessor.setAttributeValue(
-            context.axElement,
-            kAXSelectedTextRangeAttribute,
-            axRange
-        )
-        guard selectError == .success else { return }
+        // Perform the replacement in-memory using scalar offsets
+        let scalars = currentText.unicodeScalars
+        let startIdx = scalars.index(scalars.startIndex, offsetBy: offset.scalarStart)
+        let endIdx = scalars.index(startIdx, offsetBy: offset.scalarLength)
+        let stringStart = startIdx.samePosition(in: currentText) ?? String.Index(startIdx, within: currentText)!
+        let stringEnd = endIdx.samePosition(in: currentText) ?? String.Index(endIdx, within: currentText)!
 
-        // 2. Replace selected text
-        let replaceError = accessor.setAttributeValue(
+        var newText = currentText
+        newText.replaceSubrange(stringStart..<stringEnd, with: replacement)
+
+        // Write the full modified text back
+        let writeError = accessor.setAttributeValue(
             context.axElement,
-            kAXSelectedTextAttribute,
-            replacement as CFString
+            kAXValueAttribute,
+            newText as CFString
         )
-        guard replaceError == .success else { return }
+        guard writeError == .success else { return }
 
         // 3. Close popover
         closePopover()

@@ -7,10 +7,10 @@ import AppKit
 @MainActor
 struct OverlayWindowTests {
 
-    @Test("canBecomeKey returns true")
-    func canBecomeKeyIsTrue() {
+    @Test("canBecomeKey returns false (non-activating panel)")
+    func canBecomeKeyIsFalse() {
         let window = OverlayWindow()
-        #expect(window.canBecomeKey == true)
+        #expect(window.canBecomeKey == false)
     }
 
     @Test("canBecomeMain returns false")

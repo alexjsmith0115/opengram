@@ -198,12 +198,11 @@ struct OverlayControllerTests {
 @MainActor
 struct OverlayControllerAcceptTests {
 
-    @Test("acceptSuggestion calls setAttributeValue with range then replacement on success")
-    func acceptWritesRangeThenReplacement() {
+    @Test("acceptSuggestion reads full text, replaces in-memory, and writes back via AXValue")
+    func acceptWritesFullTextReplacement() {
         let mock = MockAXAccessor()
         mock.setAttributeResult = .success
-        // Return updated text so repositionAfterAccept can re-read it
-        mock.attributeValues[kAXValueAttribute] = (.success, "receive the tset" as CFString)
+        mock.attributeValues[kAXValueAttribute] = (.success, "recieve the tset" as CFString)
 
         let controller = OverlayController(accessor: mock)
         let text = "recieve the tset"
@@ -213,15 +212,18 @@ struct OverlayControllerAcceptTests {
         controller.suggestions = [suggestion]
         controller.acceptSuggestion(suggestion, context: context)
 
-        #expect(mock.setAttributeCalls.count == 2)
-        #expect(mock.setAttributeCalls[0].attribute == kAXSelectedTextRangeAttribute)
-        #expect(mock.setAttributeCalls[1].attribute == kAXSelectedTextAttribute)
+        // Should read (copyAttributeValue) then write (setAttributeValue) the full text
+        #expect(mock.setAttributeCalls.count == 1)
+        #expect(mock.setAttributeCalls[0].attribute == kAXValueAttribute)
+        let written = mock.setAttributeCalls[0].value as? String
+        #expect(written == "receive the tset")
     }
 
-    @Test("acceptSuggestion returns without modifying suggestions when AX range selection fails")
-    func acceptDoesNothingWhenRangeSelectFails() {
+    @Test("acceptSuggestion returns without modifying suggestions when AX read fails")
+    func acceptDoesNothingWhenReadFails() {
         let mock = MockAXAccessor()
-        mock.setAttributeResult = .failure
+        mock.setAttributeResult = .success
+        mock.attributeValues[kAXValueAttribute] = (.failure, nil)
 
         let controller = OverlayController(accessor: mock)
         let text = "recieve"
@@ -231,7 +233,7 @@ struct OverlayControllerAcceptTests {
         controller.suggestions = [suggestion]
         controller.acceptSuggestion(suggestion, context: context)
 
-        // Suggestion must remain because the write failed
+        // Suggestion must remain because the read failed
         #expect(controller.suggestions.count == 1)
     }
 

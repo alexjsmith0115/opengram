@@ -7,7 +7,7 @@ final class SuggestionPopoverPanel: NSPanel {
 
     init() {
         super.init(
-            contentRect: NSRect(x: 0, y: 0, width: 300, height: 160),
+            contentRect: NSRect(x: 0, y: 0, width: 300, height: 300),
             styleMask: [.nonactivatingPanel, .hudWindow],
             backing: .buffered,
             defer: false

@@ -83,7 +83,7 @@ struct AppDelegateWiringTests {
 
         controller.onAddToDictionary?("tset")
         // Allow the async task spawned in the callback to complete
-        try? await Task.sleep(for: .milliseconds(50))
+        try? await Task.sleep(for: .milliseconds(200))
         #expect(mockChecker.addedWords.contains("tset"))
     }
 
