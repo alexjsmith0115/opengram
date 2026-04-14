@@ -358,8 +358,8 @@ final class OverlayController {
         let scalars = currentText.unicodeScalars
         let startIdx = scalars.index(scalars.startIndex, offsetBy: offset.scalarStart)
         let endIdx = scalars.index(startIdx, offsetBy: offset.scalarLength)
-        let stringStart = startIdx.samePosition(in: currentText) ?? String.Index(startIdx, within: currentText)!
-        let stringEnd = endIdx.samePosition(in: currentText) ?? String.Index(endIdx, within: currentText)!
+        guard let stringStart = startIdx.samePosition(in: currentText) else { return false }
+        guard let stringEnd = endIdx.samePosition(in: currentText) else { return false }
 
         var newText = currentText
         newText.replaceSubrange(stringStart..<stringEnd, with: replacement)
