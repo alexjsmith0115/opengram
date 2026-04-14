@@ -21,6 +21,9 @@ final class MockAXAccessor: AXAccessor, @unchecked Sendable {
     var setAttributeCalls: [(attribute: String, value: CFTypeRef)] = []
     var setAttributeResult: AXError = .success
 
+    /// Per-call override: if set, invoked with the call index and its return value overrides setAttributeResult.
+    var setAttributeResultsByCall: ((Int) -> AXError)?
+
     /// Maps (attribute name) -> (error, value) for copyParameterizedAttributeValue calls.
     var parameterizedAttributeValues: [String: (AXError, CFTypeRef?)] = [:]
 
@@ -54,7 +57,11 @@ final class MockAXAccessor: AXAccessor, @unchecked Sendable {
         _ attribute: String,
         _ value: CFTypeRef
     ) -> AXError {
+        let callIndex = setAttributeCalls.count
         setAttributeCalls.append((attribute: attribute, value: value))
+        if let override = setAttributeResultsByCall {
+            return override(callIndex)
+        }
         return setAttributeResult
     }
 

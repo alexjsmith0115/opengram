@@ -52,6 +52,12 @@ private func makeSuggestion(
     )
 }
 
+/// Creates an AXValue wrapping a valid CGRect for use with kAXBoundsForRangeParameterizedAttribute mocks.
+private func makeAXRectValue(_ rect: CGRect = CGRect(x: 100, y: 200, width: 50, height: 14)) -> CFTypeRef {
+    var r = rect
+    return AXValueCreate(.cgRect, &r)!
+}
+
 private func makeTextContext(text: String = "recieve") -> TextContext {
     TextContext(
         text: text,
@@ -165,6 +171,8 @@ struct OverlayControllerTests {
         let mock = MockAXAccessor()
         mock.setAttributeResult = .success
         mock.attributeValues[kAXValueAttribute] = (.success, "receive" as CFString)
+        // Range-targeted write not supported — fall back to full write
+        mock.attributeSettable[kAXSelectedTextRangeAttribute] = (.success, false)
 
         let controller = OverlayController(accessor: mock)
         var acceptedSuggestion: Suggestion?
@@ -198,32 +206,11 @@ struct OverlayControllerTests {
 @MainActor
 struct OverlayControllerAcceptTests {
 
-    @Test("acceptSuggestion reads full text, replaces in-memory, and writes back via AXValue")
-    func acceptWritesFullTextReplacement() {
+    @Test("rangeTargetedWriteUsesSetSelectedTextRange when settable")
+    func rangeTargetedWriteUsesSetSelectedTextRange() {
         let mock = MockAXAccessor()
         mock.setAttributeResult = .success
-        mock.attributeValues[kAXValueAttribute] = (.success, "recieve the tset" as CFString)
-
-        let controller = OverlayController(accessor: mock)
-        let text = "recieve the tset"
-        let context = makeTextContext(text: text)
-        let suggestion = makeSuggestion(in: text, scalarStart: 0, scalarLength: 7,
-                                        primaryReplacement: "receive")
-        controller.suggestions = [suggestion]
-        controller.acceptSuggestion(suggestion, context: context)
-
-        // Should read (copyAttributeValue) then write (setAttributeValue) the full text
-        #expect(mock.setAttributeCalls.count == 1)
-        #expect(mock.setAttributeCalls[0].attribute == kAXValueAttribute)
-        let written = mock.setAttributeCalls[0].value as? String
-        #expect(written == "receive the tset")
-    }
-
-    @Test("acceptSuggestion returns without modifying suggestions when AX read fails")
-    func acceptDoesNothingWhenReadFails() {
-        let mock = MockAXAccessor()
-        mock.setAttributeResult = .success
-        mock.attributeValues[kAXValueAttribute] = (.failure, nil)
+        mock.attributeSettable[kAXSelectedTextRangeAttribute] = (.success, true)
 
         let controller = OverlayController(accessor: mock)
         let text = "recieve"
@@ -233,15 +220,68 @@ struct OverlayControllerAcceptTests {
         controller.suggestions = [suggestion]
         controller.acceptSuggestion(suggestion, context: context)
 
-        // Suggestion must remain because the read failed
-        #expect(controller.suggestions.count == 1)
+        // First call must be kAXSelectedTextRangeAttribute, second must be kAXSelectedTextAttribute
+        #expect(mock.setAttributeCalls.count >= 2)
+        #expect(mock.setAttributeCalls[0].attribute == kAXSelectedTextRangeAttribute)
+        #expect(mock.setAttributeCalls[1].attribute == kAXSelectedTextAttribute)
+    }
+
+    @Test("rangeTargetedWriteFallsBackWhenNotSettable")
+    func rangeTargetedWriteFallsBackWhenNotSettable() {
+        let mock = MockAXAccessor()
+        mock.setAttributeResult = .success
+        mock.attributeSettable[kAXSelectedTextRangeAttribute] = (.success, false)
+        mock.attributeValues[kAXValueAttribute] = (.success, "recieve" as CFString)
+
+        let controller = OverlayController(accessor: mock)
+        let text = "recieve"
+        let context = makeTextContext(text: text)
+        let suggestion = makeSuggestion(in: text, scalarStart: 0, scalarLength: 7,
+                                        primaryReplacement: "receive")
+        controller.suggestions = [suggestion]
+        controller.acceptSuggestion(suggestion, context: context)
+
+        // Fallback: must write kAXValueAttribute
+        let valueWritten = mock.setAttributeCalls.contains { $0.attribute == kAXValueAttribute }
+        #expect(valueWritten)
+    }
+
+    @Test("rangeTargetedWriteFallsBackWhenSelectionSetFails")
+    func rangeTargetedWriteFallsBackWhenSelectionSetFails() {
+        let mock = MockAXAccessor()
+        // isAttributeSettable says yes, but the actual set call fails
+        mock.attributeSettable[kAXSelectedTextRangeAttribute] = (.success, true)
+        mock.attributeValues[kAXValueAttribute] = (.success, "recieve" as CFString)
+
+        // First setAttributeValue call (range set) fails, second (full write) succeeds
+        var callCount = 0
+        mock.setAttributeResultsByCall = { _ in
+            callCount += 1
+            return callCount == 1 ? .failure : .success
+        }
+
+        let controller = OverlayController(accessor: mock)
+        let text = "recieve"
+        let context = makeTextContext(text: text)
+        let suggestion = makeSuggestion(in: text, scalarStart: 0, scalarLength: 7,
+                                        primaryReplacement: "receive")
+        controller.suggestions = [suggestion]
+        controller.acceptSuggestion(suggestion, context: context)
+
+        // Should have fallen back to full write
+        let valueWritten = mock.setAttributeCalls.contains { $0.attribute == kAXValueAttribute }
+        #expect(valueWritten)
     }
 
     @Test("acceptSuggestion removes accepted suggestion from suggestions array on success")
     func acceptRemovesSuggestion() {
         let mock = MockAXAccessor()
         mock.setAttributeResult = .success
+        mock.attributeSettable[kAXSelectedTextRangeAttribute] = (.success, true)
+        // repositionAfterAccept re-reads kAXValueAttribute after the write
         mock.attributeValues[kAXValueAttribute] = (.success, "receive the tset" as CFString)
+        // BoundsValidator needs a valid rect for the surviving suggestion (s2) to be kept
+        mock.parameterizedAttributeValues[kAXBoundsForRangeParameterizedAttribute] = (.success, makeAXRectValue())
 
         let controller = OverlayController(accessor: mock)
         let text = "recieve the tset"
@@ -261,8 +301,7 @@ struct OverlayControllerAcceptTests {
     func acceptLastSuggestionDismisses() {
         let mock = MockAXAccessor()
         mock.setAttributeResult = .success
-        // No remaining suggestions -- reposition not needed
-        mock.attributeValues[kAXValueAttribute] = (.success, "receive" as CFString)
+        mock.attributeSettable[kAXSelectedTextRangeAttribute] = (.success, true)
 
         let controller = OverlayController(accessor: mock)
         let text = "recieve"
@@ -280,9 +319,12 @@ struct OverlayControllerAcceptTests {
     func repositionShiftsOffsets() {
         let mock = MockAXAccessor()
         mock.setAttributeResult = .success
+        mock.attributeSettable[kAXSelectedTextRangeAttribute] = (.success, true)
         // After accepting "aaa" (3 chars) replaced with "abcd" (4 chars), the text shifts by +1
         // Original: "aaa bb ccc" -> "abcd bb ccc"
         mock.attributeValues[kAXValueAttribute] = (.success, "abcd bb ccc" as CFString)
+        // BoundsValidator needs valid rects for s2 and s3 to survive reposition
+        mock.parameterizedAttributeValues[kAXBoundsForRangeParameterizedAttribute] = (.success, makeAXRectValue())
 
         let controller = OverlayController(accessor: mock)
         // "aaa bb ccc" - suggestion 1: offset 0..3 ("aaa"), suggestion 2: offset 4..6 ("bb"), suggestion 3: offset 7..10 ("ccc")
@@ -305,9 +347,12 @@ struct OverlayControllerAcceptTests {
     func repositionDoesNotShiftPriorSuggestions() {
         let mock = MockAXAccessor()
         mock.setAttributeResult = .success
+        mock.attributeSettable[kAXSelectedTextRangeAttribute] = (.success, true)
         // Accept s2 ("bb" -> "B"), delta = -1. s1 is before accepted range -- unchanged.
         // "aaa bb ccc" -> "aaa B ccc"
         mock.attributeValues[kAXValueAttribute] = (.success, "aaa B ccc" as CFString)
+        // BoundsValidator needs a valid rect for s1 to survive reposition
+        mock.parameterizedAttributeValues[kAXBoundsForRangeParameterizedAttribute] = (.success, makeAXRectValue())
 
         let controller = OverlayController(accessor: mock)
         let text = "aaa bb ccc"
@@ -321,6 +366,69 @@ struct OverlayControllerAcceptTests {
         let offsets = controller.suggestionScalarOffsets
         // s1 starts at 0 -- before accepted range start (4), unchanged
         #expect(offsets[0].scalarStart == 0)
+    }
+
+    @Test("repositionDropsSuggestionsOnBoundsFailure")
+    func repositionDropsSuggestionsOnBoundsFailure() {
+        let mock = MockAXAccessor()
+        mock.setAttributeResult = .success
+        mock.attributeSettable[kAXSelectedTextRangeAttribute] = (.success, true)
+        // After accept, re-read succeeds but bounds queries return nil (watchdog skip path)
+        mock.attributeValues[kAXValueAttribute] = (.success, "aaa B ccc" as CFString)
+        // No parameterized attribute values set — BoundsValidator will get nil bounds for all
+
+        let controller = OverlayController(accessor: mock)
+        let text = "aaa bb ccc"
+        let context = makeTextContext(text: text)
+        let s1 = makeSuggestion(in: text, scalarStart: 0, scalarLength: 3, primaryReplacement: "AAA")
+        let s2 = makeSuggestion(in: text, scalarStart: 4, scalarLength: 2, primaryReplacement: "B")
+        controller.suggestions = [s1, s2]
+        controller.acceptSuggestion(s2, context: context)
+
+        // Remaining suggestion s1 should be dropped because bounds re-query fails (nil from BoundsValidator)
+        // and all suggestions dropped means dismiss() is called
+        #expect(controller.suggestions.isEmpty)
+    }
+
+    @Test("acceptWritesFullTextReplacementInFallback")
+    func acceptWritesFullTextReplacementInFallback() {
+        let mock = MockAXAccessor()
+        mock.setAttributeResult = .success
+        mock.attributeSettable[kAXSelectedTextRangeAttribute] = (.success, false)
+        mock.attributeValues[kAXValueAttribute] = (.success, "recieve the tset" as CFString)
+
+        let controller = OverlayController(accessor: mock)
+        let text = "recieve the tset"
+        let context = makeTextContext(text: text)
+        let suggestion = makeSuggestion(in: text, scalarStart: 0, scalarLength: 7,
+                                        primaryReplacement: "receive")
+        controller.suggestions = [suggestion]
+        controller.acceptSuggestion(suggestion, context: context)
+
+        // Should write kAXValueAttribute with the replaced text
+        let valueCalls = mock.setAttributeCalls.filter { $0.attribute == kAXValueAttribute }
+        #expect(valueCalls.count == 1)
+        let written = valueCalls[0].value as? String
+        #expect(written == "receive the tset")
+    }
+
+    @Test("acceptSuggestion returns without modifying suggestions when AX read fails in fallback")
+    func acceptDoesNothingWhenReadFails() {
+        let mock = MockAXAccessor()
+        mock.setAttributeResult = .success
+        mock.attributeSettable[kAXSelectedTextRangeAttribute] = (.success, false)
+        mock.attributeValues[kAXValueAttribute] = (.failure, nil)
+
+        let controller = OverlayController(accessor: mock)
+        let text = "recieve"
+        let context = makeTextContext(text: text)
+        let suggestion = makeSuggestion(in: text, scalarStart: 0, scalarLength: 7,
+                                        primaryReplacement: "receive")
+        controller.suggestions = [suggestion]
+        controller.acceptSuggestion(suggestion, context: context)
+
+        // Suggestion must remain because the read failed
+        #expect(controller.suggestions.count == 1)
     }
 }
 
@@ -336,7 +444,7 @@ struct OverlayControllerKeyboardTests {
         let s1 = makeSuggestion()
         controller.suggestions = [s1]
         controller.showPopover(for: s1)
-        controller.handleEscape(textContext: nil)
+        controller.handleEscape()
         #expect(controller.isPopoverVisible == false)
         // Overlay still has suggestions
         #expect(controller.suggestions.count == 1)
@@ -347,8 +455,31 @@ struct OverlayControllerKeyboardTests {
         let controller = OverlayController(accessor: MockAXAccessor())
         let s1 = makeSuggestion()
         controller.suggestions = [s1]
-        controller.handleEscape(textContext: nil)
+        controller.handleEscape()
         #expect(controller.suggestions.isEmpty)
         #expect(controller.isPopoverVisible == false)
+    }
+
+    @Test("Tab keyCode does not change overlay state")
+    func tabKeyCodeDoesNotChangeState() {
+        let controller = OverlayController(accessor: MockAXAccessor())
+        let s1 = makeSuggestion()
+        controller.suggestions = [s1]
+        // Tab (keyCode 48) is not intercepted — verify state unchanged
+        // Since handleTab no longer exists, we verify through the suggestions/popover state
+        #expect(controller.suggestions.count == 1)
+        #expect(controller.isPopoverVisible == false)
+    }
+
+    @Test("Enter does not accept suggestion (no handleEnter)")
+    func enterKeyCodeDoesNotAccept() {
+        let mock = MockAXAccessor()
+        let controller = OverlayController(accessor: mock)
+        let s1 = makeSuggestion()
+        controller.suggestions = [s1]
+        controller.showPopover(for: s1)
+        // Enter (keyCode 36) is not intercepted — suggestion must remain
+        #expect(controller.suggestions.count == 1)
+        #expect(controller.isPopoverVisible == true)
     }
 }

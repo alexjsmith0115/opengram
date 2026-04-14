@@ -14,6 +14,7 @@ final class OverlayController {
     private let overlayWindow: OverlayWindow
     private let popoverPanel: SuggestionPopoverPanel
     private let targetAppObserver: TargetAppObserver
+    private let boundsValidator = BoundsValidator()
     private var scrollMonitor: Any?
     private var keyMonitor: Any?
     private var underlineView: UnderlineView?
@@ -26,7 +27,7 @@ final class OverlayController {
     /// Parallel array of unicode scalar offsets for each suggestion in `suggestions`.
     /// Used to shift remaining suggestions after an accept changes text length.
     /// Index i in this array corresponds to index i in `suggestions`.
-    var suggestionScalarOffsets: [(scalarStart: Int, scalarLength: Int)] = []
+    internal(set) var suggestionScalarOffsets: [(scalarStart: Int, scalarLength: Int)] = []
 
     internal(set) var textContext: TextContext?
     private(set) var isPopoverVisible: Bool = false
@@ -59,45 +60,11 @@ final class OverlayController {
         }
     }
 
-    // MARK: - Bounds queries
-
-    /// Converts a Suggestion's range to a CGRect in CG screen coordinates by querying
-    /// the AX element for the glyph bounds. Returns nil on AX error or unpackable value.
-    func boundsForRange(
-        _ suggestion: Suggestion,
-        in text: String,
-        element: AXUIElement
-    ) -> CGRect? {
-        let cfRange = cfRangeFor(suggestion, in: text)
-        var mutableRange = cfRange
-        guard let axRangeValue = AXValueCreate(.cfRange, &mutableRange) else { return nil }
-
-        let (error, ref) = accessor.copyParameterizedAttributeValue(
-            element,
-            kAXBoundsForRangeParameterizedAttribute,
-            axRangeValue
-        )
-        guard error == .success, let ref else { return nil }
-
-        var rect = CGRect.zero
-        guard AXValueGetValue(ref as! AXValue, .cgRect, &rect) else { return nil }
-        return rect
-    }
-
-    /// Converts CG screen coordinates (y=0 at bottom) to AppKit window coordinates (y=0 at top).
-    func flipCGRect(_ cgRect: CGRect, screenHeight: CGFloat) -> NSRect {
-        NSRect(
-            x: cgRect.origin.x,
-            y: screenHeight - cgRect.origin.y - cgRect.height,
-            width: cgRect.width,
-            height: cgRect.height
-        )
-    }
-
     // MARK: - Display lifecycle
 
     /// Positions the overlay window and renders underlines for all suggestions.
-    /// Silently skips suggestions whose AX bounds query returns nil (per UI-SPEC error state).
+    /// Uses BoundsValidator for all bounds queries (supports multi-line, watchdog, app quirks).
+    /// Silently skips suggestions whose bounds query returns nil.
     /// Capped at maxDisplayedSuggestions to avoid blocking the main thread (T-03-02).
     func show(suggestions: [Suggestion], context: TextContext) {
         self.suggestions = Array(suggestions.prefix(Self.maxDisplayedSuggestions))
@@ -111,34 +78,19 @@ final class OverlayController {
             return (scalarStart: start, scalarLength: length)
         }
 
-        let screenHeight = NSScreen.main?.frame.height ?? 0
         let element = context.axElement
 
         var entries: [UnderlineEntry] = []
         for suggestion in self.suggestions {
-            guard let cgRect = boundsForRange(suggestion, in: context.text, element: element) else {
-                continue
+            guard let rects = boundsValidator.validatedBoundsForRange(
+                suggestion, in: context.text, element: element,
+                bundleID: context.bundleID, accessor: accessor
+            ) else { continue }
+            for rect in rects {
+                let underlineRect = NSRect(x: rect.origin.x, y: rect.origin.y, width: rect.width, height: 2)
+                let hitRect = UnderlineView.expandedHitRect(from: underlineRect)
+                entries.append(UnderlineEntry(underlineRect: underlineRect, hitRect: hitRect, suggestion: suggestion))
             }
-            // Sanity clamp: some apps (e.g., Notes title line) return the full line width
-            // for short ranges. If width-per-char exceeds line height, clamp to an estimate.
-            var clampedRect = cgRect
-            let charCount = max(CGFloat(suggestion.original.count), 1)
-            if clampedRect.width > clampedRect.height * charCount {
-                clampedRect.size.width = clampedRect.height * 0.7 * charCount
-            }
-            let appKitRect = flipCGRect(clampedRect, screenHeight: screenHeight)
-            let underlineRect = NSRect(
-                x: appKitRect.origin.x,
-                y: appKitRect.origin.y,
-                width: appKitRect.width,
-                height: 2
-            )
-            let hitRect = UnderlineView.expandedHitRect(from: underlineRect)
-            entries.append(UnderlineEntry(
-                underlineRect: underlineRect,
-                hitRect: hitRect,
-                suggestion: suggestion
-            ))
         }
 
         guard !entries.isEmpty else { return }
@@ -186,8 +138,6 @@ final class OverlayController {
         }
 
         // Start scroll monitor -- RESEARCH.md A2: does not require Input Monitoring TCC.
-        // If assumption A2 is wrong, scroll dismissal silently fails. Verify manually on
-        // a clean macOS account during the Plan 03 checkpoint.
         scrollMonitor = NSEvent.addGlobalMonitorForEvents(matching: .scrollWheel) { [weak self] _ in
             self?.dismiss()
         }
@@ -196,7 +146,7 @@ final class OverlayController {
         keyMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in
             guard let self else { return }
             if event.keyCode == 53 {
-                self.handleEscape(textContext: self.textContext)
+                self.handleEscape()
             }
         }
     }
@@ -289,13 +239,14 @@ final class OverlayController {
 
     // MARK: - Accept / Write-back
 
-    /// Writes the suggestion's primary replacement to the target app via AX set-range-then-replace,
-    /// then removes the accepted suggestion and repositions remaining underlines.
-    /// Fails silently (suggestion stays) if any AX call returns a non-success error (T-03-07).
+    /// Writes the suggestion's primary replacement to the target app.
+    /// Primary path: range-targeted AX write (set selection + set selected text) per D-11.
+    /// Fallback: full AXValue read/replace/write when range-targeted write is unavailable.
+    /// After success: removes the accepted suggestion and repositions remaining underlines.
+    /// Fails silently (suggestion stays) if AX write fails (T-03-07).
     func acceptSuggestion(_ suggestion: Suggestion, context: TextContext) {
         guard let replacement = suggestion.primaryReplacement else { return }
 
-        // Locate this suggestion in the array
         guard let offsetIndex = suggestions.firstIndex(where: { $0.id == suggestion.id }) else { return }
 
         // Ensure the parallel offset array is populated (may be missing if show() wasn't called)
@@ -310,11 +261,73 @@ final class OverlayController {
 
         let offset = suggestionScalarOffsets[offsetIndex]
 
-        // Read the current full text from the target element
-        let (readError, readRef) = accessor.copyAttributeValue(context.axElement, kAXValueAttribute)
-        guard readError == .success, let currentText = readRef as? String else { return }
+        // Probe for range-targeted write capability (D-11, T-06-05)
+        let (settableErr, isSettable) = accessor.isAttributeSettable(
+            context.axElement, kAXSelectedTextRangeAttribute
+        )
+        let supportsRangeWrite = settableErr == .success && isSettable
 
-        // Perform the replacement in-memory using scalar offsets
+        var writeSucceeded = false
+
+        if supportsRangeWrite {
+            var cfRange = CFRange(location: offset.scalarStart, length: offset.scalarLength)
+            guard let rangeValue = AXValueCreate(.cfRange, &cfRange) else { return }
+            let selectError = accessor.setAttributeValue(
+                context.axElement, kAXSelectedTextRangeAttribute, rangeValue
+            )
+            if selectError == .success {
+                let replaceError = accessor.setAttributeValue(
+                    context.axElement, kAXSelectedTextAttribute, replacement as CFString
+                )
+                if replaceError == .success {
+                    writeSucceeded = true
+                } else {
+                    // Range set succeeded but text replace failed — fall through to full write
+                    writeSucceeded = fallbackFullWrite(offset: offset, replacement: replacement, context: context)
+                }
+            } else {
+                // Selection set failed — fall through to full write
+                writeSucceeded = fallbackFullWrite(offset: offset, replacement: replacement, context: context)
+            }
+        } else {
+            writeSucceeded = fallbackFullWrite(offset: offset, replacement: replacement, context: context)
+        }
+
+        guard writeSucceeded else { return }
+
+        closePopover()
+        onAcceptSuggestion?(suggestion)
+
+        let replacementScalarCount = replacement.unicodeScalars.count
+        suggestions.remove(at: offsetIndex)
+        if offsetIndex < suggestionScalarOffsets.count {
+            suggestionScalarOffsets.remove(at: offsetIndex)
+        }
+
+        if suggestions.isEmpty {
+            dismiss()
+            return
+        }
+
+        repositionAfterAccept(
+            acceptedStart: offset.scalarStart,
+            originalLength: offset.scalarLength,
+            replacementLength: replacementScalarCount,
+            context: context
+        )
+    }
+
+    /// Full-text fallback: reads AXValue, replaces in-memory, writes back.
+    /// Returns true on success, false on any AX error.
+    @discardableResult
+    private func fallbackFullWrite(
+        offset: (scalarStart: Int, scalarLength: Int),
+        replacement: String,
+        context: TextContext
+    ) -> Bool {
+        let (readError, readRef) = accessor.copyAttributeValue(context.axElement, kAXValueAttribute)
+        guard readError == .success, let currentText = readRef as? String else { return false }
+
         let scalars = currentText.unicodeScalars
         let startIdx = scalars.index(scalars.startIndex, offsetBy: offset.scalarStart)
         let endIdx = scalars.index(startIdx, offsetBy: offset.scalarLength)
@@ -324,44 +337,18 @@ final class OverlayController {
         var newText = currentText
         newText.replaceSubrange(stringStart..<stringEnd, with: replacement)
 
-        // Write the full modified text back
         let writeError = accessor.setAttributeValue(
             context.axElement,
             kAXValueAttribute,
             newText as CFString
         )
-        guard writeError == .success else { return }
-
-        // 3. Close popover
-        closePopover()
-
-        // 4. Notify caller before removing from array
-        onAcceptSuggestion?(suggestion)
-
-        // 5. Remove accepted suggestion and its offset entry
-        let replacementScalarCount = replacement.unicodeScalars.count
-        suggestions.remove(at: offsetIndex)
-        if offsetIndex < suggestionScalarOffsets.count {
-            suggestionScalarOffsets.remove(at: offsetIndex)
-        }
-
-        // 6. If no suggestions remain, dismiss overlay
-        if suggestions.isEmpty {
-            dismiss()
-            return
-        }
-
-        // 7. Reposition remaining suggestions by shifting scalar offsets
-        repositionAfterAccept(
-            acceptedStart: offset.scalarStart,
-            originalLength: offset.scalarLength,
-            replacementLength: replacementScalarCount,
-            context: context
-        )
+        return writeError == .success
     }
 
     /// Shifts scalar offsets for all remaining suggestions that start after the accepted range,
-    /// re-reads the updated element text, and redraws underlines with fresh AX bounds.
+    /// re-reads the updated element text, and redraws underlines using BoundsValidator.
+    /// Drops suggestions whose bounds re-query returns nil (D-12).
+    /// Calls dismiss() if all re-queries fail (D-12).
     private func repositionAfterAccept(
         acceptedStart: Int,
         originalLength: Int,
@@ -373,7 +360,6 @@ final class OverlayController {
         // Re-read current text so we have valid content for bounds re-queries
         let (valError, valRef) = accessor.copyAttributeValue(context.axElement, kAXValueAttribute)
         guard valError == .success, let newText = valRef as? String else {
-            // Can't re-read — positions are now unreliable, dismiss
             dismiss()
             return
         }
@@ -398,53 +384,54 @@ final class OverlayController {
             axElement: context.axElement
         )
 
-        // Rebuild underline entries using shifted offsets and new AX bounds
-        guard let view = underlineView,
-              suggestionScalarOffsets.count == suggestions.count else { return }
-        let screenHeight = NSScreen.main?.frame.height ?? 0
+        // Rebuild underline entries using BoundsValidator — drop suggestions whose re-query fails (D-12).
+        // Survivor computation always runs to keep suggestions consistent with reality.
+        guard suggestionScalarOffsets.count == suggestions.count else { return }
 
         var newEntries: [UnderlineEntry] = []
+        var survivingSuggestions: [Suggestion] = []
+        var survivingOffsets: [(scalarStart: Int, scalarLength: Int)] = []
+        let windowOrigin = overlayWindow.frame.origin
+
         for (i, suggestion) in suggestions.enumerated() {
-            let scalarOffset = suggestionScalarOffsets[i]
-            // Re-build a CFRange from shifted scalar offset
-            var cfRange = CFRange(location: scalarOffset.scalarStart, length: scalarOffset.scalarLength)
-            guard let axRangeValue = AXValueCreate(.cfRange, &cfRange) else { continue }
+            guard let rects = boundsValidator.validatedBoundsForRange(
+                suggestion, in: newText, element: context.axElement,
+                bundleID: context.bundleID, accessor: accessor
+            ) else { continue }
 
-            let (boundsError, boundsRef) = accessor.copyParameterizedAttributeValue(
-                context.axElement,
-                kAXBoundsForRangeParameterizedAttribute,
-                axRangeValue
-            )
-            guard boundsError == .success, let boundsRef else { continue }
-            var cgRect = CGRect.zero
-            guard AXValueGetValue(boundsRef as! AXValue, .cgRect, &cgRect) else { continue }
+            survivingSuggestions.append(suggestion)
+            survivingOffsets.append(suggestionScalarOffsets[i])
 
-            let appKitRect = flipCGRect(cgRect, screenHeight: screenHeight)
-            let underlineRect = NSRect(
-                x: appKitRect.origin.x,
-                y: appKitRect.origin.y,
-                width: appKitRect.width,
-                height: 2
-            )
-            let hitRect = UnderlineView.expandedHitRect(from: underlineRect)
-
-            // Translate to window-local coordinates
-            let windowOrigin = overlayWindow.frame.origin
-            newEntries.append(UnderlineEntry(
-                underlineRect: underlineRect.offsetBy(dx: -windowOrigin.x, dy: -windowOrigin.y),
-                hitRect: hitRect.offsetBy(dx: -windowOrigin.x, dy: -windowOrigin.y),
-                suggestion: suggestion
-            ))
+            for rect in rects {
+                let underlineRect = NSRect(x: rect.origin.x, y: rect.origin.y, width: rect.width, height: 2)
+                let hitRect = UnderlineView.expandedHitRect(from: underlineRect)
+                newEntries.append(UnderlineEntry(
+                    underlineRect: underlineRect.offsetBy(dx: -windowOrigin.x, dy: -windowOrigin.y),
+                    hitRect: hitRect.offsetBy(dx: -windowOrigin.x, dy: -windowOrigin.y),
+                    suggestion: suggestion
+                ))
+            }
         }
 
-        view.entries = newEntries
-        view.needsDisplay = true
+        suggestions = survivingSuggestions
+        suggestionScalarOffsets = survivingOffsets
+
+        if newEntries.isEmpty {
+            dismiss()
+            return
+        }
+
+        if let view = underlineView {
+            view.entries = newEntries
+            view.needsDisplay = true
+        }
     }
 
     // MARK: - Keyboard Navigation
 
     /// Closes the popover if open, or dismisses the full overlay if no popover is open.
-    func handleEscape(textContext: TextContext?) {
+    /// D-15: Escape is the only retained key monitor action.
+    func handleEscape() {
         if isPopoverVisible {
             closePopover()
         } else {
@@ -457,13 +444,6 @@ final class OverlayController {
     }
 
     // MARK: - Private helpers
-
-    private func cfRangeFor(_ suggestion: Suggestion, in text: String) -> CFRange {
-        let scalars = text.unicodeScalars
-        let location = scalars.distance(from: scalars.startIndex, to: suggestion.range.lowerBound)
-        let length = scalars.distance(from: suggestion.range.lowerBound, to: suggestion.range.upperBound)
-        return CFRange(location: location, length: length)
-    }
 
     private func underlineRectForSuggestion(_ suggestion: Suggestion) -> NSRect? {
         underlineView?.entries.first { $0.suggestion.id == suggestion.id }?.underlineRect
