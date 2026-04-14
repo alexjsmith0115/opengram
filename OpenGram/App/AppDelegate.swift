@@ -9,6 +9,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
     private var permissionGuide: PermissionGuide?
     private var harperService: (any GrammarCheckerProtocol)?
     private var overlayController: OverlayController?
+    private var textMonitor: TextMonitor?
     private var lastExtractedContext: TextContext?
     private var lastSuggestions: [Suggestion] = []
     private var checkTask: Task<Void, Never>?
@@ -58,48 +59,82 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
             self?.handleHotkeyFired()
         }
 
+        let textMonitor = TextMonitor(
+            textEngine: textEngine,
+            harperService: harperService,
+            capabilityCache: capabilityCache
+        )
+        self.textMonitor = textMonitor
+
+        textMonitor.onCheckComplete = { [weak self] suggestions, context in
+            guard let self else { return }
+            self.lastSuggestions = suggestions
+            self.lastExtractedContext = context
+
+            if suggestions.isEmpty {
+                self.overlayController?.dismiss()
+                self.statusBarController?.setState(.idle)
+                self.statusBarController?.updateStatusText("OpenGram: Ready")
+            } else {
+                self.statusBarController?.setState(.done)
+                self.statusBarController?.updateStatusText("OpenGram: \(suggestions.count) suggestion(s)")
+                self.overlayController?.update(suggestions: suggestions, context: context)
+            }
+        }
+
+        textMonitor.onDismiss = { [weak self] in
+            self?.overlayController?.dismiss()
+            self?.statusBarController?.setState(.idle)
+            self?.statusBarController?.updateStatusText("OpenGram: Ready")
+            self?.lastSuggestions = []
+            self?.lastExtractedContext = nil
+        }
+
+        textMonitor.start()
+
         hotkeyManager.install()
         permissionGuide.showIfNeeded()
     }
 
     public func applicationWillTerminate(_ notification: Notification) {
+        textMonitor?.stop()
         hotkeyManager?.uninstall()
     }
 
     @MainActor
     private func handleHotkeyFired() {
-        guard let statusBar = statusBarController,
-              let engine = textEngine,
-              let harperService = harperService else { return }
-
-        // Dismiss any existing overlay before starting a new check cycle
-        overlayController?.dismiss()
+        guard let statusBar = statusBarController else { return }
 
         statusBar.setState(.checking)
         statusBar.updateStatusText("OpenGram: Checking...")
 
-        guard let context = engine.extractText() else {
-            statusBar.triggerSilentFail()
-            statusBar.updateStatusText("OpenGram: Ready")
-            return
-        }
-
-        lastExtractedContext = context
-
-        checkTask?.cancel()
-        checkTask = Task {
-            let suggestions = await harperService.check(text: context.text)
-            guard !Task.isCancelled else { return }
-            await MainActor.run {
-                self.lastSuggestions = suggestions
-
-                if suggestions.isEmpty {
-                    statusBar.setState(.done)
-                    statusBar.updateStatusText("OpenGram: No issues found")
-                } else {
-                    statusBar.setState(.done)
-                    statusBar.updateStatusText("OpenGram: \(suggestions.count) suggestion(s)")
-                    self.overlayController?.show(suggestions: suggestions, context: context)
+        if let textMonitor {
+            textMonitor.forceCheckNow()
+        } else {
+            // Fallback: direct check (should not happen in normal operation)
+            guard let engine = textEngine,
+                  let harperService = harperService else { return }
+            overlayController?.dismiss()
+            guard let context = engine.extractText() else {
+                statusBar.triggerSilentFail()
+                statusBar.updateStatusText("OpenGram: Ready")
+                return
+            }
+            lastExtractedContext = context
+            checkTask?.cancel()
+            checkTask = Task {
+                let suggestions = await harperService.check(text: context.text)
+                guard !Task.isCancelled else { return }
+                await MainActor.run {
+                    self.lastSuggestions = suggestions
+                    if suggestions.isEmpty {
+                        statusBar.setState(.done)
+                        statusBar.updateStatusText("OpenGram: No issues found")
+                    } else {
+                        statusBar.setState(.done)
+                        statusBar.updateStatusText("OpenGram: \(suggestions.count) suggestion(s)")
+                        self.overlayController?.show(suggestions: suggestions, context: context)
+                    }
                 }
             }
         }
