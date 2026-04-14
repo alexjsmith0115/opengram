@@ -31,9 +31,27 @@ struct SuggestionPopoverPanelTests {
         #expect(panel.styleMask.contains(.nonactivatingPanel))
     }
 
+    @Test("styleMask does not include hudWindow")
+    func styleMaskExcludesHudWindow() {
+        let panel = SuggestionPopoverPanel()
+        #expect(!panel.styleMask.contains(.hudWindow))
+    }
+
     @Test("becomesKeyOnlyIfNeeded is true")
     func becomesKeyOnlyIfNeededIsTrue() {
         let panel = SuggestionPopoverPanel()
         #expect(panel.becomesKeyOnlyIfNeeded == true)
+    }
+
+    @Test("backgroundColor is clear")
+    func backgroundColorIsClear() {
+        let panel = SuggestionPopoverPanel()
+        #expect(panel.backgroundColor == .clear)
+    }
+
+    @Test("hasShadow is true")
+    func hasShadowIsTrue() {
+        let panel = SuggestionPopoverPanel()
+        #expect(panel.hasShadow == true)
     }
 }
