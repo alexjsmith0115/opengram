@@ -74,12 +74,7 @@ final class OverlayController {
         self.textContext = context
 
         // Populate parallel scalar offset array so repositionAfterAccept can shift indices
-        let scalars = context.text.unicodeScalars
-        self.suggestionScalarOffsets = self.suggestions.map { s in
-            let start = scalars.distance(from: scalars.startIndex, to: s.range.lowerBound)
-            let length = scalars.distance(from: s.range.lowerBound, to: s.range.upperBound)
-            return (scalarStart: start, scalarLength: length)
-        }
+        self.suggestionScalarOffsets = computeScalarOffsets(for: self.suggestions, in: context.text)
 
         let element = context.axElement
 
@@ -155,6 +150,119 @@ final class OverlayController {
                 self.handleEscape()
             }
         }
+    }
+
+    /// Updates the overlay using a diff-merge strategy to avoid tearing down and
+    /// rebuilding the window when only a subset of suggestions has changed (D-12).
+    ///
+    /// Falls through to `show()` when:
+    /// - The overlay window is not currently visible (first display).
+    /// - The context has a different bundleID (user moved to a different field/app).
+    ///
+    /// Calls `dismiss()` when `newSuggestions` is empty (all errors resolved).
+    func update(suggestions newSuggestions: [Suggestion], context newContext: TextContext) {
+        // Fall through to show() for first display or when overlay is not visible
+        guard overlayWindow.isVisible, textContext != nil else {
+            show(suggestions: newSuggestions, context: newContext)
+            return
+        }
+
+        // Field changed — tear down and rebuild cleanly
+        if textContext?.bundleID != newContext.bundleID {
+            show(suggestions: newSuggestions, context: newContext)
+            return
+        }
+
+        if newSuggestions.isEmpty {
+            dismiss()
+            return
+        }
+
+        let cappedNew = Array(newSuggestions.prefix(Self.maxDisplayedSuggestions))
+        let newOffsets = computeScalarOffsets(for: cappedNew, in: newContext.text)
+
+        let diff = SuggestionDiffEngine.diff(
+            old: self.suggestions,
+            oldOffsets: self.suggestionScalarOffsets,
+            new: cappedNew,
+            newOffsets: newOffsets
+        )
+
+        // No visual change needed — just refresh the context timestamp
+        if diff.added.isEmpty && diff.removed.isEmpty {
+            self.textContext = newContext
+            return
+        }
+
+        // Build surviving arrays: unchanged entries keep existing underline positions,
+        // added entries get fresh bounds queries (T-07-07: only query AX for new suggestions).
+        var survivingSuggestions: [Suggestion] = []
+        var survivingOffsets: [(scalarStart: Int, scalarLength: Int)] = []
+        var survivingEntries: [UnderlineEntry] = []
+
+        let existingEntries = underlineView?.entries ?? []
+
+        for (oldIndex, newIndex) in diff.unchanged {
+            survivingSuggestions.append(cappedNew[newIndex])
+            survivingOffsets.append(newOffsets[newIndex])
+            // Keep existing underline entries for unchanged suggestions (avoids AX re-query)
+            let oldSuggestion = self.suggestions[oldIndex]
+            let kept = existingEntries.filter { $0.suggestion.id == oldSuggestion.id }
+            survivingEntries.append(contentsOf: kept)
+        }
+
+        let element = newContext.axElement
+        for newIndex in diff.added {
+            let suggestion = cappedNew[newIndex]
+            guard let rects = boundsValidator.validatedBoundsForRange(
+                suggestion, in: newContext.text, element: element,
+                bundleID: newContext.bundleID, accessor: accessor
+            ) else { continue }
+            survivingSuggestions.append(suggestion)
+            survivingOffsets.append(newOffsets[newIndex])
+            for rect in rects {
+                let underlineRect = NSRect(x: rect.origin.x, y: rect.origin.y, width: rect.width, height: 2)
+                let hitRect = UnderlineView.expandedHitRect(from: underlineRect)
+                survivingEntries.append(UnderlineEntry(underlineRect: underlineRect, hitRect: hitRect, suggestion: suggestion))
+            }
+        }
+
+        // Close popover if its suggestion was removed
+        if let popoverSuggestion = currentPopoverSuggestion {
+            let removedIDs = Set(diff.removed.map { self.suggestions[$0].id })
+            if removedIDs.contains(popoverSuggestion.id) {
+                closePopover()
+            }
+        }
+
+        self.suggestions = survivingSuggestions
+        self.suggestionScalarOffsets = survivingOffsets
+        self.textContext = newContext
+
+        if survivingEntries.isEmpty {
+            dismiss()
+            return
+        }
+
+        // Translate entries to window-local coordinates and update the view
+        let unionRect = survivingEntries.reduce(CGRect.null) { $0.union($1.hitRect) }
+        let padding: CGFloat = 4
+        let windowRect = unionRect.insetBy(dx: -padding, dy: -padding)
+
+        let localEntries = survivingEntries.map { entry in
+            UnderlineEntry(
+                underlineRect: entry.underlineRect.offsetBy(dx: -windowRect.origin.x, dy: -windowRect.origin.y),
+                hitRect: entry.hitRect.offsetBy(dx: -windowRect.origin.x, dy: -windowRect.origin.y),
+                suggestion: entry.suggestion
+            )
+        }
+
+        if let view = underlineView {
+            view.entries = localEntries
+            view.frame = NSRect(origin: .zero, size: windowRect.size)
+            view.needsDisplay = true
+        }
+        overlayWindow.setFrame(windowRect, display: false)
     }
 
     /// Dismisses the overlay, closes any open popover, uninstalls the AX observer,
@@ -529,5 +637,19 @@ final class OverlayController {
 
     private func underlineRectForSuggestion(_ suggestion: Suggestion) -> NSRect? {
         underlineView?.entries.first { $0.suggestion.id == suggestion.id }?.underlineRect
+    }
+
+    /// Computes parallel unicode scalar offsets for a suggestion array relative to the given text.
+    /// Extracted from show() to avoid duplication with update().
+    private func computeScalarOffsets(
+        for suggestions: [Suggestion],
+        in text: String
+    ) -> [(scalarStart: Int, scalarLength: Int)] {
+        let scalars = text.unicodeScalars
+        return suggestions.map { s in
+            let start = scalars.distance(from: scalars.startIndex, to: s.range.lowerBound)
+            let length = scalars.distance(from: s.range.lowerBound, to: s.range.upperBound)
+            return (scalarStart: start, scalarLength: length)
+        }
     }
 }
