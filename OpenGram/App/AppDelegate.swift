@@ -11,6 +11,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
     private var overlayController: OverlayController?
     private var lastExtractedContext: TextContext?
     private var lastSuggestions: [Suggestion] = []
+    private var checkTask: Task<Void, Never>?
 
     public func applicationDidFinishLaunching(_ notification: Notification) {
         let capabilityCache = AXCapabilityCache()
@@ -85,8 +86,10 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
 
         lastExtractedContext = context
 
-        Task {
+        checkTask?.cancel()
+        checkTask = Task {
             let suggestions = await harperService.check(text: context.text)
+            guard !Task.isCancelled else { return }
             await MainActor.run {
                 self.lastSuggestions = suggestions
 
