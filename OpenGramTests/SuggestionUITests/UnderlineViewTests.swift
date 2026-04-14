@@ -89,12 +89,6 @@ struct UnderlineViewEntryTests {
         #expect(view.entries.isEmpty)
     }
 
-    @Test("focusedIndex defaults to nil")
-    func focusedIndexDefaultsToNil() {
-        let view = UnderlineView()
-        #expect(view.focusedIndex == nil)
-    }
-
     @Test("suggestionAt returns correct suggestion when point is inside hit rect")
     func suggestionAtInsideHitRect() {
         let view = UnderlineView()

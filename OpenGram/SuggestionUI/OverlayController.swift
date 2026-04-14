@@ -28,9 +28,6 @@ final class OverlayController {
     /// Index i in this array corresponds to index i in `suggestions`.
     var suggestionScalarOffsets: [(scalarStart: Int, scalarLength: Int)] = []
 
-    /// Focused underline index for keyboard navigation (Tab/Enter). Exposed for testing.
-    var focusedIndex: Int?
-
     internal(set) var textContext: TextContext?
     private(set) var isPopoverVisible: Bool = false
     private(set) var currentPopoverSuggestion: Suggestion?
@@ -105,7 +102,6 @@ final class OverlayController {
     func show(suggestions: [Suggestion], context: TextContext) {
         self.suggestions = Array(suggestions.prefix(Self.maxDisplayedSuggestions))
         self.textContext = context
-        self.focusedIndex = nil
 
         // Populate parallel scalar offset array so repositionAfterAccept can shift indices
         let scalars = context.text.unicodeScalars
@@ -196,14 +192,11 @@ final class OverlayController {
             self?.dismiss()
         }
 
-        // Keyboard navigation via global monitor (overlay is non-activating, can't become key)
+        // D-14: Only Escape remains as a global key monitor. Tab and Enter monitors removed.
         keyMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in
             guard let self else { return }
-            switch event.keyCode {
-            case 48: self.handleTab()
-            case 36: self.handleEnter(textContext: self.textContext)
-            case 53: self.handleEscape(textContext: self.textContext)
-            default: break
+            if event.keyCode == 53 {
+                self.handleEscape(textContext: self.textContext)
             }
         }
     }
@@ -217,7 +210,6 @@ final class OverlayController {
         underlineView = nil
         suggestions = []
         suggestionScalarOffsets = []
-        focusedIndex = nil
         textContext = nil
         targetAppObserver.uninstall()
         if let monitor = scrollMonitor {
@@ -450,34 +442,6 @@ final class OverlayController {
     }
 
     // MARK: - Keyboard Navigation
-
-    /// Advances the focus ring to the next underline, wrapping at the end.
-    /// Closes any open popover first (Tab navigates, not opens).
-    func handleTab() {
-        if isPopoverVisible { closePopover() }
-        guard !suggestions.isEmpty else { return }
-        let next: Int
-        if let current = focusedIndex {
-            next = (current + 1) % suggestions.count
-        } else {
-            next = 0
-        }
-        focusedIndex = next
-        underlineView?.focusedIndex = next
-        underlineView?.needsDisplay = true
-    }
-
-    /// Opens the popover for the focused underline (no popover open),
-    /// or accepts the current popover suggestion (popover open).
-    func handleEnter(textContext: TextContext?) {
-        if isPopoverVisible {
-            if let suggestion = currentPopoverSuggestion, let ctx = textContext {
-                acceptSuggestion(suggestion, context: ctx)
-            }
-        } else if let index = focusedIndex, index < suggestions.count {
-            showPopover(for: suggestions[index])
-        }
-    }
 
     /// Closes the popover if open, or dismisses the full overlay if no popover is open.
     func handleEscape(textContext: TextContext?) {

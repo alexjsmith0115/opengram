@@ -13,7 +13,6 @@ struct UnderlineEntry {
 final class UnderlineView: NSView {
 
     var entries: [UnderlineEntry] = []
-    var focusedIndex: Int?
     var onClick: ((Suggestion) -> Void)?
 
     override var isOpaque: Bool { false }
@@ -23,7 +22,7 @@ final class UnderlineView: NSView {
         ctx.saveGState()
         defer { ctx.restoreGState() }
 
-        for (index, entry) in entries.enumerated() {
+        for entry in entries {
             let path = NSBezierPath()
             path.lineWidth = 2.0
             path.move(to: NSPoint(x: entry.underlineRect.minX, y: entry.underlineRect.midY))
@@ -36,14 +35,6 @@ final class UnderlineView: NSView {
 
             Self.colorForCategory(entry.suggestion.category).setStroke()
             path.stroke()
-
-            if focusedIndex == index {
-                let focusRect = entry.hitRect.insetBy(dx: -2, dy: -2)
-                let focusPath = NSBezierPath(roundedRect: focusRect, xRadius: 3, yRadius: 3)
-                focusPath.lineWidth = 2.0
-                NSColor.keyboardFocusIndicatorColor.setStroke()
-                focusPath.stroke()
-            }
         }
     }
 
