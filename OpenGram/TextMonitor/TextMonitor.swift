@@ -24,8 +24,8 @@ final class TextMonitor {
     /// Called when Harper results are ready. Receives suggestions and the TextContext checked.
     var onCheckComplete: ((@MainActor ([Suggestion], TextContext) -> Void))?
 
-    /// Called when an LLM check type returns results (incremental append).
-    var onLLMBatch: ((@MainActor ([Suggestion], TextContext) -> Void))?
+    /// Called when the LLM request completes with style suggestions for the LLM panel.
+    var onLLMBatch: ((@MainActor ([LLMStyleSuggestion], TextContext) -> Void))?
 
     /// Called when all LLM checks have completed.
     var onLLMFinished: ((@MainActor () -> Void))?

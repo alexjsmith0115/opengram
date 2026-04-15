@@ -109,12 +109,27 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
 
-        textMonitor.onLLMBatch = { [weak self] newBatch, context in
-            guard let self else { return }
-            self.accumulatedSuggestions.append(contentsOf: newBatch)
-            self.lastSuggestions = self.accumulatedSuggestions
-            self.overlayController?.update(suggestions: self.accumulatedSuggestions, context: context)
-            self.statusBarController?.updateStatusText("OpenGram: \(self.accumulatedSuggestions.count) suggestion(s)")
+        textMonitor.onLLMBatch = { [weak self] styleSuggestions, context in
+            guard let self, !styleSuggestions.isEmpty,
+                  let bounds = context.elementBounds else { return }
+
+            let anchorRect = NSRect(
+                x: bounds.origin.x,
+                y: bounds.origin.y,
+                width: bounds.size.width,
+                height: bounds.size.height
+            )
+            let screen = NSScreen.screens.first(where: { $0.frame.contains(anchorRect) }) ?? NSScreen.main ?? NSScreen.screens[0]
+
+            self.llmPanelController?.show(
+                suggestions: styleSuggestions,
+                near: anchorRect,
+                on: screen,
+                onApply: { _ in },
+                onDismiss: { [weak self] in
+                    self?.llmPanelController?.dismiss()
+                }
+            )
         }
 
         textMonitor.onLLMFinished = { [weak self] in
