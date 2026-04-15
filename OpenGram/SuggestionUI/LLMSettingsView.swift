@@ -41,6 +41,7 @@ struct LLMSettingsView: View {
 
     // Non-secret config stored in UserDefaults via @AppStorage (D-05)
     @AppStorage("llmBaseURL") private var baseURL: String = "http://localhost:1234/v1"
+    @AppStorage("llmModel") private var model: String = "default"
     @AppStorage("llmEnableTone") private var enableTone: Bool = true
     @AppStorage("llmEnableClarity") private var enableClarity: Bool = true
     @AppStorage("llmEnableRephrase") private var enableRephrase: Bool = true
@@ -71,6 +72,13 @@ struct LLMSettingsView: View {
             TextField("http://localhost:1234/v1", text: $baseURL)
                 .textFieldStyle(.roundedBorder)
                 .onChange(of: baseURL) { _ in resetTestState() }
+
+            Spacer().frame(height: 8)
+
+            Text("Model")
+                .font(.system(size: 13))
+            TextField("default", text: $model)
+                .textFieldStyle(.roundedBorder)
 
             Spacer().frame(height: 8)
 
@@ -172,6 +180,7 @@ struct LLMSettingsView: View {
             let service = LLMService()
             let config = LLMConfig(
                 baseURL: baseURL,
+                model: model,
                 enabledChecks: Set(LLMCheckType.allCases),
                 temperature: temperature,
                 maxTokens: 1024

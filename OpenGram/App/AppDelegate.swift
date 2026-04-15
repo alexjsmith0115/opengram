@@ -188,6 +188,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         let defaults = UserDefaults.standard
         return LLMConfig(
             baseURL: defaults.string(forKey: "llmBaseURL") ?? LLMConfig.default.baseURL,
+            model: defaults.string(forKey: "llmModel") ?? LLMConfig.default.model,
             enabledChecks: {
                 var checks = Set<LLMCheckType>()
                 if defaults.object(forKey: "llmEnableTone") == nil || defaults.bool(forKey: "llmEnableTone") { checks.insert(.tone) }

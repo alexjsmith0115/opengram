@@ -27,6 +27,7 @@ actor LLMService: LLMProviderProtocol {
 
         let systemPrompt = LLMPrompts.systemPrompt(for: type, harperSpans: harperSpans)
         let payload = ChatRequest(
+            model: config.model,
             messages: [
                 ChatMessage(role: "system", content: systemPrompt),
                 ChatMessage(role: "user", content: text)
@@ -214,12 +215,13 @@ actor LLMService: LLMProviderProtocol {
     // MARK: - Request Types
 
     private struct ChatRequest: Encodable, Sendable {
+        let model: String
         let messages: [ChatMessage]
         let temperature: Double
         let maxTokens: Int
 
         enum CodingKeys: String, CodingKey {
-            case messages, temperature
+            case model, messages, temperature
             case maxTokens = "max_tokens"
         }
     }

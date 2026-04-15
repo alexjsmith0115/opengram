@@ -5,12 +5,14 @@ import Foundation
 /// (Pitfall 2: @AppStorage is @MainActor-isolated).
 struct LLMConfig: Codable, Sendable, Equatable {
     var baseURL: String
+    var model: String
     var enabledChecks: Set<LLMCheckType>
     var temperature: Double
     var maxTokens: Int
 
     static let `default` = LLMConfig(
         baseURL: "http://localhost:1234/v1",
+        model: "default",
         enabledChecks: Set(LLMCheckType.allCases),
         temperature: 0.3,
         maxTokens: 1024
