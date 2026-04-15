@@ -281,9 +281,7 @@ final class TextMonitor {
         checkTask = Task {
             let suggestions = await harperService.check(text: context.text)
             guard !Task.isCancelled else { return }
-            await MainActor.run {
-                self.onCheckComplete?(suggestions, context)
-            }
+            self.onCheckComplete?(suggestions, context)
         }
     }
 
