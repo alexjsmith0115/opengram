@@ -42,6 +42,13 @@ final class IconStateMachine {
             startPulse()
             notifyChange()
 
+        case .checkingLLM:
+            // LLM check in-flight — pulse continues (or starts) to show async work.
+            if currentState == .checkingLLM { return }
+            currentState = .checkingLLM
+            startPulse()
+            notifyChange()
+
         case .done:
             cancelPulse()
             currentState = .done
