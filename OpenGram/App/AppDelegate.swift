@@ -113,6 +113,8 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
             guard let self, !styleSuggestions.isEmpty,
                   let bounds = context.elementBounds else { return }
 
+            self.lastExtractedContext = context
+
             let anchorRect = NSRect(
                 x: bounds.origin.x,
                 y: bounds.origin.y,
@@ -125,7 +127,9 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
                 suggestions: styleSuggestions,
                 near: anchorRect,
                 on: screen,
-                onApply: { _ in },
+                onApply: { [weak self] suggestion in
+                    self?.applyLLMSuggestion(suggestion)
+                },
                 onDismiss: { [weak self] in
                     self?.llmPanelController?.dismiss()
                 }
@@ -255,13 +259,73 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
                     suggestions: styleSuggestions,
                     near: anchorRect,
                     on: screen,
-                    onApply: { _ in },
+                    onApply: { [weak self] suggestion in
+                        self?.applyLLMSuggestion(suggestion)
+                    },
                     onDismiss: { [weak self] in
                         self?.llmPanelController?.dismiss()
                     }
                 )
             }
         }
+    }
+
+    @MainActor
+    private func applyLLMSuggestion(_ suggestion: LLMStyleSuggestion) {
+        guard let context = lastExtractedContext,
+              let engine = textEngine else { return }
+
+        // If the suggestion's originalText matches a user selection, write back via
+        // re-selection; otherwise search the full AX value for the substring and replace.
+        if let cfRange = context.selectionRange, cfRange.length > 0,
+           let selText = ParagraphExtractor.extract(from: context) as String?,
+           selText == suggestion.originalText {
+            _ = engine.writeBack(context: context, replacement: suggestion.revisedText)
+        } else {
+            _ = replaceSubstring(
+                originalText: suggestion.originalText,
+                revisedText: suggestion.revisedText,
+                in: context
+            )
+        }
+
+        llmPanelController?.dismiss()
+    }
+
+    /// Searches the current AX element value for `originalText` and replaces the first
+    /// occurrence with `revisedText` using a range-targeted AX write.
+    @MainActor
+    @discardableResult
+    private func replaceSubstring(
+        originalText: String,
+        revisedText: String,
+        in context: TextContext
+    ) -> Bool {
+        guard let engine = textEngine as? AXTextEngine else {
+            // Fallback: use writeBack which replaces current selection
+            return textEngine?.writeBack(context: context, replacement: revisedText) ?? false
+        }
+
+        // Use writeBack after constructing a context whose selectionRange covers originalText
+        let fullText = context.text
+        guard let range = fullText.range(of: originalText) else {
+            return engine.writeBack(context: context, replacement: revisedText)
+        }
+
+        let scalars = fullText.unicodeScalars
+        let start = scalars.distance(from: scalars.startIndex, to: range.lowerBound)
+        let length = scalars.distance(from: range.lowerBound, to: range.upperBound)
+        let cfRange = CFRange(location: start, length: length)
+
+        let adjustedContext = TextContext(
+            text: fullText,
+            bundleID: context.bundleID,
+            extractionMethod: context.extractionMethod,
+            selectionRange: cfRange,
+            elementBounds: context.elementBounds,
+            axElement: context.axElement
+        )
+        return engine.writeBack(context: adjustedContext, replacement: revisedText)
     }
 
     static func currentLLMConfig() -> LLMConfig {
