@@ -7,13 +7,13 @@ import os.log
 actor CheckOrchestrator {
 
     private let harper: any GrammarCheckerProtocol
-    private let llm: LLMService?
+    private let llm: (any LLMProviderProtocol)?
     private static let logger = Logger(
         subsystem: Bundle.main.bundleIdentifier ?? "com.opengram",
         category: "CheckOrchestrator"
     )
 
-    init(harper: any GrammarCheckerProtocol, llm: LLMService?) {
+    init(harper: any GrammarCheckerProtocol, llm: (any LLMProviderProtocol)?) {
         self.harper = harper
         self.llm = llm
     }
