@@ -41,7 +41,7 @@ struct MenuBuilderTests {
         let builder = MenuBuilder()
         let menu = builder.buildMenu()
         let settingsItem = menu.items[1]
-        #expect(settingsItem.title == "Settings...")
+        #expect(settingsItem.title == "Settings\u{2026}")
     }
 
     @Test("Third item is a separator")
