@@ -92,9 +92,16 @@ actor LLMService: LLMProviderProtocol {
         }
 
         let dtos = parseJSONContent(content)
-        return dtos.compactMap { dto in
-            mapDTOToSuggestion(dto, sourceText: sourceText, checkType: checkType)
+        var searchStart = sourceText.startIndex
+        var results: [Suggestion] = []
+        for dto in dtos {
+            guard let suggestion = mapDTOToSuggestion(dto, sourceText: sourceText,
+                                                       searchStart: searchStart,
+                                                       checkType: checkType) else { continue }
+            searchStart = suggestion.range.upperBound
+            results.append(suggestion)
         }
+        return results
     }
 
     /// Extracts the assistant message content from the OpenAI chat completion JSON envelope.
@@ -182,9 +189,11 @@ actor LLMService: LLMProviderProtocol {
     // MARK: - DTO to Suggestion Mapping (D-16: substring search for offset resolution)
 
     private func mapDTOToSuggestion(_ dto: LLMSuggestionDTO, sourceText: String,
+                                     searchStart: String.Index,
                                      checkType: LLMCheckType) -> Suggestion? {
         // D-16: Never trust LLM offsets. Find the original substring in source text.
-        guard let range = sourceText.range(of: dto.original) else {
+        // Search from searchStart to correctly locate repeated phrases (WR-02).
+        guard let range = sourceText.range(of: dto.original, range: searchStart..<sourceText.endIndex) else {
             Self.logger.debug("LLM original text not found in source: \(dto.original.prefix(50))")
             return nil
         }
