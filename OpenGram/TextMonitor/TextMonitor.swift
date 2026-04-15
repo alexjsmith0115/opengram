@@ -14,19 +14,29 @@ final class TextMonitor {
     // MARK: - Dependencies
 
     private let textEngine: any AXTextEngineProtocol
-    private let harperService: any GrammarCheckerProtocol
+    private let orchestrator: CheckOrchestrator
     private let capabilityCache: any AXCapabilityCacheProtocol
     private let quirksTable: AppQuirksTable
     private let watchdog: AXCallWatchdog
 
     // MARK: - Callbacks
 
-    /// Called when a grammar check completes. Receives the suggestions and the TextContext
-    /// that was checked.
+    /// Called when Harper results are ready. Receives suggestions and the TextContext checked.
     var onCheckComplete: ((@MainActor ([Suggestion], TextContext) -> Void))?
+
+    /// Called when an LLM check type returns results (incremental append).
+    var onLLMBatch: ((@MainActor ([Suggestion], TextContext) -> Void))?
+
+    /// Called when all LLM checks have completed.
+    var onLLMFinished: ((@MainActor () -> Void))?
 
     /// Called when monitoring pauses: app switch to a non-text app, or non-text element focused.
     var onDismiss: ((@MainActor () -> Void))?
+
+    // MARK: - LLM config (set by AppDelegate before each check)
+
+    var llmConfig: LLMConfig = .default
+    var llmAPIKey: String?
 
     // MARK: - Internal state
 
@@ -59,13 +69,13 @@ final class TextMonitor {
 
     init(
         textEngine: any AXTextEngineProtocol,
-        harperService: any GrammarCheckerProtocol,
+        orchestrator: CheckOrchestrator,
         capabilityCache: any AXCapabilityCacheProtocol,
         quirksTable: AppQuirksTable = .shared,
         watchdog: AXCallWatchdog = .shared
     ) {
         self.textEngine = textEngine
-        self.harperService = harperService
+        self.orchestrator = orchestrator
         self.capabilityCache = capabilityCache
         self.quirksTable = quirksTable
         self.watchdog = watchdog
@@ -278,10 +288,27 @@ final class TextMonitor {
         guard let context = textEngine.extractText(), !context.text.isEmpty else { return }
 
         checkTask?.cancel()
+        let config = llmConfig
+        let apiKey = llmAPIKey
         checkTask = Task {
-            let suggestions = await harperService.check(text: context.text)
-            guard !Task.isCancelled else { return }
-            self.onCheckComplete?(suggestions, context)
+            await orchestrator.runCheck(
+                text: context.text,
+                context: context,
+                config: config,
+                apiKey: apiKey,
+                onHarperComplete: { [weak self] suggestions, ctx in
+                    guard let self, !Task.isCancelled else { return }
+                    self.onCheckComplete?(suggestions, ctx)
+                },
+                onLLMBatch: { [weak self] suggestions, ctx in
+                    guard let self, !Task.isCancelled else { return }
+                    self.onLLMBatch?(suggestions, ctx)
+                },
+                onLLMFinished: { [weak self] in
+                    guard self != nil, !Task.isCancelled else { return }
+                    self?.onLLMFinished?()
+                }
+            )
         }
     }
 
