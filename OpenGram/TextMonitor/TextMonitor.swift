@@ -33,6 +33,10 @@ final class TextMonitor {
     /// Called when monitoring pauses: app switch to a non-text app, or non-text element focused.
     var onDismiss: ((@MainActor () -> Void))?
 
+    // MARK: - Whitelist (set by AppDelegate at init)
+
+    var appWhitelist = AppWhitelist()
+
     // MARK: - LLM config (set by AppDelegate before each check)
 
     var llmConfig: LLMConfig = .default
@@ -129,6 +133,12 @@ final class TextMonitor {
     private func installOnFocusedElement() {
         guard let app = NSWorkspace.shared.frontmostApplication,
               let bundleID = app.bundleIdentifier else { return }
+
+        // Whitelist gate: skip non-text apps (mirrors AppDelegate.handleHotkeyFired check)
+        guard appWhitelist.isAllowed(bundleID) else {
+            onDismiss?()
+            return
+        }
 
         let pid = app.processIdentifier
 

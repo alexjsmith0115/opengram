@@ -33,7 +33,6 @@ final class LLMPanelController {
         )
 
         let hosting = NSHostingView(rootView: panelView)
-        hosting.sizingOptions = .preferredContentSize
 
         let newPanel = NSPanel(
             contentRect: NSRect(x: 0, y: 0, width: 360, height: 200),
@@ -51,10 +50,17 @@ final class LLMPanelController {
         newPanel.hasShadow = false  // SwiftUI card provides its own shadow
         newPanel.contentView = hosting
 
-        // Size the panel to fit content
-        newPanel.setContentSize(hosting.intrinsicContentSize)
+        // Force layout so intrinsicContentSize is valid, then size panel to fit
+        hosting.layoutSubtreeIfNeeded()
+        let fittingSize = hosting.fittingSize
+        let size = NSSize(
+            width: max(fittingSize.width, 360),
+            height: max(fittingSize.height, 100)
+        )
+        newPanel.setContentSize(size)
 
         position(panel: newPanel, near: anchorRect, on: screen)
+        NSLog("[OpenGram] LLM panel frame=\(newPanel.frame) fittingSize=\(fittingSize) anchor=\(anchorRect)")
         newPanel.orderFront(nil)
 
         self.panel = newPanel

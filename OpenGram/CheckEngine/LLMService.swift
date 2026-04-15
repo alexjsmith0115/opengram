@@ -23,13 +23,19 @@ actor LLMService: LLMProviderProtocol {
         // Cancel any in-flight request before starting a new one.
         currentTask?.cancel()
 
+        Self.logger.info("analyze() called — baseURL=\(config.baseURL) model=\(config.model) paragraph=\(paragraph.prefix(80))...")
+
         let session = self.session
         let task = Task<[LLMStyleSuggestion], Error> {
-            guard config.isEnabled else { return [] }
-            guard let url = config.chatCompletionsURL else {
-                Self.logger.debug("Invalid chat completions URL from baseURL: \(config.baseURL)")
+            guard config.isEnabled else {
+                Self.logger.info("LLM disabled (isEnabled=false) — skipping")
                 return []
             }
+            guard let url = config.chatCompletionsURL else {
+                Self.logger.error("Invalid chat completions URL from baseURL: \(config.baseURL)")
+                return []
+            }
+            Self.logger.info("POST → \(url.absoluteString)")
 
             let payload = ChatRequest(
                 model: config.model,
@@ -58,11 +64,25 @@ actor LLMService: LLMProviderProtocol {
 
             guard let httpResponse = response as? HTTPURLResponse,
                   (200..<300).contains(httpResponse.statusCode) else {
-                Self.logger.debug("LLM HTTP error: \((response as? HTTPURLResponse)?.statusCode ?? -1)")
+                let code = (response as? HTTPURLResponse)?.statusCode ?? -1
+                Self.logger.error("LLM HTTP error: status=\(code)")
+                if let body = String(data: data, encoding: .utf8) {
+                    Self.logger.error("Response body: \(body.prefix(500))")
+                }
                 return []
             }
 
-            return try parseResponse(data: data, paragraph: paragraph)
+            Self.logger.info("LLM HTTP \(httpResponse.statusCode) — \(data.count) bytes")
+            if let raw = String(data: data, encoding: .utf8) {
+                Self.logger.info("Raw response: \(raw.prefix(500))")
+            }
+
+            let results = try parseResponse(data: data, paragraph: paragraph)
+            Self.logger.info("Parsed \(results.count) suggestions")
+            for (i, s) in results.enumerated() {
+                Self.logger.info("  [\(i)] \(s.category.rawValue) conf=\(s.confidence): \(s.explanation.prefix(60))")
+            }
+            return results
         }
 
         currentTask = task
@@ -70,9 +90,10 @@ actor LLMService: LLMProviderProtocol {
         do {
             return try await task.value
         } catch is CancellationError {
+            Self.logger.info("LLM request cancelled")
             return []
         } catch {
-            Self.logger.debug("LLM request failed: \(error.localizedDescription)")
+            Self.logger.error("LLM request failed: \(error.localizedDescription)")
             return [] // D-08: silent failure
         }
     }

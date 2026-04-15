@@ -219,7 +219,11 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Phase 2: LLM async style check — show panel on completion
         let config = Self.currentLLMConfig()
-        guard config.isEnabled, let llmService else { return }
+        guard config.isEnabled, let llmService else {
+            NSLog("[OpenGram] LLM skipped — isEnabled=\(config.isEnabled) llmService=\(self.llmService != nil)")
+            return
+        }
+        NSLog("[OpenGram] LLM Phase 2 starting — baseURL=\(config.baseURL) model=\(config.model)")
 
         statusBar.setState(.checkingLLM)
         statusBar.updateStatusText("Checking style\u{2026}")
@@ -251,9 +255,14 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
                     statusBar.updateStatusText("OpenGram: \(self.accumulatedSuggestions.count) suggestion(s)")
                 }
 
+                NSLog("[OpenGram] LLM returned \(styleSuggestions.count) suggestions")
                 guard !styleSuggestions.isEmpty,
-                      let bounds = context.elementBounds else { return }
+                      let bounds = context.elementBounds else {
+                    NSLog("[OpenGram] LLM panel skipped — suggestions=\(styleSuggestions.count) bounds=\(context.elementBounds != nil)")
+                    return
+                }
 
+                NSLog("[OpenGram] Showing LLM panel with \(styleSuggestions.count) suggestions")
                 let anchorRect = NSRect(
                     x: bounds.origin.x,
                     y: bounds.origin.y,
