@@ -12,11 +12,14 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
     private var llmService: LLMService?
     private var orchestrator: CheckOrchestrator?
     private var overlayController: OverlayController?
+    private var llmPanelController: LLMPanelController?
     private var textMonitor: TextMonitor?
     private var lastExtractedContext: TextContext?
     private var lastSuggestions: [Suggestion] = []
     private var accumulatedSuggestions: [Suggestion] = []
     private var checkTask: Task<Void, Never>?
+    private var llmTask: Task<Void, Never>?
+    private var appWhitelist = AppWhitelist()
 
     public func applicationDidFinishLaunching(_ notification: Notification) {
         let capabilityCache = AXCapabilityCache()
@@ -31,6 +34,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         let orchestrator = CheckOrchestrator(harper: harperService, llm: llmService)
 
         let overlayController = OverlayController()
+        let llmPanelController = LLMPanelController()
 
         self.statusBarController = statusBarController
         self.hotkeyManager = hotkeyManager
@@ -40,6 +44,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         self.llmService = llmService
         self.orchestrator = orchestrator
         self.overlayController = overlayController
+        self.llmPanelController = llmPanelController
 
         overlayController.onAcceptSuggestion = { [weak self] suggestion in
             self?.lastSuggestions.removeAll { $0.id == suggestion.id }
@@ -146,40 +151,100 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @MainActor
     private func handleHotkeyFired() {
-        guard let statusBar = statusBarController else { return }
+        // Whitelist gate: only check apps where text editing makes sense
+        if let frontmost = NSWorkspace.shared.frontmostApplication,
+           let bundleID = frontmost.bundleIdentifier,
+           !appWhitelist.isAllowed(bundleID) {
+            statusBarController?.flashInactive()
+            return
+        }
+
+        overlayController?.dismiss()
+        llmPanelController?.dismiss()
+
+        guard let statusBar = statusBarController,
+              let engine = textEngine,
+              let orchestrator else { return }
 
         statusBar.setState(.checking)
         statusBar.updateStatusText("OpenGram: Checking...")
 
-        if let textMonitor {
-            textMonitor.forceCheckNow()
-        } else {
-            // Fallback: direct check (should not happen in normal operation)
-            guard let engine = textEngine,
-                  let orchestrator else { return }
-            overlayController?.dismiss()
-            guard let context = engine.extractText() else {
-                statusBar.triggerSilentFail()
-                statusBar.updateStatusText("OpenGram: Ready")
-                return
-            }
-            lastExtractedContext = context
-            checkTask?.cancel()
-            checkTask = Task {
-                let suggestions = await orchestrator.harperOnly(text: context.text)
-                guard !Task.isCancelled else { return }
-                await MainActor.run {
-                    self.lastSuggestions = suggestions
-                    self.accumulatedSuggestions = suggestions
-                    if suggestions.isEmpty {
-                        statusBar.setState(.done)
-                        statusBar.updateStatusText("OpenGram: No issues found")
-                    } else {
-                        statusBar.setState(.done)
-                        statusBar.updateStatusText("OpenGram: \(suggestions.count) suggestion(s)")
-                        self.overlayController?.show(suggestions: suggestions, context: context)
-                    }
+        guard let context = engine.extractText() else {
+            statusBar.triggerSilentFail()
+            statusBar.updateStatusText("OpenGram: Ready")
+            return
+        }
+        lastExtractedContext = context
+
+        // Cancel any in-flight checks before starting new ones
+        checkTask?.cancel()
+        llmTask?.cancel()
+
+        // Phase 1: Harper check on full text — show underlines immediately
+        checkTask = Task {
+            let harperSuggestions = await orchestrator.harperOnly(text: context.text)
+            guard !Task.isCancelled else { return }
+            await MainActor.run {
+                self.lastSuggestions = harperSuggestions
+                self.accumulatedSuggestions = harperSuggestions
+                if harperSuggestions.isEmpty {
+                    statusBar.setState(.done)
+                    statusBar.updateStatusText("OpenGram: No issues found")
+                } else {
+                    statusBar.setState(.done)
+                    statusBar.updateStatusText("OpenGram: \(harperSuggestions.count) suggestion(s)")
+                    self.overlayController?.show(suggestions: harperSuggestions, context: context)
                 }
+            }
+        }
+
+        // Phase 2: LLM async style check — show panel on completion
+        let config = Self.currentLLMConfig()
+        guard config.isEnabled, let llmService else { return }
+
+        statusBar.setState(.checkingLLM)
+        statusBar.updateStatusText("Checking style\u{2026}")
+
+        let paragraph = ParagraphExtractor.extract(from: context)
+        let apiKey = Self.currentAPIKey()
+
+        llmTask = Task {
+            let styleSuggestions = await llmService.analyze(
+                paragraph: paragraph,
+                config: config,
+                apiKey: apiKey
+            )
+            guard !Task.isCancelled else { return }
+            await MainActor.run {
+                // Restore status bar now that LLM check is complete
+                if self.accumulatedSuggestions.isEmpty {
+                    statusBar.setState(.idle)
+                    statusBar.updateStatusText("OpenGram: Ready")
+                } else {
+                    statusBar.setState(.done)
+                    statusBar.updateStatusText("OpenGram: \(self.accumulatedSuggestions.count) suggestion(s)")
+                }
+
+                guard !styleSuggestions.isEmpty,
+                      let bounds = context.elementBounds else { return }
+
+                let anchorRect = NSRect(
+                    x: bounds.origin.x,
+                    y: bounds.origin.y,
+                    width: bounds.size.width,
+                    height: bounds.size.height
+                )
+                let screen = NSScreen.screens.first(where: { $0.frame.contains(anchorRect) }) ?? NSScreen.main ?? NSScreen.screens[0]
+
+                self.llmPanelController?.show(
+                    suggestions: styleSuggestions,
+                    near: anchorRect,
+                    on: screen,
+                    onApply: { _ in },
+                    onDismiss: { [weak self] in
+                        self?.llmPanelController?.dismiss()
+                    }
+                )
             }
         }
     }

@@ -32,6 +32,15 @@ final class StatusBarController {
         stateMachine.triggerSilentFail()
     }
 
+    /// Brief dim→restore animation indicating the hotkey fired in a non-whitelisted app.
+    func flashInactive() {
+        guard let button = statusItem.button else { return }
+        button.alphaValue = 0.2
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak button] in
+            button?.alphaValue = 1.0
+        }
+    }
+
     func updateStatusText(_ text: String) {
         menuBuilder.updateStatusText(text)
     }
