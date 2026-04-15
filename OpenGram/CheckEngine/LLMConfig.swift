@@ -9,13 +9,15 @@ struct LLMConfig: Codable, Sendable, Equatable {
     var enabledChecks: Set<LLMCheckType>
     var temperature: Double
     var maxTokens: Int
+    var requestTimeout: TimeInterval
 
     static let `default` = LLMConfig(
         baseURL: "http://localhost:1234/v1",
         model: "default",
         enabledChecks: Set(LLMCheckType.allCases),
         temperature: 0.3,
-        maxTokens: 1024
+        maxTokens: 1024,
+        requestTimeout: 60
     )
 
     /// True if at least one check type is enabled and the base URL is non-empty.

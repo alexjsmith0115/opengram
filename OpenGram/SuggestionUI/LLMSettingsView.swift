@@ -55,6 +55,7 @@ struct LLMSettingsView: View {
     @AppStorage("llmEnableClarity") private var enableClarity: Bool = true
     @AppStorage("llmEnableRephrase") private var enableRephrase: Bool = true
     @AppStorage("llmTemperature") private var temperature: Double = 0.3
+    @AppStorage("llmRequestTimeout") private var requestTimeout: Double = 60
 
     // Staged API key (committed to Keychain on Save)
     @State private var apiKeyField: String = ""
@@ -127,6 +128,22 @@ struct LLMSettingsView: View {
                     .foregroundColor(.secondary)
             }
 
+            // Section: Request Timeout
+            Spacer().frame(height: 24)
+            Text("Request Timeout")
+                .font(.system(size: 13, weight: .semibold))
+            Spacer().frame(height: 8)
+            Slider(value: $requestTimeout, in: 15...300, step: 5)
+            HStack {
+                Text("\(Int(requestTimeout))s")
+                    .font(.system(size: 11))
+                    .foregroundColor(.secondary)
+                Spacer()
+                Text("Local models may need 120s+")
+                    .font(.system(size: 11))
+                    .foregroundColor(.secondary)
+            }
+
             // Buttons
             Spacer().frame(height: 24)
             HStack(spacing: 8) {
@@ -192,7 +209,8 @@ struct LLMSettingsView: View {
                 model: model,
                 enabledChecks: Set(LLMCheckType.allCases),
                 temperature: temperature,
-                maxTokens: 1024
+                maxTokens: 1024,
+                requestTimeout: requestTimeout
             )
             let key = apiKeyField.isEmpty ? nil : apiKeyField
             let result = await service.healthCheck(config: config, apiKey: key)

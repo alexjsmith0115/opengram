@@ -199,7 +199,10 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
             temperature: defaults.object(forKey: "llmTemperature") != nil
                 ? defaults.double(forKey: "llmTemperature")
                 : LLMConfig.default.temperature,
-            maxTokens: LLMConfig.default.maxTokens
+            maxTokens: LLMConfig.default.maxTokens,
+            requestTimeout: defaults.object(forKey: "llmRequestTimeout") != nil
+                ? defaults.double(forKey: "llmRequestTimeout")
+                : LLMConfig.default.requestTimeout
         )
     }
 

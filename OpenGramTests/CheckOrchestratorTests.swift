@@ -175,7 +175,8 @@ struct CheckOrchestratorTests {
                 model: "test",
                 enabledChecks: [.tone],
                 temperature: 0.3,
-                maxTokens: 512
+                maxTokens: 512,
+                requestTimeout: 60
             ),
             apiKey: "test-key",
             onHarperComplete: { _, _ in },
@@ -219,7 +220,8 @@ struct CheckOrchestratorTests {
                 model: "test",
                 enabledChecks: [.clarity, .tone],
                 temperature: 0.3,
-                maxTokens: 512
+                maxTokens: 512,
+                requestTimeout: 60
             ),
             apiKey: "test-key",
             onHarperComplete: { _, _ in },

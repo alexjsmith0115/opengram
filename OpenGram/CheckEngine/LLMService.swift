@@ -43,7 +43,7 @@ actor LLMService: LLMProviderProtocol {
             if let key = apiKey, !key.isEmpty {
                 request.setValue("Bearer \(key)", forHTTPHeaderField: "Authorization")
             }
-            request.timeoutInterval = 15 // D-10
+            request.timeoutInterval = config.requestTimeout
             request.httpBody = try JSONEncoder().encode(payload)
 
             let (data, response) = try await session.data(for: request)
