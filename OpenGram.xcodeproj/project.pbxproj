@@ -77,6 +77,8 @@
 		B10000010000000000000035 /* LLMPromptsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000035 /* LLMPromptsTests.swift */; };
 		B10000010000000000000036 /* CheckOrchestratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000036 /* CheckOrchestratorTests.swift */; };
 		B10000010000000000000037 /* LLMSettingsPanelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000037 /* LLMSettingsPanelTests.swift */; };
+		B1000001000000000000003A /* LLMResponseDTOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000001000000000000003A /* LLMResponseDTOTests.swift */; };
+		B1000001000000000000003B /* ParagraphExtractorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000001000000000000003B /* ParagraphExtractorTests.swift */; };
 		C10000010000000000000001 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = C20000010000000000000001 /* KeychainAccess */; };
 /* End PBXBuildFile section */
 
@@ -164,6 +166,8 @@
 		B20000010000000000000035 /* LLMPromptsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMPromptsTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000036 /* CheckOrchestratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckOrchestratorTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000037 /* LLMSettingsPanelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSettingsPanelTests.swift; sourceTree = "<group>"; };
+		B2000001000000000000003A /* LLMResponseDTOTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMResponseDTOTests.swift; sourceTree = "<group>"; };
+		B2000001000000000000003B /* ParagraphExtractorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphExtractorTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -291,6 +295,7 @@
 				B20000010000000000000002 /* MenuBuilderTests.swift */,
 				B20000010000000000000030 /* SuggestionDiffEngineTests.swift */,
 				B20000010000000000000013 /* SuggestionTests.swift */,
+				B4000001000000000000000B /* CheckEngine */,
 				B4000001000000000000000A /* SuggestionUITests */,
 				B20000010000000000000006 /* TextContextTests.swift */,
 				B20000010000000000000032 /* TextMonitorTests.swift */,
@@ -358,6 +363,15 @@
 				A20000010000000000000034 /* HarperBridge.swift */,
 			);
 			path = Generated;
+			sourceTree = "<group>";
+		};
+		B4000001000000000000000B /* CheckEngine */ = {
+			isa = PBXGroup;
+			children = (
+				B2000001000000000000003A /* LLMResponseDTOTests.swift */,
+				B2000001000000000000003B /* ParagraphExtractorTests.swift */,
+			);
+			path = CheckEngine;
 			sourceTree = "<group>";
 		};
 		B4000001000000000000000A /* SuggestionUITests */ = {
@@ -549,6 +563,8 @@
 				B10000010000000000000035 /* LLMPromptsTests.swift in Sources */,
 				B10000010000000000000036 /* CheckOrchestratorTests.swift in Sources */,
 				B10000010000000000000037 /* LLMSettingsPanelTests.swift in Sources */,
+				B1000001000000000000003A /* LLMResponseDTOTests.swift in Sources */,
+				B1000001000000000000003B /* ParagraphExtractorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
