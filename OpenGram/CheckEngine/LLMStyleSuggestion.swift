@@ -10,16 +10,6 @@ struct LLMStyleSuggestion: Sendable {
         case clarity
         case tone
         case rephrase
-
-        /// Maps to the overlay-rendering CheckCategory used by the legacy Suggestion type.
-        /// Phase 12 will replace this bridge once CheckOrchestrator adopts the new LLM panel flow.
-        var checkCategory: CheckCategory {
-            switch self {
-            case .clarity: return .clarity
-            case .tone: return .tone
-            case .rephrase: return .rephrase
-            }
-        }
     }
 
     let category: Category

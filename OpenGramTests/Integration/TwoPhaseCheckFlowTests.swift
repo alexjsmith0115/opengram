@@ -15,7 +15,7 @@ private final class MockLLMProvider: LLMProviderProtocol, @unchecked Sendable {
         self.delay = delay
     }
 
-    func analyze(paragraph: String, config: LLMConfig, apiKey: String?) async -> [LLMStyleSuggestion] {
+    func analyze(paragraph: String, config: LLMConfig, apiKey: String?, harperSpans: [String]) async -> [LLMStyleSuggestion] {
         callCount += 1
         if delay > 0 { try? await Task.sleep(nanoseconds: delay) }
         return results
@@ -27,7 +27,7 @@ private final class MockLLMProvider: LLMProviderProtocol, @unchecked Sendable {
 private final class FailingLLMProvider: LLMProviderProtocol, @unchecked Sendable {
     var callCount: Int = 0
 
-    func analyze(paragraph: String, config: LLMConfig, apiKey: String?) async -> [LLMStyleSuggestion] {
+    func analyze(paragraph: String, config: LLMConfig, apiKey: String?, harperSpans: [String]) async -> [LLMStyleSuggestion] {
         callCount += 1
         // Simulate network failure: return empty (D-08 silent failure pattern)
         return []

@@ -1,7 +1,8 @@
 import Foundation
 
-/// Legacy per-category check type. Retained for CheckOrchestrator compatibility — will be
-/// removed in Phase 12 when the orchestrator is updated to use analyze().
+/// Per-category check type used to let users enable/disable individual LLM check dimensions
+/// (tone, clarity, rephrase) from Settings. Filtered in LLMConfig.isEnabled and passed to
+/// LLMService so only the configured dimensions are requested.
 enum LLMCheckType: String, Sendable, CaseIterable, Codable {
     case tone
     case clarity
