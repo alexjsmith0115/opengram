@@ -19,7 +19,7 @@ actor LLMService: LLMProviderProtocol {
 
     // MARK: - LLMProviderProtocol
 
-    func analyze(paragraph: String, config: LLMConfig, apiKey: String?) async -> [LLMStyleSuggestion] {
+    func analyze(paragraph: String, config: LLMConfig, apiKey: String?, harperSpans: [String] = []) async -> [LLMStyleSuggestion] {
         // Cancel any in-flight request before starting a new one.
         currentTask?.cancel()
 
@@ -34,7 +34,7 @@ actor LLMService: LLMProviderProtocol {
             let payload = ChatRequest(
                 model: config.model,
                 messages: [
-                    ChatMessage(role: "system", content: LLMPrompts.systemPrompt()),
+                    ChatMessage(role: "system", content: LLMPrompts.systemPrompt(harperSpans: harperSpans)),
                     ChatMessage(role: "user", content: LLMPrompts.userMessage(for: paragraph))
                 ],
                 temperature: config.temperature,

@@ -51,8 +51,10 @@ actor CheckOrchestrator {
 
         // 3. Single consolidated LLM request. Task.detached shields from parent cancellation
         // so the request survives hotkey re-fires (D-12, WR-04-gap).
+        let paragraph = ParagraphExtractor.extract(from: context)
+        let harperSpans = harperResults.map { $0.original }
         let styleSuggestions = await Task.detached { [llm] in
-            await llm.analyze(paragraph: text, config: config, apiKey: apiKey)
+            await llm.analyze(paragraph: paragraph, config: config, apiKey: apiKey, harperSpans: harperSpans)
         }.value
 
         if !styleSuggestions.isEmpty {

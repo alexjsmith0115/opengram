@@ -226,12 +226,19 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
 
         let paragraph = ParagraphExtractor.extract(from: context)
         let apiKey = Self.currentAPIKey()
+        let harperCheckTask = checkTask
 
         llmTask = Task {
+            // Wait for Harper Phase 1 to complete so we have spans to inject into the prompt.
+            await harperCheckTask?.value
+            guard !Task.isCancelled else { return }
+
+            let harperSpans = await MainActor.run { self.lastSuggestions.map { $0.original } }
             let styleSuggestions = await llmService.analyze(
                 paragraph: paragraph,
                 config: config,
-                apiKey: apiKey
+                apiKey: apiKey,
+                harperSpans: harperSpans
             )
             guard !Task.isCancelled else { return }
             await MainActor.run {
