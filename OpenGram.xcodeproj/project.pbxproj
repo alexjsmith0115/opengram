@@ -67,8 +67,13 @@
 		A10000010000000000000092 /* LLMPrompts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000092 /* LLMPrompts.swift */; };
 		A10000010000000000000093 /* LLMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000093 /* LLMService.swift */; };
 		A10000010000000000000094 /* CheckOrchestrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000094 /* CheckOrchestrator.swift */; };
+		A10000010000000000000095 /* LLMSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000095 /* LLMSettingsView.swift */; };
 		B10000010000000000000032 /* TextMonitorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000032 /* TextMonitorTests.swift */; };
 		B10000010000000000000033 /* OverlayControllerDiffTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000033 /* OverlayControllerDiffTests.swift */; };
+		B10000010000000000000034 /* LLMServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000034 /* LLMServiceTests.swift */; };
+		B10000010000000000000035 /* LLMPromptsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000035 /* LLMPromptsTests.swift */; };
+		B10000010000000000000036 /* CheckOrchestratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000036 /* CheckOrchestratorTests.swift */; };
+		C10000010000000000000001 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = C20000010000000000000001 /* KeychainAccess */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -145,8 +150,12 @@
 		A20000010000000000000092 /* LLMPrompts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMPrompts.swift; sourceTree = "<group>"; };
 		A20000010000000000000093 /* LLMService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMService.swift; sourceTree = "<group>"; };
 		A20000010000000000000094 /* CheckOrchestrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckOrchestrator.swift; sourceTree = "<group>"; };
+		A20000010000000000000095 /* LLMSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSettingsView.swift; sourceTree = "<group>"; };
 		B20000010000000000000032 /* TextMonitorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextMonitorTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000033 /* OverlayControllerDiffTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayControllerDiffTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000034 /* LLMServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMServiceTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000035 /* LLMPromptsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMPromptsTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000036 /* CheckOrchestratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckOrchestratorTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -155,6 +164,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A10000010000000000000060 /* HarperBridge.xcframework in Frameworks */,
+				C10000010000000000000001 /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -262,10 +272,13 @@
 				B20000010000000000000031 /* AppQuirksTests.swift */,
 				B20000010000000000000005 /* AXCapabilityCacheTests.swift */,
 				B20000010000000000000004 /* AXTextEngineTests.swift */,
+				B20000010000000000000036 /* CheckOrchestratorTests.swift */,
 				B20000010000000000000011 /* DictionaryStoreTests.swift */,
 				B20000010000000000000012 /* HarperServiceTests.swift */,
 				B20000010000000000000003 /* HotkeyManagerTests.swift */,
 				B20000010000000000000001 /* IconStateMachineTests.swift */,
+				B20000010000000000000035 /* LLMPromptsTests.swift */,
+				B20000010000000000000034 /* LLMServiceTests.swift */,
 				B20000010000000000000002 /* MenuBuilderTests.swift */,
 				B20000010000000000000030 /* SuggestionDiffEngineTests.swift */,
 				B20000010000000000000013 /* SuggestionTests.swift */,
@@ -306,6 +319,7 @@
 			children = (
 				A20000010000000000000047 /* AXCallWatchdog.swift */,
 				A20000010000000000000046 /* BoundsValidator.swift */,
+				A20000010000000000000095 /* LLMSettingsView.swift */,
 				A20000010000000000000040 /* OverlayController.swift */,
 				A20000010000000000000041 /* OverlayWindow.swift */,
 				A20000010000000000000042 /* PopoverView.swift */,
@@ -367,6 +381,9 @@
 			dependencies = (
 			);
 			name = OpenGram;
+			packageProductDependencies = (
+				C20000010000000000000001 /* KeychainAccess */,
+			);
 			productName = OpenGram;
 			productReference = A2000001000000000000000C /* OpenGram.app */;
 			productType = "com.apple.product-type.application";
@@ -416,6 +433,9 @@
 				Base,
 			);
 			mainGroup = A40000010000000000000001;
+			packageReferences = (
+				C30000010000000000000001 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
+			);
 			productRefGroup = A40000010000000000000009 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -479,6 +499,7 @@
 				A10000010000000000000092 /* LLMPrompts.swift in Sources */,
 				A10000010000000000000093 /* LLMService.swift in Sources */,
 				A10000010000000000000094 /* CheckOrchestrator.swift in Sources */,
+				A10000010000000000000095 /* LLMSettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -509,6 +530,9 @@
 				B10000010000000000000031 /* AppQuirksTests.swift in Sources */,
 				B10000010000000000000032 /* TextMonitorTests.swift in Sources */,
 				B10000010000000000000033 /* OverlayControllerDiffTests.swift in Sources */,
+				B10000010000000000000034 /* LLMServiceTests.swift in Sources */,
+				B10000010000000000000035 /* LLMPromptsTests.swift in Sources */,
+				B10000010000000000000036 /* CheckOrchestratorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -695,6 +719,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C30000010000000000000001 /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess.git";
+			requirement = {
+				kind = exactVersion;
+				version = "4.2.2";
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C20000010000000000000001 /* KeychainAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C30000010000000000000001 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A80000010000000000000001 /* Project object */;
 }

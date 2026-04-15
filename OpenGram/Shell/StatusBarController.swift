@@ -5,6 +5,7 @@ final class StatusBarController {
     private let statusItem: NSStatusItem
     private let stateMachine: IconStateMachine
     private let menuBuilder: MenuBuilder
+    private let settingsPanel = LLMSettingsPanel()
 
     init() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
@@ -13,6 +14,10 @@ final class StatusBarController {
 
         setupButton()
         statusItem.menu = menuBuilder.buildMenu()
+
+        menuBuilder.onSettingsTapped = { [weak self] in
+            self?.settingsPanel.show()
+        }
 
         stateMachine.onStateChange = { [weak self] _, symbolName, opacity in
             self?.applyIcon(symbolName: symbolName, opacity: opacity)

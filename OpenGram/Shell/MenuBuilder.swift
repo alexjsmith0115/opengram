@@ -2,6 +2,7 @@ import AppKit
 
 final class MenuBuilder {
     private(set) var statusMenuItem: NSMenuItem!
+    var onSettingsTapped: (() -> Void)?
 
     func buildMenu() -> NSMenu {
         let menu = NSMenu()
@@ -14,7 +15,8 @@ final class MenuBuilder {
         )
         menu.addItem(statusMenuItem)
 
-        let settingsItem = NSMenuItem(title: "Settings...", action: nil, keyEquivalent: "")
+        let settingsItem = NSMenuItem(title: "Settings\u{2026}", action: #selector(settingsClicked), keyEquivalent: ",")
+        settingsItem.target = self
         menu.addItem(settingsItem)
 
         menu.addItem(NSMenuItem.separator())
@@ -27,6 +29,10 @@ final class MenuBuilder {
         menu.addItem(quitItem)
 
         return menu
+    }
+
+    @objc private func settingsClicked() {
+        onSettingsTapped?()
     }
 
     func updateStatusText(_ text: String) {
