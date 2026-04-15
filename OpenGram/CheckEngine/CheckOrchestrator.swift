@@ -70,8 +70,9 @@ actor CheckOrchestrator {
             }
         }
 
-        // Close stream once all detached tasks finish
-        Task.detached {
+        // Store reference to prevent premature deallocation — without this,
+        // continuation.finish() may never fire and the for-await blocks indefinitely.
+        let finishingTask = Task.detached {
             for task in detachedTasks {
                 _ = await task.value
             }
@@ -85,6 +86,9 @@ actor CheckOrchestrator {
                 await onLLMBatch(deduped, context)
             }
         }
+
+        // Belt-and-suspenders: ensure finishing task has fully completed
+        _ = await finishingTask.value
 
         await onLLMFinished()
     }

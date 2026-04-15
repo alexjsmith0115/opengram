@@ -186,4 +186,47 @@ struct CheckOrchestratorTests {
         #expect(llmFinished, "onLLMFinished must be called")
         #expect(!llmBatches.isEmpty, "LLM results must be delivered")
     }
+
+    @Test func llmStreamCompletesAndFinishedCallbackFires() async throws {
+        let source = "We should probably consider maybe doing this"
+        guard let range = source.range(of: "probably") else {
+            Issue.record("Range not found")
+            return
+        }
+        let llmSuggestion = Suggestion(
+            id: UUID(),
+            range: range,
+            original: "probably",
+            primaryReplacement: "",
+            allReplacements: [],
+            message: "hedging language",
+            category: .clarity,
+            source: .llm,
+            priority: 50
+        )
+        // 100ms delay — fast enough to not timeout, slow enough to exercise async path
+        let mockLLM = SlowMockLLMProvider(delay: 100_000_000, results: [llmSuggestion])
+        let stubHarper = StubGrammarChecker()
+        let orchestrator = CheckOrchestrator(harper: stubHarper, llm: mockLLM)
+
+        var llmFinished = false
+
+        await orchestrator.runCheck(
+            text: source,
+            context: TextContext.stub(text: source),
+            config: LLMConfig(
+                baseURL: "http://localhost:1234/v1",
+                model: "test",
+                enabledChecks: [.clarity, .tone],
+                temperature: 0.3,
+                maxTokens: 512
+            ),
+            apiKey: "test-key",
+            onHarperComplete: { _, _ in },
+            onLLMBatch: { _, _ in },
+            onLLMFinished: { llmFinished = true }
+        )
+
+        #expect(llmFinished, "onLLMFinished must fire after stream completes — stored finishing task reference prevents premature deallocation")
+    }
 }
