@@ -71,6 +71,9 @@ final class UnderlineView: NSView {
         switch category {
         case .spelling: return .systemRed
         case .grammarPunctuation: return .systemBlue
+        case .tone: return .systemPurple
+        case .clarity: return .systemOrange
+        case .rephrase: return .systemTeal
         }
     }
 

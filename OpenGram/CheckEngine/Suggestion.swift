@@ -37,6 +37,12 @@ enum CheckCategory: Sendable {
     case spelling
     /// All other LintKind variants -- rendered blue in Phase 3 (D-03)
     case grammarPunctuation
+    /// LLM: hedging, passive voice, weak phrasing -- rendered purple
+    case tone
+    /// LLM: wordiness, redundancy, complex structure -- rendered orange
+    case clarity
+    /// LLM: structural rewrites for better flow -- rendered teal
+    case rephrase
 }
 
 // MARK: - Suggestion Source

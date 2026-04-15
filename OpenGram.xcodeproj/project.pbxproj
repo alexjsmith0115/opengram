@@ -62,6 +62,10 @@
 		B10000010000000000000030 /* SuggestionDiffEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000030 /* SuggestionDiffEngineTests.swift */; };
 		B10000010000000000000031 /* AppQuirksTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000031 /* AppQuirksTests.swift */; };
 		A10000010000000000000080 /* TextMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000080 /* TextMonitor.swift */; };
+		A10000010000000000000090 /* LLMProviderProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000090 /* LLMProviderProtocol.swift */; };
+		A10000010000000000000091 /* LLMConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000091 /* LLMConfig.swift */; };
+		A10000010000000000000092 /* LLMPrompts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000092 /* LLMPrompts.swift */; };
+		A10000010000000000000093 /* LLMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000093 /* LLMService.swift */; };
 		B10000010000000000000032 /* TextMonitorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000032 /* TextMonitorTests.swift */; };
 		B10000010000000000000033 /* OverlayControllerDiffTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000033 /* OverlayControllerDiffTests.swift */; };
 /* End PBXBuildFile section */
@@ -135,6 +139,10 @@
 		B20000010000000000000030 /* SuggestionDiffEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionDiffEngineTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000031 /* AppQuirksTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppQuirksTests.swift; sourceTree = "<group>"; };
 		A20000010000000000000080 /* TextMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextMonitor.swift; sourceTree = "<group>"; };
+		A20000010000000000000090 /* LLMProviderProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMProviderProtocol.swift; sourceTree = "<group>"; };
+		A20000010000000000000091 /* LLMConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfig.swift; sourceTree = "<group>"; };
+		A20000010000000000000092 /* LLMPrompts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMPrompts.swift; sourceTree = "<group>"; };
+		A20000010000000000000093 /* LLMService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMService.swift; sourceTree = "<group>"; };
 		B20000010000000000000032 /* TextMonitorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextMonitorTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000033 /* OverlayControllerDiffTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayControllerDiffTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -282,6 +290,10 @@
 				A20000010000000000000031 /* Suggestion.swift */,
 				A20000010000000000000032 /* DictionaryStore.swift */,
 				A20000010000000000000033 /* HarperService.swift */,
+				A20000010000000000000091 /* LLMConfig.swift */,
+				A20000010000000000000092 /* LLMPrompts.swift */,
+				A20000010000000000000090 /* LLMProviderProtocol.swift */,
+				A20000010000000000000093 /* LLMService.swift */,
 			);
 			path = CheckEngine;
 			sourceTree = "<group>";
@@ -459,6 +471,10 @@
 				A10000010000000000000050 /* AppQuirksTable.swift in Sources */,
 				A10000010000000000000070 /* SuggestionDiffEngine.swift in Sources */,
 				A10000010000000000000080 /* TextMonitor.swift in Sources */,
+				A10000010000000000000090 /* LLMProviderProtocol.swift in Sources */,
+				A10000010000000000000091 /* LLMConfig.swift in Sources */,
+				A10000010000000000000092 /* LLMPrompts.swift in Sources */,
+				A10000010000000000000093 /* LLMService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
