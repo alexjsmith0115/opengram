@@ -2,7 +2,7 @@ import SwiftUI
 import AppKit
 import KeychainAccess
 
-/// Manages the LLM Settings panel lifecycle. Call `show()` to open.
+/// Manages the Settings panel lifecycle. Call `show()` to open.
 @MainActor
 final class LLMSettingsPanel {
     private var panel: NSPanel?
@@ -17,17 +17,17 @@ final class LLMSettingsPanel {
             return
         }
 
-        let settingsView = LLMSettingsView()
+        let settingsView = SettingsView()
         let hostingView = NSHostingView(rootView: settingsView)
-        hostingView.frame = NSRect(x: 0, y: 0, width: 400, height: 320)
+        hostingView.frame = NSRect(x: 0, y: 0, width: 400, height: 500)
 
         let panel = NSPanel(
-            contentRect: NSRect(x: 0, y: 0, width: 400, height: 320),
+            contentRect: NSRect(x: 0, y: 0, width: 400, height: 500),
             styleMask: [.titled, .closable],
             backing: .buffered,
             defer: false
         )
-        panel.title = "LLM Provider"
+        panel.title = "OpenGram Settings"
         panel.isReleasedWhenClosed = false
         panel.backgroundColor = NSColor.windowBackgroundColor
         panel.contentView = hostingView
@@ -41,6 +41,24 @@ final class LLMSettingsPanel {
         // so makeKeyAndOrderFront is silently ignored without this.
         NSApp.activate(ignoringOtherApps: true)
         panel.makeKeyAndOrderFront(nil)
+    }
+}
+
+/// Root settings view with tabs for LLM configuration and whitelisted apps.
+struct SettingsView: View {
+    var body: some View {
+        TabView {
+            LLMSettingsView()
+                .tabItem {
+                    Label("LLM Provider", systemImage: "brain")
+                }
+
+            WhitelistSettingsView()
+                .tabItem {
+                    Label("Whitelisted Apps", systemImage: "app.badge.checkmark")
+                }
+        }
+        .frame(width: 400, height: 500)
     }
 }
 
