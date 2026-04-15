@@ -1,6 +1,6 @@
 import AppKit
 
-final class MenuBuilder {
+final class MenuBuilder: NSObject {
     private(set) var statusMenuItem: NSMenuItem!
     var onSettingsTapped: (() -> Void)?
 

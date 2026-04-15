@@ -66,4 +66,26 @@ struct MenuBuilderTests {
         let quitItem = menu.items[3]
         #expect(quitItem.keyEquivalent == "q")
     }
+
+    @Test("Settings item target is the MenuBuilder instance")
+    func settingsItemTargetIsBuilder() {
+        let builder = MenuBuilder()
+        let menu = builder.buildMenu()
+        let settingsItem = menu.items[1]
+        #expect(settingsItem.target === builder)
+    }
+
+    @Test("Settings item fires onSettingsTapped callback when selector is performed")
+    func settingsCallbackFires() {
+        let builder = MenuBuilder()
+        let menu = builder.buildMenu()
+        var callbackFired = false
+        builder.onSettingsTapped = { callbackFired = true }
+
+        let settingsItem = menu.items[1]
+        // Perform the target-action pair directly (simulates NSMenu dispatch)
+        _ = settingsItem.target?.perform(settingsItem.action)
+
+        #expect(callbackFired, "onSettingsTapped must fire when settings menu item action is performed")
+    }
 }
