@@ -54,22 +54,35 @@ actor CheckOrchestrator {
         // Build Harper ranges for hard filtering (D-04, LLM-04)
         let harperRanges = harperResults.map { $0.range }
 
-        // 3. Fire all enabled check types in parallel via TaskGroup (D-12)
-        await withTaskGroup(of: [Suggestion].self) { group in
-            for checkType in config.enabledChecks {
-                group.addTask {
-                    await llm.check(
-                        text: text, type: checkType, harperSpans: harperSpans,
-                        config: config, apiKey: apiKey
-                    )
-                }
+        // 3. Fire all enabled check types in parallel, shielded from parent cancellation (D-12, WR-04-gap)
+        // Task.detached breaks the structured concurrency parent-child relationship so URLSession
+        // calls survive hotkey-triggered cancellation of the parent checkTask.
+        let enabledChecks = config.enabledChecks
+        let (stream, continuation) = AsyncStream<[Suggestion]>.makeStream()
+
+        let detachedTasks = enabledChecks.map { checkType in
+            Task.detached { [llm] in
+                let result = await llm.check(
+                    text: text, type: checkType, harperSpans: harperSpans,
+                    config: config, apiKey: apiKey
+                )
+                continuation.yield(result)
             }
-            // Deliver results incrementally as each check type completes (D-01)
-            for await llmBatch in group {
-                let deduped = Self.hardFilter(llmBatch, harperRanges: harperRanges)
-                if !deduped.isEmpty {
-                    await onLLMBatch(deduped, context)
-                }
+        }
+
+        // Close stream once all detached tasks finish
+        Task.detached {
+            for task in detachedTasks {
+                _ = await task.value
+            }
+            continuation.finish()
+        }
+
+        // Deliver results incrementally as each check type completes (D-01)
+        for await llmBatch in stream {
+            let deduped = Self.hardFilter(llmBatch, harperRanges: harperRanges)
+            if !deduped.isEmpty {
+                await onLLMBatch(deduped, context)
             }
         }
 

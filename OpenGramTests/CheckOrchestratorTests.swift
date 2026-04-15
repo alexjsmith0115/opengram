@@ -32,6 +32,24 @@ private final class StubGrammarChecker: GrammarCheckerProtocol, @unchecked Senda
     func setRuleEnabled(key: String, enabled: Bool) async {}
 }
 
+private final class SlowMockLLMProvider: LLMProviderProtocol, @unchecked Sendable {
+    let delay: UInt64
+    let results: [Suggestion]
+
+    init(delay: UInt64 = 500_000_000, results: [Suggestion] = []) {
+        self.delay = delay
+        self.results = results
+    }
+
+    func check(text: String, type: LLMCheckType, harperSpans: [String],
+               config: LLMConfig, apiKey: String?) async -> [Suggestion] {
+        try? await Task.sleep(nanoseconds: delay)
+        return results
+    }
+
+    func healthCheck(config: LLMConfig, apiKey: String?) async -> Bool { true }
+}
+
 struct CheckOrchestratorTests {
 
     // Helper to create a Suggestion with a specific range in a source string
@@ -123,5 +141,49 @@ struct CheckOrchestratorTests {
         #expect(harperResults.count == 1)
         #expect(harperResults[0].original == "hello")
         #expect(llmFinishedCalled, "onLLMFinished must be called even when LLM is nil")
+    }
+
+    @Test func llmCompletesEvenWhenParentTaskCancelled() async throws {
+        let source = "I think this is quite good"
+        guard let range = source.range(of: "I think") else {
+            Issue.record("Range not found")
+            return
+        }
+        let llmSuggestion = Suggestion(
+            id: UUID(),
+            range: range,
+            original: "I think",
+            primaryReplacement: "In my opinion",
+            allReplacements: ["In my opinion"],
+            message: "hedging",
+            category: .tone,
+            source: .llm,
+            priority: 50
+        )
+        let mockLLM = SlowMockLLMProvider(delay: 200_000_000, results: [llmSuggestion])
+        let stubHarper = StubGrammarChecker()
+        let orchestrator = CheckOrchestrator(harper: stubHarper, llm: mockLLM)
+
+        var llmBatches: [[Suggestion]] = []
+        var llmFinished = false
+
+        await orchestrator.runCheck(
+            text: source,
+            context: TextContext.stub(text: source),
+            config: LLMConfig(
+                baseURL: "http://localhost:1234/v1",
+                model: "test",
+                enabledChecks: [.tone],
+                temperature: 0.3,
+                maxTokens: 512
+            ),
+            apiKey: "test-key",
+            onHarperComplete: { _, _ in },
+            onLLMBatch: { suggestions, _ in llmBatches.append(suggestions) },
+            onLLMFinished: { llmFinished = true }
+        )
+
+        #expect(llmFinished, "onLLMFinished must be called")
+        #expect(!llmBatches.isEmpty, "LLM results must be delivered")
     }
 }
