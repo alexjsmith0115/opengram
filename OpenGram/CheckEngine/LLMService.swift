@@ -3,9 +3,11 @@ import os.log
 
 /// Concrete LLM provider that calls an OpenAI-compatible /v1/chat/completions endpoint.
 /// Swift actor for concurrency safety (mirrors HarperService pattern, per D-15).
+/// Sends a single consolidated request for all three style dimensions (clarity, tone, rephrase).
 actor LLMService: LLMProviderProtocol {
 
     private let session: URLSession
+    private var currentTask: Task<[LLMStyleSuggestion], Error>?
     private static let logger = Logger(
         subsystem: Bundle.main.bundleIdentifier ?? "com.opengram",
         category: "LLMService"
@@ -17,26 +19,28 @@ actor LLMService: LLMProviderProtocol {
 
     // MARK: - LLMProviderProtocol
 
-    func check(text: String, type: LLMCheckType, harperSpans: [String],
-               config: LLMConfig, apiKey: String?) async -> [Suggestion] {
-        guard config.isEnabled else { return [] }
-        guard let url = config.chatCompletionsURL else {
-            Self.logger.debug("Invalid chat completions URL from baseURL: \(config.baseURL)")
-            return []
-        }
+    func analyze(paragraph: String, config: LLMConfig, apiKey: String?) async -> [LLMStyleSuggestion] {
+        // Cancel any in-flight request before starting a new one.
+        currentTask?.cancel()
 
-        let systemPrompt = LLMPrompts.systemPrompt(for: type, harperSpans: harperSpans)
-        let payload = ChatRequest(
-            model: config.model,
-            messages: [
-                ChatMessage(role: "system", content: systemPrompt),
-                ChatMessage(role: "user", content: text)
-            ],
-            temperature: config.temperature,
-            maxTokens: config.maxTokens
-        )
+        let session = self.session
+        let task = Task<[LLMStyleSuggestion], Error> {
+            guard config.isEnabled else { return [] }
+            guard let url = config.chatCompletionsURL else {
+                Self.logger.debug("Invalid chat completions URL from baseURL: \(config.baseURL)")
+                return []
+            }
 
-        do {
+            let payload = ChatRequest(
+                model: config.model,
+                messages: [
+                    ChatMessage(role: "system", content: LLMPrompts.systemPrompt()),
+                    ChatMessage(role: "user", content: LLMPrompts.userMessage(for: paragraph))
+                ],
+                temperature: config.temperature,
+                maxTokens: config.maxTokens
+            )
+
             var request = URLRequest(url: url)
             request.httpMethod = "POST"
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -46,14 +50,27 @@ actor LLMService: LLMProviderProtocol {
             request.timeoutInterval = config.requestTimeout
             request.httpBody = try JSONEncoder().encode(payload)
 
+            try Task.checkCancellation()
+
             let (data, response) = try await session.data(for: request)
+
+            try Task.checkCancellation()
+
             guard let httpResponse = response as? HTTPURLResponse,
                   (200..<300).contains(httpResponse.statusCode) else {
                 Self.logger.debug("LLM HTTP error: \((response as? HTTPURLResponse)?.statusCode ?? -1)")
-                return [] // D-08: silent failure
+                return []
             }
 
-            return parseLLMResponse(data: data, sourceText: text, checkType: type)
+            return try parseResponse(data: data, paragraph: paragraph)
+        }
+
+        currentTask = task
+
+        do {
+            return try await task.value
+        } catch is CancellationError {
+            return []
         } catch {
             Self.logger.debug("LLM request failed: \(error.localizedDescription)")
             return [] // D-08: silent failure
@@ -82,27 +99,21 @@ actor LLMService: LLMProviderProtocol {
         }
     }
 
-    // MARK: - Response Parsing (D-17: resilient JSON parsing)
+    // MARK: - Response Parsing
 
-    private func parseLLMResponse(data: Data, sourceText: String, checkType: LLMCheckType) -> [Suggestion] {
-        guard let rawString = String(data: data, encoding: .utf8) else { return [] }
+    /// Extracts the assistant message content and decodes via LLMResponseDTO.
+    /// Throws on unrecoverable parse failure — caller maps to empty array.
+    private func parseResponse(data: Data, paragraph: String) throws -> [LLMStyleSuggestion] {
+        guard let rawString = String(data: data, encoding: .utf8) else {
+            return []
+        }
 
         guard let content = extractContent(from: rawString) else {
             Self.logger.debug("Could not extract content from LLM response")
             return []
         }
 
-        let dtos = parseJSONContent(content)
-        var searchStart = sourceText.startIndex
-        var results: [Suggestion] = []
-        for dto in dtos {
-            guard let suggestion = mapDTOToSuggestion(dto, sourceText: sourceText,
-                                                       searchStart: searchStart,
-                                                       checkType: checkType) else { continue }
-            searchStart = suggestion.range.upperBound
-            results.append(suggestion)
-        }
-        return results
+        return parseJSONContent(content, paragraph: paragraph)
     }
 
     /// Extracts the assistant message content from the OpenAI chat completion JSON envelope.
@@ -126,10 +137,10 @@ actor LLMService: LLMProviderProtocol {
 
     /// Four-step resilient JSON parser (D-17):
     /// 1. Strip markdown code fences
-    /// 2. Strip preamble before first [
-    /// 3. Attempt JSONDecoder on cleaned string
-    /// 4. Fallback: extract individual {...} objects via brace-matching
-    func parseJSONContent(_ raw: String) -> [LLMSuggestionDTO] {
+    /// 2. Strip preamble before first {
+    /// 3. Attempt JSONDecoder via LLMResponseDTO
+    /// 4. Fallback: extract individual suggestion objects via brace-matching
+    func parseJSONContent(_ raw: String, paragraph: String) -> [LLMStyleSuggestion] {
         var cleaned = raw
 
         // Step 1: strip markdown fences
@@ -145,27 +156,37 @@ actor LLMService: LLMProviderProtocol {
             }
         }
 
-        // Step 2: strip preamble before first [
-        guard let bracketRange = cleaned.range(of: "[") else {
-            return extractIndividualObjects(from: cleaned)
+        // Step 2: strip preamble before first {
+        guard let braceRange = cleaned.range(of: "{") else {
+            return []
         }
-        cleaned = String(cleaned[bracketRange.lowerBound...])
+        cleaned = String(cleaned[braceRange.lowerBound...])
 
-        // Step 3: JSONDecoder attempt
+        // Step 3: attempt direct decode via LLMResponseDTO
         if let data = cleaned.data(using: .utf8),
-           let dtos = try? JSONDecoder().decode([LLMSuggestionDTO].self, from: data) {
-            return dtos
+           let suggestions = try? LLMResponseDTO.toModels(from: data, originalText: paragraph) {
+            return suggestions
         }
 
-        // Step 4: brace-matching fallback
-        return extractIndividualObjects(from: cleaned)
+        // Step 4: brace-matching fallback — try to salvage a partial response
+        return extractSuggestionsViaBraceMatching(from: cleaned, paragraph: paragraph)
     }
 
-    /// Extracts individual JSON objects by matching braces and decoding each independently.
-    private func extractIndividualObjects(from text: String) -> [LLMSuggestionDTO] {
-        var results: [LLMSuggestionDTO] = []
+    /// Extracts individual suggestion objects by matching braces, wraps them in the
+    /// expected envelope, and decodes each independently.
+    private func extractSuggestionsViaBraceMatching(from text: String, paragraph: String) -> [LLMStyleSuggestion] {
+        // Look for a "suggestions" array and try to extract its objects
+        var results: [LLMStyleSuggestion] = []
         var depth = 0
         var objectStart: String.Index?
+        var inSuggestionsArray = false
+
+        // Simple heuristic: find "suggestions" key to know we're in the right structure
+        if text.contains("\"suggestions\"") {
+            inSuggestionsArray = true
+        }
+
+        guard inSuggestionsArray else { return [] }
 
         for i in text.indices {
             let ch = text[i]
@@ -177,39 +198,15 @@ actor LLMService: LLMProviderProtocol {
                 if depth == 0, let start = objectStart {
                     let objectString = String(text[start...i])
                     if let data = objectString.data(using: .utf8),
-                       let dto = try? JSONDecoder().decode(LLMSuggestionDTO.self, from: data) {
-                        results.append(dto)
+                       let dto = try? JSONDecoder().decode(LLMResponseDTO.SuggestionDTO.self, from: data),
+                       let suggestion = dto.toModel(originalText: paragraph) {
+                        results.append(suggestion)
                     }
                     objectStart = nil
                 }
             }
         }
         return results
-    }
-
-    // MARK: - DTO to Suggestion Mapping (D-16: substring search for offset resolution)
-
-    private func mapDTOToSuggestion(_ dto: LLMSuggestionDTO, sourceText: String,
-                                     searchStart: String.Index,
-                                     checkType: LLMCheckType) -> Suggestion? {
-        // D-16: Never trust LLM offsets. Find the original substring in source text.
-        // Search from searchStart to correctly locate repeated phrases (WR-02).
-        guard let range = sourceText.range(of: dto.original, range: searchStart..<sourceText.endIndex) else {
-            Self.logger.debug("LLM original text not found in source: \(dto.original.prefix(50))")
-            return nil
-        }
-
-        return Suggestion(
-            id: UUID(),
-            range: range,
-            original: dto.original,
-            primaryReplacement: dto.replacement,
-            allReplacements: [dto.replacement],
-            message: dto.reason,
-            category: checkType.checkCategory,
-            source: .llm,
-            priority: 50 // LLM suggestions are lower priority than Harper (which uses raw.priority from harper-core)
-        )
     }
 
     // MARK: - Request Types

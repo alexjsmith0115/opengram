@@ -49,37 +49,22 @@ actor CheckOrchestrator {
             return
         }
 
-        // Build Harper span strings for the LLM prompt (D-11: soft dedup)
-        let harperSpans = harperResults.map { $0.original }
         // Build Harper ranges for hard filtering (D-04, LLM-04)
         let harperRanges = harperResults.map { $0.range }
 
-        // 3. Fire all enabled check types in parallel, shielded from parent cancellation (D-12, WR-04-gap)
-        // Task.detached breaks the structured concurrency parent-child relationship so URLSession
-        // calls survive hotkey-triggered cancellation of the parent checkTask.
-        let enabledChecks = config.enabledChecks
+        // 3. Single consolidated LLM request (Phase 09 refactor).
+        // Task.detached shields from parent cancellation so the request survives
+        // hotkey re-fires (D-12, WR-04-gap).
         let (stream, continuation) = AsyncStream<[Suggestion]>.makeStream()
 
-        let detachedTasks = enabledChecks.map { checkType in
-            Task.detached { [llm] in
-                let result = await llm.check(
-                    text: text, type: checkType, harperSpans: harperSpans,
-                    config: config, apiKey: apiKey
-                )
-                continuation.yield(result)
-            }
-        }
-
-        // Store reference to prevent premature deallocation — without this,
-        // continuation.finish() may never fire and the for-await blocks indefinitely.
-        let finishingTask = Task.detached {
-            for task in detachedTasks {
-                _ = await task.value
-            }
+        let detachedTask = Task.detached { [llm] in
+            let styleSuggestions = await llm.analyze(paragraph: text, config: config, apiKey: apiKey)
+            let suggestions = Self.mapStyleSuggestions(styleSuggestions, sourceText: text)
+            continuation.yield(suggestions)
             continuation.finish()
         }
 
-        // Deliver results incrementally as each check type completes (D-01)
+        // Deliver results when the single LLM request completes (D-01)
         for await llmBatch in stream {
             let deduped = Self.hardFilter(llmBatch, harperRanges: harperRanges)
             if !deduped.isEmpty {
@@ -87,10 +72,38 @@ actor CheckOrchestrator {
             }
         }
 
-        // Belt-and-suspenders: ensure finishing task has fully completed
-        _ = await finishingTask.value
+        _ = await detachedTask.value
 
         await onLLMFinished()
+    }
+
+    /// Maps paragraph-level LLMStyleSuggestions to range-based Suggestions by searching for
+    /// the originalText in sourceText (D-16 pattern). Suggestions whose originalText is not
+    /// found are dropped. Phase 12 will replace this with the new LLM panel flow.
+    nonisolated static func mapStyleSuggestions(
+        _ styleSuggestions: [LLMStyleSuggestion],
+        sourceText: String
+    ) -> [Suggestion] {
+        var searchStart = sourceText.startIndex
+        var results: [Suggestion] = []
+        for style in styleSuggestions {
+            guard let range = sourceText.range(of: style.originalText, range: searchStart..<sourceText.endIndex) else {
+                continue
+            }
+            results.append(Suggestion(
+                id: UUID(),
+                range: range,
+                original: style.originalText,
+                primaryReplacement: style.revisedText,
+                allReplacements: [style.revisedText],
+                message: style.explanation,
+                category: style.category.checkCategory,
+                source: .llm,
+                priority: 50
+            ))
+            searchStart = range.upperBound
+        }
+        return results
     }
 
     /// Hard-filters LLM suggestions that overlap any Harper-flagged range (D-04, LLM-04).

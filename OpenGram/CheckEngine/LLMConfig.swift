@@ -1,5 +1,13 @@
 import Foundation
 
+/// Legacy per-category check type. Retained for CheckOrchestrator compatibility — will be
+/// removed in Phase 12 when the orchestrator is updated to use analyze().
+enum LLMCheckType: String, Sendable, CaseIterable, Codable {
+    case tone
+    case clarity
+    case rephrase
+}
+
 /// Non-secret LLM configuration. Stored in UserDefaults via @AppStorage on the UI side.
 /// Passed as a value type to LLMService methods so the actor never reads @AppStorage directly
 /// (Pitfall 2: @AppStorage is @MainActor-isolated).
