@@ -82,6 +82,9 @@
 		A100000100000000000000A0 /* AppWhitelist.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000A0 /* AppWhitelist.swift */; };
 		B100000100000000000000A0 /* AppWhitelistTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000A0 /* AppWhitelistTests.swift */; };
 		A100000100000000000000A1 /* WhitelistSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000A1 /* WhitelistSettingsView.swift */; };
+		A100000100000000000000A2 /* InlineDiffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000A2 /* InlineDiffView.swift */; };
+		A100000100000000000000A3 /* LLMSuggestionPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000A3 /* LLMSuggestionPanel.swift */; };
+		A100000100000000000000A4 /* LLMPanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000A4 /* LLMPanelController.swift */; };
 		C10000010000000000000001 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = C20000010000000000000001 /* KeychainAccess */; };
 /* End PBXBuildFile section */
 
@@ -174,6 +177,9 @@
 		A200000100000000000000A0 /* AppWhitelist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppWhitelist.swift; sourceTree = "<group>"; };
 		B200000100000000000000A0 /* AppWhitelistTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppWhitelistTests.swift; sourceTree = "<group>"; };
 		A200000100000000000000A1 /* WhitelistSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhitelistSettingsView.swift; sourceTree = "<group>"; };
+		A200000100000000000000A2 /* InlineDiffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineDiffView.swift; sourceTree = "<group>"; };
+		A200000100000000000000A3 /* LLMSuggestionPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSuggestionPanel.swift; sourceTree = "<group>"; };
+		A200000100000000000000A4 /* LLMPanelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMPanelController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -361,6 +367,9 @@
 				A20000010000000000000045 /* TargetAppObserver.swift */,
 				A20000010000000000000044 /* UnderlineView.swift */,
 				A200000100000000000000A1 /* WhitelistSettingsView.swift */,
+				A200000100000000000000A2 /* InlineDiffView.swift */,
+				A200000100000000000000A3 /* LLMSuggestionPanel.swift */,
+				A200000100000000000000A4 /* LLMPanelController.swift */,
 			);
 			path = SuggestionUI;
 			sourceTree = "<group>";
@@ -548,6 +557,9 @@
 				A10000010000000000000095 /* LLMSettingsView.swift in Sources */,
 				A100000100000000000000A0 /* AppWhitelist.swift in Sources */,
 				A100000100000000000000A1 /* WhitelistSettingsView.swift in Sources */,
+				A100000100000000000000A2 /* InlineDiffView.swift in Sources */,
+				A100000100000000000000A3 /* LLMSuggestionPanel.swift in Sources */,
+				A100000100000000000000A4 /* LLMPanelController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
