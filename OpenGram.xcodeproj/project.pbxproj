@@ -73,6 +73,7 @@
 		B10000010000000000000034 /* LLMServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000034 /* LLMServiceTests.swift */; };
 		B10000010000000000000035 /* LLMPromptsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000035 /* LLMPromptsTests.swift */; };
 		B10000010000000000000036 /* CheckOrchestratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000036 /* CheckOrchestratorTests.swift */; };
+		B10000010000000000000037 /* LLMSettingsPanelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000037 /* LLMSettingsPanelTests.swift */; };
 		C10000010000000000000001 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = C20000010000000000000001 /* KeychainAccess */; };
 /* End PBXBuildFile section */
 
@@ -156,6 +157,7 @@
 		B20000010000000000000034 /* LLMServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMServiceTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000035 /* LLMPromptsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMPromptsTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000036 /* CheckOrchestratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckOrchestratorTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000037 /* LLMSettingsPanelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSettingsPanelTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -273,6 +275,7 @@
 				B20000010000000000000005 /* AXCapabilityCacheTests.swift */,
 				B20000010000000000000004 /* AXTextEngineTests.swift */,
 				B20000010000000000000036 /* CheckOrchestratorTests.swift */,
+				B20000010000000000000037 /* LLMSettingsPanelTests.swift */,
 				B20000010000000000000011 /* DictionaryStoreTests.swift */,
 				B20000010000000000000012 /* HarperServiceTests.swift */,
 				B20000010000000000000003 /* HotkeyManagerTests.swift */,
@@ -533,6 +536,7 @@
 				B10000010000000000000034 /* LLMServiceTests.swift in Sources */,
 				B10000010000000000000035 /* LLMPromptsTests.swift in Sources */,
 				B10000010000000000000036 /* CheckOrchestratorTests.swift in Sources */,
+				B10000010000000000000037 /* LLMSettingsPanelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

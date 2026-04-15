@@ -7,8 +7,12 @@ import KeychainAccess
 final class LLMSettingsPanel {
     private var panel: NSPanel?
 
+    /// Test-only accessor for verifying panel configuration.
+    var visiblePanel: NSPanel? { panel }
+
     func show() {
         if let existing = panel, existing.isVisible {
+            NSApp.activate(ignoringOtherApps: true)
             existing.makeKeyAndOrderFront(nil)
             return
         }
@@ -29,8 +33,13 @@ final class LLMSettingsPanel {
         panel.contentView = hostingView
         panel.center()
         panel.isMovable = true
+        // .floating keeps the panel visible in .accessory activation policy apps
+        panel.level = .floating
 
         self.panel = panel
+        // Activate the app first — .accessory apps have no foreground presence,
+        // so makeKeyAndOrderFront is silently ignored without this.
+        NSApp.activate(ignoringOtherApps: true)
         panel.makeKeyAndOrderFront(nil)
     }
 }
