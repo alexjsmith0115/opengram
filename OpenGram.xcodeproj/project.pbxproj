@@ -79,6 +79,9 @@
 		B10000010000000000000037 /* LLMSettingsPanelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000037 /* LLMSettingsPanelTests.swift */; };
 		B1000001000000000000003A /* LLMResponseDTOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000001000000000000003A /* LLMResponseDTOTests.swift */; };
 		B1000001000000000000003B /* ParagraphExtractorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000001000000000000003B /* ParagraphExtractorTests.swift */; };
+		A100000100000000000000A0 /* AppWhitelist.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000A0 /* AppWhitelist.swift */; };
+		B100000100000000000000A0 /* AppWhitelistTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000A0 /* AppWhitelistTests.swift */; };
+		A100000100000000000000A1 /* WhitelistSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000A1 /* WhitelistSettingsView.swift */; };
 		C10000010000000000000001 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = C20000010000000000000001 /* KeychainAccess */; };
 /* End PBXBuildFile section */
 
@@ -168,6 +171,9 @@
 		B20000010000000000000037 /* LLMSettingsPanelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSettingsPanelTests.swift; sourceTree = "<group>"; };
 		B2000001000000000000003A /* LLMResponseDTOTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMResponseDTOTests.swift; sourceTree = "<group>"; };
 		B2000001000000000000003B /* ParagraphExtractorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphExtractorTests.swift; sourceTree = "<group>"; };
+		A200000100000000000000A0 /* AppWhitelist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppWhitelist.swift; sourceTree = "<group>"; };
+		B200000100000000000000A0 /* AppWhitelistTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppWhitelistTests.swift; sourceTree = "<group>"; };
+		A200000100000000000000A1 /* WhitelistSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhitelistSettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -232,6 +238,7 @@
 				A20000010000000000000001 /* main.swift */,
 				A20000010000000000000002 /* AppDelegate.swift */,
 				A20000010000000000000003 /* OpenGramApp.swift */,
+				A200000100000000000000A0 /* AppWhitelist.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -277,9 +284,18 @@
 			path = Permissions;
 			sourceTree = "<group>";
 		};
+		B400000100000000000000A0 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				B200000100000000000000A0 /* AppWhitelistTests.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
 		A40000010000000000000008 /* OpenGramTests */ = {
 			isa = PBXGroup;
 			children = (
+				B400000100000000000000A0 /* App */,
 				B20000010000000000000010 /* AppDelegateWiringTests.swift */,
 				B20000010000000000000031 /* AppQuirksTests.swift */,
 				B20000010000000000000005 /* AXCapabilityCacheTests.swift */,
@@ -344,6 +360,7 @@
 				A20000010000000000000070 /* SuggestionDiffEngine.swift */,
 				A20000010000000000000045 /* TargetAppObserver.swift */,
 				A20000010000000000000044 /* UnderlineView.swift */,
+				A200000100000000000000A1 /* WhitelistSettingsView.swift */,
 			);
 			path = SuggestionUI;
 			sourceTree = "<group>";
@@ -529,6 +546,8 @@
 				A10000010000000000000098 /* ParagraphExtractor.swift in Sources */,
 				A10000010000000000000094 /* CheckOrchestrator.swift in Sources */,
 				A10000010000000000000095 /* LLMSettingsView.swift in Sources */,
+				A100000100000000000000A0 /* AppWhitelist.swift in Sources */,
+				A100000100000000000000A1 /* WhitelistSettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -565,6 +584,7 @@
 				B10000010000000000000037 /* LLMSettingsPanelTests.swift in Sources */,
 				B1000001000000000000003A /* LLMResponseDTOTests.swift in Sources */,
 				B1000001000000000000003B /* ParagraphExtractorTests.swift in Sources */,
+				B100000100000000000000A0 /* AppWhitelistTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
