@@ -66,6 +66,8 @@
 		A10000010000000000000091 /* LLMConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000091 /* LLMConfig.swift */; };
 		A10000010000000000000092 /* LLMPrompts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000092 /* LLMPrompts.swift */; };
 		A10000010000000000000093 /* LLMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000093 /* LLMService.swift */; };
+		A10000010000000000000096 /* LLMStyleSuggestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000096 /* LLMStyleSuggestion.swift */; };
+		A10000010000000000000097 /* LLMResponseDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000097 /* LLMResponseDTO.swift */; };
 		A10000010000000000000094 /* CheckOrchestrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000094 /* CheckOrchestrator.swift */; };
 		A10000010000000000000095 /* LLMSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000095 /* LLMSettingsView.swift */; };
 		B10000010000000000000032 /* TextMonitorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000032 /* TextMonitorTests.swift */; };
@@ -150,6 +152,8 @@
 		A20000010000000000000091 /* LLMConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfig.swift; sourceTree = "<group>"; };
 		A20000010000000000000092 /* LLMPrompts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMPrompts.swift; sourceTree = "<group>"; };
 		A20000010000000000000093 /* LLMService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMService.swift; sourceTree = "<group>"; };
+		A20000010000000000000096 /* LLMStyleSuggestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMStyleSuggestion.swift; sourceTree = "<group>"; };
+		A20000010000000000000097 /* LLMResponseDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMResponseDTO.swift; sourceTree = "<group>"; };
 		A20000010000000000000094 /* CheckOrchestrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckOrchestrator.swift; sourceTree = "<group>"; };
 		A20000010000000000000095 /* LLMSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSettingsView.swift; sourceTree = "<group>"; };
 		B20000010000000000000032 /* TextMonitorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextMonitorTests.swift; sourceTree = "<group>"; };
@@ -313,6 +317,8 @@
 				A20000010000000000000092 /* LLMPrompts.swift */,
 				A20000010000000000000090 /* LLMProviderProtocol.swift */,
 				A20000010000000000000093 /* LLMService.swift */,
+				A20000010000000000000096 /* LLMStyleSuggestion.swift */,
+				A20000010000000000000097 /* LLMResponseDTO.swift */,
 			);
 			path = CheckEngine;
 			sourceTree = "<group>";
@@ -501,6 +507,8 @@
 				A10000010000000000000091 /* LLMConfig.swift in Sources */,
 				A10000010000000000000092 /* LLMPrompts.swift in Sources */,
 				A10000010000000000000093 /* LLMService.swift in Sources */,
+				A10000010000000000000096 /* LLMStyleSuggestion.swift in Sources */,
+				A10000010000000000000097 /* LLMResponseDTO.swift in Sources */,
 				A10000010000000000000094 /* CheckOrchestrator.swift in Sources */,
 				A10000010000000000000095 /* LLMSettingsView.swift in Sources */,
 			);
