@@ -43,6 +43,11 @@ final class TextMonitor {
     // apps that silently drop kAXValueChangedNotification (D-02 runtime detection).
     private var notificationFiredSinceLastPoll: Bool = false
 
+    // Counts consecutive poll ticks where a notification fired and text changed,
+    // used to promote an app to notification-reliable and stop the poll timer.
+    private var consecutiveNotificationHits: Int = 0
+    private let reliabilityThreshold = 5
+
     private var appSwitchObserver: NSObjectProtocol?
     private var appSwitchDebounce: DispatchWorkItem?
     private var checkTask: Task<Void, Never>?
@@ -229,6 +234,7 @@ final class TextMonitor {
         observedPID = nil
         observedBundleID = nil
         notificationFiredSinceLastPoll = false
+        consecutiveNotificationHits = 0
     }
 
     // MARK: - Notification handling
@@ -318,6 +324,14 @@ final class TextMonitor {
             if !notificationFiredSinceLastPoll {
                 // Poll detected a change that no AX notification fired for — mark as unreliable.
                 capabilityCache.storeNotificationReliability(bundleID: bundleID, reliable: false)
+                consecutiveNotificationHits = 0
+            } else {
+                // Notification fired and poll confirmed the change — count toward reliability.
+                consecutiveNotificationHits += 1
+                if consecutiveNotificationHits >= reliabilityThreshold {
+                    capabilityCache.storeNotificationReliability(bundleID: bundleID, reliable: true)
+                    stopPollTimer()
+                }
             }
             lastKnownText = currentText
             scheduleDebounce()
