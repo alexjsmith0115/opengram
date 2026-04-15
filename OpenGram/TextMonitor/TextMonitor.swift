@@ -259,14 +259,21 @@ final class TextMonitor {
     // MARK: - Grammar check
 
     private func runCheck() {
-        guard observedElement != nil else { return }
+        guard let observedElement else { return }
 
-        // Verify the element is still focused before extracting text (Pitfall 5 guard).
+        // Verify the *same* element is still focused before extracting text (Pitfall 5 guard).
         let systemWide = AXUIElementCreateSystemWide()
         var currentFocusRef: CFTypeRef?
         guard AXUIElementCopyAttributeValue(
             systemWide, kAXFocusedUIElementAttribute as CFString, &currentFocusRef
         ) == .success else { return }
+
+        let currentElement = currentFocusRef as! AXUIElement
+        guard CFEqual(currentElement, observedElement) else {
+            // Focus moved to a different element — reinstall observer on the new field.
+            installOnFocusedElement()
+            return
+        }
 
         guard let context = textEngine.extractText(), !context.text.isEmpty else { return }
 
