@@ -194,13 +194,11 @@ struct LLMSettingsView: View {
 
     private func saveConfig() {
         // baseURL, toggles, temperature are already saved via @AppStorage
-        // Only the API key needs explicit Keychain save
-        Task {
-            if apiKeyField.isEmpty {
-                try? keychain.remove("apiKey")
-            } else {
-                keychain["apiKey"] = apiKeyField
-            }
+        // Only the API key needs explicit Keychain save (synchronous, no Task needed)
+        if apiKeyField.isEmpty {
+            try? keychain.remove("apiKey")
+        } else {
+            keychain["apiKey"] = apiKeyField
         }
     }
 
