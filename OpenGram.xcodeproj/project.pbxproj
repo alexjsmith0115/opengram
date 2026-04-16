@@ -86,6 +86,11 @@
 		A100000100000000000000A2 /* InlineDiffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000A2 /* InlineDiffView.swift */; };
 		A100000100000000000000A3 /* LLMSuggestionPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000A3 /* LLMSuggestionPanel.swift */; };
 		A100000100000000000000A4 /* LLMPanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000A4 /* LLMPanelController.swift */; };
+		A100000100000000000000B0 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000B0 /* Log.swift */; };
+		A100000100000000000000B1 /* PanelPositioner.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000B1 /* PanelPositioner.swift */; };
+		A100000100000000000000B2 /* ReliabilityDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000B2 /* ReliabilityDetector.swift */; };
+		A100000100000000000000B3 /* CheckCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000B3 /* CheckCoordinator.swift */; };
+		A100000100000000000000B4 /* ConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000B4 /* ConfigManager.swift */; };
 		C10000010000000000000001 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = C20000010000000000000001 /* KeychainAccess */; };
 /* End PBXBuildFile section */
 
@@ -181,6 +186,11 @@
 		A200000100000000000000A2 /* InlineDiffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineDiffView.swift; sourceTree = "<group>"; };
 		A200000100000000000000A3 /* LLMSuggestionPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSuggestionPanel.swift; sourceTree = "<group>"; };
 		A200000100000000000000A4 /* LLMPanelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMPanelController.swift; sourceTree = "<group>"; };
+		A200000100000000000000B0 /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
+		A200000100000000000000B1 /* PanelPositioner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelPositioner.swift; sourceTree = "<group>"; };
+		A200000100000000000000B2 /* ReliabilityDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReliabilityDetector.swift; sourceTree = "<group>"; };
+		A200000100000000000000B3 /* CheckCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckCoordinator.swift; sourceTree = "<group>"; };
+		A200000100000000000000B4 /* ConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigManager.swift; sourceTree = "<group>"; };
 		B2000001000000000000004C /* TwoPhaseCheckFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoPhaseCheckFlowTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -223,6 +233,7 @@
 				A4000001000000000000000A /* CheckEngine */,
 				A4000001000000000000000D /* Generated */,
 				A40000010000000000000005 /* Hotkey */,
+				A4000001000000000000000F /* Logging */,
 				A40000010000000000000007 /* Permissions */,
 				A40000010000000000000004 /* Shell */,
 				A4000001000000000000000B /* SuggestionUI */,
@@ -235,6 +246,7 @@
 		A4000001000000000000000E /* TextMonitor */ = {
 			isa = PBXGroup;
 			children = (
+				A200000100000000000000B2 /* ReliabilityDetector.swift */,
 				A20000010000000000000080 /* TextMonitor.swift */,
 			);
 			path = TextMonitor;
@@ -247,6 +259,8 @@
 				A20000010000000000000002 /* AppDelegate.swift */,
 				A20000010000000000000003 /* OpenGramApp.swift */,
 				A200000100000000000000A0 /* AppWhitelist.swift */,
+				A200000100000000000000B3 /* CheckCoordinator.swift */,
+				A200000100000000000000B4 /* ConfigManager.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -282,6 +296,14 @@
 				A20000010000000000000023 /* AXCapabilityCache.swift */,
 			);
 			path = TextEngine;
+			sourceTree = "<group>";
+		};
+		A4000001000000000000000F /* Logging */ = {
+			isa = PBXGroup;
+			children = (
+				A200000100000000000000B0 /* Log.swift */,
+			);
+			path = Logging;
 			sourceTree = "<group>";
 		};
 		A40000010000000000000007 /* Permissions */ = {
@@ -381,6 +403,7 @@
 				A200000100000000000000A2 /* InlineDiffView.swift */,
 				A200000100000000000000A3 /* LLMSuggestionPanel.swift */,
 				A200000100000000000000A4 /* LLMPanelController.swift */,
+				A200000100000000000000B1 /* PanelPositioner.swift */,
 			);
 			path = SuggestionUI;
 			sourceTree = "<group>";
@@ -571,6 +594,11 @@
 				A100000100000000000000A2 /* InlineDiffView.swift in Sources */,
 				A100000100000000000000A3 /* LLMSuggestionPanel.swift in Sources */,
 				A100000100000000000000A4 /* LLMPanelController.swift in Sources */,
+				A100000100000000000000B0 /* Log.swift in Sources */,
+				A100000100000000000000B1 /* PanelPositioner.swift in Sources */,
+				A100000100000000000000B2 /* ReliabilityDetector.swift in Sources */,
+				A100000100000000000000B3 /* CheckCoordinator.swift in Sources */,
+				A100000100000000000000B4 /* ConfigManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

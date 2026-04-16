@@ -1,6 +1,7 @@
 import CoreGraphics
 import AppKit
 import Foundation
+import os.log
 
 // @unchecked Sendable: The C callback bridge inherently crosses isolation boundaries.
 // Properties are accessed from the callback thread + main thread in a controlled manner.
@@ -19,6 +20,7 @@ final class HotkeyManager: HotkeyManagerProtocol, @unchecked Sendable {
     }
 
     private static let kVK_ANSI_G: CGKeyCode = 0x05
+    private static let logger = Log.logger(for: "HotkeyManager")
 
     private(set) var eventTap: CFMachPort?
     private var runLoopSource: CFRunLoopSource?
@@ -38,7 +40,7 @@ final class HotkeyManager: HotkeyManagerProtocol, @unchecked Sendable {
 
         let options = ["AXTrustedCheckOptionPrompt": true] as CFDictionary
         let trusted = AXIsProcessTrustedWithOptions(options)
-        print("[HotkeyManager] AXIsProcessTrusted: \(trusted)")
+        Self.logger.info("AXIsProcessTrusted: \(trusted)")
 
         let selfPtr = Unmanaged.passUnretained(self).toOpaque()
         let eventMask: CGEventMask = (1 << CGEventType.keyDown.rawValue)
@@ -55,11 +57,11 @@ final class HotkeyManager: HotkeyManagerProtocol, @unchecked Sendable {
         )
 
         guard let tap = eventTap else {
-            print("[HotkeyManager] Failed to create event tap — grant Accessibility permission and it will retry automatically")
+            Self.logger.warning("Failed to create event tap — grant Accessibility permission and it will retry automatically")
             startHealthCheckTimer()
             return
         }
-        print("[HotkeyManager] Event tap created successfully")
+        Self.logger.info("Event tap created successfully")
 
         runLoopSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, tap, 0)
         CFRunLoopAddSource(CFRunLoopGetMain(), runLoopSource, .commonModes)
@@ -146,7 +148,7 @@ final class HotkeyManager: HotkeyManagerProtocol, @unchecked Sendable {
             return
         case .retryInstall:
             guard AXIsProcessTrusted() else { return }
-            print("[HotkeyManager] Permission granted — retrying event tap install")
+            Self.logger.info("Permission granted — retrying event tap install")
             reinstall()
         case .reenable:
             guard let tap = eventTap else { return }

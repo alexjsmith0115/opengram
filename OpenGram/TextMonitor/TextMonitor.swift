@@ -1,6 +1,7 @@
 @preconcurrency import ApplicationServices
 import AppKit
 import Foundation
+import os.log
 
 /// Hybrid text monitor that registers AXObserver for kAXValueChangedNotification on the
 /// focused text element, with automatic fallback to 1-second polling for apps that don't
@@ -10,6 +11,8 @@ import Foundation
 /// Wire `onCheckComplete` and `onDismiss` before calling `start()`.
 @MainActor
 final class TextMonitor {
+
+    private static let logger = Log.logger(for: "TextMonitor")
 
     // MARK: - Dependencies
 
@@ -21,24 +24,14 @@ final class TextMonitor {
 
     // MARK: - Callbacks
 
-    /// Called when Harper results are ready. Receives suggestions and the TextContext checked.
     var onCheckComplete: ((@MainActor ([Suggestion], TextContext) -> Void))?
-
-    /// Called when the LLM request completes with style suggestions for the LLM panel.
     var onLLMBatch: ((@MainActor ([LLMStyleSuggestion], TextContext) -> Void))?
-
-    /// Called when all LLM checks have completed.
     var onLLMFinished: ((@MainActor () -> Void))?
-
-    /// Called when monitoring pauses: app switch to a non-text app, or non-text element focused.
     var onDismiss: ((@MainActor () -> Void))?
 
-    // MARK: - Whitelist (set by AppDelegate at init)
+    // MARK: - Config (set by AppDelegate at init)
 
     var appWhitelist = AppWhitelist()
-
-    // MARK: - LLM config (set by AppDelegate before each check)
-
     var llmConfig: LLMConfig = .default
     var llmAPIKey: String?
 
@@ -52,22 +45,15 @@ final class TextMonitor {
     private var debounceWork: DispatchWorkItem?
     private var pollTimer: Timer?
     private var lastKnownText: String?
-
-    // Track whether an AX notification fired since the last poll tick, used to detect
-    // apps that silently drop kAXValueChangedNotification (D-02 runtime detection).
-    private var notificationFiredSinceLastPoll: Bool = false
-
-    // Counts consecutive poll ticks where a notification fired and text changed,
-    // used to promote an app to notification-reliable and stop the poll timer.
-    private var consecutiveNotificationHits: Int = 0
-    private let reliabilityThreshold = 5
+    private var reliabilityDetector = ReliabilityDetector()
 
     private var appSwitchObserver: NSObjectProtocol?
     private var appSwitchDebounce: DispatchWorkItem?
     private var checkTask: Task<Void, Never>?
 
-    // Retains the MonitorContext passed to the AX callback via Unmanaged.
     private var unmanagedContext: Unmanaged<MonitorContext>?
+    /// Set to true on stop() — checked inside C callback to prevent UAF.
+    private var stopped = false
 
     // MARK: - Init
 
@@ -87,9 +73,8 @@ final class TextMonitor {
 
     // MARK: - Public API
 
-    /// Starts always-on monitoring. Subscribes to app-activation notifications and installs
-    /// an AXObserver on the current frontmost text field.
     func start() {
+        stopped = false
         appSwitchObserver = NSWorkspace.shared.notificationCenter.addObserver(
             forName: NSWorkspace.didActivateApplicationNotification,
             object: nil,
@@ -105,9 +90,8 @@ final class TextMonitor {
         installOnFocusedElement()
     }
 
-    /// Stops monitoring: removes the workspace observer, uninstalls the AXObserver,
-    /// cancels debounce and any in-flight check task.
     func stop() {
+        stopped = true
         if let observer = appSwitchObserver {
             NSWorkspace.shared.notificationCenter.removeObserver(observer)
             appSwitchObserver = nil
@@ -134,15 +118,12 @@ final class TextMonitor {
         guard let app = NSWorkspace.shared.frontmostApplication,
               let bundleID = app.bundleIdentifier else { return }
 
-        // Whitelist gate: skip non-text apps (mirrors AppDelegate.handleHotkeyFired check)
         guard appWhitelist.isAllowed(bundleID) else {
             onDismiss?()
             return
         }
 
         let pid = app.processIdentifier
-
-        // Read the focused element from the system-wide accessibility element.
         let systemWide = AXUIElementCreateSystemWide()
         var focusedRef: CFTypeRef?
         let result = AXUIElementCopyAttributeValue(
@@ -159,7 +140,6 @@ final class TextMonitor {
             return
         }
 
-        // Per D-11: respect the watchdog blocklist before installing AX observer.
         if watchdog.shouldSkip(for: bundleID) { return }
 
         installObserver(pid: pid, element: element, bundleID: bundleID)
@@ -169,7 +149,7 @@ final class TextMonitor {
         uninstallCurrentObserver()
 
         let context = MonitorContext { [weak self] notificationName in
-            guard let self else { return }
+            guard let self, !self.stopped else { return }
             if notificationName == kAXValueChangedNotification as String {
                 self.handleValueChanged()
             } else if notificationName == kAXFocusedUIElementChangedNotification as String {
@@ -199,9 +179,7 @@ final class TextMonitor {
 
         let appElement = AXUIElementCreateApplication(pid)
 
-        // Register on the text element for value changes (D-04: value only, not selection).
         AXObserverAddNotification(observer, element, kAXValueChangedNotification as CFString, ptr)
-        // Register on the app element for field switches within the same app (D-09).
         AXObserverAddNotification(
             observer, appElement, kAXFocusedUIElementChangedNotification as CFString, ptr
         )
@@ -253,14 +231,13 @@ final class TextMonitor {
         observedElement = nil
         observedPID = nil
         observedBundleID = nil
-        notificationFiredSinceLastPoll = false
-        consecutiveNotificationHits = 0
+        reliabilityDetector.reset()
     }
 
     // MARK: - Notification handling
 
     private func handleValueChanged() {
-        notificationFiredSinceLastPoll = true
+        reliabilityDetector.recordNotification()
         scheduleDebounce()
     }
 
@@ -272,7 +249,6 @@ final class TextMonitor {
             self?.runCheck()
         }
         debounceWork = work
-        // D-05: 800ms debounce to avoid checking mid-word.
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.8, execute: work)
     }
 
@@ -290,7 +266,6 @@ final class TextMonitor {
 
         let currentElement = currentFocusRef as! AXUIElement
         guard CFEqual(currentElement, observedElement) else {
-            // Focus moved to a different element — reinstall observer on the new field.
             installOnFocusedElement()
             return
         }
@@ -326,7 +301,6 @@ final class TextMonitor {
 
     private func startPollTimer() {
         stopPollTimer()
-        // D-03: 1-second poll interval for fallback mode.
         pollTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             Task { @MainActor [weak self] in
                 self?.pollForChanges()
@@ -343,11 +317,19 @@ final class TextMonitor {
         guard let element = observedElement,
               let bundleID = observedBundleID else { return }
 
-        // T-07-03: respect watchdog blocklist — never make AX calls on a blocklisted app.
-        if watchdog.shouldSkip(for: bundleID) {
-            // Do NOT reset notificationFiredSinceLastPoll; the missed notification detection
-            // must not fire during watchdog suppression (Pitfall 3).
-            return
+        if watchdog.shouldSkip(for: bundleID) { return }
+
+        // Validate element is still focused before AX call (F-10 fix).
+        let systemWide = AXUIElementCreateSystemWide()
+        var focusRef: CFTypeRef?
+        if AXUIElementCopyAttributeValue(
+            systemWide, kAXFocusedUIElementAttribute as CFString, &focusRef
+        ) == .success, let focusRef {
+            let focused = focusRef as! AXUIElement
+            guard CFEqual(focused, element) else {
+                installOnFocusedElement()
+                return
+            }
         }
 
         var valueRef: CFTypeRef?
@@ -355,31 +337,29 @@ final class TextMonitor {
         guard result == .success,
               let valueRef,
               CFGetTypeID(valueRef) == CFStringGetTypeID() else {
-            notificationFiredSinceLastPoll = false
+            reliabilityDetector.reset()
             return
         }
 
         let currentText = valueRef as! String
         let textChanged = currentText != lastKnownText
 
+        let verdict = reliabilityDetector.evaluatePollTick(textChanged: textChanged)
+
+        switch verdict {
+        case .markedUnreliable:
+            capabilityCache.storeNotificationReliability(bundleID: bundleID, reliable: false)
+        case .promoted:
+            capabilityCache.storeNotificationReliability(bundleID: bundleID, reliable: true)
+            stopPollTimer()
+        case .noChange:
+            break
+        }
+
         if textChanged {
-            if !notificationFiredSinceLastPoll {
-                // Poll detected a change that no AX notification fired for — mark as unreliable.
-                capabilityCache.storeNotificationReliability(bundleID: bundleID, reliable: false)
-                consecutiveNotificationHits = 0
-            } else {
-                // Notification fired and poll confirmed the change — count toward reliability.
-                consecutiveNotificationHits += 1
-                if consecutiveNotificationHits >= reliabilityThreshold {
-                    capabilityCache.storeNotificationReliability(bundleID: bundleID, reliable: true)
-                    stopPollTimer()
-                }
-            }
             lastKnownText = currentText
             scheduleDebounce()
         }
-
-        notificationFiredSinceLastPoll = false
     }
 
     // MARK: - App switch handling
@@ -387,8 +367,6 @@ final class TextMonitor {
     private func handleAppActivation(_ app: NSRunningApplication) {
         appSwitchDebounce?.cancel()
 
-        // T-07-05: 100ms debounce prevents registering/unregistering observers for
-        // transient intermediate apps during rapid Cmd-Tab switching.
         let work = DispatchWorkItem { [weak self] in
             guard let self else { return }
             let newBundleID = app.bundleIdentifier
@@ -403,7 +381,6 @@ final class TextMonitor {
 
     // MARK: - Role validation
 
-    /// Returns true only for element roles that accept keyboard text input.
     func isTextElement(_ element: AXUIElement) -> Bool {
         var roleRef: CFTypeRef?
         guard AXUIElementCopyAttributeValue(element, kAXRoleAttribute as CFString, &roleRef) == .success,

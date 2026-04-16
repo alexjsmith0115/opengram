@@ -81,7 +81,8 @@ private func enabledConfig() -> LLMConfig {
         enabledChecks: Set(LLMCheckType.allCases),
         temperature: 0.3,
         maxTokens: 512,
-        requestTimeout: 10
+        requestTimeout: 10,
+        confidenceThreshold: LLMConfig.defaultConfidenceThreshold
     )
 }
 
@@ -92,7 +93,8 @@ private func disabledConfig() -> LLMConfig {
         enabledChecks: [],
         temperature: 0.3,
         maxTokens: 512,
-        requestTimeout: 10
+        requestTimeout: 10,
+        confidenceThreshold: LLMConfig.defaultConfidenceThreshold
     )
 }
 

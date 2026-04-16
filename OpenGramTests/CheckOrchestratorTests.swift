@@ -111,7 +111,8 @@ struct CheckOrchestratorTests {
                 enabledChecks: [.tone],
                 temperature: 0.3,
                 maxTokens: 512,
-                requestTimeout: 60
+                requestTimeout: 60,
+                confidenceThreshold: LLMConfig.defaultConfidenceThreshold
             ),
             apiKey: "test-key",
             onHarperComplete: { _, _ in },
@@ -148,7 +149,8 @@ struct CheckOrchestratorTests {
                 enabledChecks: [.clarity, .tone],
                 temperature: 0.3,
                 maxTokens: 512,
-                requestTimeout: 60
+                requestTimeout: 60,
+                confidenceThreshold: LLMConfig.defaultConfidenceThreshold
             ),
             apiKey: "test-key",
             onHarperComplete: { _, _ in },

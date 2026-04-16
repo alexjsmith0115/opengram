@@ -40,7 +40,7 @@ actor LLMService: LLMProviderProtocol {
             let payload = ChatRequest(
                 model: config.model,
                 messages: [
-                    ChatMessage(role: "system", content: LLMPrompts.systemPrompt(harperSpans: harperSpans)),
+                    ChatMessage(role: "system", content: LLMPrompts.systemPrompt(harperSpans: harperSpans, confidenceThreshold: config.confidenceThreshold)),
                     ChatMessage(role: "user", content: LLMPrompts.userMessage(for: paragraph))
                 ],
                 temperature: config.temperature,
@@ -77,7 +77,7 @@ actor LLMService: LLMProviderProtocol {
                 Self.logger.info("Raw response: \(raw.prefix(500))")
             }
 
-            let results = try parseResponse(data: data, paragraph: paragraph)
+            let results = try parseResponse(data: data, paragraph: paragraph, confidenceThreshold: config.confidenceThreshold)
             Self.logger.info("Parsed \(results.count) suggestions")
             for (i, s) in results.enumerated() {
                 Self.logger.info("  [\(i)] \(s.category.rawValue) conf=\(s.confidence): \(s.explanation.prefix(60))")
@@ -124,7 +124,7 @@ actor LLMService: LLMProviderProtocol {
 
     /// Extracts the assistant message content and decodes via LLMResponseDTO.
     /// Throws on unrecoverable parse failure — caller maps to empty array.
-    private func parseResponse(data: Data, paragraph: String) throws -> [LLMStyleSuggestion] {
+    private func parseResponse(data: Data, paragraph: String, confidenceThreshold: Int = LLMConfig.defaultConfidenceThreshold) throws -> [LLMStyleSuggestion] {
         guard let rawString = String(data: data, encoding: .utf8) else {
             return []
         }
@@ -134,7 +134,7 @@ actor LLMService: LLMProviderProtocol {
             return []
         }
 
-        return parseJSONContent(content, paragraph: paragraph)
+        return parseJSONContent(content, paragraph: paragraph, confidenceThreshold: confidenceThreshold)
     }
 
     /// Extracts the assistant message content from the OpenAI chat completion JSON envelope.
@@ -161,7 +161,7 @@ actor LLMService: LLMProviderProtocol {
     /// 2. Strip preamble before first {
     /// 3. Attempt JSONDecoder via LLMResponseDTO
     /// 4. Fallback: extract individual suggestion objects via brace-matching
-    func parseJSONContent(_ raw: String, paragraph: String) -> [LLMStyleSuggestion] {
+    func parseJSONContent(_ raw: String, paragraph: String, confidenceThreshold: Int = LLMConfig.defaultConfidenceThreshold) -> [LLMStyleSuggestion] {
         var cleaned = raw
 
         // Step 1: strip markdown fences
@@ -185,17 +185,17 @@ actor LLMService: LLMProviderProtocol {
 
         // Step 3: attempt direct decode via LLMResponseDTO
         if let data = cleaned.data(using: .utf8),
-           let suggestions = try? LLMResponseDTO.toModels(from: data, originalText: paragraph) {
+           let suggestions = try? LLMResponseDTO.toModels(from: data, originalText: paragraph, confidenceThreshold: confidenceThreshold) {
             return suggestions
         }
 
         // Step 4: brace-matching fallback — try to salvage a partial response
-        return extractSuggestionsViaBraceMatching(from: cleaned, paragraph: paragraph)
+        return extractSuggestionsViaBraceMatching(from: cleaned, paragraph: paragraph, confidenceThreshold: confidenceThreshold)
     }
 
     /// Extracts individual suggestion objects by matching braces, wraps them in the
     /// expected envelope, and decodes each independently.
-    private func extractSuggestionsViaBraceMatching(from text: String, paragraph: String) -> [LLMStyleSuggestion] {
+    private func extractSuggestionsViaBraceMatching(from text: String, paragraph: String, confidenceThreshold: Int = LLMConfig.defaultConfidenceThreshold) -> [LLMStyleSuggestion] {
         // Look for a "suggestions" array and try to extract its objects
         var results: [LLMStyleSuggestion] = []
         var depth = 0
@@ -220,7 +220,7 @@ actor LLMService: LLMProviderProtocol {
                     let objectString = String(text[start...i])
                     if let data = objectString.data(using: .utf8),
                        let dto = try? JSONDecoder().decode(LLMResponseDTO.SuggestionDTO.self, from: data),
-                       let suggestion = dto.toModel(originalText: paragraph) {
+                       let suggestion = dto.toModel(originalText: paragraph, confidenceThreshold: confidenceThreshold) {
                         results.append(suggestion)
                     }
                     objectStart = nil

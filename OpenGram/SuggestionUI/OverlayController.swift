@@ -98,20 +98,7 @@ final class OverlayController {
         let windowRect = unionRect.insetBy(dx: -padding, dy: -padding)
 
         let view = UnderlineView()
-        // Translate entry rects to window-local coordinates
-        let localEntries = entries.map { entry in
-            UnderlineEntry(
-                underlineRect: entry.underlineRect.offsetBy(
-                    dx: -windowRect.origin.x,
-                    dy: -windowRect.origin.y
-                ),
-                hitRect: entry.hitRect.offsetBy(
-                    dx: -windowRect.origin.x,
-                    dy: -windowRect.origin.y
-                ),
-                suggestion: entry.suggestion
-            )
-        }
+        let localEntries = Self.toLocalEntries(entries, in: windowRect)
         view.entries = localEntries
         view.frame = NSRect(origin: .zero, size: windowRect.size)
 
@@ -249,13 +236,7 @@ final class OverlayController {
         let padding: CGFloat = 4
         let windowRect = unionRect.insetBy(dx: -padding, dy: -padding)
 
-        let localEntries = survivingEntries.map { entry in
-            UnderlineEntry(
-                underlineRect: entry.underlineRect.offsetBy(dx: -windowRect.origin.x, dy: -windowRect.origin.y),
-                hitRect: entry.hitRect.offsetBy(dx: -windowRect.origin.x, dy: -windowRect.origin.y),
-                suggestion: entry.suggestion
-            )
-        }
+        let localEntries = Self.toLocalEntries(survivingEntries, in: windowRect)
 
         if let view = underlineView {
             view.entries = localEntries
@@ -601,13 +582,7 @@ final class OverlayController {
         let padding: CGFloat = 4
         let newWindowRect = unionRect.insetBy(dx: -padding, dy: -padding)
 
-        let localEntries = screenEntries.map { entry in
-            UnderlineEntry(
-                underlineRect: entry.underlineRect.offsetBy(dx: -newWindowRect.origin.x, dy: -newWindowRect.origin.y),
-                hitRect: entry.hitRect.offsetBy(dx: -newWindowRect.origin.x, dy: -newWindowRect.origin.y),
-                suggestion: entry.suggestion
-            )
-        }
+        let localEntries = Self.toLocalEntries(screenEntries, in: newWindowRect)
 
         if let view = underlineView {
             view.entries = localEntries
@@ -639,8 +614,18 @@ final class OverlayController {
         underlineView?.entries.first { $0.suggestion.id == suggestion.id }?.underlineRect
     }
 
+    /// Translates screen-coordinate entries to window-local coordinates.
+    private static func toLocalEntries(_ entries: [UnderlineEntry], in windowRect: NSRect) -> [UnderlineEntry] {
+        entries.map { entry in
+            UnderlineEntry(
+                underlineRect: entry.underlineRect.offsetBy(dx: -windowRect.origin.x, dy: -windowRect.origin.y),
+                hitRect: entry.hitRect.offsetBy(dx: -windowRect.origin.x, dy: -windowRect.origin.y),
+                suggestion: entry.suggestion
+            )
+        }
+    }
+
     /// Computes parallel unicode scalar offsets for a suggestion array relative to the given text.
-    /// Extracted from show() to avoid duplication with update().
     private func computeScalarOffsets(
         for suggestions: [Suggestion],
         in text: String

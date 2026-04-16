@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 protocol DictionaryStoreProtocol: Sendable {
     func loadWords() -> [String]
@@ -7,6 +8,7 @@ protocol DictionaryStoreProtocol: Sendable {
 
 struct DictionaryStore: DictionaryStoreProtocol, Sendable {
 
+    private static let logger = Log.logger(for: "DictionaryStore")
     private let directoryURL: URL
     private let fileURL: URL
 
@@ -39,12 +41,11 @@ struct DictionaryStore: DictionaryStoreProtocol, Sendable {
                 at: directoryURL,
                 withIntermediateDirectories: true
             )
-            let sorted = words.sorted()
-            let contents = sorted.joined(separator: "\n")
+            let deduped = Array(Set(words)).sorted()
+            let contents = deduped.joined(separator: "\n")
             try contents.write(to: fileURL, atomically: true, encoding: .utf8)
         } catch {
-            // D-11: Phase 2 is pipeline-only. Log count, not content.
-            print("DictionaryStore: failed to save \(words.count) words: \(error.localizedDescription)")
+            Self.logger.error("Failed to save \(words.count) words: \(error.localizedDescription)")
         }
     }
 }

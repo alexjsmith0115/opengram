@@ -228,7 +228,8 @@ struct LLMSettingsView: View {
                 enabledChecks: Set(LLMCheckType.allCases),
                 temperature: temperature,
                 maxTokens: 1024,
-                requestTimeout: requestTimeout
+                requestTimeout: requestTimeout,
+                confidenceThreshold: LLMConfig.defaultConfidenceThreshold
             )
             let key = apiKeyField.isEmpty ? nil : apiKeyField
             let result = await service.healthCheck(config: config, apiKey: key)

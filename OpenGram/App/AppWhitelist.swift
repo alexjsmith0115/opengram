@@ -42,9 +42,10 @@ struct AppWhitelist {
     }
 
     var bundleIDs: Set<String> {
-        let stored = defaults.string(forKey: Self.storageKey) ?? ""
-        guard !stored.isEmpty else { return Self.defaultBundleIDs }
-        return Set(stored.components(separatedBy: "\n").filter { !$0.isEmpty })
+        guard let stored = defaults.array(forKey: Self.storageKey) as? [String], !stored.isEmpty else {
+            return Self.defaultBundleIDs
+        }
+        return Set(stored)
     }
 
     func isAllowed(_ bundleID: String) -> Bool {
@@ -69,6 +70,6 @@ struct AppWhitelist {
     }
 
     private func persist(_ ids: Set<String>) {
-        defaults.set(ids.joined(separator: "\n"), forKey: Self.storageKey)
+        defaults.set(Array(ids).sorted(), forKey: Self.storageKey)
     }
 }

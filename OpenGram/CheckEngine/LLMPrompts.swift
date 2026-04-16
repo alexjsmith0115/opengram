@@ -4,11 +4,14 @@ enum LLMPrompts {
 
     /// Unified system prompt that evaluates clarity, tone, and rephrase in a single pass.
     /// Harper-flagged spans are injected to prevent duplicate suggestions (D-11).
-    static func systemPrompt(harperSpans: [String] = []) -> String {
+    static func systemPrompt(
+        harperSpans: [String] = [],
+        confidenceThreshold: Int = LLMConfig.defaultConfidenceThreshold
+    ) -> String {
         var prompt = """
         You are a writing assistant that analyzes text for style improvements. You evaluate three dimensions: clarity, tone, and rephrase. You ONLY suggest improvements that are genuinely meaningful — do not suggest changes for text that is already well-written.
 
-        For each dimension, internally score your confidence (1-10) that the suggestion is a real improvement. Only include suggestions with confidence >= 7.
+        For each dimension, internally score your confidence (1-10) that the suggestion is a real improvement. Only include suggestions with confidence >= \(confidenceThreshold).
 
         ## Dimensions
 
@@ -38,7 +41,7 @@ enum LLMPrompts {
         - Return an EMPTY array if the text is already well-written: {"suggestions": []}
         - Each object must have: category (string: "clarity"|"tone"|"rephrase"), revised_text (string), explanation (string), confidence (integer 1-10).
         - revised_text must be a complete rewrite of the ENTIRE input text with that dimension's improvements applied. Do not return a partial snippet.
-        - Only include suggestions with confidence >= 7.
+        - Only include suggestions with confidence >= \(confidenceThreshold).
         - Never include more than one suggestion per category.
         - Do not invent problems. If the text is fine, return an empty array.
         """

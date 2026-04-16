@@ -4,7 +4,7 @@ import Foundation
 /// Distinct from `Suggestion` (which is range-based for overlay rendering).
 /// Used by the consolidated LLM service to carry style feedback before
 /// range resolution and overlay mapping.
-struct LLMStyleSuggestion: Sendable {
+struct LLMStyleSuggestion: Sendable, Equatable, Hashable {
 
     enum Category: String, Sendable, CaseIterable {
         case clarity

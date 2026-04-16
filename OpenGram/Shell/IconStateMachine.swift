@@ -70,8 +70,8 @@ final class IconStateMachine {
         pulseIsHigh = true
 
         pulseTimer = Timer.scheduledTimer(withTimeInterval: pulseInterval, repeats: true) { [weak self] _ in
+            guard let self else { return }
             MainActor.assumeIsolated {
-                guard let self else { return }
                 self.pulseIsHigh.toggle()
                 self.notifyChange()
             }
@@ -87,8 +87,9 @@ final class IconStateMachine {
 
     private func scheduleDoneReturn() {
         doneTimer = Timer.scheduledTimer(withTimeInterval: doneReturnDelay, repeats: false) { [weak self] _ in
+            guard let self else { return }
             MainActor.assumeIsolated {
-                self?.setState(.idle)
+                self.setState(.idle)
             }
         }
     }

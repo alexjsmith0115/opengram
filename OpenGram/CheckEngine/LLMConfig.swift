@@ -19,6 +19,9 @@ struct LLMConfig: Codable, Sendable, Equatable {
     var temperature: Double
     var maxTokens: Int
     var requestTimeout: TimeInterval
+    var confidenceThreshold: Int
+
+    static let defaultConfidenceThreshold = 7
 
     static let `default` = LLMConfig(
         baseURL: "http://localhost:1234/v1",
@@ -26,7 +29,8 @@ struct LLMConfig: Codable, Sendable, Equatable {
         enabledChecks: Set(LLMCheckType.allCases),
         temperature: 0.3,
         maxTokens: 1024,
-        requestTimeout: 60
+        requestTimeout: 60,
+        confidenceThreshold: defaultConfidenceThreshold
     )
 
     /// True if at least one check type is enabled and the base URL is non-empty.
@@ -34,11 +38,14 @@ struct LLMConfig: Codable, Sendable, Equatable {
         !baseURL.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !enabledChecks.isEmpty
     }
 
-    /// Builds the full chat completions URL from baseURL.
+    /// Builds the full chat completions URL from baseURL using URLComponents.
     /// Returns nil if the URL is malformed.
     var chatCompletionsURL: URL? {
-        let base = baseURL.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmed = baseURL.trimmingCharacters(in: .whitespacesAndNewlines)
             .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-        return URL(string: "\(base)/chat/completions")
+        guard var components = URLComponents(string: trimmed) else { return nil }
+        let basePath = components.path.hasSuffix("/") ? String(components.path.dropLast()) : components.path
+        components.path = basePath + "/chat/completions"
+        return components.url
     }
 }

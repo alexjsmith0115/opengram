@@ -51,7 +51,7 @@ final class AXCapabilityCache: AXCapabilityCacheProtocol, @unchecked Sendable {
         lock.lock()
         entries[key] = supported
         lock.unlock()
-        saveToDisk()
+        saveToDisk()  // saveToDisk() snapshots under its own lock
     }
 
     // MARK: - Notification Reliability
@@ -66,7 +66,7 @@ final class AXCapabilityCache: AXCapabilityCacheProtocol, @unchecked Sendable {
         lock.lock()
         notificationEntries[bundleID] = reliable
         lock.unlock()
-        saveToDisk()
+        saveToDisk()  // saveToDisk() snapshots under its own lock
     }
 
     // MARK: - Persistence
@@ -84,7 +84,7 @@ final class AXCapabilityCache: AXCapabilityCacheProtocol, @unchecked Sendable {
             let encoded = try JSONEncoder().encode(data)
             try encoded.write(to: cacheFileURL, options: .atomic)
         } catch {
-            // D-07: silent failure -- no user-facing error for cache persistence
+            // D-07: non-critical — cache is reconstructable via probing
         }
     }
 

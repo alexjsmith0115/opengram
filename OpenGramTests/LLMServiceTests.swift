@@ -107,7 +107,8 @@ struct LLMServiceTests {
             enabledChecks: [.tone],
             temperature: 0.3,
             maxTokens: 512,
-            requestTimeout: 30
+            requestTimeout: 30,
+            confidenceThreshold: LLMConfig.defaultConfidenceThreshold
         )
 
         // First call — will hang because HangingURLProtocol never responds
@@ -138,7 +139,8 @@ struct LLMServiceTests {
             enabledChecks: [.tone],
             temperature: 0.3,
             maxTokens: 512,
-            requestTimeout: 5
+            requestTimeout: 5,
+            confidenceThreshold: LLMConfig.defaultConfidenceThreshold
         )
 
         let result = await service.analyze(paragraph: "Some text.", config: llmConfig, apiKey: nil)

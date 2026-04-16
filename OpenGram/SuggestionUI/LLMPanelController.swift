@@ -59,8 +59,8 @@ final class LLMPanelController {
         )
         newPanel.setContentSize(size)
 
-        position(panel: newPanel, near: anchorRect, on: screen)
-        NSLog("[OpenGram] LLM panel frame=\(newPanel.frame) fittingSize=\(fittingSize) anchor=\(anchorRect)")
+        let panelOrigin = PanelPositioner.origin(for: newPanel.frame.size, near: anchorRect, on: screen, gap: 8)
+        newPanel.setFrameOrigin(panelOrigin)
         newPanel.orderFront(nil)
 
         self.panel = newPanel
@@ -73,29 +73,4 @@ final class LLMPanelController {
         hostingView = nil
     }
 
-    // MARK: - Positioning
-
-    private func position(panel: NSPanel, near anchorRect: NSRect, on screen: NSScreen) {
-        let size = panel.frame.size
-        let gap: CGFloat = 8
-        let visibleFrame = screen.visibleFrame
-
-        // Prefer above the anchor rect
-        var origin = NSPoint(
-            x: anchorRect.midX - size.width / 2,
-            y: anchorRect.maxY + gap
-        )
-
-        // Flip below if not enough space above
-        if origin.y + size.height > visibleFrame.maxY {
-            origin.y = anchorRect.minY - size.height - gap
-        }
-
-        // Clamp horizontally
-        origin.x = max(visibleFrame.minX, min(origin.x, visibleFrame.maxX - size.width))
-        // Clamp vertically
-        origin.y = max(visibleFrame.minY, min(origin.y, visibleFrame.maxY - size.height))
-
-        panel.setFrameOrigin(origin)
-    }
 }
