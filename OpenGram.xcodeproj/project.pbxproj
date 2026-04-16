@@ -107,6 +107,7 @@
 		B100000100000000000000E0 /* LLMCheckSchedulerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000E0 /* LLMCheckSchedulerTests.swift */; };
 		B100000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift */; };
 		B100000100000000000000E2 /* LLMCheckSchedulerFlagOffTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000E2 /* LLMCheckSchedulerFlagOffTests.swift */; };
+		B100000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -222,6 +223,7 @@
 		B200000100000000000000E0 /* LLMCheckSchedulerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCheckSchedulerTests.swift; sourceTree = "<group>"; };
 		B200000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCheckSchedulerCancellationTests.swift; sourceTree = "<group>"; };
 		B200000100000000000000E2 /* LLMCheckSchedulerFlagOffTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCheckSchedulerFlagOffTests.swift; sourceTree = "<group>"; };
+		B200000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckCoordinatorSchedulerIntegrationTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -348,6 +350,7 @@
 			isa = PBXGroup;
 			children = (
 				B200000100000000000000A0 /* AppWhitelistTests.swift */,
+				B200000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -769,6 +772,7 @@
 				B100000100000000000000E0 /* LLMCheckSchedulerTests.swift in Sources */,
 				B100000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift in Sources */,
 				B100000100000000000000E2 /* LLMCheckSchedulerFlagOffTests.swift in Sources */,
+				B100000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
