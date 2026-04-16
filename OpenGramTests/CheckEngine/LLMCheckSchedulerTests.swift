@@ -238,4 +238,19 @@ private func style(category: LLMStyleSuggestion.Category = .clarity, original: S
         }
         #expect(elapsed < .milliseconds(50))
     }
+
+    // WR-04: Unicode ZWJ emoji sequence must not crash rebase() and must round-trip
+    // to a source range whose substring equals style.originalText.
+    @Test func rebase_zwjEmojiParagraph_producesAlignedSourceRange() async {
+        let llm = RecordingLLM()
+        let family = "\u{1F468}\u{200D}\u{1F469}\u{200D}\u{1F466}"
+        let target = "Hello \(family) world"
+        llm.setCanned([target: [style(original: family, revised: "[family]")]])
+        let scheduler = makeScheduler(llm: llm)
+
+        let out = await scheduler.check(text: target, bundleID: "b")
+        #expect(out.count == 1)
+        guard let s = out.first else { return }
+        #expect(String(target[s.range]) == family)
+    }
 }

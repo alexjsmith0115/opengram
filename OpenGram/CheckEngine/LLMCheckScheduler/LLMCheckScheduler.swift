@@ -210,23 +210,21 @@ actor LLMCheckScheduler {
 
     // MARK: - Offset rebasing (NFR-7)
 
-    /// Substring-search `style.originalText` within `paragraph.text`, then map the paragraph-local
-    /// range into the SOURCE string's index space. Paragraph.range is the untrimmed source span
-    /// (Phase 15 D-03) so we first locate the trimmed body's start by scanning past leading
-    /// whitespace/newlines.
+    /// Search `style.originalText` directly within the trimmed source slice for `paragraph.range`.
+    /// Paragraph.range is the untrimmed source span (Phase 15 D-03), so we advance past leading
+    /// whitespace/newlines first. Avoids the paragraph.text→source Character-offset translation,
+    /// which can misalign on Unicode sequences where paragraph.text normalization differs from
+    /// source[paragraph.range] (WR-04).
     private func rebase(paragraph: Paragraph, styleSuggestions: [LLMStyleSuggestion], source: String) -> [Suggestion] {
         styleSuggestions.compactMap { style in
-            guard let local = paragraph.text.range(of: style.originalText) else { return nil }
-            let lowerOffset = paragraph.text.distance(from: paragraph.text.startIndex, to: local.lowerBound)
-            let upperOffset = paragraph.text.distance(from: paragraph.text.startIndex, to: local.upperBound)
             guard let trimmedStart = source[paragraph.range].firstIndex(where: { !$0.isWhitespace && !$0.isNewline }) else {
                 return nil
             }
-            let absoluteLower = source.index(trimmedStart, offsetBy: lowerOffset)
-            let absoluteUpper = source.index(trimmedStart, offsetBy: upperOffset)
+            let bodySlice = source[trimmedStart..<paragraph.range.upperBound]
+            guard let sourceRange = bodySlice.range(of: style.originalText) else { return nil }
             return Suggestion(
                 id: UUID(),
-                range: absoluteLower..<absoluteUpper,
+                range: sourceRange,
                 original: style.originalText,
                 primaryReplacement: style.revisedText,
                 allReplacements: [style.revisedText],
