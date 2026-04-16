@@ -12,7 +12,6 @@ final class CheckCoordinator {
 
     private let textEngine: any AXTextEngineProtocol
     private let orchestrator: CheckOrchestrator
-    private let llmService: LLMService?
     private let scheduler: LLMCheckScheduler
     let overlayController: OverlayController
     let llmPanelController: LLMPanelController
@@ -30,7 +29,6 @@ final class CheckCoordinator {
     init(
         textEngine: any AXTextEngineProtocol,
         orchestrator: CheckOrchestrator,
-        llmService: LLMService?,
         scheduler: LLMCheckScheduler,
         overlayController: OverlayController,
         llmPanelController: LLMPanelController,
@@ -39,7 +37,6 @@ final class CheckCoordinator {
     ) {
         self.textEngine = textEngine
         self.orchestrator = orchestrator
-        self.llmService = llmService
         self.scheduler = scheduler
         self.overlayController = overlayController
         self.llmPanelController = llmPanelController
@@ -116,7 +113,7 @@ final class CheckCoordinator {
         }
 
         let config = ConfigManager.currentLLMConfig()
-        guard config.isEnabled, llmService != nil else {
+        guard config.isEnabled else {
             Self.logger.debug("LLM skipped — isEnabled=\(config.isEnabled)")
             return
         }

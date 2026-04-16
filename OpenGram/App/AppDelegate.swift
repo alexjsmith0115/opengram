@@ -39,7 +39,6 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         let coordinator = CheckCoordinator(
             textEngine: textEngine,
             orchestrator: orchestrator,
-            llmService: llmService,
             scheduler: scheduler,
             overlayController: overlayController,
             llmPanelController: llmPanelController,
