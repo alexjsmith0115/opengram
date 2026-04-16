@@ -251,6 +251,16 @@ actor LLMCheckScheduler {
     // D-09: idle-debounce. On each keystroke signal, cancel prior pending task and spawn a
     // replacement. When the sleep completes uncancelled, fire check() and hand results to
     // onComplete (fire-and-forget; callers wanting an awaitable result use check() directly).
+    //
+    // Cancellation semantic: DELIVERY-GATING, not request-cancelling. Cancelling
+    // `pendingIdleTask` only prevents the pre-sleep debounce fire and the post-check
+    // `onComplete` callback — per-paragraph fan-out Tasks spawned inside `check()` are
+    // unstructured and do NOT inherit cancellation from this wrapper. In-flight HTTP
+    // traffic at the moment of cancellation continues to completion; its results either
+    // land in the paragraph cache (next warm-cache lookup benefits) or are dropped by
+    // the stale-ownership guard in the await loop. Cross-invocation cancellation of
+    // fan-out work is handled by `check()` itself via `inFlightByIndex[i]?.cancel()`
+    // when a later call re-dispatches the same index.
     private var pendingIdleTask: Task<Void, Never>?
 
     func onKeystroke(text: String, bundleID: String, harperSpans: [String] = [], onComplete: @escaping @Sendable ([Suggestion]) -> Void) {
