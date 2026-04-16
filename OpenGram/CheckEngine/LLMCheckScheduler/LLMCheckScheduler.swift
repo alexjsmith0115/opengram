@@ -112,6 +112,10 @@ actor LLMCheckScheduler {
             inFlightByIndex[i]?.cancel()
         }
 
+        // Snapshot the tasks THIS invocation spawned so a concurrently-entered check() call
+        // replacing `inFlightByIndex[i]` after our own cancel-before-replace doesn't make us
+        // read its task or clear its entry. Each invocation only clears its own entries.
+        var ownTasks: [Int: Task<[LLMStyleSuggestion], Error>] = [:]
         for i in missIndices {
             let paragraph = paragraphs[i]
             let prev: String? = i > 0 ? paragraphs[i - 1].text : nil
@@ -130,15 +134,20 @@ actor LLMCheckScheduler {
                 )
             }
             inFlightByIndex[i] = task
+            ownTasks[i] = task
         }
 
         // Await each Task, upsert into cache (D-11 / FR-9: record attempt even on empty results).
         var llmSuggestions: [Int: [LLMStyleSuggestion]] = [:]
         for i in missIndices {
-            guard let task = inFlightByIndex[i] else { continue }
+            guard let task = ownTasks[i] else { continue }
             let results = (try? await task.value) ?? []
             llmSuggestions[i] = results
-            inFlightByIndex[i] = nil
+            // Only clear if the slot still holds OUR task; a newer check() call may have
+            // replaced it in the interim.
+            if inFlightByIndex[i] == task {
+                inFlightByIndex[i] = nil
+            }
             await cache.upsert(keys[i], status: .active, suggestions: results)
         }
 
