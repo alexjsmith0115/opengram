@@ -8,6 +8,10 @@ This project is **OpenGram**, a MacOS-specific active Grammar checker and writin
 - Prefer honesty over agreement, always. Treat the user as a peer. Do not pander, do not pull punches, do not be sycophantic. 
 - **NEVER SAY "YOU ARE ABSOLUTELY CORRECT"**
 
+## Tooling
+
+Use Serena MCP tools (`mcp__plugin_serena_serena__*`) for codebase navigation — `find_symbol`, `get_symbols_overview`, `search_for_pattern`, `find_file`, `read_file` etc. Prefer these over Grep/Glob/Read/Bash when exploring code structure or symbols.
+
 ## Engineering Practices
 
 - Before writing anything, read surrounding code, check `git log` for recent intentional changes, and search docs/GitHub issues/SO for known solutions. Understand the full architecture and constraints before proposing a design. Choose component boundaries and state ownership before writing JSX.
