@@ -22,7 +22,6 @@ actor LLMCheckScheduler {
     private let configProvider: @Sendable () -> LLMConfig
     private let apiKeyProvider: @Sendable () -> String?
     private let incrementalConfig: any IncrementalConfig
-    let idleDebounceSeconds: TimeInterval
 
     // D-03, D-04: per-paragraph cancellation. Keyed on paragraph index -- index is stable for the
     // duration of one check() invocation's paragraph layout; hash would collide across position changes.
@@ -40,8 +39,7 @@ actor LLMCheckScheduler {
         llm: any LLMProviderProtocol,
         configProvider: @escaping @Sendable () -> LLMConfig,
         apiKeyProvider: @escaping @Sendable () -> String?,
-        incrementalConfig: any IncrementalConfig,
-        idleDebounceSeconds: TimeInterval = 1.5
+        incrementalConfig: any IncrementalConfig
     ) {
         self.splitter = splitter
         self.hasher = hasher
@@ -51,7 +49,6 @@ actor LLMCheckScheduler {
         self.configProvider = configProvider
         self.apiKeyProvider = apiKeyProvider
         self.incrementalConfig = incrementalConfig
-        self.idleDebounceSeconds = idleDebounceSeconds
     }
 
     // MARK: - Public API
@@ -263,7 +260,9 @@ actor LLMCheckScheduler {
 
     func onKeystroke(text: String, bundleID: String, harperSpans: [String] = [], onComplete: @escaping @Sendable ([Suggestion]) -> Void) {
         pendingIdleTask?.cancel()
-        let debounce = idleDebounceSeconds
+        // SET-10 / D-03: live-read per-call so Advanced tab Stepper changes take effect on next keystroke.
+        // Mirrors D-14 flag-read pattern — no cached snapshot.
+        let debounce = incrementalConfig.idleDebounceSeconds
         pendingIdleTask = Task { [weak self] in
             try? await Task.sleep(for: .seconds(debounce))
             if Task.isCancelled { return }
