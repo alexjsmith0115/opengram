@@ -96,6 +96,8 @@
 		A100000100000000000000C0 /* Paragraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000C0 /* Paragraph.swift */; };
 		A100000100000000000000C1 /* CacheClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000C1 /* CacheClock.swift */; };
 		B100000100000000000000D0 /* CacheClockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000D0 /* CacheClockTests.swift */; };
+		A100000100000000000000C2 /* ParagraphSplitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000C2 /* ParagraphSplitter.swift */; };
+		B100000100000000000000D1 /* ParagraphSplitterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000D1 /* ParagraphSplitterTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -200,6 +202,8 @@
 		A200000100000000000000C0 /* Paragraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paragraph.swift; sourceTree = "<group>"; };
 		A200000100000000000000C1 /* CacheClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheClock.swift; sourceTree = "<group>"; };
 		B200000100000000000000D0 /* CacheClockTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheClockTests.swift; sourceTree = "<group>"; };
+		A200000100000000000000C2 /* ParagraphSplitter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphSplitter.swift; sourceTree = "<group>"; };
+		B200000100000000000000D1 /* ParagraphSplitterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphSplitterTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -393,6 +397,7 @@
 			children = (
 				A200000100000000000000C0 /* Paragraph.swift */,
 				A200000100000000000000C1 /* CacheClock.swift */,
+				A200000100000000000000C2 /* ParagraphSplitter.swift */,
 			);
 			path = ParagraphInfra;
 			sourceTree = "<group>";
@@ -505,6 +510,7 @@
 			isa = PBXGroup;
 			children = (
 				B200000100000000000000D0 /* CacheClockTests.swift */,
+				B200000100000000000000D1 /* ParagraphSplitterTests.swift */,
 			);
 			path = ParagraphInfra;
 			sourceTree = "<group>";
@@ -677,6 +683,7 @@
 				A100000100000000000000B4 /* ConfigManager.swift in Sources */,
 				A100000100000000000000C0 /* Paragraph.swift in Sources */,
 				A100000100000000000000C1 /* CacheClock.swift in Sources */,
+				A100000100000000000000C2 /* ParagraphSplitter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -717,6 +724,7 @@
 				B1000001000000000000004C /* TwoPhaseCheckFlowTests.swift in Sources */,
 				B100000100000000000000C0 /* PanelPositionerTests.swift in Sources */,
 				B100000100000000000000D0 /* CacheClockTests.swift in Sources */,
+				B100000100000000000000D1 /* ParagraphSplitterTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
