@@ -9,7 +9,11 @@ import Foundation
 /// changes in the Advanced Settings tab propagate on the next qualifying check.
 protocol IncrementalConfig: Sendable {
     var isIncrementalCheckingEnabled: Bool { get }
+    /// Consumed in Phase 18 by the rephrase card display heuristic. Phase 17 ships the
+    /// plumbing and tab UI only (CONTEXT.md D-04).
     var minIssueCount: Int { get }
+    /// Consumed in Phase 18 by the rephrase card display heuristic. Phase 17 ships the
+    /// plumbing and tab UI only (CONTEXT.md D-04).
     var minWordCount: Int { get }
     var idleDebounceSeconds: TimeInterval { get }
 }
