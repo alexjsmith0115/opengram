@@ -105,6 +105,7 @@
 		A100000100000000000000E0 /* IncrementalConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000E0 /* IncrementalConfig.swift */; };
 		A100000100000000000000E1 /* LLMCheckScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000E1 /* LLMCheckScheduler.swift */; };
 		B100000100000000000000E0 /* LLMCheckSchedulerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000E0 /* LLMCheckSchedulerTests.swift */; };
+		B100000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -218,6 +219,7 @@
 		A200000100000000000000E0 /* IncrementalConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementalConfig.swift; sourceTree = "<group>"; };
 		A200000100000000000000E1 /* LLMCheckScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCheckScheduler.swift; sourceTree = "<group>"; };
 		B200000100000000000000E0 /* LLMCheckSchedulerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCheckSchedulerTests.swift; sourceTree = "<group>"; };
+		B200000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCheckSchedulerCancellationTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -529,6 +531,7 @@
 				B2000001000000000000003A /* LLMResponseDTOTests.swift */,
 				B2000001000000000000003B /* ParagraphExtractorTests.swift */,
 				B200000100000000000000E0 /* LLMCheckSchedulerTests.swift */,
+				B200000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift */,
 			);
 			path = CheckEngine;
 			sourceTree = "<group>";
@@ -761,6 +764,7 @@
 				B100000100000000000000D2 /* ParagraphHasherTests.swift in Sources */,
 				B100000100000000000000D3 /* ParagraphSuggestionCacheTests.swift in Sources */,
 				B100000100000000000000E0 /* LLMCheckSchedulerTests.swift in Sources */,
+				B100000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
