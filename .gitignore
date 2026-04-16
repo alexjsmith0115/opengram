@@ -8,3 +8,4 @@ harper-bridge/bindings/
 .swiftpm/
 OpenGram.xcodeproj/project.xcworkspace/
 HarperBridge.xcframework/
+graphify-out/
