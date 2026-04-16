@@ -75,10 +75,11 @@ import Foundation
         let oneParagraph = String(repeating: "abc ", count: 20)
         let corpus = Array(repeating: oneParagraph, count: 500).joined(separator: "\n\n")
         _ = splitter.split(corpus) // warm-up
-        let start = Date()
-        let result = splitter.split(corpus)
-        let elapsed = Date().timeIntervalSince(start)
+        var result: [Paragraph] = []
+        let elapsed = ContinuousClock().measure {
+            result = splitter.split(corpus)
+        }
         #expect(result.count == 500)
-        #expect(elapsed < 0.010)
+        #expect(elapsed < .milliseconds(10))
     }
 }

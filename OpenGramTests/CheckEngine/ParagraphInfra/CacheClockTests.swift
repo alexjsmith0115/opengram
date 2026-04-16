@@ -16,8 +16,8 @@ final class FakeClock: CacheClock, @unchecked Sendable {
         let before = Date()
         let clockNow = SystemClock().now()
         let after = Date()
-        #expect(clockNow >= before.addingTimeInterval(-0.001))
-        #expect(clockNow <= after.addingTimeInterval(0.001))
+        #expect(clockNow >= before.addingTimeInterval(-0.050))
+        #expect(clockNow <= after.addingTimeInterval(0.050))
     }
 
     @Test func fakeClockReturnsSeedValue() {

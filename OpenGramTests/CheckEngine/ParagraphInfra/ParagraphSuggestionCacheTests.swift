@@ -198,11 +198,12 @@ private func makeKey(bundle: String = "com.test", hash: UInt64) -> ParagraphCach
         }
         _ = await cache.lookup(makeKey(hash: 250)) // warm-up
 
-        let start = Date()
+        let clock = ContinuousClock()
+        let start = clock.now
         for _ in 0..<100 {
             _ = await cache.lookup(makeKey(hash: 250))
         }
-        let elapsed = Date().timeIntervalSince(start)
-        #expect(elapsed / 100.0 < 0.001)
+        let elapsed = clock.now - start
+        #expect(elapsed / 100 < .milliseconds(1))
     }
 }

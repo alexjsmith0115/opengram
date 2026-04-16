@@ -47,10 +47,11 @@ import Foundation
     @Test func performance500ParagraphsUnder10ms() {
         let inputs = (0..<500).map { "paragraph \($0) body with some filler text" }
         _ = inputs.map { hasher.hash($0) }
-        let start = Date()
-        let results = inputs.map { hasher.hash($0) }
-        let elapsed = Date().timeIntervalSince(start)
+        var results: [UInt64] = []
+        let elapsed = ContinuousClock().measure {
+            results = inputs.map { hasher.hash($0) }
+        }
         #expect(results.count == 500)
-        #expect(elapsed < 0.010)
+        #expect(elapsed < .milliseconds(10))
     }
 }
