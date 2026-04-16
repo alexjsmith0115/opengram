@@ -137,9 +137,7 @@ final class CheckCoordinator {
             // byte-identical pre-v1.2 call; under flag-on it fans out per-paragraph with the
             // cache. harperSpans forwarded either way (LLM-03/LLM-04).
             let harperSpans = await MainActor.run { self.lastSuggestions.map { $0.original } }
-            let schedulerSuggestions = await scheduler.check(
-                text: contextText, bundleID: contextBundleID, harperSpans: harperSpans
-            )
+            let schedulerSuggestions = await scheduler.check(text: contextText, bundleID: contextBundleID, harperSpans: harperSpans)
             guard !Task.isCancelled else { return }
 
             // Panel consumes [LLMStyleSuggestion] — map the scheduler's [Suggestion] back.
