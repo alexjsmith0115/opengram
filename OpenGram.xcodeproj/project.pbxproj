@@ -93,6 +93,9 @@
 		A100000100000000000000B3 /* CheckCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000B3 /* CheckCoordinator.swift */; };
 		A100000100000000000000B4 /* ConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000B4 /* ConfigManager.swift */; };
 		C10000010000000000000001 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = C20000010000000000000001 /* KeychainAccess */; };
+		A100000100000000000000C0 /* Paragraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000C0 /* Paragraph.swift */; };
+		A100000100000000000000C1 /* CacheClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000C1 /* CacheClock.swift */; };
+		B100000100000000000000D0 /* CacheClockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000D0 /* CacheClockTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -194,6 +197,9 @@
 		A200000100000000000000B4 /* ConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigManager.swift; sourceTree = "<group>"; };
 		B2000001000000000000004C /* TwoPhaseCheckFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoPhaseCheckFlowTests.swift; sourceTree = "<group>"; };
 		B200000100000000000000C0 /* PanelPositionerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelPositionerTests.swift; sourceTree = "<group>"; };
+		A200000100000000000000C0 /* Paragraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paragraph.swift; sourceTree = "<group>"; };
+		A200000100000000000000C1 /* CacheClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheClock.swift; sourceTree = "<group>"; };
+		B200000100000000000000D0 /* CacheClockTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheClockTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -374,11 +380,21 @@
 			children = (
 				A4000001000000000000C001 /* Harper */,
 				A4000001000000000000C002 /* LLM */,
+				A4000001000000000000C007 /* ParagraphInfra */,
 				A20000010000000000000094 /* CheckOrchestrator.swift */,
 				A20000010000000000000098 /* ParagraphExtractor.swift */,
 				A20000010000000000000031 /* Suggestion.swift */,
 			);
 			path = CheckEngine;
+			sourceTree = "<group>";
+		};
+		A4000001000000000000C007 /* ParagraphInfra */ = {
+			isa = PBXGroup;
+			children = (
+				A200000100000000000000C0 /* Paragraph.swift */,
+				A200000100000000000000C1 /* CacheClock.swift */,
+			);
+			path = ParagraphInfra;
 			sourceTree = "<group>";
 		};
 		A4000001000000000000C001 /* Harper */ = {
@@ -478,10 +494,19 @@
 		B4000001000000000000000B /* CheckEngine */ = {
 			isa = PBXGroup;
 			children = (
+				B4000001000000000000C001 /* ParagraphInfra */,
 				B2000001000000000000003A /* LLMResponseDTOTests.swift */,
 				B2000001000000000000003B /* ParagraphExtractorTests.swift */,
 			);
 			path = CheckEngine;
+			sourceTree = "<group>";
+		};
+		B4000001000000000000C001 /* ParagraphInfra */ = {
+			isa = PBXGroup;
+			children = (
+				B200000100000000000000D0 /* CacheClockTests.swift */,
+			);
+			path = ParagraphInfra;
 			sourceTree = "<group>";
 		};
 		B4000001000000000000000A /* SuggestionUITests */ = {
@@ -650,6 +675,8 @@
 				A100000100000000000000B2 /* ReliabilityDetector.swift in Sources */,
 				A100000100000000000000B3 /* CheckCoordinator.swift in Sources */,
 				A100000100000000000000B4 /* ConfigManager.swift in Sources */,
+				A100000100000000000000C0 /* Paragraph.swift in Sources */,
+				A100000100000000000000C1 /* CacheClock.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -689,6 +716,7 @@
 				B100000100000000000000A0 /* AppWhitelistTests.swift in Sources */,
 				B1000001000000000000004C /* TwoPhaseCheckFlowTests.swift in Sources */,
 				B100000100000000000000C0 /* PanelPositionerTests.swift in Sources */,
+				B100000100000000000000D0 /* CacheClockTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
