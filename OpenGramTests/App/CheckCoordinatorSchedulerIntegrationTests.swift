@@ -46,12 +46,33 @@ private final class RecordingLLM: LLMProviderProtocol, @unchecked Sendable {
 }
 
 /// Runtime-flippable incremental config for testing ON→OFF transitions.
+/// Phase 17: extended with minIssueCount / minWordCount / idleDebounceSeconds
+/// to satisfy the extended IncrementalConfig protocol (D-05).
 private final class MutableIncrementalConfig: IncrementalConfig, @unchecked Sendable {
     private let lock = NSLock()
     private var _flag: Bool
-    init(_ initial: Bool) { self._flag = initial }
+    private var _minIssueCount: Int
+    private var _minWordCount: Int
+    private var _idleDebounceSeconds: TimeInterval
+    init(
+        _ initial: Bool,
+        minIssueCount: Int = 2,
+        minWordCount: Int = 12,
+        idleDebounceSeconds: TimeInterval = 1.5
+    ) {
+        self._flag = initial
+        self._minIssueCount = minIssueCount
+        self._minWordCount = minWordCount
+        self._idleDebounceSeconds = idleDebounceSeconds
+    }
     var isIncrementalCheckingEnabled: Bool { lock.lock(); defer { lock.unlock() }; return _flag }
+    var minIssueCount: Int { lock.lock(); defer { lock.unlock() }; return _minIssueCount }
+    var minWordCount: Int { lock.lock(); defer { lock.unlock() }; return _minWordCount }
+    var idleDebounceSeconds: TimeInterval { lock.lock(); defer { lock.unlock() }; return _idleDebounceSeconds }
     func set(_ value: Bool) { lock.lock(); _flag = value; lock.unlock() }
+    func setIdleDebounceSeconds(_ value: TimeInterval) { lock.lock(); _idleDebounceSeconds = value; lock.unlock() }
+    func setMinIssueCount(_ value: Int) { lock.lock(); _minIssueCount = value; lock.unlock() }
+    func setMinWordCount(_ value: Int) { lock.lock(); _minWordCount = value; lock.unlock() }
 }
 
 // MARK: - Helpers

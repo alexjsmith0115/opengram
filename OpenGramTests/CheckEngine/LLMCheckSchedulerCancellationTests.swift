@@ -50,7 +50,41 @@ private final class SlowLLM: LLMProviderProtocol, @unchecked Sendable {
     func healthCheck(config: LLMConfig, apiKey: String?) async -> Bool { true }
 }
 
-private struct AlwaysOnIncrementalConfig: IncrementalConfig { var isIncrementalCheckingEnabled: Bool { true } }
+private struct AlwaysOnIncrementalConfig: IncrementalConfig {
+    var isIncrementalCheckingEnabled: Bool { true }
+    var minIssueCount: Int { 2 }
+    var minWordCount: Int { 12 }
+    var idleDebounceSeconds: TimeInterval { 1.5 }
+}
+
+/// Mutable config for live-read regression test. Allows flipping idleDebounceSeconds
+/// mid-scheduler to prove the per-call read contract (SET-10 / D-03).
+private final class MutableIncrementalConfig: IncrementalConfig, @unchecked Sendable {
+    private let lock = NSLock()
+    private var _flag: Bool
+    private var _minIssueCount: Int
+    private var _minWordCount: Int
+    private var _idleDebounceSeconds: TimeInterval
+    init(
+        _ initial: Bool,
+        minIssueCount: Int = 2,
+        minWordCount: Int = 12,
+        idleDebounceSeconds: TimeInterval = 1.5
+    ) {
+        self._flag = initial
+        self._minIssueCount = minIssueCount
+        self._minWordCount = minWordCount
+        self._idleDebounceSeconds = idleDebounceSeconds
+    }
+    var isIncrementalCheckingEnabled: Bool { lock.lock(); defer { lock.unlock() }; return _flag }
+    var minIssueCount: Int { lock.lock(); defer { lock.unlock() }; return _minIssueCount }
+    var minWordCount: Int { lock.lock(); defer { lock.unlock() }; return _minWordCount }
+    var idleDebounceSeconds: TimeInterval { lock.lock(); defer { lock.unlock() }; return _idleDebounceSeconds }
+    func set(_ value: Bool) { lock.lock(); _flag = value; lock.unlock() }
+    func setIdleDebounceSeconds(_ value: TimeInterval) { lock.lock(); _idleDebounceSeconds = value; lock.unlock() }
+    func setMinIssueCount(_ value: Int) { lock.lock(); _minIssueCount = value; lock.unlock() }
+    func setMinWordCount(_ value: Int) { lock.lock(); _minWordCount = value; lock.unlock() }
+}
 
 private final class CancellationFakeClock: CacheClock, @unchecked Sendable {
     var current: Date
@@ -60,8 +94,7 @@ private final class CancellationFakeClock: CacheClock, @unchecked Sendable {
 
 private func makeScheduler(
     llm: SlowLLM,
-    cache: ParagraphSuggestionCache = ParagraphSuggestionCache(),
-    idleDebounceSeconds: TimeInterval = 1.5
+    cache: ParagraphSuggestionCache = ParagraphSuggestionCache()
 ) -> LLMCheckScheduler {
     LLMCheckScheduler(
         splitter: DoubleNewlineSplitter(),
@@ -71,8 +104,26 @@ private func makeScheduler(
         llm: llm,
         configProvider: { LLMConfig.default },
         apiKeyProvider: { "test-key" },
-        incrementalConfig: AlwaysOnIncrementalConfig(),
-        idleDebounceSeconds: idleDebounceSeconds
+        incrementalConfig: AlwaysOnIncrementalConfig()
+    )
+}
+
+/// Scheduler with a mutable debounce config — drives the SET-10 live-read tests
+/// and the debounce-sensitive cancellation cases.
+private func makeSchedulerWithDebounce(
+    llm: SlowLLM,
+    debounce: TimeInterval,
+    cache: ParagraphSuggestionCache = ParagraphSuggestionCache()
+) -> LLMCheckScheduler {
+    LLMCheckScheduler(
+        splitter: DoubleNewlineSplitter(),
+        hasher: Sha256ParagraphHasher(),
+        cache: cache,
+        clock: SystemClock(),
+        llm: llm,
+        configProvider: { LLMConfig.default },
+        apiKeyProvider: { "test-key" },
+        incrementalConfig: MutableIncrementalConfig(true, idleDebounceSeconds: debounce)
     )
 }
 
@@ -135,7 +186,7 @@ private func style(original: String, revised: String = "revised") -> LLMStyleSug
         let llm = SlowLLM()
         llm.setDefaultDelay(.milliseconds(5))
         llm.setCanned(["P1": [style(original: "P1")], "P2": [style(original: "P2")]])
-        let scheduler = makeScheduler(llm: llm, idleDebounceSeconds: 0.1)
+        let scheduler = makeSchedulerWithDebounce(llm: llm, debounce: 0.1)
 
         let fireCount = OSAllocatedUnfairLock(initialState: 0)
         let text = "P1\n\nP2"
@@ -160,7 +211,7 @@ private func style(original: String, revised: String = "revised") -> LLMStyleSug
         let llm = SlowLLM()
         llm.setDefaultDelay(.milliseconds(5))
         llm.setCanned(["P1": [style(original: "P1")]])
-        let scheduler = makeScheduler(llm: llm, idleDebounceSeconds: 0.5)
+        let scheduler = makeSchedulerWithDebounce(llm: llm, debounce: 0.5)
 
         let keystrokeFired = OSAllocatedUnfairLock(initialState: false)
         let text = "P1"
@@ -184,13 +235,16 @@ private func style(original: String, revised: String = "revised") -> LLMStyleSug
         llm.setDefaultDelay(.milliseconds(5))
         llm.setCanned(["P1": [style(original: "P1")]])
         // Deliberately large debounce; focus-loss must NOT observe it.
-        let scheduler = makeScheduler(llm: llm, idleDebounceSeconds: 5.0)
+        let scheduler = makeSchedulerWithDebounce(llm: llm, debounce: 5.0)
 
         let clock = ContinuousClock()
         let elapsed = await clock.measure {
             _ = await scheduler.checkOnFocusLoss(text: "P1", bundleID: "b")
         }
-        #expect(elapsed < .milliseconds(200))
+        // Ceiling of 1s gives headroom for cooperative-pool scheduling jitter under parallel
+        // test load while still being << the deliberately large 5.0s debounce — the assertion
+        // remains that focus-loss did NOT observe the debounce.
+        #expect(elapsed < .seconds(1))
     }
 
     // 5. D-09 edge: zero-second debounce fires effectively immediately.
@@ -198,7 +252,7 @@ private func style(original: String, revised: String = "revised") -> LLMStyleSug
         let llm = SlowLLM()
         llm.setDefaultDelay(.milliseconds(5))
         llm.setCanned(["P1": [style(original: "P1")]])
-        let scheduler = makeScheduler(llm: llm, idleDebounceSeconds: 0)
+        let scheduler = makeSchedulerWithDebounce(llm: llm, debounce: 0)
 
         let fired = OSAllocatedUnfairLock(initialState: false)
         await scheduler.onKeystroke(text: "P1", bundleID: "b") { _ in
@@ -245,5 +299,40 @@ private func style(original: String, revised: String = "revised") -> LLMStyleSug
         // Zero new analyze calls proves no stale pending entries linger.
         _ = await scheduler.check(text: text, bundleID: "b")
         #expect(llm.callCount == 0)
+    }
+
+    // SET-10 / D-03: idleDebounceSeconds is live-read on every onKeystroke() entry.
+    // Flipping the config value between two onKeystroke calls on the SAME scheduler
+    // instance must honor the new value — no re-init required.
+    @Test func idleDebounceSeconds_liveReadHonoredWithoutReinit() async {
+        let llm = SlowLLM()
+        llm.setDefaultDelay(.milliseconds(2))
+        llm.setCanned(["P1": [style(original: "P1")], "P2": [style(original: "P2")]])
+        let config = MutableIncrementalConfig(true, idleDebounceSeconds: 0.05)
+        let scheduler = LLMCheckScheduler(
+            splitter: DoubleNewlineSplitter(),
+            hasher: Sha256ParagraphHasher(),
+            cache: ParagraphSuggestionCache(),
+            clock: SystemClock(),
+            llm: llm,
+            configProvider: { LLMConfig.default },
+            apiKeyProvider: { "test-key" },
+            incrementalConfig: config
+        )
+
+        // Fire 1: debounce 0.05s, sleep 0.25s so the analyze MUST fire.
+        await scheduler.onKeystroke(text: "P1", bundleID: "b") { _ in }
+        try? await Task.sleep(for: .milliseconds(250))
+        let firstCount = llm.callCount
+        #expect(firstCount >= 1)
+
+        // Flip debounce to 5.0s on the SAME scheduler instance.
+        config.setIdleDebounceSeconds(5.0)
+
+        // Fire 2: sleep only 0.25s. If scheduler cached the old 0.05s, LLM would fire again.
+        // Live-read honored → 0.25s < 5.0s → no additional call within this window.
+        await scheduler.onKeystroke(text: "P2", bundleID: "b") { _ in }
+        try? await Task.sleep(for: .milliseconds(250))
+        #expect(llm.callCount == firstCount)
     }
 }

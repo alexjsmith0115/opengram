@@ -30,12 +30,33 @@ private final class RecordingHasher: ParagraphHashing, @unchecked Sendable {
 }
 
 /// Mutable IncrementalConfig for runtime flag flipping inside a single test.
+/// Phase 17: extended with minIssueCount / minWordCount / idleDebounceSeconds for live-read
+/// testing of the three Advanced-tab tunables (SET-07/08/09/10, D-05).
 private final class MutableIncrementalConfig: IncrementalConfig, @unchecked Sendable {
     private let lock = NSLock()
     private var _flag: Bool
-    init(_ initial: Bool) { self._flag = initial }
+    private var _minIssueCount: Int
+    private var _minWordCount: Int
+    private var _idleDebounceSeconds: TimeInterval
+    init(
+        _ initial: Bool,
+        minIssueCount: Int = 2,
+        minWordCount: Int = 12,
+        idleDebounceSeconds: TimeInterval = 1.5
+    ) {
+        self._flag = initial
+        self._minIssueCount = minIssueCount
+        self._minWordCount = minWordCount
+        self._idleDebounceSeconds = idleDebounceSeconds
+    }
     var isIncrementalCheckingEnabled: Bool { lock.lock(); defer { lock.unlock() }; return _flag }
+    var minIssueCount: Int { lock.lock(); defer { lock.unlock() }; return _minIssueCount }
+    var minWordCount: Int { lock.lock(); defer { lock.unlock() }; return _minWordCount }
+    var idleDebounceSeconds: TimeInterval { lock.lock(); defer { lock.unlock() }; return _idleDebounceSeconds }
     func set(_ value: Bool) { lock.lock(); _flag = value; lock.unlock() }
+    func setIdleDebounceSeconds(_ value: TimeInterval) { lock.lock(); _idleDebounceSeconds = value; lock.unlock() }
+    func setMinIssueCount(_ value: Int) { lock.lock(); _minIssueCount = value; lock.unlock() }
+    func setMinWordCount(_ value: Int) { lock.lock(); _minWordCount = value; lock.unlock() }
 }
 
 /// LLM mock that distinguishes calls to the legacy `analyze(paragraph:)` from the
@@ -102,8 +123,7 @@ private func makeScheduler(
     splitter: any ParagraphSplitting = DoubleNewlineSplitter(),
     hasher: any ParagraphHashing = Sha256ParagraphHasher(),
     cache: ParagraphSuggestionCache = ParagraphSuggestionCache(),
-    config: any IncrementalConfig,
-    idleDebounceSeconds: TimeInterval = 1.5
+    config: any IncrementalConfig
 ) -> LLMCheckScheduler {
     LLMCheckScheduler(
         splitter: splitter,
@@ -113,8 +133,7 @@ private func makeScheduler(
         llm: llm,
         configProvider: { LLMConfig.default },
         apiKeyProvider: { "test-key" },
-        incrementalConfig: config,
-        idleDebounceSeconds: idleDebounceSeconds
+        incrementalConfig: config
     )
 }
 
@@ -245,7 +264,7 @@ private func makeScheduler(
     //    within the debounce window.
     @Test func flagOff_onKeystrokeStillDelegatesToCheck() async {
         let llm = MethodRecordingLLM()
-        let scheduler = makeScheduler(llm: llm, config: MutableIncrementalConfig(false), idleDebounceSeconds: 0.01)
+        let scheduler = makeScheduler(llm: llm, config: MutableIncrementalConfig(false, idleDebounceSeconds: 0.01))
 
         let fired = OSAllocatedUnfairLock(initialState: false)
         await scheduler.onKeystroke(text: "hello", bundleID: "b") { _ in
