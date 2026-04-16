@@ -6,8 +6,9 @@ import os.log
 /// Split → hash → cache lookup → neighbor-context assembly → per-paragraph LLM fan-out
 /// → substring-based offset rebasing → merged `[Suggestion]`. D-01, D-02, D-05, D-07, D-11.
 ///
-/// Plan 16-02 scope: flag-on flow only. Flag-off fallback lands in Plan 16-04; per-paragraph
-/// in-flight cancellation map + idle debounce + focus-out trigger land in Plan 16-03.
+/// Plan 16-02 scope: flag-on flow only. Flag-off fallback lands in Plan 16-04.
+/// Plan 16-03 adds per-paragraph in-flight cancellation map (`inFlightByIndex`); idle debounce
+/// + focus-loss trigger land in Task 2 of this plan.
 actor LLMCheckScheduler {
 
     // MARK: - Dependencies
@@ -21,6 +22,10 @@ actor LLMCheckScheduler {
     private let apiKeyProvider: @Sendable () -> String?
     private let incrementalConfig: any IncrementalConfig
     let idleDebounceSeconds: TimeInterval
+
+    // D-03, D-04: per-paragraph cancellation. Keyed on paragraph index -- index is stable for the
+    // duration of one check() invocation's paragraph layout; hash would collide across position changes.
+    private var inFlightByIndex: [Int: Task<[LLMStyleSuggestion], Error>] = [:]
 
     private static let logger = Log.logger(for: "LLMCheckScheduler")
 
@@ -93,20 +98,26 @@ actor LLMCheckScheduler {
 
         Self.logger.info("LLM fan-out: \(missIndices.count) requests")
 
-        // Fan out LLM requests for cache-miss paragraphs. Explicit per-paragraph Task spawn
-        // (NOT withTaskGroup) — Plan 16-03 promotes this function-local dispatch dictionary
-        // to an actor-owned `inFlightByIndex` for per-paragraph cancellation.
+        // Fan out LLM requests for cache-miss paragraphs. Explicit per-paragraph Task spawn;
+        // tasks tracked in actor-owned `inFlightByIndex` so a subsequent check() call can
+        // cancel prior in-flight work at the same index before replacing it.
         let llmRef = llm
         let cfg = configProvider()
         let apiKey = apiKeyProvider()
-        var dispatch: [Int: Task<[LLMStyleSuggestion], Error>] = [:]
+
+        // D-04: cancel-before-replace. Any prior Task at one of the indices we're about to
+        // re-dispatch is cancelled so its URLSession work stops before the replacement fires.
+        for i in missIndices {
+            inFlightByIndex[i]?.cancel()
+        }
+
         for i in missIndices {
             let paragraph = paragraphs[i]
             let prev: String? = i > 0 ? paragraphs[i - 1].text : nil
             let next: String? = (i + 1) < paragraphs.count ? paragraphs[i + 1].text : nil
             let target = paragraph.text
             let spans = harperSpans
-            dispatch[i] = Task<[LLMStyleSuggestion], Error> {
+            let task = Task<[LLMStyleSuggestion], Error> {
                 try Task.checkCancellation()
                 return await llmRef.analyze(
                     target: target,
@@ -117,13 +128,16 @@ actor LLMCheckScheduler {
                     harperSpans: spans
                 )
             }
+            inFlightByIndex[i] = task
         }
 
         // Await each Task, upsert into cache (D-11 / FR-9: record attempt even on empty results).
         var llmSuggestions: [Int: [LLMStyleSuggestion]] = [:]
-        for (i, task) in dispatch {
+        for i in missIndices {
+            guard let task = inFlightByIndex[i] else { continue }
             let results = (try? await task.value) ?? []
             llmSuggestions[i] = results
+            inFlightByIndex[i] = nil
             await cache.upsert(keys[i], status: .active, suggestions: results)
         }
 
