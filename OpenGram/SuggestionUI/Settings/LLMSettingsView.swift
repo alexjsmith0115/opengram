@@ -57,6 +57,11 @@ struct SettingsView: View {
                 .tabItem {
                     Label("Whitelisted Apps", systemImage: "app.badge.checkmark")
                 }
+
+            AdvancedSettingsView()
+                .tabItem {
+                    Label("Advanced", systemImage: "slider.horizontal.3")
+                }
         }
         .frame(width: 400, height: 500)
     }
