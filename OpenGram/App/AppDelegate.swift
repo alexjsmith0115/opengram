@@ -19,6 +19,19 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         let llmService = LLMService()
         let orchestrator = CheckOrchestrator(harper: harperService, llm: llmService)
 
+        // D-13: Scheduler is DI-composed at the root. Concrete Phase 15 components passed in;
+        // flag is read live per-call via UserDefaultsIncrementalConfig (D-14).
+        let scheduler = LLMCheckScheduler(
+            splitter: DoubleNewlineSplitter(),
+            hasher: Sha256ParagraphHasher(),
+            cache: ParagraphSuggestionCache(),
+            clock: SystemClock(),
+            llm: llmService,
+            configProvider: { ConfigManager.currentLLMConfig() },
+            apiKeyProvider: { ConfigManager.currentAPIKey() },
+            incrementalConfig: UserDefaultsIncrementalConfig()
+        )
+
         let statusBarController = StatusBarController()
         let overlayController = OverlayController()
         let llmPanelController = LLMPanelController()
@@ -27,6 +40,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
             textEngine: textEngine,
             orchestrator: orchestrator,
             llmService: llmService,
+            scheduler: scheduler,
             overlayController: overlayController,
             llmPanelController: llmPanelController,
             statusBarController: statusBarController,

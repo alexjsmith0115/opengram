@@ -13,6 +13,7 @@ final class CheckCoordinator {
     private let textEngine: any AXTextEngineProtocol
     private let orchestrator: CheckOrchestrator
     private let llmService: LLMService?
+    private let scheduler: LLMCheckScheduler
     let overlayController: OverlayController
     let llmPanelController: LLMPanelController
     let statusBarController: StatusBarController
@@ -30,6 +31,7 @@ final class CheckCoordinator {
         textEngine: any AXTextEngineProtocol,
         orchestrator: CheckOrchestrator,
         llmService: LLMService?,
+        scheduler: LLMCheckScheduler,
         overlayController: OverlayController,
         llmPanelController: LLMPanelController,
         statusBarController: StatusBarController,
@@ -38,6 +40,7 @@ final class CheckCoordinator {
         self.textEngine = textEngine
         self.orchestrator = orchestrator
         self.llmService = llmService
+        self.scheduler = scheduler
         self.overlayController = overlayController
         self.llmPanelController = llmPanelController
         self.statusBarController = statusBarController
@@ -113,7 +116,7 @@ final class CheckCoordinator {
         }
 
         let config = ConfigManager.currentLLMConfig()
-        guard config.isEnabled, let llmService else {
+        guard config.isEnabled, llmService != nil else {
             Self.logger.debug("LLM skipped — isEnabled=\(config.isEnabled)")
             return
         }
@@ -121,19 +124,43 @@ final class CheckCoordinator {
         statusBarController.setState(.checkingLLM)
         statusBarController.updateStatusText("Checking style\u{2026}")
 
-        let paragraph = ParagraphExtractor.extract(from: context)
-        let apiKey = ConfigManager.currentAPIKey()
+        let contextBundleID = context.bundleID
+        let contextText = context.text
         let harperCheckTask = checkTask
+        let scheduler = self.scheduler
 
         llmTask = Task {
             await harperCheckTask?.value
             guard !Task.isCancelled else { return }
 
+            // D-12: route the hotkey LLM leg through the scheduler. Under flag-off this is a
+            // byte-identical pre-v1.2 call; under flag-on it fans out per-paragraph with the
+            // cache. harperSpans forwarded either way (LLM-03/LLM-04).
             let harperSpans = await MainActor.run { self.lastSuggestions.map { $0.original } }
-            let styleSuggestions = await llmService.analyze(
-                paragraph: paragraph, config: config, apiKey: apiKey, harperSpans: harperSpans
+            let schedulerSuggestions = await scheduler.check(
+                text: contextText, bundleID: contextBundleID, harperSpans: harperSpans
             )
             guard !Task.isCancelled else { return }
+
+            // Panel consumes [LLMStyleSuggestion] — map the scheduler's [Suggestion] back.
+            let styleSuggestions: [LLMStyleSuggestion] = schedulerSuggestions.compactMap { sug in
+                guard sug.source == .llm, let revised = sug.primaryReplacement else { return nil }
+                let cat: LLMStyleSuggestion.Category
+                switch sug.category {
+                case .clarity: cat = .clarity
+                case .tone: cat = .tone
+                case .rephrase: cat = .rephrase
+                default: return nil
+                }
+                return LLMStyleSuggestion(
+                    category: cat,
+                    originalText: sug.original,
+                    revisedText: revised,
+                    explanation: sug.message,
+                    confidence: Int(sug.priority)
+                )
+            }
+
             await MainActor.run {
                 self.restoreStatusAfterLLM()
                 self.showLLMPanel(styleSuggestions, context: context)
