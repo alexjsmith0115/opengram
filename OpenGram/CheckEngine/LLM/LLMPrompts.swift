@@ -58,4 +58,22 @@ enum LLMPrompts {
     static func userMessage(for paragraph: String) -> String {
         "Analyze this text:\n\n\(paragraph)"
     }
+
+    /// Incremental user message with labeled previous/target/next sections (D-05).
+    /// Missing neighbors are rendered as literal "<none>" so the prompt structure
+    /// stays invariant whether or not context paragraphs exist.
+    static func userMessageIncremental(target: String, previousContext: String?, nextContext: String?) -> String {
+        let prev = previousContext ?? "<none>"
+        let next = nextContext ?? "<none>"
+        return """
+        Previous paragraph (context only, do not suggest changes):
+        \(prev)
+
+        Target paragraph (provide suggestions for this paragraph only):
+        \(target)
+
+        Following paragraph (context only, do not suggest changes):
+        \(next)
+        """
+    }
 }
