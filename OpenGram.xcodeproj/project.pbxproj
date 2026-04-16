@@ -109,6 +109,8 @@
 		B100000100000000000000E2 /* LLMCheckSchedulerFlagOffTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000E2 /* LLMCheckSchedulerFlagOffTests.swift */; };
 		B100000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift */; };
 		B100000100000000000000F0 /* IncrementalConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000F0 /* IncrementalConfigTests.swift */; };
+		A100000100000000000000E2 /* AdvancedSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000E2 /* AdvancedSettingsView.swift */; };
+		B100000100000000000000F1 /* AdvancedSettingsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000F1 /* AdvancedSettingsViewTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -226,6 +228,8 @@
 		B200000100000000000000E2 /* LLMCheckSchedulerFlagOffTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCheckSchedulerFlagOffTests.swift; sourceTree = "<group>"; };
 		B200000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckCoordinatorSchedulerIntegrationTests.swift; sourceTree = "<group>"; };
 		B200000100000000000000F0 /* IncrementalConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementalConfigTests.swift; sourceTree = "<group>"; };
+		A200000100000000000000E2 /* AdvancedSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSettingsView.swift; sourceTree = "<group>"; };
+		B200000100000000000000F1 /* AdvancedSettingsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSettingsViewTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -510,6 +514,7 @@
 			children = (
 				A20000010000000000000095 /* LLMSettingsView.swift */,
 				A200000100000000000000A1 /* WhitelistSettingsView.swift */,
+				A200000100000000000000E2 /* AdvancedSettingsView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -570,6 +575,7 @@
 				B20000010000000000000028 /* UnderlineViewTests.swift */,
 				B20000010000000000000033 /* OverlayControllerDiffTests.swift */,
 				B200000100000000000000C0 /* PanelPositionerTests.swift */,
+				B200000100000000000000F1 /* AdvancedSettingsViewTests.swift */,
 			);
 			path = SuggestionUITests;
 			sourceTree = "<group>";
@@ -729,6 +735,7 @@
 				A100000100000000000000C4 /* ParagraphSuggestionCache.swift in Sources */,
 				A100000100000000000000E0 /* IncrementalConfig.swift in Sources */,
 				A100000100000000000000E1 /* LLMCheckScheduler.swift in Sources */,
+				A100000100000000000000E2 /* AdvancedSettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -777,6 +784,7 @@
 				B100000100000000000000E2 /* LLMCheckSchedulerFlagOffTests.swift in Sources */,
 				B100000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift in Sources */,
 				B100000100000000000000F0 /* IncrementalConfigTests.swift in Sources */,
+				B100000100000000000000F1 /* AdvancedSettingsViewTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
