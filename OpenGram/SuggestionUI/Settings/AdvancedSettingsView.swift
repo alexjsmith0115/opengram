@@ -8,9 +8,13 @@ import Foundation
 struct AdvancedSettingsView: View {
 
     static let warningText = "Advanced settings are unstable \u{2014} values may change between versions."
-    static let minIssueCountKey = "llmMinIssueCount"
-    static let minWordCountKey = "llmMinWordCount"
-    static let idleDebounceSecondsKey = "llmIdleDebounceSeconds"
+
+    // Key constants re-exported from UserDefaultsIncrementalConfig (single source of truth).
+    // The @AppStorage literals below MUST match these — enforced by
+    // `appStorageKeys_matchConfigKeys` test.
+    static let minIssueCountKey = UserDefaultsIncrementalConfig.minIssueCountKey
+    static let minWordCountKey = UserDefaultsIncrementalConfig.minWordCountKey
+    static let idleDebounceSecondsKey = UserDefaultsIncrementalConfig.idleDebounceSecondsKey
 
     @AppStorage("llmMinIssueCount") private var minIssueCount: Int = 2
     @AppStorage("llmMinWordCount") private var minWordCount: Int = 12

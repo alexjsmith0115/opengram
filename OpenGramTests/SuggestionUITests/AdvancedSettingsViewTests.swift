@@ -20,6 +20,16 @@ import Foundation
         #expect(AdvancedSettingsView.idleDebounceSecondsKey == "llmIdleDebounceSeconds")
     }
 
+    /// Drift guard: `@AppStorage` property wrappers in `AdvancedSettingsView` use string
+    /// literals (property wrapper arguments must be compile-time constants). This test
+    /// asserts the view's key constants match `UserDefaultsIncrementalConfig`'s keys so
+    /// a rename on one side forces a rename on the other.
+    @Test func appStorageKeys_matchConfigKeys() {
+        #expect(AdvancedSettingsView.minIssueCountKey == UserDefaultsIncrementalConfig.minIssueCountKey)
+        #expect(AdvancedSettingsView.minWordCountKey == UserDefaultsIncrementalConfig.minWordCountKey)
+        #expect(AdvancedSettingsView.idleDebounceSecondsKey == UserDefaultsIncrementalConfig.idleDebounceSecondsKey)
+    }
+
     @Test func resetDefaults_writesLockedDefaultsToSuite() {
         let suite = makeSuite()
         suite.set(7, forKey: "llmMinIssueCount")

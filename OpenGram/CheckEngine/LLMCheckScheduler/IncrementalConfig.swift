@@ -29,24 +29,33 @@ struct UserDefaultsIncrementalConfig: IncrementalConfig, @unchecked Sendable {
     static let defaultMinWordCount: Int = 12
     static let defaultIdleDebounceSeconds: TimeInterval = 1.5
 
+    // Single source of truth for the UserDefaults key strings. `AdvancedSettingsView`
+    // re-declares the same literals in its `@AppStorage` wrappers (property-wrapper
+    // arguments require compile-time string literals) and asserts equality via
+    // `appStorageKeys_matchConfigKeys` test to prevent drift.
+    static let isIncrementalCheckingEnabledKey = "llmIncrementalCheckingEnabled"
+    static let minIssueCountKey = "llmMinIssueCount"
+    static let minWordCountKey = "llmMinWordCount"
+    static let idleDebounceSecondsKey = "llmIdleDebounceSeconds"
+
     private let defaults: UserDefaults
     init(defaults: UserDefaults = .standard) { self.defaults = defaults }
 
     var isIncrementalCheckingEnabled: Bool {
-        defaults.bool(forKey: "llmIncrementalCheckingEnabled")
+        defaults.bool(forKey: Self.isIncrementalCheckingEnabledKey)
     }
 
     /// `defaults.object(forKey:)` (not `defaults.integer(forKey:)`) to distinguish unset from
     /// a user-set zero — `integer(forKey:)` returns 0 for missing keys, collapsing both cases.
     var minIssueCount: Int {
-        defaults.object(forKey: "llmMinIssueCount") as? Int ?? Self.defaultMinIssueCount
+        defaults.object(forKey: Self.minIssueCountKey) as? Int ?? Self.defaultMinIssueCount
     }
 
     var minWordCount: Int {
-        defaults.object(forKey: "llmMinWordCount") as? Int ?? Self.defaultMinWordCount
+        defaults.object(forKey: Self.minWordCountKey) as? Int ?? Self.defaultMinWordCount
     }
 
     var idleDebounceSeconds: TimeInterval {
-        defaults.object(forKey: "llmIdleDebounceSeconds") as? Double ?? Self.defaultIdleDebounceSeconds
+        defaults.object(forKey: Self.idleDebounceSecondsKey) as? Double ?? Self.defaultIdleDebounceSeconds
     }
 }
