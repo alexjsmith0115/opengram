@@ -47,7 +47,12 @@ enum LLMPrompts {
         """
 
         if !harperSpans.isEmpty {
-            let quoted = harperSpans.map { "\"\($0)\"" }.joined(separator: ", ")
+            let quoted = harperSpans.map { span in
+                let escaped = span
+                    .replacingOccurrences(of: "\\", with: "\\\\")
+                    .replacingOccurrences(of: "\"", with: "\\\"")
+                return "\"\(escaped)\""
+            }.joined(separator: ", ")
             prompt += "\n\nThe grammar checker already flagged these spans: [\(quoted)]. Do NOT suggest changes for any of these spans."
         }
 
