@@ -370,42 +370,90 @@
 		A4000001000000000000000A /* CheckEngine */ = {
 			isa = PBXGroup;
 			children = (
-				A20000010000000000000030 /* GrammarCheckerProtocol.swift */,
-				A20000010000000000000031 /* Suggestion.swift */,
-				A20000010000000000000032 /* DictionaryStore.swift */,
-				A20000010000000000000033 /* HarperService.swift */,
+				A4000001000000000000C001 /* Harper */,
+				A4000001000000000000C002 /* LLM */,
 				A20000010000000000000094 /* CheckOrchestrator.swift */,
+				A20000010000000000000098 /* ParagraphExtractor.swift */,
+				A20000010000000000000031 /* Suggestion.swift */,
+			);
+			path = CheckEngine;
+			sourceTree = "<group>";
+		};
+		A4000001000000000000C001 /* Harper */ = {
+			isa = PBXGroup;
+			children = (
+				A20000010000000000000032 /* DictionaryStore.swift */,
+				A20000010000000000000030 /* GrammarCheckerProtocol.swift */,
+				A20000010000000000000033 /* HarperService.swift */,
+			);
+			path = Harper;
+			sourceTree = "<group>";
+		};
+		A4000001000000000000C002 /* LLM */ = {
+			isa = PBXGroup;
+			children = (
 				A20000010000000000000091 /* LLMConfig.swift */,
 				A20000010000000000000092 /* LLMPrompts.swift */,
 				A20000010000000000000090 /* LLMProviderProtocol.swift */,
+				A20000010000000000000097 /* LLMResponseDTO.swift */,
 				A20000010000000000000093 /* LLMService.swift */,
 				A20000010000000000000096 /* LLMStyleSuggestion.swift */,
-				A20000010000000000000097 /* LLMResponseDTO.swift */,
-				A20000010000000000000098 /* ParagraphExtractor.swift */,
 			);
-			path = CheckEngine;
+			path = LLM;
 			sourceTree = "<group>";
 		};
 		A4000001000000000000000B /* SuggestionUI */ = {
 			isa = PBXGroup;
 			children = (
-				A20000010000000000000047 /* AXCallWatchdog.swift */,
-				A20000010000000000000046 /* BoundsValidator.swift */,
-				A20000010000000000000095 /* LLMSettingsView.swift */,
-				A20000010000000000000040 /* OverlayController.swift */,
-				A20000010000000000000041 /* OverlayWindow.swift */,
-				A20000010000000000000042 /* PopoverView.swift */,
-				A20000010000000000000043 /* SuggestionPopoverPanel.swift */,
-				A20000010000000000000070 /* SuggestionDiffEngine.swift */,
-				A20000010000000000000045 /* TargetAppObserver.swift */,
-				A20000010000000000000044 /* UnderlineView.swift */,
-				A200000100000000000000A1 /* WhitelistSettingsView.swift */,
-				A200000100000000000000A2 /* InlineDiffView.swift */,
-				A200000100000000000000A3 /* LLMSuggestionPanel.swift */,
-				A200000100000000000000A4 /* LLMPanelController.swift */,
-				A200000100000000000000B1 /* PanelPositioner.swift */,
+				A4000001000000000000C005 /* Accessibility */,
+				A4000001000000000000C003 /* Overlay */,
+				A4000001000000000000C004 /* Panels */,
+				A4000001000000000000C006 /* Settings */,
 			);
 			path = SuggestionUI;
+			sourceTree = "<group>";
+		};
+		A4000001000000000000C003 /* Overlay */ = {
+			isa = PBXGroup;
+			children = (
+				A20000010000000000000040 /* OverlayController.swift */,
+				A20000010000000000000041 /* OverlayWindow.swift */,
+				A20000010000000000000044 /* UnderlineView.swift */,
+			);
+			path = Overlay;
+			sourceTree = "<group>";
+		};
+		A4000001000000000000C004 /* Panels */ = {
+			isa = PBXGroup;
+			children = (
+				A200000100000000000000A2 /* InlineDiffView.swift */,
+				A200000100000000000000A4 /* LLMPanelController.swift */,
+				A200000100000000000000A3 /* LLMSuggestionPanel.swift */,
+				A200000100000000000000B1 /* PanelPositioner.swift */,
+				A20000010000000000000042 /* PopoverView.swift */,
+				A20000010000000000000070 /* SuggestionDiffEngine.swift */,
+				A20000010000000000000043 /* SuggestionPopoverPanel.swift */,
+			);
+			path = Panels;
+			sourceTree = "<group>";
+		};
+		A4000001000000000000C005 /* Accessibility */ = {
+			isa = PBXGroup;
+			children = (
+				A20000010000000000000047 /* AXCallWatchdog.swift */,
+				A20000010000000000000046 /* BoundsValidator.swift */,
+				A20000010000000000000045 /* TargetAppObserver.swift */,
+			);
+			path = Accessibility;
+			sourceTree = "<group>";
+		};
+		A4000001000000000000C006 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				A20000010000000000000095 /* LLMSettingsView.swift */,
+				A200000100000000000000A1 /* WhitelistSettingsView.swift */,
+			);
+			path = Settings;
 			sourceTree = "<group>";
 		};
 		A4000001000000000000000C /* AppQuirks */ = {
