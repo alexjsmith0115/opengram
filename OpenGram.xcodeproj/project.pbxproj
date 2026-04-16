@@ -108,6 +108,7 @@
 		B100000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift */; };
 		B100000100000000000000E2 /* LLMCheckSchedulerFlagOffTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000E2 /* LLMCheckSchedulerFlagOffTests.swift */; };
 		B100000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift */; };
+		B100000100000000000000F0 /* IncrementalConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000F0 /* IncrementalConfigTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -224,6 +225,7 @@
 		B200000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCheckSchedulerCancellationTests.swift; sourceTree = "<group>"; };
 		B200000100000000000000E2 /* LLMCheckSchedulerFlagOffTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCheckSchedulerFlagOffTests.swift; sourceTree = "<group>"; };
 		B200000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckCoordinatorSchedulerIntegrationTests.swift; sourceTree = "<group>"; };
+		B200000100000000000000F0 /* IncrementalConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementalConfigTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -538,6 +540,7 @@
 				B200000100000000000000E0 /* LLMCheckSchedulerTests.swift */,
 				B200000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift */,
 				B200000100000000000000E2 /* LLMCheckSchedulerFlagOffTests.swift */,
+				B200000100000000000000F0 /* IncrementalConfigTests.swift */,
 			);
 			path = CheckEngine;
 			sourceTree = "<group>";
@@ -773,6 +776,7 @@
 				B100000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift in Sources */,
 				B100000100000000000000E2 /* LLMCheckSchedulerFlagOffTests.swift in Sources */,
 				B100000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift in Sources */,
+				B100000100000000000000F0 /* IncrementalConfigTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
