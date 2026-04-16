@@ -7,8 +7,9 @@ import os.log
 /// → substring-based offset rebasing → merged `[Suggestion]`. D-01, D-02, D-05, D-07, D-11.
 ///
 /// Plan 16-02 scope: flag-on flow only. Flag-off fallback lands in Plan 16-04.
-/// Plan 16-03 adds per-paragraph in-flight cancellation map (`inFlightByIndex`); idle debounce
-/// + focus-loss trigger land in Task 2 of this plan.
+/// Plan 16-03 adds per-paragraph in-flight cancellation map (`inFlightByIndex`),
+/// keystroke idle-debounce (`onKeystroke` + `pendingIdleTask`), and focus-loss trigger
+/// (`checkOnFocusLoss`).
 actor LLMCheckScheduler {
 
     // MARK: - Dependencies
@@ -187,5 +188,33 @@ actor LLMCheckScheduler {
         case .tone: return .tone
         case .rephrase: return .rephrase
         }
+    }
+
+    // MARK: - Scheduling entry points (D-09, D-10)
+
+    // D-09: idle-debounce. On each keystroke signal, cancel prior pending task and spawn a
+    // replacement. When the sleep completes uncancelled, fire check() and hand results to
+    // onComplete (fire-and-forget; callers wanting an awaitable result use check() directly).
+    private var pendingIdleTask: Task<Void, Never>?
+
+    func onKeystroke(text: String, bundleID: String, harperSpans: [String] = [], onComplete: @escaping @Sendable ([Suggestion]) -> Void) {
+        pendingIdleTask?.cancel()
+        let debounce = idleDebounceSeconds
+        pendingIdleTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(debounce))
+            if Task.isCancelled { return }
+            guard let self else { return }
+            let suggestions = await self.check(text: text, bundleID: bundleID, harperSpans: harperSpans)
+            if Task.isCancelled { return }
+            onComplete(suggestions)
+        }
+    }
+
+    // D-10: focus-loss trigger reuses the main check() flow with no idle wait. Cancels any
+    // pending debounce fire so the two signals don't double-fire.
+    func checkOnFocusLoss(text: String, bundleID: String, harperSpans: [String] = []) async -> [Suggestion] {
+        pendingIdleTask?.cancel()
+        pendingIdleTask = nil
+        return await check(text: text, bundleID: bundleID, harperSpans: harperSpans)
     }
 }
