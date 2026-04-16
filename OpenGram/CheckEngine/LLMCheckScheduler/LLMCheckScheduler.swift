@@ -145,17 +145,32 @@ actor LLMCheckScheduler {
         }
 
         // Await each Task, upsert into cache (D-11 / FR-9: record attempt even on empty results).
+        // CR-01: distinguish cancellation from empty LLM result — never poison the cache with []
+        // on cancel. CR-02: the cache.upsert must live inside the same "still own the slot" guard
+        // so a peer's fresh result isn't clobbered by our trailing write.
         var llmSuggestions: [Int: [LLMStyleSuggestion]] = [:]
         for i in missIndices {
             guard let task = ownTasks[i] else { continue }
-            let results = (try? await task.value) ?? []
+            let results: [LLMStyleSuggestion]
+            let taskCancelled: Bool
+            do {
+                results = try await task.value
+                taskCancelled = false
+            } catch is CancellationError {
+                results = []
+                taskCancelled = true
+            } catch {
+                results = []
+                taskCancelled = false
+            }
             llmSuggestions[i] = results
-            // Only clear if the slot still holds OUR task; a newer check() call may have
-            // replaced it in the interim.
-            if inFlightByIndex[i] == task {
+            let stillOwnsSlot = (inFlightByIndex[i] == task)
+            if stillOwnsSlot {
                 inFlightByIndex[i] = nil
             }
-            await cache.upsert(keys[i], status: .active, suggestions: results)
+            if !taskCancelled, stillOwnsSlot {
+                await cache.upsert(keys[i], status: .active, suggestions: results)
+            }
         }
 
         // Merge cache-hits + fresh LLM results and rebase every paragraph's style suggestions
