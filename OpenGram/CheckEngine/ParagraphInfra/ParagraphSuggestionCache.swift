@@ -31,8 +31,8 @@ actor ParagraphSuggestionCache {
     private var partitions: [String: [UInt64: CacheEntry]] = [:]
 
     init(clock: CacheClock = SystemClock(),
-         ttl: TimeInterval = Self.defaultTTL,
-         maxEntriesPerBundle: Int = Self.defaultMaxEntriesPerBundle) {
+         ttl: TimeInterval = ParagraphSuggestionCache.defaultTTL,
+         maxEntriesPerBundle: Int = ParagraphSuggestionCache.defaultMaxEntriesPerBundle) {
         self.clock = clock
         self.ttl = ttl
         self.maxEntriesPerBundle = maxEntriesPerBundle

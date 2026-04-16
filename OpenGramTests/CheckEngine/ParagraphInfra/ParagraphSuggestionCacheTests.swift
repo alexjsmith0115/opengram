@@ -2,9 +2,10 @@ import Testing
 import Foundation
 @testable import OpenGramLib
 
-/// Test-local fake. Re-declared to keep the cache suite decoupled from `CacheClockTests`
-/// (where the same shape lives) — D-19.
-private final class FakeClock: CacheClock, @unchecked Sendable {
+/// Test-local fake. Named distinctly from `CacheClockTests.FakeClock` because
+/// `private` at top level is file-private access but still occupies module-level
+/// namespace — two same-named private classes in the same module collide. D-19.
+private final class CacheFakeClock: CacheClock, @unchecked Sendable {
     var current: Date
     init(_ seed: Date) { self.current = seed }
     func now() -> Date { current }
@@ -91,7 +92,7 @@ private func makeKey(bundle: String = "com.test", hash: UInt64) -> ParagraphCach
     // MARK: - LRU (INCR-10)
 
     @Test func lruEvictsOldestWhenCapExceeded() async {
-        let clock = FakeClock(Date(timeIntervalSince1970: 0))
+        let clock = CacheFakeClock(Date(timeIntervalSince1970: 0))
         let cache = ParagraphSuggestionCache(clock: clock, ttl: 10_000, maxEntriesPerBundle: 3)
 
         await cache.upsert(makeKey(hash: 1), status: .active, suggestions: [makeSuggestion("1")])
@@ -126,7 +127,7 @@ private func makeKey(bundle: String = "com.test", hash: UInt64) -> ParagraphCach
     // MARK: - TTL (INCR-10)
 
     @Test func ttlEvictsExpiredEntriesOnInsert() async {
-        let clock = FakeClock(Date(timeIntervalSince1970: 0))
+        let clock = CacheFakeClock(Date(timeIntervalSince1970: 0))
         let cache = ParagraphSuggestionCache(clock: clock, ttl: 60, maxEntriesPerBundle: 1000)
 
         await cache.upsert(makeKey(hash: 1), status: .active, suggestions: [makeSuggestion("1")])
@@ -138,7 +139,7 @@ private func makeKey(bundle: String = "com.test", hash: UInt64) -> ParagraphCach
     }
 
     @Test func ttlDoesNotEvictFreshEntriesOnLookup() async {
-        let clock = FakeClock(Date(timeIntervalSince1970: 0))
+        let clock = CacheFakeClock(Date(timeIntervalSince1970: 0))
         let cache = ParagraphSuggestionCache(clock: clock, ttl: 60, maxEntriesPerBundle: 1000)
 
         await cache.upsert(makeKey(hash: 1), status: .active, suggestions: [makeSuggestion("1")])
@@ -156,7 +157,7 @@ private func makeKey(bundle: String = "com.test", hash: UInt64) -> ParagraphCach
     }
 
     @Test func ttlSweepRunsBeforeLruCap() async {
-        let clock = FakeClock(Date(timeIntervalSince1970: 0))
+        let clock = CacheFakeClock(Date(timeIntervalSince1970: 0))
         let cache = ParagraphSuggestionCache(clock: clock, ttl: 10, maxEntriesPerBundle: 2)
 
         await cache.upsert(makeKey(hash: 1), status: .active, suggestions: [makeSuggestion("1")])

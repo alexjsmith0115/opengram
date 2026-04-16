@@ -100,6 +100,8 @@
 		B100000100000000000000D1 /* ParagraphSplitterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000D1 /* ParagraphSplitterTests.swift */; };
 		A100000100000000000000C3 /* ParagraphHasher.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000C3 /* ParagraphHasher.swift */; };
 		B100000100000000000000D2 /* ParagraphHasherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000D2 /* ParagraphHasherTests.swift */; };
+		A100000100000000000000C4 /* ParagraphSuggestionCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000C4 /* ParagraphSuggestionCache.swift */; };
+		B100000100000000000000D3 /* ParagraphSuggestionCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000D3 /* ParagraphSuggestionCacheTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -208,6 +210,8 @@
 		B200000100000000000000D1 /* ParagraphSplitterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphSplitterTests.swift; sourceTree = "<group>"; };
 		A200000100000000000000C3 /* ParagraphHasher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphHasher.swift; sourceTree = "<group>"; };
 		B200000100000000000000D2 /* ParagraphHasherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphHasherTests.swift; sourceTree = "<group>"; };
+		A200000100000000000000C4 /* ParagraphSuggestionCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphSuggestionCache.swift; sourceTree = "<group>"; };
+		B200000100000000000000D3 /* ParagraphSuggestionCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphSuggestionCacheTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -403,6 +407,7 @@
 				A200000100000000000000C1 /* CacheClock.swift */,
 				A200000100000000000000C2 /* ParagraphSplitter.swift */,
 				A200000100000000000000C3 /* ParagraphHasher.swift */,
+				A200000100000000000000C4 /* ParagraphSuggestionCache.swift */,
 			);
 			path = ParagraphInfra;
 			sourceTree = "<group>";
@@ -517,6 +522,7 @@
 				B200000100000000000000D0 /* CacheClockTests.swift */,
 				B200000100000000000000D1 /* ParagraphSplitterTests.swift */,
 				B200000100000000000000D2 /* ParagraphHasherTests.swift */,
+				B200000100000000000000D3 /* ParagraphSuggestionCacheTests.swift */,
 			);
 			path = ParagraphInfra;
 			sourceTree = "<group>";
@@ -691,6 +697,7 @@
 				A100000100000000000000C1 /* CacheClock.swift in Sources */,
 				A100000100000000000000C2 /* ParagraphSplitter.swift in Sources */,
 				A100000100000000000000C3 /* ParagraphHasher.swift in Sources */,
+				A100000100000000000000C4 /* ParagraphSuggestionCache.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -733,6 +740,7 @@
 				B100000100000000000000D0 /* CacheClockTests.swift in Sources */,
 				B100000100000000000000D1 /* ParagraphSplitterTests.swift in Sources */,
 				B100000100000000000000D2 /* ParagraphHasherTests.swift in Sources */,
+				B100000100000000000000D3 /* ParagraphSuggestionCacheTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
