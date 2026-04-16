@@ -82,6 +82,7 @@
 		A100000100000000000000A0 /* AppWhitelist.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000A0 /* AppWhitelist.swift */; };
 		B100000100000000000000A0 /* AppWhitelistTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000A0 /* AppWhitelistTests.swift */; };
 		B1000001000000000000004C /* TwoPhaseCheckFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000001000000000000004C /* TwoPhaseCheckFlowTests.swift */; };
+		B100000100000000000000C0 /* PanelPositionerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000C0 /* PanelPositionerTests.swift */; };
 		A100000100000000000000A1 /* WhitelistSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000A1 /* WhitelistSettingsView.swift */; };
 		A100000100000000000000A2 /* InlineDiffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000A2 /* InlineDiffView.swift */; };
 		A100000100000000000000A3 /* LLMSuggestionPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000A3 /* LLMSuggestionPanel.swift */; };
@@ -192,6 +193,7 @@
 		A200000100000000000000B3 /* CheckCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckCoordinator.swift; sourceTree = "<group>"; };
 		A200000100000000000000B4 /* ConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigManager.swift; sourceTree = "<group>"; };
 		B2000001000000000000004C /* TwoPhaseCheckFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoPhaseCheckFlowTests.swift; sourceTree = "<group>"; };
+		B200000100000000000000C0 /* PanelPositionerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelPositionerTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -495,6 +497,7 @@
 				B20000010000000000000027 /* TargetAppObserverTests.swift */,
 				B20000010000000000000028 /* UnderlineViewTests.swift */,
 				B20000010000000000000033 /* OverlayControllerDiffTests.swift */,
+				B200000100000000000000C0 /* PanelPositionerTests.swift */,
 			);
 			path = SuggestionUITests;
 			sourceTree = "<group>";
@@ -685,6 +688,7 @@
 				B1000001000000000000003B /* ParagraphExtractorTests.swift in Sources */,
 				B100000100000000000000A0 /* AppWhitelistTests.swift in Sources */,
 				B1000001000000000000004C /* TwoPhaseCheckFlowTests.swift in Sources */,
+				B100000100000000000000C0 /* PanelPositionerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

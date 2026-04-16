@@ -32,4 +32,36 @@ enum PanelPositioner {
 
         return origin
     }
+
+    /// Positions panel in the margin — prefers right of anchor, falls back to left, then above/below.
+    /// Vertically centers panel against anchor rect.
+    static func marginOrigin(
+        for size: NSSize,
+        near anchorRect: NSRect,
+        on screen: NSScreen,
+        gap: CGFloat = 8
+    ) -> NSPoint {
+        let visibleFrame = screen.visibleFrame
+        let verticalY = clampedY(anchorMidY: anchorRect.midY, panelHeight: size.height, visibleFrame: visibleFrame)
+
+        // Prefer right margin
+        let rightX = anchorRect.maxX + gap
+        if rightX + size.width <= visibleFrame.maxX {
+            return NSPoint(x: rightX, y: verticalY)
+        }
+
+        // Fall back to left margin
+        let leftX = anchorRect.minX - size.width - gap
+        if leftX >= visibleFrame.minX {
+            return NSPoint(x: leftX, y: verticalY)
+        }
+
+        // Neither margin fits — fall back to above/below
+        return origin(for: size, near: anchorRect, on: screen, gap: gap)
+    }
+
+    private static func clampedY(anchorMidY: CGFloat, panelHeight: CGFloat, visibleFrame: NSRect) -> CGFloat {
+        let y = anchorMidY - panelHeight / 2
+        return max(visibleFrame.minY, min(y, visibleFrame.maxY - panelHeight))
+    }
 }

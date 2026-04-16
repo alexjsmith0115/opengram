@@ -43,7 +43,7 @@ final class LLMPanelController {
         newPanel.isFloatingPanel = true
         newPanel.level = .popUpMenu
         newPanel.collectionBehavior = [.canJoinAllSpaces]
-        newPanel.isMovableByWindowBackground = false
+        newPanel.isMovableByWindowBackground = true
         newPanel.becomesKeyOnlyIfNeeded = true
         newPanel.backgroundColor = .clear
         newPanel.isOpaque = false
@@ -59,7 +59,7 @@ final class LLMPanelController {
         )
         newPanel.setContentSize(size)
 
-        let panelOrigin = PanelPositioner.origin(for: newPanel.frame.size, near: anchorRect, on: screen, gap: 8)
+        let panelOrigin = PanelPositioner.marginOrigin(for: newPanel.frame.size, near: anchorRect, on: screen, gap: 8)
         newPanel.setFrameOrigin(panelOrigin)
         newPanel.orderFront(nil)
 
