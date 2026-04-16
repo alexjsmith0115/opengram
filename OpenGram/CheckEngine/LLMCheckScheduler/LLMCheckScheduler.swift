@@ -64,6 +64,13 @@ actor LLMCheckScheduler {
     /// Harper's already-flagged spans are forwarded verbatim to every per-paragraph
     /// LLM call on the flag-on path.
     func check(text: String, bundleID: String, harperSpans: [String] = []) async -> [Suggestion] {
+        // D-11 / INCR-14: feature flag gate. Flag-off delegates to the legacy analyze(paragraph:...) path
+        // unchanged from pre-v1.2 behavior. Splitter/hasher/cache stay dormant.
+        // D-14: flag read on every call — NO cached snapshot; a defaults flip takes effect on the next check().
+        guard incrementalConfig.isIncrementalCheckingEnabled else {
+            return await checkFullText(text: text, harperSpans: harperSpans)
+        }
+
         let paragraphs = splitter.split(text)
         guard !paragraphs.isEmpty else { return [] }
 
@@ -159,6 +166,31 @@ actor LLMCheckScheduler {
             merged.append(contentsOf: rebase(paragraph: paragraph, styleSuggestions: styles, source: text))
         }
         return merged
+    }
+
+    // MARK: - Flag-off fallback (D-11 / INCR-14)
+
+    /// Pre-v1.2 path: one legacy `analyze(paragraph:)` call over the full text, `harperSpans`
+    /// forwarded verbatim (LLM-03/LLM-04). Splitter/hasher/cache are NOT consulted on this path.
+    /// Offsets rebased by substring-search within the source string (NFR-7).
+    private func checkFullText(text: String, harperSpans: [String]) async -> [Suggestion] {
+        let cfg = configProvider()
+        let apiKey = apiKeyProvider()
+        let styleSuggestions = await llm.analyze(paragraph: text, config: cfg, apiKey: apiKey, harperSpans: harperSpans)
+        return styleSuggestions.compactMap { style in
+            guard let range = text.range(of: style.originalText) else { return nil }
+            return Suggestion(
+                id: UUID(),
+                range: range,
+                original: style.originalText,
+                primaryReplacement: style.revisedText,
+                allReplacements: [style.revisedText],
+                message: style.explanation,
+                category: checkCategory(for: style.category),
+                source: .llm,
+                priority: UInt8(max(1, min(10, style.confidence)))
+            )
+        }
     }
 
     // MARK: - Offset rebasing (NFR-7)
