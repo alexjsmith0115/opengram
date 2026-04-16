@@ -59,7 +59,7 @@ actor ParagraphSuggestionCache {
             lastAccessedAt: clock.now()
         )
         partitions[key.bundleID] = bundle
-        evictIfNeeded()
+        evictIfNeeded(bundleID: key.bundleID)
     }
 
     func markDismissed(_ key: ParagraphCacheKey) {
@@ -73,26 +73,27 @@ actor ParagraphSuggestionCache {
         partitions[key.bundleID] = bundle
     }
 
-    func evictIfNeeded() {
+    private func evictIfNeeded(bundleID: String) {
+        guard var bundle = partitions[bundleID] else { return }
         let now = clock.now()
-        for (bundleID, var bundle) in partitions {
-            // Step 1: TTL sweep (D-15, D-16).
-            for (hash, entry) in bundle where now.timeIntervalSince(entry.lastAccessedAt) > ttl {
-                bundle.removeValue(forKey: hash)
+        // Step 1: TTL sweep (D-15, D-16). Collect keys first, then remove —
+        // avoids mutate-during-iteration pattern even though COW makes it safe today.
+        let expired = bundle.compactMap { hash, entry in
+            now.timeIntervalSince(entry.lastAccessedAt) > ttl ? hash : nil
+        }
+        for hash in expired { bundle.removeValue(forKey: hash) }
+        // Step 2: LRU cap — partition-scoped (D-13, D-15). Common case toDrop == 1,
+        // so pick the oldest via min(by:) rather than sorting the whole bundle.
+        while bundle.count > maxEntriesPerBundle {
+            guard let oldest = bundle.min(by: { $0.value.lastAccessedAt < $1.value.lastAccessedAt })?.key else {
+                break
             }
-            // Step 2: LRU cap — partition-scoped (D-13, D-15).
-            if bundle.count > maxEntriesPerBundle {
-                let sorted = bundle.sorted { $0.value.lastAccessedAt < $1.value.lastAccessedAt }
-                let toDrop = bundle.count - maxEntriesPerBundle
-                for (hash, _) in sorted.prefix(toDrop) {
-                    bundle.removeValue(forKey: hash)
-                }
-            }
-            if bundle.isEmpty {
-                partitions.removeValue(forKey: bundleID)
-            } else {
-                partitions[bundleID] = bundle
-            }
+            bundle.removeValue(forKey: oldest)
+        }
+        if bundle.isEmpty {
+            partitions.removeValue(forKey: bundleID)
+        } else {
+            partitions[bundleID] = bundle
         }
     }
 }
