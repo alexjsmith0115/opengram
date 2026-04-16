@@ -46,6 +46,11 @@ private final class SlowMockLLMProvider: LLMProviderProtocol, @unchecked Sendabl
         return styleResults
     }
 
+    func analyze(target: String, previousContext: String?, nextContext: String?, config: LLMConfig, apiKey: String?, harperSpans: [String]) async -> [LLMStyleSuggestion] {
+        try? await Task.sleep(nanoseconds: delay)
+        return styleResults
+    }
+
     func healthCheck(config: LLMConfig, apiKey: String?) async -> Bool { true }
 }
 

@@ -98,6 +98,67 @@ actor LLMService: LLMProviderProtocol {
         }
     }
 
+    /// Context-aware analyze for Phase 16 scheduler (D-05/D-06).
+    /// Cancellation is per-call (caller owns the Task) — does NOT touch currentTask,
+    /// so the legacy analyze(paragraph:) single-flight path is unaffected.
+    func analyze(
+        target: String,
+        previousContext: String?,
+        nextContext: String?,
+        config: LLMConfig,
+        apiKey: String?,
+        harperSpans: [String] = []
+    ) async -> [LLMStyleSuggestion] {
+        guard config.isEnabled else {
+            Self.logger.info("LLM disabled (isEnabled=false) — skipping target analyze")
+            return []
+        }
+        guard let url = config.chatCompletionsURL else {
+            Self.logger.error("Invalid chat completions URL from baseURL: \(config.baseURL)")
+            return []
+        }
+
+        let session = self.session
+        do {
+            let payload = ChatRequest(
+                model: config.model,
+                messages: [
+                    ChatMessage(role: "system", content: LLMPrompts.systemPrompt(harperSpans: harperSpans, confidenceThreshold: config.confidenceThreshold)),
+                    ChatMessage(role: "user", content: LLMPrompts.userMessageIncremental(target: target, previousContext: previousContext, nextContext: nextContext))
+                ],
+                temperature: config.temperature,
+                maxTokens: config.maxTokens
+            )
+
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            if let key = apiKey, !key.isEmpty {
+                request.setValue("Bearer \(key)", forHTTPHeaderField: "Authorization")
+            }
+            request.timeoutInterval = config.requestTimeout
+            request.httpBody = try JSONEncoder().encode(payload)
+
+            try Task.checkCancellation()
+            let (data, response) = try await session.data(for: request)
+            try Task.checkCancellation()
+
+            guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+                let code = (response as? HTTPURLResponse)?.statusCode ?? -1
+                Self.logger.error("LLM HTTP error (target): status=\(code)")
+                return []
+            }
+
+            return (try? parseResponse(data: data, paragraph: target, confidenceThreshold: config.confidenceThreshold)) ?? []
+        } catch is CancellationError {
+            Self.logger.info("LLM target request cancelled")
+            return []
+        } catch {
+            Self.logger.error("LLM target request failed: \(error.localizedDescription)")
+            return []
+        }
+    }
+
     func healthCheck(config: LLMConfig, apiKey: String?) async -> Bool {
         guard let baseURL = URL(string: config.baseURL.trimmingCharacters(in: .whitespacesAndNewlines)
                 .trimmingCharacters(in: CharacterSet(charactersIn: "/"))) else { return false }

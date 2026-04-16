@@ -205,3 +205,248 @@ private final class HangingURLProtocol: URLProtocol {
     override func startLoading() {}
     override func stopLoading() {}
 }
+
+// MARK: - Target Context Tests (Plan 16-01)
+
+/// Records every request it sees; responds with a canned body + status.
+private final class RecordingURLProtocol: URLProtocol {
+    nonisolated(unsafe) static var cannedStatus: Int = 200
+    nonisolated(unsafe) static var cannedBody: Data = Data()
+    nonisolated(unsafe) static var receivedRequests: [URLRequest] = []
+    nonisolated(unsafe) static var receivedBodies: [Data] = []
+    nonisolated(unsafe) static var didLoadAny: Bool = false
+
+    static func reset() {
+        cannedStatus = 200
+        cannedBody = Data()
+        receivedRequests = []
+        receivedBodies = []
+        didLoadAny = false
+    }
+
+    override class func canInit(with request: URLRequest) -> Bool { true }
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+
+    override func startLoading() {
+        Self.didLoadAny = true
+        Self.receivedRequests.append(request)
+        // URLProtocol strips httpBody in some flows; grab via bodyStreamData if needed.
+        if let body = request.httpBody {
+            Self.receivedBodies.append(body)
+        } else if let stream = request.httpBodyStream {
+            stream.open()
+            var buf = Data()
+            let bufferSize = 4096
+            var rawBuf = [UInt8](repeating: 0, count: bufferSize)
+            while stream.hasBytesAvailable {
+                let n = stream.read(&rawBuf, maxLength: bufferSize)
+                if n <= 0 { break }
+                buf.append(rawBuf, count: n)
+            }
+            stream.close()
+            Self.receivedBodies.append(buf)
+        }
+
+        let response = HTTPURLResponse(
+            url: request.url!,
+            statusCode: Self.cannedStatus,
+            httpVersion: "HTTP/1.1",
+            headerFields: ["Content-Type": "application/json"]
+        )!
+        client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+        client?.urlProtocol(self, didLoad: Self.cannedBody)
+        client?.urlProtocolDidFinishLoading(self)
+    }
+
+    override func stopLoading() {}
+}
+
+private func makeRecordingSession() -> URLSession {
+    let cfg = URLSessionConfiguration.ephemeral
+    cfg.protocolClasses = [RecordingURLProtocol.self]
+    return URLSession(configuration: cfg)
+}
+
+private func makeEnabledConfig() -> LLMConfig {
+    LLMConfig(
+        baseURL: "http://localhost:1234/v1",
+        model: "test",
+        enabledChecks: [.tone, .clarity, .rephrase],
+        temperature: 0.3,
+        maxTokens: 512,
+        requestTimeout: 30,
+        confidenceThreshold: LLMConfig.defaultConfidenceThreshold
+    )
+}
+
+private let fixtureTarget = "The target paragraph text."
+private let fixturePrevious = "Earlier."
+private let fixtureNext = "Later."
+
+private let cannedOneSuggestionEnvelope: Data = {
+    let content = """
+    {"suggestions":[{"category":"tone","revised_text":"Direct version.","explanation":"More confident.","confidence":8}]}
+    """
+    let escaped = content
+        .replacingOccurrences(of: "\\", with: "\\\\")
+        .replacingOccurrences(of: "\"", with: "\\\"")
+    let envelope = """
+    {"choices":[{"message":{"content":"\(escaped)"}}]}
+    """
+    return envelope.data(using: .utf8)!
+}()
+
+@Suite("LLMService.analyze(target:)", .serialized)
+struct LLMServiceTargetTests {
+
+    @Test("disabled config returns empty and does not hit session")
+    func analyze_target_disabledConfig_returnsEmpty() async {
+        RecordingURLProtocol.reset()
+        let session = makeRecordingSession()
+        let service = LLMService(session: session)
+        var config = makeEnabledConfig()
+        config.baseURL = ""   // isEnabled = false
+
+        let result = await service.analyze(
+            target: fixtureTarget,
+            previousContext: fixturePrevious,
+            nextContext: fixtureNext,
+            config: config,
+            apiKey: nil,
+            harperSpans: []
+        )
+
+        #expect(result.isEmpty)
+        #expect(RecordingURLProtocol.didLoadAny == false)
+    }
+
+    @Test("invalid URL returns empty")
+    func analyze_target_invalidURL_returnsEmpty() async {
+        RecordingURLProtocol.reset()
+        let session = makeRecordingSession()
+        let service = LLMService(session: session)
+        var config = makeEnabledConfig()
+        config.baseURL = "   "   // whitespace -> chatCompletionsURL nil, but isEnabled may still be true
+
+        let result = await service.analyze(
+            target: fixtureTarget,
+            previousContext: nil,
+            nextContext: nil,
+            config: config,
+            apiKey: nil,
+            harperSpans: []
+        )
+        #expect(result.isEmpty)
+    }
+
+    @Test("HTTP non-2xx returns empty")
+    func analyze_target_httpNon2xx_returnsEmpty() async {
+        RecordingURLProtocol.reset()
+        RecordingURLProtocol.cannedStatus = 500
+        RecordingURLProtocol.cannedBody = Data("error".utf8)
+        let session = makeRecordingSession()
+        let service = LLMService(session: session)
+
+        let result = await service.analyze(
+            target: fixtureTarget,
+            previousContext: fixturePrevious,
+            nextContext: fixtureNext,
+            config: makeEnabledConfig(),
+            apiKey: nil,
+            harperSpans: []
+        )
+        #expect(result.isEmpty)
+    }
+
+    @Test("parses suggestions with target as originalText")
+    func analyze_target_parsesSuggestionsWithTargetAsOriginalText() async {
+        RecordingURLProtocol.reset()
+        RecordingURLProtocol.cannedStatus = 200
+        RecordingURLProtocol.cannedBody = cannedOneSuggestionEnvelope
+        let session = makeRecordingSession()
+        let service = LLMService(session: session)
+
+        let result = await service.analyze(
+            target: fixtureTarget,
+            previousContext: fixturePrevious,
+            nextContext: fixtureNext,
+            config: makeEnabledConfig(),
+            apiKey: nil,
+            harperSpans: []
+        )
+        #expect(result.count == 1)
+        #expect(result.first?.originalText == fixtureTarget)
+        #expect(result.first?.category == .tone)
+    }
+
+    @Test("user message uses incremental prompt shape with <none> for nil context")
+    func analyze_target_userMessageIsIncrementalShape() async throws {
+        RecordingURLProtocol.reset()
+        RecordingURLProtocol.cannedStatus = 200
+        RecordingURLProtocol.cannedBody = cannedOneSuggestionEnvelope
+        let session = makeRecordingSession()
+        let service = LLMService(session: session)
+
+        _ = await service.analyze(
+            target: fixtureTarget,
+            previousContext: nil,
+            nextContext: fixtureNext,
+            config: makeEnabledConfig(),
+            apiKey: nil,
+            harperSpans: []
+        )
+
+        #expect(RecordingURLProtocol.receivedBodies.count == 1)
+        let body = RecordingURLProtocol.receivedBodies.first ?? Data()
+        let bodyString = String(data: body, encoding: .utf8) ?? ""
+        #expect(bodyString.contains("Previous paragraph (context only"))
+        #expect(bodyString.contains("Target paragraph (provide suggestions"))
+        #expect(bodyString.contains("Following paragraph (context only"))
+        #expect(bodyString.contains("<none>"))
+        #expect(bodyString.contains(fixtureTarget))
+        #expect(bodyString.contains(fixtureNext))
+    }
+
+    @Test("cancellation returns empty without throwing")
+    func analyze_target_cancellation_returnsEmpty() async {
+        // Hanging protocol so the request never resolves on its own.
+        let cfg = URLSessionConfiguration.ephemeral
+        cfg.protocolClasses = [HangingURLProtocol.self]
+        let session = URLSession(configuration: cfg)
+        let service = LLMService(session: session)
+
+        let task = Task {
+            await service.analyze(
+                target: fixtureTarget,
+                previousContext: fixturePrevious,
+                nextContext: fixtureNext,
+                config: makeEnabledConfig(),
+                apiKey: nil,
+                harperSpans: []
+            )
+        }
+
+        try? await Task.sleep(nanoseconds: 50_000_000)
+        task.cancel()
+        let result = await task.value
+        #expect(result.isEmpty)
+    }
+
+    @Test("legacy analyze(paragraph:) signature unchanged — regression guard")
+    func analyze_paragraph_legacySignatureUnchanged() async {
+        RecordingURLProtocol.reset()
+        RecordingURLProtocol.cannedStatus = 200
+        RecordingURLProtocol.cannedBody = cannedOneSuggestionEnvelope
+        let session = makeRecordingSession()
+        let service = LLMService(session: session)
+
+        let result = await service.analyze(
+            paragraph: "Legacy full-text path.",
+            config: makeEnabledConfig(),
+            apiKey: nil,
+            harperSpans: []
+        )
+        #expect(result.count == 1)
+        #expect(result.first?.originalText == "Legacy full-text path.")
+    }
+}
