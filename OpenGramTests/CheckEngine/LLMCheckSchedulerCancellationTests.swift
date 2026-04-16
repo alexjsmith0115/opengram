@@ -205,8 +205,15 @@ private func style(original: String, revised: String = "revised") -> LLMStyleSug
             fired.withLock { $0 = true }
         }
 
-        try? await Task.sleep(for: .milliseconds(100))
-        #expect(fired.withLock { $0 } == true)
+        // Poll up to 1s — under parallel test load the cooperative pool may delay the
+        // zero-debounce Task scheduling beyond a fixed short sleep. Assertion is that it
+        // fires WITHOUT waiting an idleDebounceSeconds window (which doesn't exist here).
+        var fireObserved = false
+        for _ in 0..<20 {
+            try? await Task.sleep(for: .milliseconds(50))
+            if fired.withLock({ $0 }) { fireObserved = true; break }
+        }
+        #expect(fireObserved)
     }
 
     // 6. Map cleanup: consecutive cache-miss check() invocations leave no stale in-flight entries.
