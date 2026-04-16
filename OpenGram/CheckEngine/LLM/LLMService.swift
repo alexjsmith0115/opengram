@@ -87,6 +87,12 @@ actor LLMService: LLMProviderProtocol {
 
         currentTask = task
 
+        defer {
+            // WR-03: clear the slot once done so the last request's closure (paragraph text,
+            // API key) doesn't linger on the actor until the next analyze() call.
+            if currentTask == task { currentTask = nil }
+        }
+
         do {
             return try await task.value
         } catch is CancellationError {
