@@ -31,7 +31,7 @@ Full details: [milestones/v1.1-ROADMAP.md](milestones/v1.1-ROADMAP.md)
 - [x] **Phase 18: Paragraph Rephrase Card** — Full Part B UI: card rendering, diff views, accept/dismiss/hide semantics, highlight (completed 2026-04-17)
 - [x] **Phase 18.1: Rephrase Card Hotkey Wiring Fix (INSERTED)** — CheckCoordinator LLM routing fix so card dispatches in hotkey path (completed 2026-04-17)
 - [x] **Phase 18.2: Rephrase Card as Default (INSERTED)** — Remove `paragraphRephraseCardEnabled` flag and legacy LLM panel path; card is the unconditional product default (completed 2026-04-17)
-- [ ] **Phase 18.3: Rephrase Card Panel Sizing Fix (INSERTED)** — Card panel frame clips content; Accept button not visible, Dismiss barely visible. Fix `RephraseCardPanelController` / `RephraseCardView` sizing so full card renders.
+- [x] **Phase 18.3: Rephrase Card Panel Sizing Fix (INSERTED)** — Card panel frame clips content; Accept button not visible, Dismiss barely visible. Fix `RephraseCardPanelController` / `RephraseCardView` sizing so full card renders. (completed 2026-04-17)
 - [ ] **Phase 19: Integration & UAT** — End-to-end validation, visual regression, manual dogfooding
 
 ## Phase Details
@@ -159,11 +159,11 @@ Plans:
   4. Panel positioning does not push the card off-screen at the document edges; if the anchor would clip, the panel shifts to stay within the active screen's visible frame.
   5. xcodebuild build + xcodebuild test both green; no regressions in the 437-test baseline.
   6. Manual validation in Notes.app with the Phase 18.2 test paragraph: Accept button visible, Dismiss button visible, full card content readable without scrolling the underlying document.
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans complete
 - [x] 18.3-01-PLAN.md — Remove inner SwiftUI ScrollView from RephraseCardView.bodyContent (D-01/D-02/D-03)
 - [x] 18.3-02-PLAN.md — Add PanelPositioner.capHeight helper + conditional NSScrollView wrapper in RephraseCardPanelController (D-04/D-05/D-06/D-08/D-09/D-10)
 - [x] 18.3-03-PLAN.md — Regression tests for capHeight + short/long/teardown controller paths (D-11/D-12/D-13/D-14/D-15)
-- [ ] 18.3-04-PLAN.md — Manual validation checkpoint in Notes.app against the Phase 18.2 UAT paragraph
+- [x] 18.3-04-PLAN.md — Manual validation checkpoint in Notes.app against the Phase 18.2 UAT paragraph
 
 ### Phase 19: Integration & UAT
 **Goal**: All v1.2 requirements verified end-to-end: automated integration tests pass, visual regression baseline captured, manual dogfooding confirms card UX and scheduler behavior in real apps.
