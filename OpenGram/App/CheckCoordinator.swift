@@ -14,7 +14,7 @@ final class CheckCoordinator {
     private let orchestrator: CheckOrchestrator
     private let scheduler: LLMCheckScheduler
     let overlayController: OverlayController
-    let llmPanelController: LLMPanelController
+    let llmPanelController: any LLMPanelShowing
     let statusBarController: StatusBarController
     var appWhitelist: AppWhitelist
 
@@ -31,7 +31,7 @@ final class CheckCoordinator {
         orchestrator: CheckOrchestrator,
         scheduler: LLMCheckScheduler,
         overlayController: OverlayController,
-        llmPanelController: LLMPanelController,
+        llmPanelController: any LLMPanelShowing,
         statusBarController: StatusBarController,
         appWhitelist: AppWhitelist
     ) {
@@ -172,7 +172,7 @@ final class CheckCoordinator {
                 }
 
                 // Legacy per-issue panel: only when card flag is OFF (v1.1 parity).
-                if !cardEnabled {
+                if Self.llmPanelGatePasses(cardEnabled: cardEnabled, suggestions: styleSuggestions) {
                     self.showLLMPanel(styleSuggestions, context: context)
                 }
             }
@@ -239,6 +239,13 @@ final class CheckCoordinator {
     }
 
     // MARK: - Private helpers
+
+    /// Pure gate: returns true when the legacy LLM panel should be shown.
+    /// card flag OFF + non-empty suggestions → panel fires; card flag ON → panel suppressed.
+    /// Extracted for unit testability without constructing the full coordinator.
+    static func llmPanelGatePasses(cardEnabled: Bool, suggestions: [LLMStyleSuggestion]) -> Bool {
+        !cardEnabled && !suggestions.isEmpty
+    }
 
     private func resetState() {
         statusBarController.setState(.idle)

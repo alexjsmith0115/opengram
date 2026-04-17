@@ -1,10 +1,23 @@
 import AppKit
 import SwiftUI
 
+/// Seam for injecting a panel spy in tests without requiring AppKit UI.
+@MainActor
+protocol LLMPanelShowing: AnyObject {
+    func show(
+        suggestions: [LLMStyleSuggestion],
+        near anchorRect: NSRect,
+        on screen: NSScreen,
+        onApply: @escaping @MainActor (LLMStyleSuggestion) -> Void,
+        onDismiss: @escaping @MainActor () -> Void
+    )
+    func dismiss()
+}
+
 /// Hosts LLMSuggestionPanel in a non-activating NSPanel, following the SuggestionPopoverPanel pattern.
 /// Call show(suggestions:context:near:) to display; dismiss() to hide.
 @MainActor
-final class LLMPanelController {
+final class LLMPanelController: LLMPanelShowing {
 
     private var panel: NSPanel?
     private var hostingView: NSHostingView<LLMSuggestionPanel>?

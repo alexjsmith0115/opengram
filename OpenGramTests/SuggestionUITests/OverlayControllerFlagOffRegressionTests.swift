@@ -32,43 +32,58 @@ struct OverlayControllerFlagOffRegressionTests {
 
 // MARK: - CheckCoordinator flag gating (WIRE-01 regression)
 
-/// Directly tests the flag gate introduced in CheckCoordinator.handleHotkeyFired():
-///   - flag=true → showLLMPanel() must NOT be called (`!cardEnabled` is false)
-///   - flag=false → showLLMPanel() must be called (`!cardEnabled` is true)
+/// Tests the routing gate introduced in CheckCoordinator.handleHotkeyFired() via the
+/// extracted pure function llmPanelGatePasses(cardEnabled:suggestions:).
 ///
-/// Tests the branch-condition logic directly via IncrementalConfig. A full spy-based test
-/// would require injecting LLMPanelController via a protocol — deferred to a future phase.
+/// These are behavioral assertions against the gate expression itself — if the condition
+/// in llmPanelGatePasses is removed or inverted, these tests fail. A full spy-based test
+/// (constructing CheckCoordinator with a LLMPanelShowing mock) requires stubbing
+/// StatusBarController and LLMCheckScheduler — deferred per 18.1 CONTEXT.md minimize-diff.
 @MainActor
 @Suite("CheckCoordinator LLMPanel flag gate (WIRE-01 regression)")
 struct CheckCoordinatorFlagGatingTests {
 
-    @Test func flagOn_panelSuppressed_branchLogic() {
-        struct FlagOn: IncrementalConfig {
-            var paragraphRephraseCardEnabled: Bool { true }
-            var isIncrementalCheckingEnabled: Bool { true }
-            var minIssueCount: Int { 2 }
-            var minWordCount: Int { 12 }
-            var idleDebounceSeconds: TimeInterval { 1.5 }
-        }
-        let config = FlagOn()
-        // Gate in coordinator: if !cardEnabled { showLLMPanel(...) }
-        // With flag=true, !cardEnabled == false → panel must NOT be invoked.
-        #expect(!config.paragraphRephraseCardEnabled == false,
-                "flag=true → !cardEnabled is false → LLMPanel must NOT be invoked")
+    private func makeSuggestion() -> LLMStyleSuggestion {
+        LLMStyleSuggestion(
+            category: .clarity,
+            originalText: "We should probably consider doing this",
+            revisedText: "Consider doing this",
+            explanation: "Remove hedging",
+            confidence: 8
+        )
     }
 
-    @Test func flagOff_panelInvoked_branchLogic() {
-        struct FlagOff: IncrementalConfig {
-            var paragraphRephraseCardEnabled: Bool { false }
-            var isIncrementalCheckingEnabled: Bool { true }
-            var minIssueCount: Int { 2 }
-            var minWordCount: Int { 12 }
-            var idleDebounceSeconds: TimeInterval { 1.5 }
-        }
-        let config = FlagOff()
-        // Gate in coordinator: if !cardEnabled { showLLMPanel(...) }
-        // With flag=false, !cardEnabled == true → panel must be invoked.
-        #expect(!config.paragraphRephraseCardEnabled == true,
-                "flag=false → !cardEnabled is true → LLMPanel must be invoked")
+    // flag=true → panel must NOT fire regardless of suggestion count
+    @Test func flagOn_panelSuppressed() {
+        let suggestions = [makeSuggestion()]
+        #expect(
+            CheckCoordinator.llmPanelGatePasses(cardEnabled: true, suggestions: suggestions) == false,
+            "card flag ON → gate must return false (panel suppressed)"
+        )
+    }
+
+    // flag=true + empty suggestions → also suppressed
+    @Test func flagOn_noSuggestions_panelSuppressed() {
+        #expect(
+            CheckCoordinator.llmPanelGatePasses(cardEnabled: true, suggestions: []) == false,
+            "card flag ON + empty suggestions → gate must return false"
+        )
+    }
+
+    // flag=false + non-empty suggestions → panel must fire
+    @Test func flagOff_withSuggestions_panelInvoked() {
+        let suggestions = [makeSuggestion()]
+        #expect(
+            CheckCoordinator.llmPanelGatePasses(cardEnabled: false, suggestions: suggestions) == true,
+            "card flag OFF + suggestions → gate must return true (panel invoked)"
+        )
+    }
+
+    // flag=false + empty suggestions → panel must NOT fire (nothing to show)
+    @Test func flagOff_noSuggestions_panelSuppressed() {
+        #expect(
+            CheckCoordinator.llmPanelGatePasses(cardEnabled: false, suggestions: []) == false,
+            "card flag OFF + empty suggestions → gate must return false (nothing to show)"
+        )
     }
 }
