@@ -132,7 +132,6 @@
 		B18070010000000000000001 /* MultiQualifierSelectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28070010000000000000001 /* MultiQualifierSelectionTests.swift */; };
 		B18070010000000000000002 /* OverlayControllerRephraseIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28070010000000000000002 /* OverlayControllerRephraseIntegrationTests.swift */; };
 		B18080010000000000000001 /* RephraseCardLifecycleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28080010000000000000001 /* RephraseCardLifecycleTests.swift */; };
-		B18080010000000000000002 /* OverlayControllerFlagOffRegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28080010000000000000002 /* OverlayControllerFlagOffRegressionTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -273,7 +272,6 @@
 		B28070010000000000000001 /* MultiQualifierSelectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiQualifierSelectionTests.swift; sourceTree = "<group>"; };
 		B28070010000000000000002 /* OverlayControllerRephraseIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayControllerRephraseIntegrationTests.swift; sourceTree = "<group>"; };
 		B28080010000000000000001 /* RephraseCardLifecycleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RephraseCardLifecycleTests.swift; sourceTree = "<group>"; };
-		B28080010000000000000002 /* OverlayControllerFlagOffRegressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayControllerFlagOffRegressionTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -650,7 +648,6 @@
 				B28060010000000000000002 /* OverlayControllerHideUnderlinesTests.swift */,
 				B28070010000000000000001 /* MultiQualifierSelectionTests.swift */,
 				B28070010000000000000002 /* OverlayControllerRephraseIntegrationTests.swift */,
-				B28080010000000000000002 /* OverlayControllerFlagOffRegressionTests.swift */,
 				B48000010000000000000021 /* Panels */,
 				B48020010000000000000001 /* RephraseCard */,
 			);
@@ -896,7 +893,6 @@
 				B18070010000000000000001 /* MultiQualifierSelectionTests.swift in Sources */,
 				B18070010000000000000002 /* OverlayControllerRephraseIntegrationTests.swift in Sources */,
 				B18080010000000000000001 /* RephraseCardLifecycleTests.swift in Sources */,
-				B18080010000000000000002 /* OverlayControllerFlagOffRegressionTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
