@@ -454,14 +454,19 @@ final class OverlayController {
         let composedRephrase = rephrase
 
         let acceptClosure: @MainActor () -> Void = { [weak self] in
-            guard let self else { return }
+            guard let self else {
+                OverlayController.logger.error("acceptClosure fired but self was released")
+                return
+            }
+            OverlayController.logger.info("acceptClosure fired — replacement len=\(composedRephrase.count) writeRange=(\(writeRange.scalarStart), \(writeRange.scalarLength))")
             // Explicitly hide the panel before hideCardAndRestore() so the panel's onHide callback
             // is cleared before teardown — prevents double-fire of hideCardAndRestore() via the
             // kAXValueChangedNotification → handleKeystroke → hide() path (WR-04).
             self.rephraseCardPanelController.hide()
             self.hideCardAndRestore()
             let replacer = AXTextReplacer(accessor: self.accessor)
-            _ = replacer.replace(text: composedRephrase, in: writeRange, of: ax)
+            let ok = replacer.replace(text: composedRephrase, in: writeRange, of: ax)
+            OverlayController.logger.info("AXTextReplacer.replace returned \(ok)")
         }
         let dismissClosure: @MainActor () -> Void = { [weak self] in
             guard let self else { return }
