@@ -32,7 +32,7 @@ extension String {
 
 // MARK: - Suggestion Category (Swift-side, distinct from UniFFI-generated SuggestionCategory)
 
-enum CheckCategory: Sendable {
+enum CheckCategory: Sendable, Equatable, Hashable {
     /// Harper LintKind.Spelling -- rendered red in Phase 3 (D-03)
     case spelling
     /// All other LintKind variants -- rendered blue in Phase 3 (D-03)
