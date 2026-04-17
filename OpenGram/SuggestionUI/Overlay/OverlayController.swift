@@ -31,6 +31,12 @@ final class OverlayController {
     internal(set) var suggestionScalarOffsets: [(scalarStart: Int, scalarLength: Int)] = []
 
     internal(set) var textContext: TextContext?
+
+    /// Phase 18 D-13 / FR-19: while the rephrase card is visible for a paragraph, per-issue
+    /// underlines for that paragraph are hidden. Stored as a scalar-offset range (NOT
+    /// Range<String.Index> — research Pitfall #3) so it remains valid across text mutations.
+    internal(set) var hiddenParagraphScalarRange: (scalarStart: Int, scalarLength: Int)?
+
     private(set) var isPopoverVisible: Bool = false
     private(set) var currentPopoverSuggestion: Suggestion?
     private var currentAnimationState: PopoverAnimationState?
@@ -79,7 +85,10 @@ final class OverlayController {
         let element = context.axElement
 
         var entries: [UnderlineEntry] = []
-        for suggestion in self.suggestions {
+        for (idx, suggestion) in self.suggestions.enumerated() {
+            // Phase 18 D-13 / REPH-09: skip underlines inside the card's paragraph if any.
+            let off = self.suggestionScalarOffsets[idx]
+            if shouldHideUnderline(scalarStart: off.scalarStart, scalarLength: off.scalarLength) { continue }
             guard let rects = boundsValidator.validatedBoundsForRange(
                 suggestion, in: context.text, element: element,
                 bundleID: context.bundleID, accessor: accessor
@@ -190,9 +199,15 @@ final class OverlayController {
         let existingEntries = underlineView?.entries ?? []
 
         for (oldIndex, newIndex) in diff.unchanged {
+            let off = newOffsets[newIndex]
+            // Phase 18 D-13 / REPH-09: skip underlines inside the card's paragraph if any.
+            if shouldHideUnderline(scalarStart: off.scalarStart, scalarLength: off.scalarLength) {
+                survivingSuggestions.append(cappedNew[newIndex])
+                survivingOffsets.append(off)
+                continue
+            }
             survivingSuggestions.append(cappedNew[newIndex])
-            survivingOffsets.append(newOffsets[newIndex])
-            // Keep existing underline entries for unchanged suggestions (avoids AX re-query)
+            survivingOffsets.append(off)
             let oldSuggestion = self.suggestions[oldIndex]
             let kept = existingEntries.filter { $0.suggestion.id == oldSuggestion.id }
             survivingEntries.append(contentsOf: kept)
@@ -201,12 +216,19 @@ final class OverlayController {
         let element = newContext.axElement
         for newIndex in diff.added {
             let suggestion = cappedNew[newIndex]
+            let off = newOffsets[newIndex]
+            // Phase 18 D-13 / REPH-09: skip underlines inside the card's paragraph if any.
+            if shouldHideUnderline(scalarStart: off.scalarStart, scalarLength: off.scalarLength) {
+                survivingSuggestions.append(suggestion)
+                survivingOffsets.append(off)
+                continue
+            }
             guard let rects = boundsValidator.validatedBoundsForRange(
                 suggestion, in: newContext.text, element: element,
                 bundleID: newContext.bundleID, accessor: accessor
             ) else { continue }
             survivingSuggestions.append(suggestion)
-            survivingOffsets.append(newOffsets[newIndex])
+            survivingOffsets.append(off)
             for rect in rects {
                 let underlineRect = NSRect(x: rect.origin.x, y: rect.origin.y, width: rect.width, height: 2)
                 let hitRect = UnderlineView.expandedHitRect(from: underlineRect)
@@ -267,6 +289,67 @@ final class OverlayController {
         }
         targetAppPID = nil
         onDismissAll?()
+    }
+
+    // MARK: - Paragraph underline hide/show (Phase 18 FR-19 / D-13)
+
+    /// Hides all per-issue underlines whose scalar offset overlaps `range`. The card is the
+    /// sole interaction surface for the target paragraph while visible (REPH-09 / FR-19).
+    /// Call `showUnderlines()` to restore.
+    func hideUnderlines(inParagraphScalarRange range: (scalarStart: Int, scalarLength: Int)) {
+        hiddenParagraphScalarRange = range
+        applyHiddenFilterToCurrentEntries()
+    }
+
+    /// Clears the hidden-paragraph filter and restores all underlines for the current suggestions.
+    func showUnderlines() {
+        hiddenParagraphScalarRange = nil
+        rebuildUnderlineEntriesFromSuggestions()
+    }
+
+    /// Tests whether a scalar offset should be hidden under the current filter.
+    internal func shouldHideUnderline(scalarStart: Int, scalarLength: Int) -> Bool {
+        guard let r = hiddenParagraphScalarRange else { return false }
+        let aEnd = scalarStart + scalarLength
+        let bEnd = r.scalarStart + r.scalarLength
+        return scalarStart < bEnd && aEnd > r.scalarStart
+    }
+
+    /// Re-filters the existing underlineView.entries in-place using the current hidden range.
+    /// Does not re-query AX — positions of surviving entries are kept as-is.
+    private func applyHiddenFilterToCurrentEntries() {
+        guard let view = underlineView else { return }
+        var offsetByID: [UUID: (Int, Int)] = [:]
+        for (i, s) in suggestions.enumerated() where i < suggestionScalarOffsets.count {
+            offsetByID[s.id] = (suggestionScalarOffsets[i].scalarStart, suggestionScalarOffsets[i].scalarLength)
+        }
+        view.entries = view.entries.filter { entry in
+            guard let (ss, sl) = offsetByID[entry.suggestion.id] else { return true }
+            return !shouldHideUnderline(scalarStart: ss, scalarLength: sl)
+        }
+        view.needsDisplay = true
+    }
+
+    /// Rebuilds underline entries from the current suggestion list, bypassing the hidden filter.
+    /// Falls back to no-op if context is absent.
+    private func rebuildUnderlineEntriesFromSuggestions() {
+        guard let ctx = textContext, let view = underlineView else { return }
+        var entries: [UnderlineEntry] = []
+        for suggestion in suggestions {
+            guard let rects = boundsValidator.validatedBoundsForRange(
+                suggestion, in: ctx.text, element: ctx.axElement,
+                bundleID: ctx.bundleID, accessor: accessor
+            ) else { continue }
+            for rect in rects {
+                let underlineRect = NSRect(x: rect.origin.x, y: rect.origin.y, width: rect.width, height: 2)
+                let hitRect = UnderlineView.expandedHitRect(from: underlineRect)
+                entries.append(UnderlineEntry(underlineRect: underlineRect, hitRect: hitRect, suggestion: suggestion))
+            }
+        }
+        let windowRect = overlayWindow.frame
+        let localEntries = Self.toLocalEntries(entries, in: windowRect)
+        view.entries = localEntries
+        view.needsDisplay = true
     }
 
     // MARK: - Popover management
