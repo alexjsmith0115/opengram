@@ -2,6 +2,17 @@
 
 This project is **OpenGram**, a MacOS-specific active Grammar checker and writing style tool. The application is entirely local by default. There is no external API, logging, error reporting - anything. Users will be able to get realtime feedback on their writing. The application will highlight, underline, or otherwise indicate if the text the user has written contains grammar or spelling mistakes, and will suggesting writing improvements to improve the clarity, flow, and tone of the writing.
 
+### Standalone Application — No Dependencies
+
+OpenGram is a **fully standalone app**. No upstream services, no downstream consumers, no external API surface, no library clients. Every caller of every internal API is inside this repo.
+
+Implications for architecture decisions:
+- **No feature flags, no gated rollouts, no A/B toggles.** Ship changes directly. If a change is risky, stage it behind plan/review — not a runtime flag.
+- **No backwards-compatibility shims.** Rename freely, delete freely, restructure freely. Update every call site in the same change.
+- **No deprecation cycles.** If an API is wrong, replace it. Do not preserve the old version alongside the new.
+- **No versioned public API.** Internal interfaces can change in any commit.
+- **No migration layers for user data** beyond what actual users of shipped builds require — during development, wipe and reset freely.
+
 *IMPORTANT*
 ## User Interaction
 - Never assume the user is correct. Trust but verify all statements, using the code as a source of truth. When in doubt, ask the user for clarification.

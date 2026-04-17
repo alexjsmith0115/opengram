@@ -30,7 +30,8 @@ Full details: [milestones/v1.1-ROADMAP.md](milestones/v1.1-ROADMAP.md)
 - [x] **Phase 17: Advanced Settings Tab** — Tunables exposed before feature flags go user-visible (completed 2026-04-16)
 - [x] **Phase 18: Paragraph Rephrase Card** — Full Part B UI: card rendering, diff views, accept/dismiss/hide semantics, highlight (completed 2026-04-17)
 - [x] **Phase 18.1: Rephrase Card Hotkey Wiring Fix (INSERTED)** — CheckCoordinator LLM routing fix so card dispatches in hotkey path (completed 2026-04-17)
-- [ ] **Phase 18.2: Rephrase Card as Default (INSERTED)** — Remove `paragraphRephraseCardEnabled` flag and legacy LLM panel path; card is the unconditional product default
+- [x] **Phase 18.2: Rephrase Card as Default (INSERTED)** — Remove `paragraphRephraseCardEnabled` flag and legacy LLM panel path; card is the unconditional product default (completed 2026-04-17)
+- [ ] **Phase 18.3: Rephrase Card Panel Sizing Fix (INSERTED)** — Card panel frame clips content; Accept button not visible, Dismiss barely visible. Fix `RephraseCardPanelController` / `RephraseCardView` sizing so full card renders.
 - [ ] **Phase 19: Integration & UAT** — End-to-end validation, visual regression, manual dogfooding
 
 ## Phase Details
@@ -139,7 +140,30 @@ Plans:
   6. No references to `paragraphRephraseCardEnabled` or `llmParagraphRephraseCardEnabled` remain in `OpenGram/**` or `OpenGramTests/**` (grep is empty).
   7. Full `xcodebuild -project OpenGram.xcodeproj -scheme OpenGram build` green; full test suite green (`xcodebuild test`).
   8. Manual validation: hotkey on a qualifying paragraph in Notes.app shows the unified Rephrase card (single Accept / Dismiss), NOT the 3-section Clarity/Tone/Rephrase legacy panel, with no UserDefaults modification required.
-**Plans:** TBD
+**Plans:** 3/3 plans complete
+
+Plans:
+- [x] 18.2-01-PLAN.md — Delete `paragraphRephraseCardEnabled` flag, gates, and flag-off tests; scrub all stub properties (REPH-15, UAT-18.1-G1)
+- [x] 18.2-02-PLAN.md — LLMPanelController caller audit + conditional deletion (UAT-18.1-G1)
+- [x] 18.2-03-PLAN.md — REQUIREMENTS.md REPH-15 supersession + manual Notes.app validation
+
+### Phase 18.3: Rephrase Card Panel Sizing Fix (INSERTED)
+
+**Goal:** The unified Rephrase card renders with its full content visible — header, revised-text body, rationale, and BOTH Accept and Dismiss controls — on first display against a qualifying paragraph in any target app (Notes.app, TextEdit, Obsidian). No clipping, no missing buttons, no scroll required to reach Accept.
+**Requirements**: closes post-18.2 UAT observation "card renders but Accept button not visible, Dismiss barely visible" (Phase 18.1 UAT Test 1 residual_followup). Validates Phase 18 UI-SPEC D-02/D-04/D-05/D-06 card-frame contract against real-world LLM content.
+**Depends on:** Phase 18.2
+**Success Criteria** (what must be TRUE):
+  1. `RephraseCardPanelController` sizes the `NSPanel` frame to fit the `RephraseCardView` intrinsic content (or adds an internal `NSScrollView` so content is reachable). The window is not fixed to an undersized rectangle.
+  2. When the LLM returns a typical response (header + 2-4 line revised text + 1-3 line rationale), the rendered card shows: header, full revised text, full rationale, one Accept button, one Dismiss button — all visible within the panel frame on first dispatch.
+  3. When the LLM returns a longer response (8+ lines of rationale/revised text), the card either auto-expands or scrolls to keep Accept and Dismiss reachable without user resizing.
+  4. Panel positioning does not push the card off-screen at the document edges; if the anchor would clip, the panel shifts to stay within the active screen's visible frame.
+  5. xcodebuild build + xcodebuild test both green; no regressions in the 437-test baseline.
+  6. Manual validation in Notes.app with the Phase 18.2 test paragraph: Accept button visible, Dismiss button visible, full card content readable without scrolling the underlying document.
+**Plans:** 4 plans
+- [ ] 18.3-01-PLAN.md — Remove inner SwiftUI ScrollView from RephraseCardView.bodyContent (D-01/D-02/D-03)
+- [ ] 18.3-02-PLAN.md — Add PanelPositioner.capHeight helper + conditional NSScrollView wrapper in RephraseCardPanelController (D-04/D-05/D-06/D-08/D-09/D-10)
+- [ ] 18.3-03-PLAN.md — Regression tests for capHeight + short/long/teardown controller paths (D-11/D-12/D-13/D-14/D-15)
+- [ ] 18.3-04-PLAN.md — Manual validation checkpoint in Notes.app against the Phase 18.2 UAT paragraph
 
 ### Phase 19: Integration & UAT
 **Goal**: All v1.2 requirements verified end-to-end: automated integration tests pass, visual regression baseline captured, manual dogfooding confirms card UX and scheduler behavior in real apps.

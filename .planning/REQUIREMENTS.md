@@ -106,7 +106,7 @@ Requirements for the v1.2 milestone Part B. Depends on Part A. Gated by `@AppSto
 - [ ] **REPH-12**: When more than one paragraph qualifies simultaneously, show only the card closest to the cursor; Accept/Dismiss does NOT auto-advance to the next qualifier (FR-21)
 - [ ] **REPH-13**: Card styling — rounded-rect with teal accent border, thin vertical accent bar on leading edge, outlined Accept button, bold accent-color header (FR-20)
 - [ ] **REPH-14**: Paragraphs not qualifying under REPH-02 fall back to existing per-issue popovers (regression — no change from current behavior for these paragraphs) (FR-12 fallback)
-- [ ] **REPH-15**: When `paragraphRephraseCardEnabled` is off, all LLM suggestions use existing per-issue popover UI regardless of paragraph qualification (rollout §10)
+- [x] **REPH-15**: ~~When `paragraphRephraseCardEnabled` is off, all LLM suggestions use existing per-issue popover UI regardless of paragraph qualification (rollout §10)~~ Superseded: rollout flag removed in Phase 18.2; rephrase card is the unconditional default UX. Flag-off parity test suite deleted.
 
 ### v1.2 Settings
 
@@ -249,7 +249,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | REPH-12 | Phase 18 | Pending |
 | REPH-13 | Phase 18 | Pending |
 | REPH-14 | Phase 18 | Pending |
-| REPH-15 | Phase 18 | Pending |
+| REPH-15 | Phase 18 → Superseded 18.2 | Superseded |
 | SET-07 | Phase 17 | Complete |
 | SET-08 | Phase 17 | Complete |
 | SET-09 | Phase 17 | Complete |
