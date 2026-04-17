@@ -60,6 +60,20 @@ enum PanelPositioner {
         return origin(for: size, near: anchorRect, on: screen, gap: gap)
     }
 
+    /// Caps `size.height` to `visibleFrame.height - margin`. Width unchanged.
+    /// D-08 (option a) — explicit, single-purpose, opt-in. Callers invoke before
+    /// `origin(...)` / `marginOrigin(...)` to guarantee the resulting Y+height
+    /// stays inside `visibleFrame`. Does not affect `LLMPanelController` or
+    /// `SuggestionPopoverPanel` — they are not required to adopt.
+    static func capHeight(
+        _ size: NSSize,
+        visibleFrame: NSRect,
+        margin: CGFloat
+    ) -> NSSize {
+        let maxHeight = visibleFrame.height - margin
+        return NSSize(width: size.width, height: min(size.height, maxHeight))
+    }
+
     private static func clampedY(anchorMidY: CGFloat, panelHeight: CGFloat, visibleFrame: NSRect) -> CGFloat {
         let y = anchorMidY - panelHeight / 2
         return max(visibleFrame.minY, min(y, visibleFrame.maxY - panelHeight))
