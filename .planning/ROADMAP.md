@@ -29,6 +29,8 @@ Full details: [milestones/v1.1-ROADMAP.md](milestones/v1.1-ROADMAP.md)
 - [x] **Phase 16: LLMCheckScheduler** — Scheduler + per-paragraph cancellation + AppDelegate DI wiring + flag-off fallback (completed 2026-04-16; Task 5 human-verify deferred to Phase 19 UAT)
 - [x] **Phase 17: Advanced Settings Tab** — Tunables exposed before feature flags go user-visible (completed 2026-04-16)
 - [x] **Phase 18: Paragraph Rephrase Card** — Full Part B UI: card rendering, diff views, accept/dismiss/hide semantics, highlight (completed 2026-04-17)
+- [x] **Phase 18.1: Rephrase Card Hotkey Wiring Fix (INSERTED)** — CheckCoordinator LLM routing fix so card dispatches in hotkey path (completed 2026-04-17)
+- [ ] **Phase 18.2: Rephrase Card as Default (INSERTED)** — Remove `paragraphRephraseCardEnabled` flag and legacy LLM panel path; card is the unconditional product default
 - [ ] **Phase 19: Integration & UAT** — End-to-end validation, visual regression, manual dogfooding
 
 ## Phase Details
@@ -117,11 +119,27 @@ Full details: [milestones/v1.1-ROADMAP.md](milestones/v1.1-ROADMAP.md)
   4. Flag-off regression test updated to assert `LLMPanelController` path when flag=false, and NOT invoked when flag=true.
   5. Full `xcodebuild test` green; no regression in Phase 15-18 suites.
   6. `REQUIREMENTS.md` traceability updated: INCR-02, INCR-04, INCR-09, INCR-13, SET-08, SET-09 flipped from `[ ]` to `[x]`.
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 
 Plans:
-- [ ] 18.1-01-PLAN.md — CheckCoordinator LLM routing fix + integration test + flag-off/on regression (WIRE-01, REPH-01..REPH-15)
-- [ ] 18.1-02-PLAN.md — REQUIREMENTS.md stale checkbox fix (REQ-STALE-01: INCR-02, INCR-04, INCR-09, INCR-13, SET-08, SET-09)
+- [x] 18.1-01-PLAN.md — CheckCoordinator LLM routing fix + integration test + flag-off/on regression (WIRE-01, REPH-01..REPH-15)
+- [x] 18.1-02-PLAN.md — REQUIREMENTS.md stale checkbox fix (REQ-STALE-01: INCR-02, INCR-04, INCR-09, INCR-13, SET-08, SET-09)
+
+### Phase 18.2: Rephrase Card as Default (INSERTED)
+
+**Goal:** The Paragraph Rephrase card is the unconditional default UX for qualifying LLM style results. The `paragraphRephraseCardEnabled` rollout flag is removed from the codebase entirely — no UserDefaults key, no `IncrementalConfig` property, no gate checks, no flag-off branches, no flag-off regression tests. `CheckCoordinator` always routes LLM `.source == .llm` Suggestions through `OverlayController.update()` for card dispatch; the legacy `LLMPanelController.show()` call path for scheduler LLM style results is deleted. If `LLMPanelController` has no remaining callers after removal, delete it and its tests.
+**Requirements**: closes UAT gap "card behind feature flag" from Phase 18.1 verification; simplifies v1.2 shipping surface to a single Part A flag (`llmIncrementalCheckingEnabled`).
+**Depends on:** Phase 18.1
+**Success Criteria** (what must be TRUE):
+  1. `paragraphRephraseCardEnabled` property is removed from `IncrementalConfig` protocol and from `UserDefaultsIncrementalConfig`; the `"llmParagraphRephraseCardEnabled"` UserDefaults key constant is deleted.
+  2. `OverlayController.tryDispatchRephraseCard()` no longer gates on the flag; card dispatch runs whenever a qualifying LLM Suggestion set is present.
+  3. `CheckCoordinator.handleHotkeyFired()` (and any streaming path) no longer reads the flag and no longer invokes `LLMPanelController.show()` for scheduler `.source == .llm` Suggestions — card is the only surface for paragraph rephrase.
+  4. If `LLMPanelController` retains no other callers after step 3, it is deleted along with its tests; otherwise only the LLM-style-suggestion call path is removed.
+  5. Flag-off regression tests are deleted: `OverlayControllerFlagOffRegressionTests.swift`, `LLMCheckSchedulerFlagOffTests.swift`, `IncrementalConfigTests.paragraphRephraseCardEnabled_*`, and any `paragraphRephraseCardEnabled: false` variants in remaining integration tests simplified or removed.
+  6. No references to `paragraphRephraseCardEnabled` or `llmParagraphRephraseCardEnabled` remain in `OpenGram/**` or `OpenGramTests/**` (grep is empty).
+  7. Full `xcodebuild -project OpenGram.xcodeproj -scheme OpenGram build` green; full test suite green (`xcodebuild test`).
+  8. Manual validation: hotkey on a qualifying paragraph in Notes.app shows the unified Rephrase card (single Accept / Dismiss), NOT the 3-section Clarity/Tone/Rephrase legacy panel, with no UserDefaults modification required.
+**Plans:** TBD
 
 ### Phase 19: Integration & UAT
 **Goal**: All v1.2 requirements verified end-to-end: automated integration tests pass, visual regression baseline captured, manual dogfooding confirms card UX and scheduler behavior in real apps.
@@ -149,5 +167,5 @@ Plans:
 | 16. LLMCheckScheduler | v1.2 | 4/4 | Complete   | 2026-04-16 |
 | 17. Advanced Settings Tab | v1.2 | 3/3 | Complete   | 2026-04-16 |
 | 18. Paragraph Rephrase Card | v1.2 | 8/8 | Complete   | 2026-04-17 |
-| 18.1. Rephrase Card Hotkey Wiring Fix | v1.2 | 0/2 | In progress | - |
+| 18.1. Rephrase Card Hotkey Wiring Fix | v1.2 | 2/2 | Complete   | 2026-04-17 |
 | 19. Integration & UAT | v1.2 | 0/TBD | Not started | - |

@@ -9,10 +9,6 @@ import Foundation
 /// changes in the Advanced Settings tab propagate on the next qualifying check.
 protocol IncrementalConfig: Sendable {
     var isIncrementalCheckingEnabled: Bool { get }
-    /// Phase 18 REPH-15 gate. When false, LLMCheckScheduler + CheckCoordinator continue
-    /// to surface per-issue popovers via LLMPanelController regardless of paragraph
-    /// qualification. D-14. Default false until dogfooding validates the heuristic.
-    var paragraphRephraseCardEnabled: Bool { get }
     /// Consumed in Phase 18 by the rephrase card display heuristic. Phase 17 ships the
     /// plumbing and tab UI only (CONTEXT.md D-04).
     var minIssueCount: Int { get }
@@ -38,7 +34,6 @@ struct UserDefaultsIncrementalConfig: IncrementalConfig, @unchecked Sendable {
     // arguments require compile-time string literals) and asserts equality via
     // `appStorageKeys_matchConfigKeys` test to prevent drift.
     static let isIncrementalCheckingEnabledKey = "llmIncrementalCheckingEnabled"
-    static let paragraphRephraseCardEnabledKey = "llmParagraphRephraseCardEnabled"
     static let minIssueCountKey = "llmMinIssueCount"
     static let minWordCountKey = "llmMinWordCount"
     static let idleDebounceSecondsKey = "llmIdleDebounceSeconds"
@@ -48,10 +43,6 @@ struct UserDefaultsIncrementalConfig: IncrementalConfig, @unchecked Sendable {
 
     var isIncrementalCheckingEnabled: Bool {
         defaults.bool(forKey: Self.isIncrementalCheckingEnabledKey)
-    }
-
-    var paragraphRephraseCardEnabled: Bool {
-        defaults.bool(forKey: Self.paragraphRephraseCardEnabledKey)
     }
 
     /// `defaults.object(forKey:)` (not `defaults.integer(forKey:)`) to distinguish unset from

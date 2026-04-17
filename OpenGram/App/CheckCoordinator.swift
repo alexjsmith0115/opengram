@@ -137,30 +137,8 @@ final class CheckCoordinator {
             let schedulerSuggestions = await scheduler.check(text: contextText, bundleID: contextBundleID, harperSpans: harperSpans)
             guard !Task.isCancelled else { return }
 
-            // Panel consumes [LLMStyleSuggestion] — map the scheduler's [Suggestion] back.
-            let styleSuggestions: [LLMStyleSuggestion] = schedulerSuggestions.compactMap { sug in
-                guard sug.source == .llm, let revised = sug.primaryReplacement else { return nil }
-                let cat: LLMStyleSuggestion.Category
-                switch sug.category {
-                case .clarity: cat = .clarity
-                case .tone: cat = .tone
-                case .rephrase: cat = .rephrase
-                default: return nil
-                }
-                return LLMStyleSuggestion(
-                    category: cat,
-                    originalText: sug.original,
-                    revisedText: revised,
-                    explanation: sug.message,
-                    confidence: Int(sug.priority)
-                )
-            }
-
             await MainActor.run {
                 self.restoreStatusAfterLLM()
-
-                // Read flag once per hotkey resolution — prevents divergence if toggled mid-flight.
-                let cardEnabled = UserDefaultsIncrementalConfig().paragraphRephraseCardEnabled
 
                 // Merge scheduler's LLM Suggestions into the overlay so tryDispatchRephraseCard
                 // receives non-empty llmInRange. accumulatedSuggestions stays Harper-only (state
@@ -169,11 +147,6 @@ final class CheckCoordinator {
                 if !llmSuggestions.isEmpty {
                     let merged = self.accumulatedSuggestions + llmSuggestions
                     self.overlayController.update(suggestions: merged, context: context)
-                }
-
-                // Legacy per-issue panel: only when card flag is OFF (v1.1 parity).
-                if Self.llmPanelGatePasses(cardEnabled: cardEnabled, suggestions: styleSuggestions) {
-                    self.showLLMPanel(styleSuggestions, context: context)
                 }
             }
         }
@@ -239,13 +212,6 @@ final class CheckCoordinator {
     }
 
     // MARK: - Private helpers
-
-    /// Pure gate: returns true when the legacy LLM panel should be shown.
-    /// card flag OFF + non-empty suggestions → panel fires; card flag ON → panel suppressed.
-    /// Extracted for unit testability without constructing the full coordinator.
-    static func llmPanelGatePasses(cardEnabled: Bool, suggestions: [LLMStyleSuggestion]) -> Bool {
-        !cardEnabled && !suggestions.isEmpty
-    }
 
     private func resetState() {
         statusBarController.setState(.idle)

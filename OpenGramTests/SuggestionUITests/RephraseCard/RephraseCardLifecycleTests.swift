@@ -8,7 +8,6 @@ struct RephraseCardLifecycleTests {
 
     private struct OnFlag: IncrementalConfig {
         var isIncrementalCheckingEnabled: Bool { true }
-        var paragraphRephraseCardEnabled: Bool { true }
         var minIssueCount: Int { 2 }
         var minWordCount: Int { 12 }
         var idleDebounceSeconds: TimeInterval { 1.5 }

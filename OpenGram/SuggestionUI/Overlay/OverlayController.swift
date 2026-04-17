@@ -342,7 +342,6 @@ final class OverlayController {
         suggestions: [Suggestion],
         context: TextContext
     ) -> Bool {
-        guard incrementalConfig.paragraphRephraseCardEnabled else { return false }
         guard let scheduler, let textMonitor else { return false }
 
         let paragraphs = splitter.split(context.text)
