@@ -6,7 +6,6 @@ import Foundation
 struct LLMCheckSchedulerMarkDismissedTests {
 
     private struct OnIncrementalConfig: IncrementalConfig {
-        var isIncrementalCheckingEnabled: Bool { true }
         var minIssueCount: Int { 2 }
         var minWordCount: Int { 12 }
         var idleDebounceSeconds: TimeInterval { 1.5 }

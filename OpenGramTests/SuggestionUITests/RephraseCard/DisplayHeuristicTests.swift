@@ -6,7 +6,6 @@ import Foundation
 struct DisplayHeuristicTests {
 
     private struct FakeConfig: IncrementalConfig {
-        var isIncrementalCheckingEnabled: Bool = true
         var minIssueCount: Int = 2
         var minWordCount: Int = 12
         var idleDebounceSeconds: TimeInterval = 1.5
@@ -58,7 +57,6 @@ struct DisplayHeuristicTests {
 
     @Test func liveConfigRead_minIssueCount() {
         final class Mutable: IncrementalConfig, @unchecked Sendable {
-            var isIncrementalCheckingEnabled: Bool = true
             var minIssueCount: Int = 2
             var minWordCount: Int = 12
             var idleDebounceSeconds: TimeInterval = 1.5

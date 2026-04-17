@@ -51,7 +51,6 @@ private final class SlowLLM: LLMProviderProtocol, @unchecked Sendable {
 }
 
 private struct AlwaysOnIncrementalConfig: IncrementalConfig {
-    var isIncrementalCheckingEnabled: Bool { true }
     var minIssueCount: Int { 2 }
     var minWordCount: Int { 12 }
     var idleDebounceSeconds: TimeInterval { 1.5 }
@@ -61,26 +60,21 @@ private struct AlwaysOnIncrementalConfig: IncrementalConfig {
 /// mid-scheduler to prove the per-call read contract (SET-10 / D-03).
 private final class MutableIncrementalConfig: IncrementalConfig, @unchecked Sendable {
     private let lock = NSLock()
-    private var _flag: Bool
     private var _minIssueCount: Int
     private var _minWordCount: Int
     private var _idleDebounceSeconds: TimeInterval
     init(
-        _ initial: Bool,
         minIssueCount: Int = 2,
         minWordCount: Int = 12,
         idleDebounceSeconds: TimeInterval = 1.5
     ) {
-        self._flag = initial
         self._minIssueCount = minIssueCount
         self._minWordCount = minWordCount
         self._idleDebounceSeconds = idleDebounceSeconds
     }
-    var isIncrementalCheckingEnabled: Bool { lock.lock(); defer { lock.unlock() }; return _flag }
     var minIssueCount: Int { lock.lock(); defer { lock.unlock() }; return _minIssueCount }
     var minWordCount: Int { lock.lock(); defer { lock.unlock() }; return _minWordCount }
     var idleDebounceSeconds: TimeInterval { lock.lock(); defer { lock.unlock() }; return _idleDebounceSeconds }
-    func set(_ value: Bool) { lock.lock(); _flag = value; lock.unlock() }
     func setIdleDebounceSeconds(_ value: TimeInterval) { lock.lock(); _idleDebounceSeconds = value; lock.unlock() }
     func setMinIssueCount(_ value: Int) { lock.lock(); _minIssueCount = value; lock.unlock() }
     func setMinWordCount(_ value: Int) { lock.lock(); _minWordCount = value; lock.unlock() }
@@ -123,7 +117,7 @@ private func makeSchedulerWithDebounce(
         llm: llm,
         configProvider: { LLMConfig.default },
         apiKeyProvider: { "test-key" },
-        incrementalConfig: MutableIncrementalConfig(true, idleDebounceSeconds: debounce)
+        incrementalConfig: MutableIncrementalConfig(idleDebounceSeconds: debounce)
     )
 }
 
@@ -308,7 +302,7 @@ private func style(original: String, revised: String = "revised") -> LLMStyleSug
         let llm = SlowLLM()
         llm.setDefaultDelay(.milliseconds(2))
         llm.setCanned(["P1": [style(original: "P1")], "P2": [style(original: "P2")]])
-        let config = MutableIncrementalConfig(true, idleDebounceSeconds: 0.05)
+        let config = MutableIncrementalConfig(idleDebounceSeconds: 0.05)
         let scheduler = LLMCheckScheduler(
             splitter: DoubleNewlineSplitter(),
             hasher: Sha256ParagraphHasher(),

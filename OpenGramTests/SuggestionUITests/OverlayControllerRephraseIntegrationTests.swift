@@ -7,7 +7,6 @@ import AppKit
 struct OverlayControllerRephraseIntegrationTests {
 
     private struct OnFlag: IncrementalConfig {
-        var isIncrementalCheckingEnabled: Bool { true }
         var minIssueCount: Int { 2 }
         var minWordCount: Int { 12 }
         var idleDebounceSeconds: TimeInterval { 1.5 }
@@ -35,7 +34,6 @@ struct OverlayControllerRephraseIntegrationTests {
 struct OverlayControllerWIRE01IntegrationTests {
 
     private struct OnFlag: IncrementalConfig {
-        var isIncrementalCheckingEnabled: Bool { true }
         var minIssueCount: Int { 2 }
         var minWordCount: Int { 12 }
         var idleDebounceSeconds: TimeInterval { 1.5 }

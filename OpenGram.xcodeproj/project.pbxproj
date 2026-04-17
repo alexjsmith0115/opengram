@@ -106,7 +106,6 @@
 		A100000100000000000000E1 /* LLMCheckScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000E1 /* LLMCheckScheduler.swift */; };
 		B100000100000000000000E0 /* LLMCheckSchedulerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000E0 /* LLMCheckSchedulerTests.swift */; };
 		B100000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift */; };
-		B100000100000000000000E2 /* LLMCheckSchedulerFlagOffTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000E2 /* LLMCheckSchedulerFlagOffTests.swift */; };
 		B100000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift */; };
 		B100000100000000000000E4 /* LLMCheckSchedulerMarkDismissedTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000E4 /* LLMCheckSchedulerMarkDismissedTests.swift */; };
 		B100000100000000000000F0 /* IncrementalConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000F0 /* IncrementalConfigTests.swift */; };
@@ -246,7 +245,6 @@
 		A200000100000000000000E1 /* LLMCheckScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCheckScheduler.swift; sourceTree = "<group>"; };
 		B200000100000000000000E0 /* LLMCheckSchedulerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCheckSchedulerTests.swift; sourceTree = "<group>"; };
 		B200000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCheckSchedulerCancellationTests.swift; sourceTree = "<group>"; };
-		B200000100000000000000E2 /* LLMCheckSchedulerFlagOffTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCheckSchedulerFlagOffTests.swift; sourceTree = "<group>"; };
 		B200000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckCoordinatorSchedulerIntegrationTests.swift; sourceTree = "<group>"; };
 		B200000100000000000000E4 /* LLMCheckSchedulerMarkDismissedTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCheckSchedulerMarkDismissedTests.swift; sourceTree = "<group>"; };
 		B200000100000000000000F0 /* IncrementalConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementalConfigTests.swift; sourceTree = "<group>"; };
@@ -602,7 +600,6 @@
 				B2000001000000000000003B /* ParagraphExtractorTests.swift */,
 				B200000100000000000000E0 /* LLMCheckSchedulerTests.swift */,
 				B200000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift */,
-				B200000100000000000000E2 /* LLMCheckSchedulerFlagOffTests.swift */,
 				B200000100000000000000E4 /* LLMCheckSchedulerMarkDismissedTests.swift */,
 				B200000100000000000000F0 /* IncrementalConfigTests.swift */,
 			);
@@ -876,7 +873,6 @@
 				B100000100000000000000D3 /* ParagraphSuggestionCacheTests.swift in Sources */,
 				B100000100000000000000E0 /* LLMCheckSchedulerTests.swift in Sources */,
 				B100000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift in Sources */,
-				B100000100000000000000E2 /* LLMCheckSchedulerFlagOffTests.swift in Sources */,
 				B100000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift in Sources */,
 				B100000100000000000000E4 /* LLMCheckSchedulerMarkDismissedTests.swift in Sources */,
 				B100000100000000000000F0 /* IncrementalConfigTests.swift in Sources */,

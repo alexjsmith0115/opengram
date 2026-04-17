@@ -45,31 +45,25 @@ private final class RecordingLLM: LLMProviderProtocol, @unchecked Sendable {
     func healthCheck(config: LLMConfig, apiKey: String?) async -> Bool { true }
 }
 
-/// Runtime-flippable incremental config for testing ON→OFF transitions.
-/// Phase 17: extended with minIssueCount / minWordCount / idleDebounceSeconds
-/// to satisfy the extended IncrementalConfig protocol (D-05).
+/// Incremental config holding Phase 17 Advanced-tab tunables
+/// (minIssueCount / minWordCount / idleDebounceSeconds).
 private final class MutableIncrementalConfig: IncrementalConfig, @unchecked Sendable {
     private let lock = NSLock()
-    private var _flag: Bool
     private var _minIssueCount: Int
     private var _minWordCount: Int
     private var _idleDebounceSeconds: TimeInterval
     init(
-        _ initial: Bool,
         minIssueCount: Int = 2,
         minWordCount: Int = 12,
         idleDebounceSeconds: TimeInterval = 1.5
     ) {
-        self._flag = initial
         self._minIssueCount = minIssueCount
         self._minWordCount = minWordCount
         self._idleDebounceSeconds = idleDebounceSeconds
     }
-    var isIncrementalCheckingEnabled: Bool { lock.lock(); defer { lock.unlock() }; return _flag }
     var minIssueCount: Int { lock.lock(); defer { lock.unlock() }; return _minIssueCount }
     var minWordCount: Int { lock.lock(); defer { lock.unlock() }; return _minWordCount }
     var idleDebounceSeconds: TimeInterval { lock.lock(); defer { lock.unlock() }; return _idleDebounceSeconds }
-    func set(_ value: Bool) { lock.lock(); _flag = value; lock.unlock() }
     func setIdleDebounceSeconds(_ value: TimeInterval) { lock.lock(); _idleDebounceSeconds = value; lock.unlock() }
     func setMinIssueCount(_ value: Int) { lock.lock(); _minIssueCount = value; lock.unlock() }
     func setMinWordCount(_ value: Int) { lock.lock(); _minWordCount = value; lock.unlock() }
@@ -113,7 +107,7 @@ private func makeIntegrationScheduler(
             "P3": [style(original: "P3")]
         ])
         let cache = ParagraphSuggestionCache()
-        let scheduler = makeIntegrationScheduler(llm: llm, cache: cache, config: MutableIncrementalConfig(true))
+        let scheduler = makeIntegrationScheduler(llm: llm, cache: cache, config: MutableIncrementalConfig())
 
         let text = "P1\n\nP2\n\nP3"
 
@@ -122,57 +116,6 @@ private func makeIntegrationScheduler(
 
         _ = await scheduler.check(text: text, bundleID: "com.test")
         #expect(llm.targetCallCount == 3)
-    }
-
-    // 2. Flag-off path: identical repeated checks each fire one legacy full-text call (no cache).
-    @Test func flagOffPath_twoIdenticalChecks_bothIssueFullTextLLMCall() async {
-        let llm = RecordingLLM()
-        let cache = ParagraphSuggestionCache()
-        let scheduler = makeIntegrationScheduler(llm: llm, cache: cache, config: MutableIncrementalConfig(false))
-
-        let text = "P1\n\nP2"
-
-        _ = await scheduler.check(text: text, bundleID: "com.test")
-        _ = await scheduler.check(text: text, bundleID: "com.test")
-
-        #expect(llm.paragraphCallCount == 2)
-        #expect(llm.targetCallCount == 0)
-    }
-
-    // 3. Mid-stream flag flip ON→OFF: cache contents survive, but OFF path does not consult them.
-    @Test func flagFlipMidStream_onToOff_cacheRemainsButUnused() async {
-        let llm = RecordingLLM()
-        llm.setCannedForTarget(["P1": [style(original: "P1")]])
-        let cache = ParagraphSuggestionCache()
-        let config = MutableIncrementalConfig(true)
-        let scheduler = makeIntegrationScheduler(llm: llm, cache: cache, config: config)
-
-        // Warm cache under flag-on.
-        _ = await scheduler.check(text: "P1", bundleID: "com.test")
-        #expect(llm.targetCallCount == 1)
-
-        // Capture the seeded entry's lastAccessedAt.
-        let hasher = Sha256ParagraphHasher()
-        let key = ParagraphCacheKey(bundleID: "com.test", paragraphHash: hasher.hash("P1"))
-        let seeded = await cache.lookup(key)
-        let seededTimestamp = try! #require(seeded?.lastAccessedAt)
-
-        // Flip OFF.
-        config.set(false)
-
-        // Check under OFF path — fires legacy paragraph call; does NOT consult cache.
-        _ = await scheduler.check(text: "P1", bundleID: "com.test")
-        #expect(llm.paragraphCallCount == 1)
-        #expect(llm.targetCallCount == 1)
-
-        // Cache entry still present (dormant, not cleared).
-        let after = await cache.lookup(key)
-        #expect(after?.status == .active)
-        #expect(after?.suggestions.count == 1)
-        // The two observed timestamps differ only because this lookup bumped lastAccessedAt — not
-        // because the scheduler consulted the cache during the OFF-path check.
-        let afterTimestamp = try! #require(after?.lastAccessedAt)
-        #expect(afterTimestamp >= seededTimestamp)
     }
 
     // 4. INCR-06: cache is scoped per bundleID. Same text under a different bundleID is a full
@@ -184,7 +127,7 @@ private func makeIntegrationScheduler(
             "P2": [style(original: "P2")]
         ])
         let cache = ParagraphSuggestionCache()
-        let scheduler = makeIntegrationScheduler(llm: llm, cache: cache, config: MutableIncrementalConfig(true))
+        let scheduler = makeIntegrationScheduler(llm: llm, cache: cache, config: MutableIncrementalConfig())
 
         let text = "P1\n\nP2"
         _ = await scheduler.check(text: text, bundleID: "A")
@@ -194,33 +137,18 @@ private func makeIntegrationScheduler(
         #expect(llm.targetCallCount == 4)
     }
 
-    // 5. harperSpans preserved end-to-end through the scheduler on both feature-flag paths.
+    // 5. harperSpans preserved end-to-end through the scheduler.
     //    Closes Phase 13 LLM-03/LLM-04 regression risk.
     @Test func integration_harperSpansPreservedThroughScheduler() async {
-        // Flag OFF: one legacy paragraph call sees harperSpans verbatim.
-        do {
-            let llm = RecordingLLM()
-            let cache = ParagraphSuggestionCache()
-            let scheduler = makeIntegrationScheduler(llm: llm, cache: cache, config: MutableIncrementalConfig(false))
+        let llm = RecordingLLM()
+        let cache = ParagraphSuggestionCache()
+        let scheduler = makeIntegrationScheduler(llm: llm, cache: cache, config: MutableIncrementalConfig())
 
-            _ = await scheduler.check(text: "P1\n\nP2", bundleID: "com.test", harperSpans: ["foo"])
+        _ = await scheduler.check(text: "P1\n\nP2", bundleID: "com.test", harperSpans: ["foo"])
 
-            #expect(llm.paragraphCallCount == 1)
-            #expect(llm.paragraphCalls.first?.harperSpans == ["foo"])
-        }
-
-        // Flag ON: every per-paragraph target call sees the same harperSpans array.
-        do {
-            let llm = RecordingLLM()
-            let cache = ParagraphSuggestionCache()
-            let scheduler = makeIntegrationScheduler(llm: llm, cache: cache, config: MutableIncrementalConfig(true))
-
-            _ = await scheduler.check(text: "P1\n\nP2", bundleID: "com.test", harperSpans: ["foo"])
-
-            #expect(llm.targetCallCount == 2)
-            for call in llm.targetCalls {
-                #expect(call.harperSpans == ["foo"])
-            }
+        #expect(llm.targetCallCount == 2)
+        for call in llm.targetCalls {
+            #expect(call.harperSpans == ["foo"])
         }
     }
 }
