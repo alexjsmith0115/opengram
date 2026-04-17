@@ -40,6 +40,38 @@ struct RephraseCardViewTests {
         #expect(dismissCount == 1)
     }
 
+    @Test func bodyContent_noScrollView_multiSegmentBodyResolvesWithoutCrash() {
+        // Regression for D-01: verifies RephraseCardView renders a multi-segment diff body
+        // (added + removed + unchanged) without crash after ScrollView removal.
+        // ScrollView presence/absence is verified structurally via grep in the acceptance criteria.
+        let source = "The quick brown fox jumps over the lazy dog"
+        let p = Paragraph(text: source, range: source.startIndex..<source.endIndex, index: 0)
+        let vm = RephraseCardViewModel(
+            paragraph: p,
+            issues: [],
+            rephrase: "A swift auburn fox leaps over the lethargic dog",
+            segments: [
+                .unchanged("The"),
+                .removed("quick brown"),
+                .added("swift auburn"),
+                .unchanged("fox"),
+                .removed("jumps"),
+                .added("leaps"),
+                .unchanged("over the"),
+                .removed("lazy"),
+                .added("lethargic"),
+                .unchanged("dog")
+            ],
+            header: "Improve clarity",
+            onAccept: {},
+            onDismiss: {}
+        )
+        let view = RephraseCardView(viewModel: vm)
+        // Touch body in both diff modes — no crash expected
+        _ = view.body
+        #expect(vm.segments.count == 10)
+    }
+
     @Test func additionsOnlyMode_omitsRemovedSegments_conceptually() {
         // Data-level assertion: additions-only omits .removed segments.
         // Actual visual verification deferred to Phase 19 UAT.

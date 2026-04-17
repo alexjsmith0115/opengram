@@ -60,12 +60,10 @@ struct RephraseCardView: View {
     // MARK: - Body
 
     private var bodyContent: some View {
-        ScrollView {
-            composedBody
-                .font(.body)
-                .multilineTextAlignment(.leading)
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
+        composedBody
+            .font(.body)
+            .multilineTextAlignment(.leading)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     /// Builds the Text composition from the diff segments per the current mode.
