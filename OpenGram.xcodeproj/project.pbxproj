@@ -126,6 +126,9 @@
 		B18050010000000000000001 /* RephraseCardViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28050010000000000000001 /* RephraseCardViewTests.swift */; };
 		A18050010000000000000002 /* RephraseCardPanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28050010000000000000002 /* RephraseCardPanelController.swift */; };
 		B18050010000000000000002 /* RephraseCardPanelControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28050010000000000000002 /* RephraseCardPanelControllerTests.swift */; };
+		A18060010000000000000001 /* SourceParagraphHighlight.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28060010000000000000001 /* SourceParagraphHighlight.swift */; };
+		B18060010000000000000001 /* SourceParagraphHighlightTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28060010000000000000001 /* SourceParagraphHighlightTests.swift */; };
+		B18060010000000000000002 /* OverlayControllerHideUnderlinesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28060010000000000000002 /* OverlayControllerHideUnderlinesTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -260,6 +263,9 @@
 		B28050010000000000000001 /* RephraseCardViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RephraseCardViewTests.swift; sourceTree = "<group>"; };
 		A28050010000000000000002 /* RephraseCardPanelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RephraseCardPanelController.swift; sourceTree = "<group>"; };
 		B28050010000000000000002 /* RephraseCardPanelControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RephraseCardPanelControllerTests.swift; sourceTree = "<group>"; };
+		A28060010000000000000001 /* SourceParagraphHighlight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceParagraphHighlight.swift; sourceTree = "<group>"; };
+		B28060010000000000000001 /* SourceParagraphHighlightTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceParagraphHighlightTests.swift; sourceTree = "<group>"; };
+		B28060010000000000000002 /* OverlayControllerHideUnderlinesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayControllerHideUnderlinesTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -523,6 +529,7 @@
 			children = (
 				A20000010000000000000040 /* OverlayController.swift */,
 				A20000010000000000000041 /* OverlayWindow.swift */,
+				A28060010000000000000001 /* SourceParagraphHighlight.swift */,
 				A20000010000000000000044 /* UnderlineView.swift */,
 			);
 			path = Overlay;
@@ -631,6 +638,8 @@
 				B20000010000000000000033 /* OverlayControllerDiffTests.swift */,
 				B200000100000000000000C0 /* PanelPositionerTests.swift */,
 				B200000100000000000000F1 /* AdvancedSettingsViewTests.swift */,
+				B28060010000000000000001 /* SourceParagraphHighlightTests.swift */,
+				B28060010000000000000002 /* OverlayControllerHideUnderlinesTests.swift */,
 				B48000010000000000000021 /* Panels */,
 				B48020010000000000000001 /* RephraseCard */,
 			);
@@ -812,6 +821,7 @@
 				A18020010000000000000004 /* RephraseCardViewModel.swift in Sources */,
 				A18050010000000000000001 /* RephraseCardView.swift in Sources */,
 				A18050010000000000000002 /* RephraseCardPanelController.swift in Sources */,
+				A18060010000000000000001 /* SourceParagraphHighlight.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -869,6 +879,8 @@
 				B18020010000000000000004 /* RephraseCardViewModelTests.swift in Sources */,
 				B18050010000000000000001 /* RephraseCardViewTests.swift in Sources */,
 				B18050010000000000000002 /* RephraseCardPanelControllerTests.swift in Sources */,
+				B18060010000000000000001 /* SourceParagraphHighlightTests.swift in Sources */,
+				B18060010000000000000002 /* OverlayControllerHideUnderlinesTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
