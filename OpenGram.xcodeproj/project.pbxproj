@@ -122,6 +122,10 @@
 		B18020010000000000000002 /* DisplayHeuristicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28020010000000000000002 /* DisplayHeuristicTests.swift */; };
 		B18020010000000000000003 /* RephraseComposerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28020010000000000000003 /* RephraseComposerTests.swift */; };
 		B18020010000000000000004 /* RephraseCardViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28020010000000000000004 /* RephraseCardViewModelTests.swift */; };
+		A18050010000000000000001 /* RephraseCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28050010000000000000001 /* RephraseCardView.swift */; };
+		B18050010000000000000001 /* RephraseCardViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28050010000000000000001 /* RephraseCardViewTests.swift */; };
+		A18050010000000000000002 /* RephraseCardPanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28050010000000000000002 /* RephraseCardPanelController.swift */; };
+		B18050010000000000000002 /* RephraseCardPanelControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28050010000000000000002 /* RephraseCardPanelControllerTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -252,6 +256,10 @@
 		B28020010000000000000002 /* DisplayHeuristicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayHeuristicTests.swift; sourceTree = "<group>"; };
 		B28020010000000000000003 /* RephraseComposerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RephraseComposerTests.swift; sourceTree = "<group>"; };
 		B28020010000000000000004 /* RephraseCardViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RephraseCardViewModelTests.swift; sourceTree = "<group>"; };
+		A28050010000000000000001 /* RephraseCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RephraseCardView.swift; sourceTree = "<group>"; };
+		B28050010000000000000001 /* RephraseCardViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RephraseCardViewTests.swift; sourceTree = "<group>"; };
+		A28050010000000000000002 /* RephraseCardPanelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RephraseCardPanelController.swift; sourceTree = "<group>"; };
+		B28050010000000000000002 /* RephraseCardPanelControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RephraseCardPanelControllerTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -505,6 +513,7 @@
 				A28020010000000000000002 /* DisplayHeuristic.swift */,
 				A28020010000000000000003 /* RephraseComposer.swift */,
 				A28020010000000000000004 /* RephraseCardViewModel.swift */,
+				A28050010000000000000001 /* RephraseCardView.swift */,
 			);
 			path = RephraseCard;
 			sourceTree = "<group>";
@@ -528,6 +537,7 @@
 				A200000100000000000000A3 /* LLMSuggestionPanel.swift */,
 				A200000100000000000000B1 /* PanelPositioner.swift */,
 				A20000010000000000000042 /* PopoverView.swift */,
+				A28050010000000000000002 /* RephraseCardPanelController.swift */,
 				A20000010000000000000070 /* SuggestionDiffEngine.swift */,
 				A20000010000000000000043 /* SuggestionPopoverPanel.swift */,
 			);
@@ -601,6 +611,7 @@
 			isa = PBXGroup;
 			children = (
 				B28000010000000000000021 /* AXTextReplacerTests.swift */,
+				B28050010000000000000002 /* RephraseCardPanelControllerTests.swift */,
 			);
 			path = Panels;
 			sourceTree = "<group>";
@@ -633,6 +644,7 @@
 				B28020010000000000000002 /* DisplayHeuristicTests.swift */,
 				B28020010000000000000003 /* RephraseComposerTests.swift */,
 				B28020010000000000000004 /* RephraseCardViewModelTests.swift */,
+				B28050010000000000000001 /* RephraseCardViewTests.swift */,
 			);
 			path = RephraseCard;
 			sourceTree = "<group>";
@@ -798,6 +810,8 @@
 				A18020010000000000000002 /* DisplayHeuristic.swift in Sources */,
 				A18020010000000000000003 /* RephraseComposer.swift in Sources */,
 				A18020010000000000000004 /* RephraseCardViewModel.swift in Sources */,
+				A18050010000000000000001 /* RephraseCardView.swift in Sources */,
+				A18050010000000000000002 /* RephraseCardPanelController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -853,6 +867,8 @@
 				B18020010000000000000002 /* DisplayHeuristicTests.swift in Sources */,
 				B18020010000000000000003 /* RephraseComposerTests.swift in Sources */,
 				B18020010000000000000004 /* RephraseCardViewModelTests.swift in Sources */,
+				B18050010000000000000001 /* RephraseCardViewTests.swift in Sources */,
+				B18050010000000000000002 /* RephraseCardPanelControllerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
