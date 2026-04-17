@@ -17,7 +17,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         let dictionaryStore = DictionaryStore()
         let harperService = HarperService(dictionaryStore: dictionaryStore, dialect: selectedDialect)
         let llmService = LLMService()
-        let orchestrator = CheckOrchestrator(harper: harperService, llm: llmService)
+        let orchestrator = CheckOrchestrator(harper: harperService)
 
         // D-13: Scheduler is DI-composed at the root. Concrete Phase 15 components passed in;
         // flag is read live per-call via UserDefaultsIncrementalConfig (D-14).
@@ -33,7 +33,6 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         )
 
         let statusBarController = StatusBarController()
-        let llmPanelController = LLMPanelController()
 
         // TextMonitor constructed before OverlayController so it can be DI-injected.
         // RephraseCardPanelController (Phase 18) installs its own onKeystroke subscription
@@ -55,7 +54,6 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
             orchestrator: orchestrator,
             scheduler: scheduler,
             overlayController: overlayController,
-            llmPanelController: llmPanelController,
             statusBarController: statusBarController,
             appWhitelist: AppWhitelist()
         )
@@ -69,15 +67,8 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
             coordinator?.handleHotkeyFired()
         }
 
-        textMonitor.llmConfig = ConfigManager.currentLLMConfig()
-        textMonitor.llmAPIKey = ConfigManager.currentAPIKey()
-
         textMonitor.onCheckComplete = { [weak coordinator] suggestions, context in
             coordinator?.handleCheckComplete(suggestions, context)
-        }
-
-        textMonitor.onLLMBatch = { [weak coordinator] styleSuggestions, context in
-            coordinator?.handleLLMBatch(styleSuggestions, context)
         }
 
         textMonitor.onLLMFinished = { [weak coordinator] in

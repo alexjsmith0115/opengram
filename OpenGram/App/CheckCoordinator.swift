@@ -14,7 +14,6 @@ final class CheckCoordinator {
     private let orchestrator: CheckOrchestrator
     private let scheduler: LLMCheckScheduler
     let overlayController: OverlayController
-    let llmPanelController: any LLMPanelShowing
     let statusBarController: StatusBarController
     var appWhitelist: AppWhitelist
 
@@ -31,7 +30,6 @@ final class CheckCoordinator {
         orchestrator: CheckOrchestrator,
         scheduler: LLMCheckScheduler,
         overlayController: OverlayController,
-        llmPanelController: any LLMPanelShowing,
         statusBarController: StatusBarController,
         appWhitelist: AppWhitelist
     ) {
@@ -39,7 +37,6 @@ final class CheckCoordinator {
         self.orchestrator = orchestrator
         self.scheduler = scheduler
         self.overlayController = overlayController
-        self.llmPanelController = llmPanelController
         self.statusBarController = statusBarController
         self.appWhitelist = appWhitelist
 
@@ -80,7 +77,6 @@ final class CheckCoordinator {
         }
 
         overlayController.dismiss()
-        llmPanelController.dismiss()
 
         statusBarController.setState(.checking)
         statusBarController.updateStatusText("OpenGram: Checking...")
@@ -133,9 +129,6 @@ final class CheckCoordinator {
                 return
             }
 
-            // D-12: route the hotkey LLM leg through the scheduler. Under flag-off this is a
-            // byte-identical pre-v1.2 call; under flag-on it fans out per-paragraph with the
-            // cache. harperSpans forwarded either way (LLM-03/LLM-04).
             let harperSpans = await MainActor.run { self.lastSuggestions.map { $0.original } }
             Self.logger.info("llmTask calling scheduler.check — textLen=\(contextText.count) harperSpans=\(harperSpans.count)")
             let schedulerSuggestions = await scheduler.check(text: contextText, bundleID: contextBundleID, harperSpans: harperSpans)
@@ -148,9 +141,6 @@ final class CheckCoordinator {
             await MainActor.run {
                 self.restoreStatusAfterLLM()
 
-                // Merge scheduler's LLM Suggestions into the overlay so tryDispatchRephraseCard
-                // receives non-empty llmInRange. accumulatedSuggestions stays Harper-only (state
-                // semantics unchanged); merged array is ephemeral, passed only to update().
                 let llmSuggestions = schedulerSuggestions.filter { $0.source == .llm }
                 Self.logger.info("llmTask filter — llmSuggestions=\(llmSuggestions.count) accumulatedHarper=\(self.accumulatedSuggestions.count)")
                 if !llmSuggestions.isEmpty {
@@ -188,12 +178,6 @@ final class CheckCoordinator {
         }
     }
 
-    func handleLLMBatch(_ styleSuggestions: [LLMStyleSuggestion], _ context: TextContext) {
-        guard !styleSuggestions.isEmpty, context.elementBounds != nil else { return }
-        lastExtractedContext = context
-        showLLMPanel(styleSuggestions, context: context)
-    }
-
     func handleLLMFinished() {
         restoreStatusAfterLLM()
     }
@@ -201,26 +185,6 @@ final class CheckCoordinator {
     func handleDismiss() {
         overlayController.dismiss()
         resetState()
-    }
-
-    // MARK: - LLM suggestion application
-
-    func applyLLMSuggestion(_ suggestion: LLMStyleSuggestion) {
-        guard let context = lastExtractedContext else { return }
-
-        if let cfRange = context.selectionRange, cfRange.length > 0,
-           let selText = ParagraphExtractor.extract(from: context) as String?,
-           selText == suggestion.originalText {
-            _ = textEngine.writeBack(context: context, replacement: suggestion.revisedText)
-        } else {
-            _ = replaceSubstring(
-                originalText: suggestion.originalText,
-                revisedText: suggestion.revisedText,
-                in: context
-            )
-        }
-
-        llmPanelController.dismiss()
     }
 
     // MARK: - Private helpers
@@ -241,48 +205,5 @@ final class CheckCoordinator {
             statusBarController.setState(.done)
             statusBarController.updateStatusText("OpenGram: \(accumulatedSuggestions.count) suggestion(s)")
         }
-    }
-
-    private func showLLMPanel(_ suggestions: [LLMStyleSuggestion], context: TextContext) {
-        guard !suggestions.isEmpty, let bounds = context.elementBounds else { return }
-
-        let anchorRect = NSRect(
-            x: bounds.origin.x, y: bounds.origin.y,
-            width: bounds.size.width, height: bounds.size.height
-        )
-        let screen = NSScreen.screens.first(where: { $0.frame.contains(anchorRect) })
-            ?? NSScreen.main ?? NSScreen.screens[0]
-
-        llmPanelController.show(
-            suggestions: suggestions, near: anchorRect, on: screen,
-            onApply: { [weak self] s in self?.applyLLMSuggestion(s) },
-            onDismiss: { [weak self] in self?.llmPanelController.dismiss() }
-        )
-    }
-
-    @discardableResult
-    private func replaceSubstring(
-        originalText: String, revisedText: String, in context: TextContext
-    ) -> Bool {
-        guard let engine = textEngine as? AXTextEngine else {
-            return textEngine.writeBack(context: context, replacement: revisedText)
-        }
-
-        let fullText = context.text
-        guard let range = fullText.range(of: originalText) else {
-            return engine.writeBack(context: context, replacement: revisedText)
-        }
-
-        let scalars = fullText.unicodeScalars
-        let start = scalars.distance(from: scalars.startIndex, to: range.lowerBound)
-        let length = scalars.distance(from: range.lowerBound, to: range.upperBound)
-        let cfRange = CFRange(location: start, length: length)
-
-        let adjustedContext = TextContext(
-            text: fullText, bundleID: context.bundleID,
-            extractionMethod: context.extractionMethod, selectionRange: cfRange,
-            elementBounds: context.elementBounds, axElement: context.axElement
-        )
-        return engine.writeBack(context: adjustedContext, replacement: revisedText)
     }
 }

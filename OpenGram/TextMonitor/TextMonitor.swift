@@ -25,7 +25,6 @@ final class TextMonitor {
     // MARK: - Callbacks
 
     var onCheckComplete: ((@MainActor ([Suggestion], TextContext) -> Void))?
-    var onLLMBatch: ((@MainActor ([LLMStyleSuggestion], TextContext) -> Void))?
     var onLLMFinished: ((@MainActor () -> Void))?
     var onDismiss: ((@MainActor () -> Void))?
     /// Phase 18 FR-18 edit-closes hook. Fires synchronously on every AX value-change
@@ -37,8 +36,6 @@ final class TextMonitor {
     // MARK: - Config (set by AppDelegate at init)
 
     var appWhitelist = AppWhitelist()
-    var llmConfig: LLMConfig = .default
-    var llmAPIKey: String?
 
     // MARK: - Internal state
 
@@ -279,21 +276,13 @@ final class TextMonitor {
         guard let context = textEngine.extractText(), !context.text.isEmpty else { return }
 
         checkTask?.cancel()
-        let config = llmConfig
-        let apiKey = llmAPIKey
         checkTask = Task {
             await orchestrator.runCheck(
                 text: context.text,
                 context: context,
-                config: config,
-                apiKey: apiKey,
                 onHarperComplete: { [weak self] suggestions, ctx in
                     guard let self, !Task.isCancelled else { return }
                     self.onCheckComplete?(suggestions, ctx)
-                },
-                onLLMBatch: { [weak self] suggestions, ctx in
-                    guard let self, !Task.isCancelled else { return }
-                    self.onLLMBatch?(suggestions, ctx)
                 },
                 onLLMFinished: { [weak self] in
                     guard self != nil, !Task.isCancelled else { return }
