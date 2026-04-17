@@ -283,4 +283,11 @@ actor LLMCheckScheduler {
         pendingIdleTask = nil
         return await check(text: text, bundleID: bundleID, harperSpans: harperSpans)
     }
+
+    /// Phase 18 D-17: card Dismiss action entry point.
+    /// Thin wrapper around `cache.markDismissed(...)` so the UI layer never touches the cache directly.
+    /// No-op when no entry exists for the key (mirrors cache.markDismissed semantics).
+    func markDismissed(bundleID: String, hash: UInt64) async {
+        await cache.markDismissed(ParagraphCacheKey(bundleID: bundleID, paragraphHash: hash))
+    }
 }

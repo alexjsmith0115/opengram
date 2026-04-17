@@ -108,6 +108,7 @@
 		B100000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift */; };
 		B100000100000000000000E2 /* LLMCheckSchedulerFlagOffTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000E2 /* LLMCheckSchedulerFlagOffTests.swift */; };
 		B100000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift */; };
+		B100000100000000000000E4 /* LLMCheckSchedulerMarkDismissedTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000E4 /* LLMCheckSchedulerMarkDismissedTests.swift */; };
 		B100000100000000000000F0 /* IncrementalConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000F0 /* IncrementalConfigTests.swift */; };
 		A100000100000000000000E2 /* AdvancedSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000E2 /* AdvancedSettingsView.swift */; };
 		B100000100000000000000F1 /* AdvancedSettingsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000F1 /* AdvancedSettingsViewTests.swift */; };
@@ -237,6 +238,7 @@
 		B200000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCheckSchedulerCancellationTests.swift; sourceTree = "<group>"; };
 		B200000100000000000000E2 /* LLMCheckSchedulerFlagOffTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCheckSchedulerFlagOffTests.swift; sourceTree = "<group>"; };
 		B200000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckCoordinatorSchedulerIntegrationTests.swift; sourceTree = "<group>"; };
+		B200000100000000000000E4 /* LLMCheckSchedulerMarkDismissedTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCheckSchedulerMarkDismissedTests.swift; sourceTree = "<group>"; };
 		B200000100000000000000F0 /* IncrementalConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementalConfigTests.swift; sourceTree = "<group>"; };
 		A200000100000000000000E2 /* AdvancedSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSettingsView.swift; sourceTree = "<group>"; };
 		B200000100000000000000F1 /* AdvancedSettingsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSettingsViewTests.swift; sourceTree = "<group>"; };
@@ -578,6 +580,7 @@
 				B200000100000000000000E0 /* LLMCheckSchedulerTests.swift */,
 				B200000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift */,
 				B200000100000000000000E2 /* LLMCheckSchedulerFlagOffTests.swift */,
+				B200000100000000000000E4 /* LLMCheckSchedulerMarkDismissedTests.swift */,
 				B200000100000000000000F0 /* IncrementalConfigTests.swift */,
 			);
 			path = CheckEngine;
@@ -842,6 +845,7 @@
 				B100000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift in Sources */,
 				B100000100000000000000E2 /* LLMCheckSchedulerFlagOffTests.swift in Sources */,
 				B100000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift in Sources */,
+				B100000100000000000000E4 /* LLMCheckSchedulerMarkDismissedTests.swift in Sources */,
 				B100000100000000000000F0 /* IncrementalConfigTests.swift in Sources */,
 				B100000100000000000000F1 /* AdvancedSettingsViewTests.swift in Sources */,
 				B18000010000000000000021 /* AXTextReplacerTests.swift in Sources */,
