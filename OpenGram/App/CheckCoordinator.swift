@@ -166,7 +166,7 @@ final class CheckCoordinator {
                 // receives non-empty llmInRange. accumulatedSuggestions stays Harper-only (state
                 // semantics unchanged); merged array is ephemeral, passed only to update().
                 let llmSuggestions = schedulerSuggestions.filter { $0.source == .llm }
-                if !llmSuggestions.isEmpty || !self.accumulatedSuggestions.isEmpty {
+                if !llmSuggestions.isEmpty {
                     let merged = self.accumulatedSuggestions + llmSuggestions
                     self.overlayController.update(suggestions: merged, context: context)
                 }
