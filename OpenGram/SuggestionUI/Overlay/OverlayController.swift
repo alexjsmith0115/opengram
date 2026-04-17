@@ -37,6 +37,9 @@ final class OverlayController {
     private var underlineView: UnderlineView?
     private var targetAppPID: pid_t?
     private var currentCardParagraphRange: (scalarStart: Int, scalarLength: Int)?
+    /// Hash of the paragraph currently shown in the rephrase card. Guards against re-dispatching
+    /// the card for the same paragraph on incremental update() calls (WR-02).
+    private var currentCardParagraphHash: UInt64? = nil
 
     // MARK: - Public state
     // internal(set) allows @testable test targets to inject state directly
@@ -388,6 +391,9 @@ final class OverlayController {
             in: context.text
         )
 
+        // WR-02: skip re-dispatch when the card is already showing for this paragraph.
+        guard currentCardParagraphHash != selected.hash else { return true }
+
         var categoriesSet: Set<CheckCategory> = []
         for issue in selected.llmIssues {
             categoriesSet.insert(RephraseCardViewModel.checkCategory(from: issue.category))
@@ -409,6 +415,7 @@ final class OverlayController {
         let pLen = scalars.distance(from: selected.paragraph.range.lowerBound, to: selected.paragraph.range.upperBound)
         let paragraphScalarRange = (scalarStart: pStart, scalarLength: pLen)
         currentCardParagraphRange = paragraphScalarRange
+        currentCardParagraphHash = selected.hash
 
         let schedulerRef = scheduler
         let bundleID = context.bundleID
@@ -467,6 +474,7 @@ final class OverlayController {
     private func hideCardAndRestore() {
         sourceParagraphHighlight.removeFromSuperview()
         currentCardParagraphRange = nil
+        currentCardParagraphHash = nil
         showUnderlines()
     }
 
