@@ -1,5 +1,6 @@
 @preconcurrency import ApplicationServices
 import AppKit
+import os.log
 import SwiftUI
 
 /// Per-paragraph bundle used during rephrase-card dispatch. Internal visibility so
@@ -15,6 +16,11 @@ internal struct CardQualifier: Sendable {
 /// Owns the OverlayWindow, SuggestionPopoverPanel, TargetAppObserver, and scroll monitor.
 @MainActor
 final class OverlayController {
+
+    private static let logger = Logger(
+        subsystem: Bundle.main.bundleIdentifier ?? "com.opengram",
+        category: "OverlayController"
+    )
 
     // T-03-02: cap displayed suggestions to prevent blocking the main thread with AX queries
     private static let maxDisplayedSuggestions = 50
@@ -342,13 +348,24 @@ final class OverlayController {
         suggestions: [Suggestion],
         context: TextContext
     ) -> Bool {
-        guard let scheduler, let textMonitor else { return false }
+        let llmCount = suggestions.filter { $0.source == .llm }.count
+        let harperCount = suggestions.filter { $0.source == .harper }.count
+        Self.logger.info("tryDispatchRephraseCard entry — suggestions=\(suggestions.count) llm=\(llmCount) harper=\(harperCount) bundleID=\(context.bundleID)")
+
+        guard let scheduler, let textMonitor else {
+            Self.logger.error("dispatch blocked: scheduler=\(self.scheduler != nil) textMonitor=\(self.textMonitor != nil) — one or both missing")
+            return false
+        }
 
         let paragraphs = splitter.split(context.text)
-        guard !paragraphs.isEmpty else { return false }
+        guard !paragraphs.isEmpty else {
+            Self.logger.info("dispatch blocked: splitter returned 0 paragraphs for text length \(context.text.count)")
+            return false
+        }
+        Self.logger.info("split produced \(paragraphs.count) paragraph(s)")
 
         var qualifiers: [CardQualifier] = []
-        for paragraph in paragraphs {
+        for (idx, paragraph) in paragraphs.enumerated() {
             let hash = hasher.hash(paragraph.text)
 
             let llmInRange = suggestions.filter { $0.source == .llm && $0.paragraphHash == hash }
@@ -374,14 +391,21 @@ final class OverlayController {
                     && s.range.upperBound <= paragraph.range.upperBound
             }
 
-            if heuristic.qualifies(paragraph: paragraph, issues: llmIssues) {
+            let qualifies = heuristic.qualifies(paragraph: paragraph, issues: llmIssues)
+            Self.logger.info("  paragraph[\(idx)] len=\(paragraph.text.count) hash=\(hash) llmInRange=\(llmInRange.count) llmIssues=\(llmIssues.count) harperInside=\(harperInside.count) qualifies=\(qualifies)")
+
+            if qualifies {
                 qualifiers.append(CardQualifier(
                     paragraph: paragraph, llmIssues: llmIssues,
                     harperInside: harperInside, hash: hash
                 ))
             }
         }
-        guard !qualifiers.isEmpty else { return false }
+        guard !qualifiers.isEmpty else {
+            Self.logger.info("dispatch blocked: 0 qualifying paragraphs (heuristic gate)")
+            return false
+        }
+        Self.logger.info("\(qualifiers.count) qualifier(s) — selecting nearest to caret")
 
         let caretIndex = Self.caretScalarOffset(in: context.axElement)
         let selected = OverlayController.selectQualifier(
@@ -391,7 +415,10 @@ final class OverlayController {
         )
 
         // WR-02: skip re-dispatch when the card is already showing for this paragraph.
-        guard currentCardParagraphHash != selected.hash else { return true }
+        guard currentCardParagraphHash != selected.hash else {
+            Self.logger.info("dispatch skipped: card already showing for paragraph hash=\(selected.hash) (WR-02 dedup)")
+            return true
+        }
 
         var categoriesSet: Set<CheckCategory> = []
         for issue in selected.llmIssues {
@@ -401,7 +428,10 @@ final class OverlayController {
             categoriesSet.insert(harper.category)
         }
         let header = RephraseCardViewModel.headerText(for: categoriesSet)
-        guard !header.isEmpty else { return false }
+        guard !header.isEmpty else {
+            Self.logger.info("dispatch blocked: empty header (categories=\(categoriesSet.count))")
+            return false
+        }
 
         let rephrase = RephraseComposer.compose(
             paragraphText: selected.paragraph.text,
@@ -451,15 +481,23 @@ final class OverlayController {
             onDismiss: dismissClosure
         )
 
-        guard let anchorRect = anchorRect(for: selected.paragraph, in: context) else { return false }
+        guard let anchorRect = anchorRect(for: selected.paragraph, in: context) else {
+            Self.logger.error("dispatch blocked: anchorRect computation failed for paragraph — AX bounds query may have returned nil")
+            return false
+        }
+        Self.logger.info("anchorRect=\(NSStringFromRect(anchorRect)) for paragraph len=\(selected.paragraph.text.count)")
         let screen = NSScreen.screens.first(where: { $0.frame.contains(anchorRect) })
             ?? NSScreen.main
             ?? NSScreen.screens.first
-        guard let screen else { return false }
+        guard let screen else {
+            Self.logger.error("dispatch blocked: no screen found for anchor + no fallback NSScreen available")
+            return false
+        }
 
         hideUnderlines(inParagraphScalarRange: paragraphScalarRange)
         showSourceHighlight(for: selected.paragraph, in: context)
 
+        Self.logger.info("dispatch → RephraseCardPanelController.show (screen=\(NSStringFromRect(screen.visibleFrame)))")
         rephraseCardPanelController.show(
             viewModel: viewModel,
             near: anchorRect,

@@ -1,5 +1,6 @@
 @preconcurrency import ApplicationServices
 import AppKit
+import os.log
 import SwiftUI
 
 /// Phase 18 D-06: hosts `RephraseCardView` in a non-activating NSPanel, mirroring
@@ -8,6 +9,11 @@ import SwiftUI
 /// (TextMonitor.onKeystroke → caret-in-paragraph check).
 @MainActor
 final class RephraseCardPanelController {
+
+    private static let logger = Logger(
+        subsystem: Bundle.main.bundleIdentifier ?? "com.opengram",
+        category: "RephraseCardPanel"
+    )
 
     private var panel: NSPanel?
     private var hostingView: NSHostingView<RephraseCardView>?
@@ -50,6 +56,8 @@ final class RephraseCardPanelController {
         textMonitor: TextMonitor,
         onHide: @escaping @MainActor () -> Void
     ) {
+        Self.logger.info("show() entry — anchorRect=\(NSStringFromRect(anchorRect)) screen.visibleFrame=\(NSStringFromRect(screen.visibleFrame))")
+
         // Tear down any prior card first (single active card — D-06 one at a time).
         self.hide()
 
@@ -95,8 +103,11 @@ final class RephraseCardPanelController {
             margin: Self.verticalSafeMargin
         )
 
+        Self.logger.info("sizing — fitting=\(NSStringFromSize(fitting)) floored=\(NSStringFromSize(flooredSize)) capped=\(NSStringFromSize(capped))")
+
         // D-04/D-05: conditional scroll wrapper — overflow-only. Reassign contentView if needed.
         if capped.height < flooredSize.height {
+            Self.logger.info("overflow branch — wrapping hosting in NSScrollView")
             let scroll = NSScrollView(frame: .zero)
             scroll.hasVerticalScroller = true
             scroll.autohidesScrollers = true
@@ -105,12 +116,15 @@ final class RephraseCardPanelController {
             scroll.documentView = hosting
             newPanel.contentView = scroll
             self.scrollWrapper = scroll
+        } else {
+            Self.logger.info("short-content branch — plain NSHostingView")
         }
 
         newPanel.setContentSize(capped)
 
         let panelOrigin = PanelPositioner.marginOrigin(for: newPanel.frame.size, near: anchorRect, on: screen, gap: 12)
         newPanel.setFrameOrigin(panelOrigin)
+        Self.logger.info("panel frame=\(NSStringFromRect(newPanel.frame)) — ordering front")
         newPanel.orderFront(nil)
 
         self.panel = newPanel
