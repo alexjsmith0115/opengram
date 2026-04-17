@@ -2,6 +2,15 @@
 import AppKit
 import SwiftUI
 
+/// Per-paragraph bundle used during rephrase-card dispatch. Internal visibility so
+/// OverlayController.selectQualifier is unit-testable.
+internal struct CardQualifier: Sendable {
+    let paragraph: Paragraph
+    let llmIssues: [LLMStyleSuggestion]
+    let harperInside: [Suggestion]
+    let hash: UInt64
+}
+
 /// Coordinates the overlay window and suggestion popover.
 /// Owns the OverlayWindow, SuggestionPopoverPanel, TargetAppObserver, and scroll monitor.
 @MainActor
@@ -11,14 +20,23 @@ final class OverlayController {
     private static let maxDisplayedSuggestions = 50
 
     private let accessor: any AXAccessor
+    private let scheduler: LLMCheckScheduler?
+    private let textMonitor: TextMonitor?
+    private let incrementalConfig: any IncrementalConfig
+    private let splitter: any ParagraphSplitting
+    private let hasher: any ParagraphHashing
+    private let heuristic: DisplayHeuristic
     private let overlayWindow: OverlayWindow
     private let popoverPanel: SuggestionPopoverPanel
     private let targetAppObserver: TargetAppObserver
+    private let rephraseCardPanelController: RephraseCardPanelController
+    private let sourceParagraphHighlight: SourceParagraphHighlight
     private let boundsValidator = BoundsValidator()
     private var scrollMonitor: Any?
     private var keyMonitor: Any?
     private var underlineView: UnderlineView?
     private var targetAppPID: pid_t?
+    private var currentCardParagraphRange: (scalarStart: Int, scalarLength: Int)?
 
     // MARK: - Public state
     // internal(set) allows @testable test targets to inject state directly
@@ -49,11 +67,26 @@ final class OverlayController {
     var onAddToDictionary: (@MainActor (String) -> Void)?
     var onDismissAll: (@MainActor () -> Void)?
 
-    init(accessor: any AXAccessor = SystemAXAccessor()) {
+    init(
+        accessor: any AXAccessor = SystemAXAccessor(),
+        scheduler: LLMCheckScheduler? = nil,
+        textMonitor: TextMonitor? = nil,
+        incrementalConfig: any IncrementalConfig = UserDefaultsIncrementalConfig(),
+        splitter: any ParagraphSplitting = DoubleNewlineSplitter(),
+        hasher: any ParagraphHashing = Sha256ParagraphHasher()
+    ) {
         self.accessor = accessor
+        self.scheduler = scheduler
+        self.textMonitor = textMonitor
+        self.incrementalConfig = incrementalConfig
+        self.splitter = splitter
+        self.hasher = hasher
+        self.heuristic = DisplayHeuristic(config: incrementalConfig)
         self.overlayWindow = OverlayWindow()
         self.popoverPanel = SuggestionPopoverPanel()
         self.targetAppObserver = TargetAppObserver()
+        self.rephraseCardPanelController = RephraseCardPanelController()
+        self.sourceParagraphHighlight = SourceParagraphHighlight(frame: .zero)
 
         // Wire click-outside dismissal: mouseDown outside underlines triggers dismiss
         overlayWindow.mouseDownHandler = { [weak self] event in
@@ -81,6 +114,9 @@ final class OverlayController {
 
         // Populate parallel scalar offset array so repositionAfterAccept can shift indices
         self.suggestionScalarOffsets = computeScalarOffsets(for: self.suggestions, in: context.text)
+
+        // Phase 18: card takes over presentation if a paragraph qualifies under flag-on.
+        _ = tryDispatchRephraseCard(suggestions: self.suggestions, context: context)
 
         let element = context.axElement
 
@@ -248,6 +284,9 @@ final class OverlayController {
         self.suggestionScalarOffsets = survivingOffsets
         self.textContext = newContext
 
+        // Phase 18: card takes over presentation if a paragraph qualifies under flag-on.
+        _ = tryDispatchRephraseCard(suggestions: self.suggestions, context: newContext)
+
         if survivingEntries.isEmpty {
             dismiss()
             return
@@ -289,6 +328,222 @@ final class OverlayController {
         }
         targetAppPID = nil
         onDismissAll?()
+    }
+
+    // MARK: - Rephrase card dispatch (Phase 18 REPH-01/02/12/14/15)
+
+    /// Entry point for card dispatch. Returns true when the card dispatched.
+    /// Non-qualifying paragraphs continue through the caller's normal per-issue render path.
+    @discardableResult
+    private func tryDispatchRephraseCard(
+        suggestions: [Suggestion],
+        context: TextContext
+    ) -> Bool {
+        guard incrementalConfig.paragraphRephraseCardEnabled else { return false }
+        guard let scheduler, let textMonitor else { return false }
+
+        let paragraphs = splitter.split(context.text)
+        guard !paragraphs.isEmpty else { return false }
+
+        var qualifiers: [CardQualifier] = []
+        for paragraph in paragraphs {
+            let hash = hasher.hash(paragraph.text)
+
+            let llmInRange = suggestions.filter { $0.source == .llm && $0.paragraphHash == hash }
+            let llmIssues: [LLMStyleSuggestion] = llmInRange.compactMap { s in
+                guard let revised = s.primaryReplacement else { return nil }
+                let cat: LLMStyleSuggestion.Category
+                switch s.category {
+                case .clarity: cat = .clarity
+                case .tone: cat = .tone
+                case .rephrase: cat = .rephrase
+                default: return nil
+                }
+                return LLMStyleSuggestion(
+                    category: cat, originalText: s.original,
+                    revisedText: revised, explanation: s.message,
+                    confidence: Int(s.priority)
+                )
+            }
+
+            let harperInside = suggestions.filter { s in
+                s.source == .harper
+                    && s.range.lowerBound >= paragraph.range.lowerBound
+                    && s.range.upperBound <= paragraph.range.upperBound
+            }
+
+            if heuristic.qualifies(paragraph: paragraph, issues: llmIssues) {
+                qualifiers.append(CardQualifier(
+                    paragraph: paragraph, llmIssues: llmIssues,
+                    harperInside: harperInside, hash: hash
+                ))
+            }
+        }
+        guard !qualifiers.isEmpty else { return false }
+
+        let caretIndex = Self.caretScalarOffset(in: context.axElement)
+        let selected = OverlayController.selectQualifier(
+            qualifiers: qualifiers,
+            caretScalarIndex: caretIndex,
+            in: context.text
+        )
+
+        var categoriesSet: Set<CheckCategory> = []
+        for issue in selected.llmIssues {
+            categoriesSet.insert(RephraseCardViewModel.checkCategory(from: issue.category))
+        }
+        for harper in selected.harperInside {
+            categoriesSet.insert(harper.category)
+        }
+        let header = RephraseCardViewModel.headerText(for: categoriesSet)
+        guard !header.isEmpty else { return false }
+
+        let rephrase = RephraseComposer.compose(
+            paragraphText: selected.paragraph.text,
+            issues: selected.llmIssues
+        )
+        let segments = TextDiff.segments(original: selected.paragraph.text, revised: rephrase)
+
+        let scalars = context.text.unicodeScalars
+        let pStart = scalars.distance(from: scalars.startIndex, to: selected.paragraph.range.lowerBound)
+        let pLen = scalars.distance(from: selected.paragraph.range.lowerBound, to: selected.paragraph.range.upperBound)
+        let paragraphScalarRange = (scalarStart: pStart, scalarLength: pLen)
+        currentCardParagraphRange = paragraphScalarRange
+
+        let schedulerRef = scheduler
+        let bundleID = context.bundleID
+        let hashForDismiss = selected.hash
+        let ax = context.axElement
+        let writeRange = paragraphScalarRange
+        let composedRephrase = rephrase
+
+        let acceptClosure: @MainActor () -> Void = { [weak self] in
+            guard let self else { return }
+            // Hide card before AX write: write fires kAXValueChangedNotification → TextMonitor
+            // reschedule → scheduler re-eval. Hiding first prevents card flicker on stale hash.
+            self.hideCardAndRestore()
+            let replacer = AXTextReplacer(accessor: self.accessor)
+            _ = replacer.replace(text: composedRephrase, in: writeRange, of: ax)
+        }
+        let dismissClosure: @MainActor () -> Void = { [weak self] in
+            guard let self else { return }
+            Task { @MainActor in
+                await schedulerRef.markDismissed(bundleID: bundleID, hash: hashForDismiss)
+                self.hideCardAndRestore()
+            }
+        }
+
+        let viewModel = RephraseCardViewModel(
+            paragraph: selected.paragraph,
+            issues: selected.llmIssues,
+            rephrase: rephrase,
+            segments: segments,
+            header: header,
+            onAccept: acceptClosure,
+            onDismiss: dismissClosure
+        )
+
+        guard let anchorRect = anchorRect(for: selected.paragraph, in: context) else { return false }
+        let screen = NSScreen.screens.first(where: { $0.frame.contains(anchorRect) })
+            ?? NSScreen.main
+            ?? NSScreen.screens.first
+        guard let screen else { return false }
+
+        hideUnderlines(inParagraphScalarRange: paragraphScalarRange)
+        showSourceHighlight(for: selected.paragraph, in: context)
+
+        rephraseCardPanelController.show(
+            viewModel: viewModel,
+            near: anchorRect,
+            on: screen,
+            axElement: ax,
+            paragraphScalarRange: paragraphScalarRange,
+            textMonitor: textMonitor,
+            onHide: { [weak self] in self?.hideCardAndRestore() }
+        )
+        return true
+    }
+
+    private func hideCardAndRestore() {
+        sourceParagraphHighlight.removeFromSuperview()
+        currentCardParagraphRange = nil
+        showUnderlines()
+    }
+
+    private func showSourceHighlight(for paragraph: Paragraph, in context: TextContext) {
+        let fakeSug = Suggestion(
+            id: UUID(), range: paragraph.range, original: paragraph.text,
+            primaryReplacement: nil, allReplacements: [], message: "",
+            category: .clarity, source: .llm, priority: 1, paragraphHash: nil
+        )
+        guard let rects = boundsValidator.validatedBoundsForRange(
+            fakeSug, in: context.text, element: context.axElement,
+            bundleID: context.bundleID, accessor: accessor
+        ) else { return }
+        let union = rects.reduce(CGRect.null) { $0.union($1) }
+        guard !union.isNull else { return }
+
+        let windowRect = overlayWindow.frame
+        let localRect = NSRect(
+            x: union.minX - windowRect.minX,
+            y: union.minY - windowRect.minY,
+            width: union.width,
+            height: union.height
+        )
+        sourceParagraphHighlight.frame = localRect
+        if let contentView = overlayWindow.contentView {
+            contentView.addSubview(sourceParagraphHighlight, positioned: .below, relativeTo: underlineView)
+        }
+    }
+
+    private func anchorRect(for paragraph: Paragraph, in context: TextContext) -> NSRect? {
+        let fakeSug = Suggestion(
+            id: UUID(), range: paragraph.range, original: paragraph.text,
+            primaryReplacement: nil, allReplacements: [], message: "",
+            category: .clarity, source: .llm, priority: 1, paragraphHash: nil
+        )
+        return boundsValidator.validatedBoundsForRange(
+            fakeSug, in: context.text, element: context.axElement,
+            bundleID: context.bundleID, accessor: accessor
+        )?.first
+    }
+
+    private static func caretScalarOffset(in element: AXUIElement) -> Int? {
+        var rangeRef: CFTypeRef?
+        let err = AXUIElementCopyAttributeValue(element, kAXSelectedTextRangeAttribute as CFString, &rangeRef)
+        guard err == .success, let rangeRef else { return nil }
+        var cfRange = CFRange(location: 0, length: 0)
+        guard AXValueGetValue(rangeRef as! AXValue, .cfRange, &cfRange) else { return nil }
+        return cfRange.location
+    }
+
+    /// D-12 / REPH-12: caret-containment wins; otherwise nearest midpoint.
+    /// Static + internal so unit tests can exercise without an OverlayController instance.
+    internal static func selectQualifier(
+        qualifiers: [CardQualifier],
+        caretScalarIndex: Int?,
+        in text: String
+    ) -> CardQualifier {
+        precondition(!qualifiers.isEmpty)
+        guard let caret = caretScalarIndex else { return qualifiers[0] }
+
+        let scalars = text.unicodeScalars
+        func scalarRange(_ q: CardQualifier) -> (Int, Int) {
+            let start = scalars.distance(from: scalars.startIndex, to: q.paragraph.range.lowerBound)
+            let len = scalars.distance(from: q.paragraph.range.lowerBound, to: q.paragraph.range.upperBound)
+            return (start, len)
+        }
+        for q in qualifiers {
+            let (s, l) = scalarRange(q)
+            if caret >= s && caret <= s + l { return q }
+        }
+        return qualifiers.min(by: { a, b in
+            let (sa, la) = scalarRange(a)
+            let (sb, lb) = scalarRange(b)
+            let midA = sa + la / 2
+            let midB = sb + lb / 2
+            return abs(midA - caret) < abs(midB - caret)
+        }) ?? qualifiers[0]
     }
 
     // MARK: - Paragraph underline hide/show (Phase 18 FR-19 / D-13)

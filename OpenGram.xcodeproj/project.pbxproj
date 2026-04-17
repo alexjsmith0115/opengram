@@ -129,6 +129,8 @@
 		A18060010000000000000001 /* SourceParagraphHighlight.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28060010000000000000001 /* SourceParagraphHighlight.swift */; };
 		B18060010000000000000001 /* SourceParagraphHighlightTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28060010000000000000001 /* SourceParagraphHighlightTests.swift */; };
 		B18060010000000000000002 /* OverlayControllerHideUnderlinesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28060010000000000000002 /* OverlayControllerHideUnderlinesTests.swift */; };
+		B18070010000000000000001 /* MultiQualifierSelectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28070010000000000000001 /* MultiQualifierSelectionTests.swift */; };
+		B18070010000000000000002 /* OverlayControllerRephraseIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28070010000000000000002 /* OverlayControllerRephraseIntegrationTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -266,6 +268,8 @@
 		A28060010000000000000001 /* SourceParagraphHighlight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceParagraphHighlight.swift; sourceTree = "<group>"; };
 		B28060010000000000000001 /* SourceParagraphHighlightTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceParagraphHighlightTests.swift; sourceTree = "<group>"; };
 		B28060010000000000000002 /* OverlayControllerHideUnderlinesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayControllerHideUnderlinesTests.swift; sourceTree = "<group>"; };
+		B28070010000000000000001 /* MultiQualifierSelectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiQualifierSelectionTests.swift; sourceTree = "<group>"; };
+		B28070010000000000000002 /* OverlayControllerRephraseIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayControllerRephraseIntegrationTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -640,6 +644,8 @@
 				B200000100000000000000F1 /* AdvancedSettingsViewTests.swift */,
 				B28060010000000000000001 /* SourceParagraphHighlightTests.swift */,
 				B28060010000000000000002 /* OverlayControllerHideUnderlinesTests.swift */,
+				B28070010000000000000001 /* MultiQualifierSelectionTests.swift */,
+				B28070010000000000000002 /* OverlayControllerRephraseIntegrationTests.swift */,
 				B48000010000000000000021 /* Panels */,
 				B48020010000000000000001 /* RephraseCard */,
 			);
@@ -881,6 +887,8 @@
 				B18050010000000000000002 /* RephraseCardPanelControllerTests.swift in Sources */,
 				B18060010000000000000001 /* SourceParagraphHighlightTests.swift in Sources */,
 				B18060010000000000000002 /* OverlayControllerHideUnderlinesTests.swift in Sources */,
+				B18070010000000000000001 /* MultiQualifierSelectionTests.swift in Sources */,
+				B18070010000000000000002 /* OverlayControllerRephraseIntegrationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
