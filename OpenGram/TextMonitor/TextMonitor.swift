@@ -28,6 +28,11 @@ final class TextMonitor {
     var onLLMBatch: ((@MainActor ([LLMStyleSuggestion], TextContext) -> Void))?
     var onLLMFinished: ((@MainActor () -> Void))?
     var onDismiss: ((@MainActor () -> Void))?
+    /// Phase 18 FR-18 edit-closes hook. Fires synchronously on every AX value-change
+    /// notification BEFORE the 0.8s debounce, so subscribers (e.g., RephraseCardPanelController)
+    /// can close transient UI on the user's first keystroke without waiting for the check cycle.
+    /// Sole subscriber as of Phase 18; if a second subscriber appears later, refactor to multicast.
+    var onKeystroke: ((@MainActor () -> Void))?
 
     // MARK: - Config (set by AppDelegate at init)
 
@@ -236,8 +241,9 @@ final class TextMonitor {
 
     // MARK: - Notification handling
 
-    private func handleValueChanged() {
+    func handleValueChanged() {
         reliabilityDetector.recordNotification()
+        onKeystroke?()
         scheduleDebounce()
     }
 
