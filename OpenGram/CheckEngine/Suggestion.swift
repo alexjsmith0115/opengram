@@ -64,6 +64,10 @@ struct Suggestion: Identifiable, Sendable {
     let category: CheckCategory
     let source: SuggestionSource
     let priority: UInt8
+    /// Phase 18 D-23: non-nil for LLM-sourced suggestions emitted by LLMCheckScheduler
+    /// carrying the paragraph's hash for Dismiss-path `scheduler.markDismissed(bundleID:hash:)`.
+    /// Nil for Harper suggestions and flag-off LLM suggestions.
+    let paragraphHash: UInt64?
 }
 
 extension Suggestion {
@@ -92,7 +96,8 @@ extension Suggestion {
             message: raw.message,
             category: category,
             source: .harper,
-            priority: raw.priority
+            priority: raw.priority,
+            paragraphHash: nil
         )
     }
 }

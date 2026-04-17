@@ -484,7 +484,8 @@ final class OverlayController {
                 message: suggestion.message,
                 category: suggestion.category,
                 source: suggestion.source,
-                priority: suggestion.priority
+                priority: suggestion.priority,
+                paragraphHash: suggestion.paragraphHash
             ))
             rebuiltOffsets.append(off)
         }

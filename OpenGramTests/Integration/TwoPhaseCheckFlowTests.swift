@@ -71,7 +71,8 @@ private func makeHarperSuggestion(original: String = "tset") -> Suggestion {
         message: "Spelling error",
         category: .spelling,
         source: .harper,
-        priority: 10
+        priority: 10,
+        paragraphHash: nil
     )
 }
 

@@ -21,7 +21,8 @@ private func makeSuggestion(
         message: "test",
         category: category,
         source: source,
-        priority: 0
+        priority: 0,
+        paragraphHash: nil
     )
 }
 

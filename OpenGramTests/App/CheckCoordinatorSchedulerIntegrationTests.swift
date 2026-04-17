@@ -66,6 +66,7 @@ private final class MutableIncrementalConfig: IncrementalConfig, @unchecked Send
         self._idleDebounceSeconds = idleDebounceSeconds
     }
     var isIncrementalCheckingEnabled: Bool { lock.lock(); defer { lock.unlock() }; return _flag }
+    var paragraphRephraseCardEnabled: Bool { false }
     var minIssueCount: Int { lock.lock(); defer { lock.unlock() }; return _minIssueCount }
     var minWordCount: Int { lock.lock(); defer { lock.unlock() }; return _minWordCount }
     var idleDebounceSeconds: TimeInterval { lock.lock(); defer { lock.unlock() }; return _idleDebounceSeconds }

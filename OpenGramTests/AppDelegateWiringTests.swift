@@ -28,7 +28,8 @@ private func makeWiringSuggestion(id: UUID = UUID(), original: String = "tset") 
         message: "Spelling error.",
         category: .spelling,
         source: .harper,
-        priority: 5
+        priority: 5,
+        paragraphHash: nil
     )
 }
 

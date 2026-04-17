@@ -50,4 +50,21 @@ import Foundation
         let cfg = UserDefaultsIncrementalConfig(defaults: suite)
         #expect(cfg.minIssueCount == 0)
     }
+
+    @Test func paragraphRephraseCardEnabled_defaultFalse_whenUnset() {
+        let suite = makeSuite()
+        let cfg = UserDefaultsIncrementalConfig(defaults: suite)
+        #expect(cfg.paragraphRephraseCardEnabled == false)
+    }
+
+    @Test func paragraphRephraseCardEnabled_true_whenSet() {
+        let suite = makeSuite()
+        suite.set(true, forKey: UserDefaultsIncrementalConfig.paragraphRephraseCardEnabledKey)
+        let cfg = UserDefaultsIncrementalConfig(defaults: suite)
+        #expect(cfg.paragraphRephraseCardEnabled == true)
+    }
+
+    @Test func paragraphRephraseCardEnabledKey_matchesExpectedString() {
+        #expect(UserDefaultsIncrementalConfig.paragraphRephraseCardEnabledKey == "llmParagraphRephraseCardEnabled")
+    }
 }

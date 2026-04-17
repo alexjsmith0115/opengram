@@ -68,7 +68,8 @@ struct CheckOrchestratorTests {
                 message: "Capitalize",
                 category: .spelling,
                 source: .harper,
-                priority: 100
+                priority: 100,
+                paragraphHash: nil
             )
         ])
         let orchestrator = CheckOrchestrator(harper: stubHarper, llm: nil)

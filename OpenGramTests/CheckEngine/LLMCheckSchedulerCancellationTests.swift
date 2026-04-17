@@ -52,6 +52,7 @@ private final class SlowLLM: LLMProviderProtocol, @unchecked Sendable {
 
 private struct AlwaysOnIncrementalConfig: IncrementalConfig {
     var isIncrementalCheckingEnabled: Bool { true }
+    var paragraphRephraseCardEnabled: Bool { false }
     var minIssueCount: Int { 2 }
     var minWordCount: Int { 12 }
     var idleDebounceSeconds: TimeInterval { 1.5 }
@@ -62,21 +63,25 @@ private struct AlwaysOnIncrementalConfig: IncrementalConfig {
 private final class MutableIncrementalConfig: IncrementalConfig, @unchecked Sendable {
     private let lock = NSLock()
     private var _flag: Bool
+    private var _paragraphRephraseCardEnabled: Bool
     private var _minIssueCount: Int
     private var _minWordCount: Int
     private var _idleDebounceSeconds: TimeInterval
     init(
         _ initial: Bool,
+        paragraphRephraseCardEnabled: Bool = false,
         minIssueCount: Int = 2,
         minWordCount: Int = 12,
         idleDebounceSeconds: TimeInterval = 1.5
     ) {
         self._flag = initial
+        self._paragraphRephraseCardEnabled = paragraphRephraseCardEnabled
         self._minIssueCount = minIssueCount
         self._minWordCount = minWordCount
         self._idleDebounceSeconds = idleDebounceSeconds
     }
     var isIncrementalCheckingEnabled: Bool { lock.lock(); defer { lock.unlock() }; return _flag }
+    var paragraphRephraseCardEnabled: Bool { lock.lock(); defer { lock.unlock() }; return _paragraphRephraseCardEnabled }
     var minIssueCount: Int { lock.lock(); defer { lock.unlock() }; return _minIssueCount }
     var minWordCount: Int { lock.lock(); defer { lock.unlock() }; return _minWordCount }
     var idleDebounceSeconds: TimeInterval { lock.lock(); defer { lock.unlock() }; return _idleDebounceSeconds }

@@ -27,7 +27,8 @@ private func makeDiffSuggestion(
         message: "Spelling error.",
         category: category,
         source: .harper,
-        priority: 5
+        priority: 5,
+        paragraphHash: nil
     )
 }
 

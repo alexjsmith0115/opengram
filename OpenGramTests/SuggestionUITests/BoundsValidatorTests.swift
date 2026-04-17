@@ -18,7 +18,8 @@ private func makeSuggestion(in text: String = "Hello world", startChar: Int = 0,
         message: "test issue",
         category: .spelling,
         source: .harper,
-        priority: 1
+        priority: 1,
+        paragraphHash: nil
     )
 }
 

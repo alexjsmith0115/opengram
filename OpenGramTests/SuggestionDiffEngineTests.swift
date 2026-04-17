@@ -20,7 +20,8 @@ private func makeSuggestion(
         message: "test",
         category: category,
         source: .harper,
-        priority: 0
+        priority: 0,
+        paragraphHash: nil
     )
 }
 

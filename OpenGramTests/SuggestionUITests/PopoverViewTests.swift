@@ -18,7 +18,8 @@ private func makeSpellingSuggestion() -> Suggestion {
         message: "Possible spelling mistake.",
         category: .spelling,
         source: .harper,
-        priority: 5
+        priority: 5,
+        paragraphHash: nil
     )
 }
 
@@ -34,7 +35,8 @@ private func makeSpellingSuggestionSingle() -> Suggestion {
         message: "Possible spelling mistake.",
         category: .spelling,
         source: .harper,
-        priority: 5
+        priority: 5,
+        paragraphHash: nil
     )
 }
 
@@ -50,7 +52,8 @@ private func makeSpellingSuggestionMultiple() -> Suggestion {
         message: "Possible spelling mistake.",
         category: .spelling,
         source: .harper,
-        priority: 5
+        priority: 5,
+        paragraphHash: nil
     )
 }
 
@@ -66,7 +69,8 @@ private func makeGrammarSuggestion() -> Suggestion {
         message: "Subject-verb agreement error.",
         category: .grammarPunctuation,
         source: .harper,
-        priority: 5
+        priority: 5,
+        paragraphHash: nil
     )
 }
 

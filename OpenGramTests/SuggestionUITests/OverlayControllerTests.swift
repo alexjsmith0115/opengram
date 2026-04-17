@@ -22,7 +22,8 @@ private func makeSuggestion(
         message: "Spelling error.",
         category: category,
         source: .harper,
-        priority: 5
+        priority: 5,
+        paragraphHash: nil
     )
 }
 
@@ -48,7 +49,8 @@ private func makeSuggestion(
         message: "Spelling error.",
         category: category,
         source: .harper,
-        priority: 5
+        priority: 5,
+        paragraphHash: nil
     )
 }
 

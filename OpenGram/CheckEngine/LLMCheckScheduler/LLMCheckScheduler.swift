@@ -175,7 +175,8 @@ actor LLMCheckScheduler {
         var merged: [Suggestion] = []
         for paragraph in paragraphs {
             let styles = llmSuggestions[paragraph.index] ?? cachedSuggestions[paragraph.index] ?? []
-            merged.append(contentsOf: rebase(paragraph: paragraph, styleSuggestions: styles, source: text))
+            let hash = keys[paragraph.index].paragraphHash
+            merged.append(contentsOf: rebase(paragraph: paragraph, paragraphHash: hash, styleSuggestions: styles, source: text))
         }
         return merged
     }
@@ -200,7 +201,8 @@ actor LLMCheckScheduler {
                 message: style.explanation,
                 category: checkCategory(for: style.category),
                 source: .llm,
-                priority: UInt8(max(1, min(10, style.confidence)))
+                priority: UInt8(max(1, min(10, style.confidence))),
+                paragraphHash: nil
             )
         }
     }
@@ -212,7 +214,7 @@ actor LLMCheckScheduler {
     /// whitespace/newlines first. Avoids the paragraph.text→source Character-offset translation,
     /// which can misalign on Unicode sequences where paragraph.text normalization differs from
     /// source[paragraph.range] (WR-04).
-    private func rebase(paragraph: Paragraph, styleSuggestions: [LLMStyleSuggestion], source: String) -> [Suggestion] {
+    private func rebase(paragraph: Paragraph, paragraphHash: UInt64, styleSuggestions: [LLMStyleSuggestion], source: String) -> [Suggestion] {
         styleSuggestions.compactMap { style in
             guard let trimmedStart = source[paragraph.range].firstIndex(where: { !$0.isWhitespace && !$0.isNewline }) else {
                 return nil
@@ -228,7 +230,8 @@ actor LLMCheckScheduler {
                 message: style.explanation,
                 category: checkCategory(for: style.category),
                 source: .llm,
-                priority: UInt8(max(1, min(10, style.confidence)))
+                priority: UInt8(max(1, min(10, style.confidence))),
+                paragraphHash: paragraphHash
             )
         }
     }
