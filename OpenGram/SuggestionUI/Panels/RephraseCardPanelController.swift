@@ -11,7 +11,15 @@ final class RephraseCardPanelController {
 
     private var panel: NSPanel?
     private var hostingView: NSHostingView<RephraseCardView>?
+    private var scrollWrapper: NSScrollView?
     private var resignObserver: NSObjectProtocol?
+
+    private static let verticalSafeMargin: CGFloat = 40
+
+    /// Test-only hook. Internal (not public) — `@testable import OpenGramLib` grants access
+    /// to Plan 03 D-11 test cases that need to inspect panel.contentView type and panel.frame size.
+    /// Read-only; production code does not consume it.
+    internal var testHookPanel: NSPanel? { panel }
 
     // Captured for the keystroke callback's caret-containment check.
     private var currentAXElement: AXUIElement?
@@ -61,16 +69,39 @@ final class RephraseCardPanelController {
         newPanel.backgroundColor = .clear
         newPanel.isOpaque = false
         newPanel.hasShadow = false   // SwiftUI card provides its own shadow via RoundedRectangle
-        newPanel.contentView = hosting
 
         // Force layout so fittingSize is valid (Phase 11 learning — see LLMPanelController.swift:53-59).
         hosting.layoutSubtreeIfNeeded()
         let fitting = hosting.fittingSize
-        let size = NSSize(
+
+        // D-10: 200pt defensive floor guards against fittingSize glitches returning 0.
+        let flooredSize = NSSize(
             width: max(fitting.width, 380),
             height: max(fitting.height, 200)
         )
-        newPanel.setContentSize(size)
+
+        // D-09: cap height at visibleFrame.height - verticalSafeMargin before positioning.
+        let capped = PanelPositioner.capHeight(
+            flooredSize,
+            visibleFrame: screen.visibleFrame,
+            margin: Self.verticalSafeMargin
+        )
+
+        // D-04/D-05: conditional scroll wrapper — overflow-only.
+        if capped.height < flooredSize.height {
+            let scroll = NSScrollView(frame: .zero)
+            scroll.hasVerticalScroller = true
+            scroll.autohidesScrollers = true
+            scroll.drawsBackground = false
+            scroll.borderType = .noBorder
+            scroll.documentView = hosting
+            newPanel.contentView = scroll
+            self.scrollWrapper = scroll
+        } else {
+            newPanel.contentView = hosting
+        }
+
+        newPanel.setContentSize(capped)
 
         let panelOrigin = PanelPositioner.marginOrigin(for: newPanel.frame.size, near: anchorRect, on: screen, gap: 12)
         newPanel.setFrameOrigin(panelOrigin)
@@ -104,6 +135,7 @@ final class RephraseCardPanelController {
         panel?.orderOut(nil)
         panel = nil
         hostingView = nil
+        scrollWrapper = nil   // D-05 teardown symmetry
 
         if let resignObserver {
             NotificationCenter.default.removeObserver(resignObserver)
