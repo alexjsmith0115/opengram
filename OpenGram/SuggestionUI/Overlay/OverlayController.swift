@@ -386,37 +386,12 @@ final class OverlayController {
 
         let offset = suggestionScalarOffsets[offsetIndex]
 
-        // Probe for range-targeted write capability (D-11, T-06-05)
-        let (settableErr, isSettable) = accessor.isAttributeSettable(
-            context.axElement, kAXSelectedTextRangeAttribute
+        let replacer = AXTextReplacer(accessor: accessor)
+        let writeSucceeded = replacer.replace(
+            text: replacement,
+            in: (scalarStart: offset.scalarStart, scalarLength: offset.scalarLength),
+            of: context.axElement
         )
-        let supportsRangeWrite = settableErr == .success && isSettable
-
-        var writeSucceeded = false
-
-        if supportsRangeWrite {
-            var cfRange = CFRange(location: offset.scalarStart, length: offset.scalarLength)
-            guard let rangeValue = AXValueCreate(.cfRange, &cfRange) else { return }
-            let selectError = accessor.setAttributeValue(
-                context.axElement, kAXSelectedTextRangeAttribute, rangeValue
-            )
-            if selectError == .success {
-                let replaceError = accessor.setAttributeValue(
-                    context.axElement, kAXSelectedTextAttribute, replacement as CFString
-                )
-                if replaceError == .success {
-                    writeSucceeded = true
-                } else {
-                    // Range set succeeded but text replace failed — fall through to full write
-                    writeSucceeded = fallbackFullWrite(offset: offset, replacement: replacement, context: context)
-                }
-            } else {
-                // Selection set failed — fall through to full write
-                writeSucceeded = fallbackFullWrite(offset: offset, replacement: replacement, context: context)
-            }
-        } else {
-            writeSucceeded = fallbackFullWrite(offset: offset, replacement: replacement, context: context)
-        }
 
         guard writeSucceeded else { return }
 
@@ -440,34 +415,6 @@ final class OverlayController {
             replacementLength: replacementScalarCount,
             context: context
         )
-    }
-
-    /// Full-text fallback: reads AXValue, replaces in-memory, writes back.
-    /// Returns true on success, false on any AX error.
-    @discardableResult
-    private func fallbackFullWrite(
-        offset: (scalarStart: Int, scalarLength: Int),
-        replacement: String,
-        context: TextContext
-    ) -> Bool {
-        let (readError, readRef) = accessor.copyAttributeValue(context.axElement, kAXValueAttribute)
-        guard readError == .success, let currentText = readRef as? String else { return false }
-
-        let scalars = currentText.unicodeScalars
-        let startIdx = scalars.index(scalars.startIndex, offsetBy: offset.scalarStart)
-        let endIdx = scalars.index(startIdx, offsetBy: offset.scalarLength)
-        guard let stringStart = startIdx.samePosition(in: currentText) else { return false }
-        guard let stringEnd = endIdx.samePosition(in: currentText) else { return false }
-
-        var newText = currentText
-        newText.replaceSubrange(stringStart..<stringEnd, with: replacement)
-
-        let writeError = accessor.setAttributeValue(
-            context.axElement,
-            kAXValueAttribute,
-            newText as CFString
-        )
-        return writeError == .success
     }
 
     /// Shifts scalar offsets for all remaining suggestions that start after the accepted range,
