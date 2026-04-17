@@ -65,4 +65,35 @@ struct PanelPositionerTests {
         #expect(origin.y >= visibleFrame.minY)
         #expect(origin.y + size.height <= visibleFrame.maxY)
     }
+
+    // MARK: - capHeight (D-12)
+
+    @Test("capHeight passes size unchanged when height within cap")
+    func capHeight_passesSizeUnchangedWhenWithinCap() {
+        let visibleFrame = screen.visibleFrame
+        let size = NSSize(width: 380, height: 260)
+        let capped = PanelPositioner.capHeight(size, visibleFrame: visibleFrame, margin: 40)
+        #expect(capped.height == 260)
+        #expect(capped.width == 380)
+    }
+
+    @Test("capHeight clamps oversized height to visibleFrame.height - margin")
+    func capHeight_clampsOversizedHeight() {
+        let visibleFrame = screen.visibleFrame
+        let oversized = NSSize(width: 380, height: visibleFrame.height + 200)
+        let capped = PanelPositioner.capHeight(oversized, visibleFrame: visibleFrame, margin: 40)
+        #expect(capped.height == visibleFrame.height - 40)
+        #expect(capped.width == 380)
+    }
+
+    @Test("capHeight + marginOrigin keeps panel rect inside visibleFrame")
+    func capHeight_composedWithMarginOrigin_staysInsideVisibleFrame() {
+        let visibleFrame = screen.visibleFrame
+        let anchor = NSRect(x: 100, y: visibleFrame.midY, width: 400, height: 20)
+        let oversized = NSSize(width: 380, height: visibleFrame.height + 500)
+        let capped = PanelPositioner.capHeight(oversized, visibleFrame: visibleFrame, margin: 40)
+        let origin = PanelPositioner.marginOrigin(for: capped, near: anchor, on: screen, gap: 8)
+        #expect(origin.y >= visibleFrame.minY)
+        #expect(origin.y + capped.height <= visibleFrame.maxY)
+    }
 }
