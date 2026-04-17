@@ -3,21 +3,21 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Incremental LLM Checking + Paragraph Rephrase Card
 status: executing
-stopped_at: Completed 18.3-01-PLAN.md
-last_updated: "2026-04-17T16:10:51.894Z"
+stopped_at: Completed 18.3-02-PLAN.md
+last_updated: "2026-04-17T16:13:38.029Z"
 last_activity: 2026-04-17
 progress:
   total_phases: 8
   completed_phases: 6
   total_plans: 28
-  completed_plans: 25
-  percent: 89
+  completed_plans: 26
+  percent: 93
 ---
 
 ## Current Position
 
 Phase: 18.3 (rephrase-card-panel-sizing-fix-inserted) — EXECUTING
-Plan: 2 of 4
+Plan: 3 of 4
 Status: Ready to execute
 Last activity: 2026-04-17
 
@@ -50,6 +50,7 @@ Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out
 | Phase 18.2-rephrase-card-as-default-inserted P02 | 5 min | 1 tasks | 0 files |
 | Phase 18.2 P03 | 4 min | 2 tasks | 1 files |
 | Phase 18.3 P01 | 15min | 1 tasks | 2 files |
+| Phase 18.3 P02 | 8min | 2 tasks | 2 files |
 
 ### Decisions
 
@@ -70,6 +71,7 @@ Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out
 - [Phase 18.2]: REPH-15 retired via Supersession in REQUIREMENTS.md (body line 109 + traceability row 252); matches UI-03/UI-08/UI-09 precedent, preserves audit trail for the deleted paragraphRephraseCardEnabled rollout flag.
 - [Phase 18.2]: Phase 18.1 UAT Test 1 gap (UAT-18.1-G1) closed: user-confirmed Notes.app smoke test — unified Rephrase card fires by default on qualifying paragraphs with zero UserDefaults mutation. Legacy 3-section LLMPanelController UI did not appear.
 - [Phase 18.3]: Inner ScrollView removed from RephraseCardView.bodyContent; outer .frame(minHeight:idealHeight:) preserved per D-02; height cap deferred to controller layer (Plan 02)
+- [Phase 18.3]: capHeight placed before clampedY in PanelPositioner (option a opt-in); verticalSafeMargin=40pt private static; flooredSize computed before capped; testHookPanel lives in Plan 02 to keep Plan 03 test-only
 
 ### Pending Todos
 
@@ -88,6 +90,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-17T16:10:51.890Z
-Stopped at: Completed 18.3-01-PLAN.md
+Last session: 2026-04-17T16:13:34.034Z
+Stopped at: Completed 18.3-02-PLAN.md
 Resume file: None

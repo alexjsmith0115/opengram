@@ -159,9 +159,9 @@ Plans:
   4. Panel positioning does not push the card off-screen at the document edges; if the anchor would clip, the panel shifts to stay within the active screen's visible frame.
   5. xcodebuild build + xcodebuild test both green; no regressions in the 437-test baseline.
   6. Manual validation in Notes.app with the Phase 18.2 test paragraph: Accept button visible, Dismiss button visible, full card content readable without scrolling the underlying document.
-**Plans:** 1/4 plans executed
+**Plans:** 2/4 plans executed
 - [x] 18.3-01-PLAN.md — Remove inner SwiftUI ScrollView from RephraseCardView.bodyContent (D-01/D-02/D-03)
-- [ ] 18.3-02-PLAN.md — Add PanelPositioner.capHeight helper + conditional NSScrollView wrapper in RephraseCardPanelController (D-04/D-05/D-06/D-08/D-09/D-10)
+- [x] 18.3-02-PLAN.md — Add PanelPositioner.capHeight helper + conditional NSScrollView wrapper in RephraseCardPanelController (D-04/D-05/D-06/D-08/D-09/D-10)
 - [ ] 18.3-03-PLAN.md — Regression tests for capHeight + short/long/teardown controller paths (D-11/D-12/D-13/D-14/D-15)
 - [ ] 18.3-04-PLAN.md — Manual validation checkpoint in Notes.app against the Phase 18.2 UAT paragraph
 
