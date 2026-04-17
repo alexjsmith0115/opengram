@@ -286,3 +286,27 @@ struct TextMonitorTests {
         _ = monitor
     }
 }
+
+// MARK: - TextMonitor.onKeystroke tests (Phase 18 FR-18)
+
+@Suite("TextMonitor.onKeystroke")
+@MainActor
+struct TextMonitorOnKeystrokeTests {
+
+    @Test("onKeystroke fires synchronously when handleValueChanged is invoked")
+    func onKeystroke_fires_whenHandleValueChangedInvoked() {
+        let monitor = makeMonitor()
+        var callCount = 0
+        monitor.onKeystroke = { callCount += 1 }
+        monitor.handleValueChanged()
+        #expect(callCount == 1)
+    }
+
+    @Test("onKeystroke nil does not crash when handleValueChanged is invoked")
+    func onKeystroke_nil_doesNotCrash() {
+        let monitor = makeMonitor()
+        // Default nil — must not crash.
+        monitor.handleValueChanged()
+        #expect(true)
+    }
+}
