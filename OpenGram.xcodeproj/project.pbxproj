@@ -113,6 +113,14 @@
 		B100000100000000000000F1 /* AdvancedSettingsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000F1 /* AdvancedSettingsViewTests.swift */; };
 		A18000010000000000000021 /* AXTextReplacer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28000010000000000000021 /* AXTextReplacer.swift */; };
 		B18000010000000000000021 /* AXTextReplacerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28000010000000000000021 /* AXTextReplacerTests.swift */; };
+		A18020010000000000000001 /* TextDiff.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28020010000000000000001 /* TextDiff.swift */; };
+		A18020010000000000000002 /* DisplayHeuristic.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28020010000000000000002 /* DisplayHeuristic.swift */; };
+		A18020010000000000000003 /* RephraseComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28020010000000000000003 /* RephraseComposer.swift */; };
+		A18020010000000000000004 /* RephraseCardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28020010000000000000004 /* RephraseCardViewModel.swift */; };
+		B18020010000000000000001 /* TextDiffTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28020010000000000000001 /* TextDiffTests.swift */; };
+		B18020010000000000000002 /* DisplayHeuristicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28020010000000000000002 /* DisplayHeuristicTests.swift */; };
+		B18020010000000000000003 /* RephraseComposerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28020010000000000000003 /* RephraseComposerTests.swift */; };
+		B18020010000000000000004 /* RephraseCardViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28020010000000000000004 /* RephraseCardViewModelTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -234,6 +242,14 @@
 		B200000100000000000000F1 /* AdvancedSettingsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSettingsViewTests.swift; sourceTree = "<group>"; };
 		A28000010000000000000021 /* AXTextReplacer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXTextReplacer.swift; sourceTree = "<group>"; };
 		B28000010000000000000021 /* AXTextReplacerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXTextReplacerTests.swift; sourceTree = "<group>"; };
+		A28020010000000000000001 /* TextDiff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDiff.swift; sourceTree = "<group>"; };
+		A28020010000000000000002 /* DisplayHeuristic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayHeuristic.swift; sourceTree = "<group>"; };
+		A28020010000000000000003 /* RephraseComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RephraseComposer.swift; sourceTree = "<group>"; };
+		A28020010000000000000004 /* RephraseCardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RephraseCardViewModel.swift; sourceTree = "<group>"; };
+		B28020010000000000000001 /* TextDiffTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDiffTests.swift; sourceTree = "<group>"; };
+		B28020010000000000000002 /* DisplayHeuristicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayHeuristicTests.swift; sourceTree = "<group>"; };
+		B28020010000000000000003 /* RephraseComposerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RephraseComposerTests.swift; sourceTree = "<group>"; };
+		B28020010000000000000004 /* RephraseCardViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RephraseCardViewModelTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -474,9 +490,21 @@
 				A4000001000000000000C005 /* Accessibility */,
 				A4000001000000000000C003 /* Overlay */,
 				A4000001000000000000C004 /* Panels */,
+				A4000001000000000000C009 /* RephraseCard */,
 				A4000001000000000000C006 /* Settings */,
 			);
 			path = SuggestionUI;
+			sourceTree = "<group>";
+		};
+		A4000001000000000000C009 /* RephraseCard */ = {
+			isa = PBXGroup;
+			children = (
+				A28020010000000000000001 /* TextDiff.swift */,
+				A28020010000000000000002 /* DisplayHeuristic.swift */,
+				A28020010000000000000003 /* RephraseComposer.swift */,
+				A28020010000000000000004 /* RephraseCardViewModel.swift */,
+			);
+			path = RephraseCard;
 			sourceTree = "<group>";
 		};
 		A4000001000000000000C003 /* Overlay */ = {
@@ -590,8 +618,20 @@
 				B200000100000000000000C0 /* PanelPositionerTests.swift */,
 				B200000100000000000000F1 /* AdvancedSettingsViewTests.swift */,
 				B48000010000000000000021 /* Panels */,
+				B48020010000000000000001 /* RephraseCard */,
 			);
 			path = SuggestionUITests;
+			sourceTree = "<group>";
+		};
+		B48020010000000000000001 /* RephraseCard */ = {
+			isa = PBXGroup;
+			children = (
+				B28020010000000000000001 /* TextDiffTests.swift */,
+				B28020010000000000000002 /* DisplayHeuristicTests.swift */,
+				B28020010000000000000003 /* RephraseComposerTests.swift */,
+				B28020010000000000000004 /* RephraseCardViewModelTests.swift */,
+			);
+			path = RephraseCard;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -751,6 +791,10 @@
 				A100000100000000000000E1 /* LLMCheckScheduler.swift in Sources */,
 				A100000100000000000000E2 /* AdvancedSettingsView.swift in Sources */,
 				A18000010000000000000021 /* AXTextReplacer.swift in Sources */,
+				A18020010000000000000001 /* TextDiff.swift in Sources */,
+				A18020010000000000000002 /* DisplayHeuristic.swift in Sources */,
+				A18020010000000000000003 /* RephraseComposer.swift in Sources */,
+				A18020010000000000000004 /* RephraseCardViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -801,6 +845,10 @@
 				B100000100000000000000F0 /* IncrementalConfigTests.swift in Sources */,
 				B100000100000000000000F1 /* AdvancedSettingsViewTests.swift in Sources */,
 				B18000010000000000000021 /* AXTextReplacerTests.swift in Sources */,
+				B18020010000000000000001 /* TextDiffTests.swift in Sources */,
+				B18020010000000000000002 /* DisplayHeuristicTests.swift in Sources */,
+				B18020010000000000000003 /* RephraseComposerTests.swift in Sources */,
+				B18020010000000000000004 /* RephraseCardViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
