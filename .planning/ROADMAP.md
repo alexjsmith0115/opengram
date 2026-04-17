@@ -193,3 +193,16 @@ Plans:
 | 18. Paragraph Rephrase Card | v1.2 | 8/8 | Complete   | 2026-04-17 |
 | 18.1. Rephrase Card Hotkey Wiring Fix | v1.2 | 2/2 | Complete   | 2026-04-17 |
 | 19. Integration & UAT | v1.2 | 0/TBD | Not started | - |
+
+## Backlog
+
+### Phase 999.1: Rephrase card stale cache — no re-dispatch on second hotkey (BACKLOG)
+
+**Goal:** [Captured for future planning] After the rephrase card has been shown and dismissed for paragraph P, a second Ctrl+Shift+G against the same unchanged paragraph does not re-show the card. Likely root cause: `ParagraphSuggestionCache` hit returns cached suggestions, but `OverlayController.tryDispatchRephraseCard` WR-02 dedup guard (`currentCardParagraphHash`) still matches even after dismiss, OR scheduler's `.dismissed` cache entries short-circuit the re-dispatch. Also check that `hideCardAndRestore()` / `onDismissAll` properly clears `currentCardParagraphHash` and `hiddenParagraphScalarRange`.
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+Surfaced during Phase 18.3 Plan 04 manual validation — 2026-04-17.
