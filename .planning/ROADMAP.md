@@ -117,10 +117,11 @@ Full details: [milestones/v1.1-ROADMAP.md](milestones/v1.1-ROADMAP.md)
   4. Flag-off regression test updated to assert `LLMPanelController` path when flag=false, and NOT invoked when flag=true.
   5. Full `xcodebuild test` green; no regression in Phase 15-18 suites.
   6. `REQUIREMENTS.md` traceability updated: INCR-02, INCR-04, INCR-09, INCR-13, SET-08, SET-09 flipped from `[ ]` to `[x]`.
-**Plans:** 0 plans
+**Plans:** 2 plans
 
 Plans:
-- [ ] TBD (run /gsd-plan-phase 18.1 to break down)
+- [ ] 18.1-01-PLAN.md — CheckCoordinator LLM routing fix + integration test + flag-off/on regression (WIRE-01, REPH-01..REPH-15)
+- [ ] 18.1-02-PLAN.md — REQUIREMENTS.md stale checkbox fix (REQ-STALE-01: INCR-02, INCR-04, INCR-09, INCR-13, SET-08, SET-09)
 
 ### Phase 19: Integration & UAT
 **Goal**: All v1.2 requirements verified end-to-end: automated integration tests pass, visual regression baseline captured, manual dogfooding confirms card UX and scheduler behavior in real apps.
@@ -148,4 +149,5 @@ Plans:
 | 16. LLMCheckScheduler | v1.2 | 4/4 | Complete   | 2026-04-16 |
 | 17. Advanced Settings Tab | v1.2 | 3/3 | Complete   | 2026-04-16 |
 | 18. Paragraph Rephrase Card | v1.2 | 8/8 | Complete   | 2026-04-17 |
+| 18.1. Rephrase Card Hotkey Wiring Fix | v1.2 | 0/2 | In progress | - |
 | 19. Integration & UAT | v1.2 | 0/TBD | Not started | - |
