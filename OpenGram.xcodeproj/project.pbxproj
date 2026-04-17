@@ -81,12 +81,9 @@
 		B1000001000000000000003B /* ParagraphExtractorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000001000000000000003B /* ParagraphExtractorTests.swift */; };
 		A100000100000000000000A0 /* AppWhitelist.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000A0 /* AppWhitelist.swift */; };
 		B100000100000000000000A0 /* AppWhitelistTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000A0 /* AppWhitelistTests.swift */; };
-		B1000001000000000000004C /* TwoPhaseCheckFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000001000000000000004C /* TwoPhaseCheckFlowTests.swift */; };
 		B100000100000000000000C0 /* PanelPositionerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000C0 /* PanelPositionerTests.swift */; };
 		A100000100000000000000A1 /* WhitelistSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000A1 /* WhitelistSettingsView.swift */; };
 		A100000100000000000000A2 /* InlineDiffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000A2 /* InlineDiffView.swift */; };
-		A100000100000000000000A3 /* LLMSuggestionPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000A3 /* LLMSuggestionPanel.swift */; };
-		A100000100000000000000A4 /* LLMPanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000A4 /* LLMPanelController.swift */; };
 		A100000100000000000000B0 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000B0 /* Log.swift */; };
 		A100000100000000000000B1 /* PanelPositioner.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000B1 /* PanelPositioner.swift */; };
 		A100000100000000000000B2 /* ReliabilityDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000B2 /* ReliabilityDetector.swift */; };
@@ -223,14 +220,11 @@
 		B200000100000000000000A0 /* AppWhitelistTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppWhitelistTests.swift; sourceTree = "<group>"; };
 		A200000100000000000000A1 /* WhitelistSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhitelistSettingsView.swift; sourceTree = "<group>"; };
 		A200000100000000000000A2 /* InlineDiffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineDiffView.swift; sourceTree = "<group>"; };
-		A200000100000000000000A3 /* LLMSuggestionPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSuggestionPanel.swift; sourceTree = "<group>"; };
-		A200000100000000000000A4 /* LLMPanelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMPanelController.swift; sourceTree = "<group>"; };
 		A200000100000000000000B0 /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		A200000100000000000000B1 /* PanelPositioner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelPositioner.swift; sourceTree = "<group>"; };
 		A200000100000000000000B2 /* ReliabilityDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReliabilityDetector.swift; sourceTree = "<group>"; };
 		A200000100000000000000B3 /* CheckCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckCoordinator.swift; sourceTree = "<group>"; };
 		A200000100000000000000B4 /* ConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigManager.swift; sourceTree = "<group>"; };
-		B2000001000000000000004C /* TwoPhaseCheckFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoPhaseCheckFlowTests.swift; sourceTree = "<group>"; };
 		B200000100000000000000C0 /* PanelPositionerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelPositionerTests.swift; sourceTree = "<group>"; };
 		A200000100000000000000C0 /* Paragraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paragraph.swift; sourceTree = "<group>"; };
 		A200000100000000000000C1 /* CacheClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheClock.swift; sourceTree = "<group>"; };
@@ -404,7 +398,6 @@
 		B4000001000000000000004C /* Integration */ = {
 			isa = PBXGroup;
 			children = (
-				B2000001000000000000004C /* TwoPhaseCheckFlowTests.swift */,
 			);
 			path = Integration;
 			sourceTree = "<group>";
@@ -544,8 +537,6 @@
 			children = (
 				A28000010000000000000021 /* AXTextReplacer.swift */,
 				A200000100000000000000A2 /* InlineDiffView.swift */,
-				A200000100000000000000A4 /* LLMPanelController.swift */,
-				A200000100000000000000A3 /* LLMSuggestionPanel.swift */,
 				A200000100000000000000B1 /* PanelPositioner.swift */,
 				A20000010000000000000042 /* PopoverView.swift */,
 				A28050010000000000000002 /* RephraseCardPanelController.swift */,
@@ -805,8 +796,6 @@
 				A100000100000000000000A0 /* AppWhitelist.swift in Sources */,
 				A100000100000000000000A1 /* WhitelistSettingsView.swift in Sources */,
 				A100000100000000000000A2 /* InlineDiffView.swift in Sources */,
-				A100000100000000000000A3 /* LLMSuggestionPanel.swift in Sources */,
-				A100000100000000000000A4 /* LLMPanelController.swift in Sources */,
 				A100000100000000000000B0 /* Log.swift in Sources */,
 				A100000100000000000000B1 /* PanelPositioner.swift in Sources */,
 				A100000100000000000000B2 /* ReliabilityDetector.swift in Sources */,
@@ -865,7 +854,6 @@
 				B1000001000000000000003A /* LLMResponseDTOTests.swift in Sources */,
 				B1000001000000000000003B /* ParagraphExtractorTests.swift in Sources */,
 				B100000100000000000000A0 /* AppWhitelistTests.swift in Sources */,
-				B1000001000000000000004C /* TwoPhaseCheckFlowTests.swift in Sources */,
 				B100000100000000000000C0 /* PanelPositionerTests.swift in Sources */,
 				B100000100000000000000D0 /* CacheClockTests.swift in Sources */,
 				B100000100000000000000D1 /* ParagraphSplitterTests.swift in Sources */,
