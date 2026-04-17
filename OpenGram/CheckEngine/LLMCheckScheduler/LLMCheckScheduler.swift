@@ -64,8 +64,11 @@ actor LLMCheckScheduler {
         // D-11 / INCR-14: feature flag gate. Flag-off delegates to the legacy analyze(paragraph:...) path
         // unchanged from pre-v1.2 behavior. Splitter/hasher/cache stay dormant.
         // D-14: flag read on every call — NO cached snapshot; a defaults flip takes effect on the next check().
+        Self.logger.info("scheduler.check entry — textLen=\(text.count) bundleID=\(bundleID, privacy: .public) incremental=\(self.incrementalConfig.isIncrementalCheckingEnabled)")
         guard incrementalConfig.isIncrementalCheckingEnabled else {
-            return await checkFullText(text: text, harperSpans: harperSpans)
+            let result = await checkFullText(text: text, harperSpans: harperSpans)
+            Self.logger.info("scheduler.check → flag-off returned \(result.count) suggestion(s)")
+            return result
         }
 
         let paragraphs = splitter.split(text)
@@ -190,8 +193,14 @@ actor LLMCheckScheduler {
         let cfg = configProvider()
         let apiKey = apiKeyProvider()
         let styleSuggestions = await llm.analyze(paragraph: text, config: cfg, apiKey: apiKey, harperSpans: harperSpans)
-        return styleSuggestions.compactMap { style in
-            guard let range = text.range(of: style.originalText) else { return nil }
+        Self.logger.info("checkFullText — llm returned \(styleSuggestions.count) styleSuggestion(s); text.count=\(text.count)")
+        var dropped = 0
+        let mapped = styleSuggestions.compactMap { style -> Suggestion? in
+            guard let range = text.range(of: style.originalText) else {
+                Self.logger.error("checkFullText drop — range(of: originalText) nil; originalText.count=\(style.originalText.count) matchesFullText=\(style.originalText == text)")
+                dropped += 1
+                return nil
+            }
             return Suggestion(
                 id: UUID(),
                 range: range,
@@ -205,6 +214,8 @@ actor LLMCheckScheduler {
                 paragraphHash: nil
             )
         }
+        Self.logger.info("checkFullText → mapped=\(mapped.count) dropped=\(dropped)")
+        return mapped
     }
 
     // MARK: - Offset rebasing (NFR-7)

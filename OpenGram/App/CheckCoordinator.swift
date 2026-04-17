@@ -128,14 +128,22 @@ final class CheckCoordinator {
 
         llmTask = Task {
             await harperCheckTask?.value
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled else {
+                Self.logger.info("llmTask cancelled after Harper wait")
+                return
+            }
 
             // D-12: route the hotkey LLM leg through the scheduler. Under flag-off this is a
             // byte-identical pre-v1.2 call; under flag-on it fans out per-paragraph with the
             // cache. harperSpans forwarded either way (LLM-03/LLM-04).
             let harperSpans = await MainActor.run { self.lastSuggestions.map { $0.original } }
+            Self.logger.info("llmTask calling scheduler.check — textLen=\(contextText.count) harperSpans=\(harperSpans.count)")
             let schedulerSuggestions = await scheduler.check(text: contextText, bundleID: contextBundleID, harperSpans: harperSpans)
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled else {
+                Self.logger.info("llmTask cancelled after scheduler.check")
+                return
+            }
+            Self.logger.info("llmTask scheduler returned \(schedulerSuggestions.count) total suggestion(s)")
 
             await MainActor.run {
                 self.restoreStatusAfterLLM()
@@ -144,9 +152,13 @@ final class CheckCoordinator {
                 // receives non-empty llmInRange. accumulatedSuggestions stays Harper-only (state
                 // semantics unchanged); merged array is ephemeral, passed only to update().
                 let llmSuggestions = schedulerSuggestions.filter { $0.source == .llm }
+                Self.logger.info("llmTask filter — llmSuggestions=\(llmSuggestions.count) accumulatedHarper=\(self.accumulatedSuggestions.count)")
                 if !llmSuggestions.isEmpty {
                     let merged = self.accumulatedSuggestions + llmSuggestions
+                    Self.logger.info("llmTask calling overlayController.update with merged=\(merged.count)")
                     self.overlayController.update(suggestions: merged, context: context)
+                } else {
+                    Self.logger.info("llmTask skipping update — no .llm suggestions in scheduler output")
                 }
             }
         }
