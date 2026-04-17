@@ -33,8 +33,22 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         )
 
         let statusBarController = StatusBarController()
-        let overlayController = OverlayController()
         let llmPanelController = LLMPanelController()
+
+        // TextMonitor constructed before OverlayController so it can be DI-injected.
+        // RephraseCardPanelController (Phase 18) installs its own onKeystroke subscription
+        // on show() and restores prior value on hide() — AppDelegate stays out of that chain.
+        let textMonitor = TextMonitor(
+            textEngine: textEngine,
+            orchestrator: orchestrator,
+            capabilityCache: capabilityCache
+        )
+
+        let overlayController = OverlayController(
+            scheduler: scheduler,
+            textMonitor: textMonitor,
+            incrementalConfig: UserDefaultsIncrementalConfig()
+        )
 
         let coordinator = CheckCoordinator(
             textEngine: textEngine,
@@ -49,17 +63,11 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         self.hotkeyManager = hotkeyManager
         self.permissionGuide = permissionGuide
         self.checkCoordinator = coordinator
+        self.textMonitor = textMonitor
 
         hotkeyManager.onHotkeyFired = { [weak coordinator] in
             coordinator?.handleHotkeyFired()
         }
-
-        let textMonitor = TextMonitor(
-            textEngine: textEngine,
-            orchestrator: orchestrator,
-            capabilityCache: capabilityCache
-        )
-        self.textMonitor = textMonitor
 
         textMonitor.llmConfig = ConfigManager.currentLLMConfig()
         textMonitor.llmAPIKey = ConfigManager.currentAPIKey()

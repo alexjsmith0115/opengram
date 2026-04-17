@@ -132,6 +132,20 @@ struct AppDelegateWiringTests {
         #expect(controller.suggestions.isEmpty)
     }
 
+    @Test("OverlayController accepts scheduler and incrementalConfig DI args without crashing")
+    func overlayControllerAcceptsPhase18DIArgs() {
+        // Verifies the Phase 18 init overload compiles and constructs without crashing.
+        // scheduler and textMonitor are nil (no live LLM in test context); the card
+        // dispatch path will early-return on the nil guard — no side effects.
+        let ctrl = OverlayController(
+            accessor: MockAXAccessor(),
+            scheduler: nil,
+            textMonitor: nil,
+            incrementalConfig: UserDefaultsIncrementalConfig()
+        )
+        #expect(ctrl.hiddenParagraphScalarRange == nil)
+    }
+
     @Test("overlayController.show does not crash when called with valid suggestions and context")
     func showCalledWithNonEmptySuggestions() {
         let controller = OverlayController(accessor: MockAXAccessor())
