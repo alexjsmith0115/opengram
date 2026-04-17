@@ -63,8 +63,7 @@ enum PanelPositioner {
     /// Caps `size.height` to `visibleFrame.height - margin`. Width unchanged.
     /// D-08 (option a) — explicit, single-purpose, opt-in. Callers invoke before
     /// `origin(...)` / `marginOrigin(...)` to guarantee the resulting Y+height
-    /// stays inside `visibleFrame`. Does not affect `LLMPanelController` or
-    /// `SuggestionPopoverPanel` — they are not required to adopt.
+    /// stays inside `visibleFrame`. Not required by all panel callers.
     static func capHeight(
         _ size: NSSize,
         visibleFrame: NSRect,

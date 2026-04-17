@@ -7,7 +7,7 @@ import SwiftUI
 struct RephraseCardViewTests {
 
     private func makeMonitor() -> TextMonitor {
-        let orchestrator = CheckOrchestrator(harper: TMockGrammarChecker(), llm: nil)
+        let orchestrator = CheckOrchestrator(harper: TMockGrammarChecker())
         return TextMonitor(
             textEngine: TMockAXTextEngine(),
             orchestrator: orchestrator,

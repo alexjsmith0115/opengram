@@ -3,8 +3,7 @@ import AppKit
 import os.log
 import SwiftUI
 
-/// Phase 18 D-06: hosts `RephraseCardView` in a non-activating NSPanel, mirroring
-/// LLMPanelController's pattern (76-line template). Coexists with LLMPanelController.
+/// Phase 18 D-06: hosts `RephraseCardView` in a non-activating NSPanel.
 /// Owns subscriptions for click-outside hide (resignKey) and FR-18 edit-closes
 /// (TextMonitor.onKeystroke → caret-in-paragraph check).
 @MainActor

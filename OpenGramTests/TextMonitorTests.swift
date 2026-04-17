@@ -77,7 +77,7 @@ private func makeMonitor(
     quirksTable: AppQuirksTable = AppQuirksTable(quirks: [:]),
     watchdog: AXCallWatchdog = AXCallWatchdog(hangThreshold: 0.5, blocklistDuration: 1.0)
 ) -> TextMonitor {
-    let orchestrator = CheckOrchestrator(harper: grammarChecker, llm: nil)
+    let orchestrator = CheckOrchestrator(harper: grammarChecker)
     return TextMonitor(
         textEngine: textEngine,
         orchestrator: orchestrator,
