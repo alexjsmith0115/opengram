@@ -111,6 +111,8 @@
 		B100000100000000000000F0 /* IncrementalConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000F0 /* IncrementalConfigTests.swift */; };
 		A100000100000000000000E2 /* AdvancedSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000E2 /* AdvancedSettingsView.swift */; };
 		B100000100000000000000F1 /* AdvancedSettingsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000F1 /* AdvancedSettingsViewTests.swift */; };
+		A18000010000000000000021 /* AXTextReplacer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28000010000000000000021 /* AXTextReplacer.swift */; };
+		B18000010000000000000021 /* AXTextReplacerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28000010000000000000021 /* AXTextReplacerTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -230,6 +232,8 @@
 		B200000100000000000000F0 /* IncrementalConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementalConfigTests.swift; sourceTree = "<group>"; };
 		A200000100000000000000E2 /* AdvancedSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSettingsView.swift; sourceTree = "<group>"; };
 		B200000100000000000000F1 /* AdvancedSettingsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSettingsViewTests.swift; sourceTree = "<group>"; };
+		A28000010000000000000021 /* AXTextReplacer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXTextReplacer.swift; sourceTree = "<group>"; };
+		B28000010000000000000021 /* AXTextReplacerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXTextReplacerTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -488,6 +492,7 @@
 		A4000001000000000000C004 /* Panels */ = {
 			isa = PBXGroup;
 			children = (
+				A28000010000000000000021 /* AXTextReplacer.swift */,
 				A200000100000000000000A2 /* InlineDiffView.swift */,
 				A200000100000000000000A4 /* LLMPanelController.swift */,
 				A200000100000000000000A3 /* LLMSuggestionPanel.swift */,
@@ -561,6 +566,14 @@
 			path = ParagraphInfra;
 			sourceTree = "<group>";
 		};
+		B48000010000000000000021 /* Panels */ = {
+			isa = PBXGroup;
+			children = (
+				B28000010000000000000021 /* AXTextReplacerTests.swift */,
+			);
+			path = Panels;
+			sourceTree = "<group>";
+		};
 		B4000001000000000000000A /* SuggestionUITests */ = {
 			isa = PBXGroup;
 			children = (
@@ -576,6 +589,7 @@
 				B20000010000000000000033 /* OverlayControllerDiffTests.swift */,
 				B200000100000000000000C0 /* PanelPositionerTests.swift */,
 				B200000100000000000000F1 /* AdvancedSettingsViewTests.swift */,
+				B48000010000000000000021 /* Panels */,
 			);
 			path = SuggestionUITests;
 			sourceTree = "<group>";
@@ -736,6 +750,7 @@
 				A100000100000000000000E0 /* IncrementalConfig.swift in Sources */,
 				A100000100000000000000E1 /* LLMCheckScheduler.swift in Sources */,
 				A100000100000000000000E2 /* AdvancedSettingsView.swift in Sources */,
+				A18000010000000000000021 /* AXTextReplacer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -785,6 +800,7 @@
 				B100000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift in Sources */,
 				B100000100000000000000F0 /* IncrementalConfigTests.swift in Sources */,
 				B100000100000000000000F1 /* AdvancedSettingsViewTests.swift in Sources */,
+				B18000010000000000000021 /* AXTextReplacerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
