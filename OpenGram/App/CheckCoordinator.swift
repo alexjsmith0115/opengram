@@ -158,7 +158,23 @@ final class CheckCoordinator {
 
             await MainActor.run {
                 self.restoreStatusAfterLLM()
-                self.showLLMPanel(styleSuggestions, context: context)
+
+                // Read flag once per hotkey resolution — prevents divergence if toggled mid-flight.
+                let cardEnabled = UserDefaultsIncrementalConfig().paragraphRephraseCardEnabled
+
+                // Merge scheduler's LLM Suggestions into the overlay so tryDispatchRephraseCard
+                // receives non-empty llmInRange. accumulatedSuggestions stays Harper-only (state
+                // semantics unchanged); merged array is ephemeral, passed only to update().
+                let llmSuggestions = schedulerSuggestions.filter { $0.source == .llm }
+                if !llmSuggestions.isEmpty || !self.accumulatedSuggestions.isEmpty {
+                    let merged = self.accumulatedSuggestions + llmSuggestions
+                    self.overlayController.update(suggestions: merged, context: context)
+                }
+
+                // Legacy per-issue panel: only when card flag is OFF (v1.1 parity).
+                if !cardEnabled {
+                    self.showLLMPanel(styleSuggestions, context: context)
+                }
             }
         }
     }
