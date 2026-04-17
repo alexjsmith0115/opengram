@@ -21,6 +21,11 @@ final class RephraseCardPanelController {
     /// Read-only; production code does not consume it.
     internal var testHookPanel: NSPanel? { panel }
 
+    /// Test-only seam. Overrides the fittingSize measurement so tests can force the overflow
+    /// branch without requiring a real display (headless NSHostingView always returns idealHeight).
+    /// Nil in production — the real fittingSize path runs.
+    internal var testHookFittingSize: NSSize?
+
     // Captured for the keystroke callback's caret-containment check.
     private var currentAXElement: AXUIElement?
     private var currentParagraphRange: (scalarStart: Int, scalarLength: Int)?
@@ -70,9 +75,12 @@ final class RephraseCardPanelController {
         newPanel.isOpaque = false
         newPanel.hasShadow = false   // SwiftUI card provides its own shadow via RoundedRectangle
 
-        // Force layout so fittingSize is valid (Phase 11 learning — see LLMPanelController.swift:53-59).
+        // Attach hosting to panel before layout so SwiftUI has a window context for fittingSize.
+        newPanel.contentView = hosting
         hosting.layoutSubtreeIfNeeded()
-        let fitting = hosting.fittingSize
+        // testHookFittingSize lets tests force the overflow branch; headless NSHostingView always
+        // returns idealHeight so real text-length-driven overflow cannot be observed without a display.
+        let fitting = testHookFittingSize ?? hosting.fittingSize
 
         // D-10: 200pt defensive floor guards against fittingSize glitches returning 0.
         let flooredSize = NSSize(
@@ -87,7 +95,7 @@ final class RephraseCardPanelController {
             margin: Self.verticalSafeMargin
         )
 
-        // D-04/D-05: conditional scroll wrapper — overflow-only.
+        // D-04/D-05: conditional scroll wrapper — overflow-only. Reassign contentView if needed.
         if capped.height < flooredSize.height {
             let scroll = NSScrollView(frame: .zero)
             scroll.hasVerticalScroller = true
@@ -97,8 +105,6 @@ final class RephraseCardPanelController {
             scroll.documentView = hosting
             newPanel.contentView = scroll
             self.scrollWrapper = scroll
-        } else {
-            newPanel.contentView = hosting
         }
 
         newPanel.setContentSize(capped)
