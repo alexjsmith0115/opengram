@@ -21,16 +21,16 @@ enum RephraseComposer {
             return $0.range.upperBound > $1.range.upperBound
         }
         var result = paragraphText
-        // Track the earliest lowerBound already consumed by an applied edit.
-        // Since we iterate descending, any subsequent edit whose upperBound exceeds
-        // the applied lowerBound overlaps and is skipped.
-        var appliedLower: String.Index? = nil
+        // Track the full range of the last applied edit. Since we iterate descending,
+        // any subsequent edit whose range overlaps an already-applied range is skipped.
+        // Using lowerBound alone misses edits entirely below the applied range start.
+        var appliedRange: Range<String.Index>? = nil
         for edit in edits {
-            if let applied = appliedLower, edit.range.upperBound > applied { continue }
+            if let applied = appliedRange, edit.range.overlaps(applied) { continue }
             guard edit.range.lowerBound < result.endIndex,
                   edit.range.upperBound <= result.endIndex else { continue }
             result.replaceSubrange(edit.range, with: edit.replacement)
-            appliedLower = edit.range.lowerBound
+            appliedRange = edit.range
         }
         return result
     }
