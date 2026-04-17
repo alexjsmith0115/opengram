@@ -135,10 +135,11 @@ final class RephraseCardPanelController {
 
         var rangeRef: CFTypeRef?
         let err = AXUIElementCopyAttributeValue(element, kAXSelectedTextRangeAttribute as CFString, &rangeRef)
-        guard err == .success, let rangeRef else { return }
+        guard err == .success,
+              let rangeRef,
+              CFGetTypeID(rangeRef) == AXValueGetTypeID() else { return }
 
         var cfRange = CFRange(location: 0, length: 0)
-        // swiftlint:disable:next force_cast
         guard AXValueGetValue(rangeRef as! AXValue, .cfRange, &cfRange) else { return }
 
         let caret = cfRange.location
