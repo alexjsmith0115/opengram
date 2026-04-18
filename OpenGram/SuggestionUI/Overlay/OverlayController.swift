@@ -31,7 +31,7 @@ final class OverlayController {
     private let accessor: any AXAccessor
     private let scheduler: LLMCheckScheduler?
     private let textMonitor: TextMonitor?
-    private let incrementalConfig: any IncrementalConfig
+    private let config: OpenGramConfig
     private let splitter: any ParagraphSplitting
     private let hasher: any ParagraphHashing
     private let store: ParagraphSuggestionStore?
@@ -84,7 +84,7 @@ final class OverlayController {
         accessor: any AXAccessor = SystemAXAccessor(),
         scheduler: LLMCheckScheduler? = nil,
         textMonitor: TextMonitor? = nil,
-        incrementalConfig: any IncrementalConfig = UserDefaultsIncrementalConfig(),
+        config: OpenGramConfig = OpenGramConfig(),
         splitter: any ParagraphSplitting = DoubleNewlineSplitter(),
         hasher: any ParagraphHashing = Sha256ParagraphHasher(),
         store: ParagraphSuggestionStore? = nil
@@ -92,11 +92,11 @@ final class OverlayController {
         self.accessor = accessor
         self.scheduler = scheduler
         self.textMonitor = textMonitor
-        self.incrementalConfig = incrementalConfig
+        self.config = config
         self.splitter = splitter
         self.hasher = hasher
         self.store = store
-        self.heuristic = DisplayHeuristic(config: incrementalConfig)
+        self.heuristic = DisplayHeuristic(config: config)
         self.overlayWindow = OverlayWindow()
         self.popoverPanel = SuggestionPopoverPanel()
         self.targetAppObserver = TargetAppObserver()

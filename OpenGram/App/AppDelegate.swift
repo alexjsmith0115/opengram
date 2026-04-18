@@ -46,7 +46,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         let overlayController = OverlayController(
             scheduler: scheduler,
             textMonitor: textMonitor,
-            incrementalConfig: UserDefaultsIncrementalConfig()
+            config: OpenGramConfig()
         )
 
         let coordinator = CheckCoordinator(

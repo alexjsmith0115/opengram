@@ -2,19 +2,19 @@ import SwiftUI
 import Foundation
 
 /// Advanced tab — exposes incremental check tunables. Warning text per D-09. All bindings
-/// are @AppStorage to the same UserDefaults keys read by UserDefaultsIncrementalConfig
+/// are @AppStorage to the same UserDefaults keys read by OpenGramConfig
 /// (single source of truth — D-10). Reset button reuses the static defaults on
-/// UserDefaultsIncrementalConfig so the default values live in one place.
+/// OpenGramConfig so the default values live in one place.
 struct AdvancedSettingsView: View {
 
     static let warningText = "Advanced settings are unstable \u{2014} values may change between versions."
 
-    // Key constants re-exported from UserDefaultsIncrementalConfig (single source of truth).
+    // Key constants re-exported from OpenGramConfig (single source of truth).
     // The @AppStorage literals below MUST match these — enforced by
     // `appStorageKeys_matchConfigKeys` test.
-    static let minIssueCountKey = UserDefaultsIncrementalConfig.minIssueCountKey
-    static let minWordCountKey = UserDefaultsIncrementalConfig.minWordCountKey
-    static let idleDebounceSecondsKey = UserDefaultsIncrementalConfig.idleDebounceSecondsKey
+    static let minIssueCountKey = OpenGramConfig.minIssueCountKey
+    static let minWordCountKey = OpenGramConfig.minWordCountKey
+    static let idleDebounceSecondsKey = OpenGramConfig.idleDebounceSecondsKey
 
     @AppStorage("llmMinIssueCount") private var minIssueCount: Int = 2
     @AppStorage("llmMinWordCount") private var minWordCount: Int = 12
@@ -41,9 +41,9 @@ struct AdvancedSettingsView: View {
             HStack {
                 Spacer()
                 Button("Reset to defaults") {
-                    minIssueCount = UserDefaultsIncrementalConfig.defaultMinIssueCount
-                    minWordCount = UserDefaultsIncrementalConfig.defaultMinWordCount
-                    idleDebounceSeconds = UserDefaultsIncrementalConfig.defaultIdleDebounceSeconds
+                    minIssueCount = OpenGramConfig.defaultMinIssueCount
+                    minWordCount = OpenGramConfig.defaultMinWordCount
+                    idleDebounceSeconds = OpenGramConfig.defaultIdleDebounceSeconds
                     Self.resetDefaults(in: .standard)
                 }
             }
@@ -53,10 +53,13 @@ struct AdvancedSettingsView: View {
     }
 
     /// Test seam + single source of truth for the reset action. Writes the three
-    /// UserDefaultsIncrementalConfig.default* values into the provided suite.
-    static func resetDefaults(in defaults: UserDefaults) {
-        defaults.set(UserDefaultsIncrementalConfig.defaultMinIssueCount, forKey: minIssueCountKey)
-        defaults.set(UserDefaultsIncrementalConfig.defaultMinWordCount, forKey: minWordCountKey)
-        defaults.set(UserDefaultsIncrementalConfig.defaultIdleDebounceSeconds, forKey: idleDebounceSecondsKey)
+    /// OpenGramConfig.default* values into the provided suite and posts the change
+    /// notification so eager-rescheduling consumers can flush caches.
+    static func resetDefaults(in defaults: UserDefaults,
+                              center: NotificationCenter = .default) {
+        defaults.set(OpenGramConfig.defaultMinIssueCount, forKey: minIssueCountKey)
+        defaults.set(OpenGramConfig.defaultMinWordCount, forKey: minWordCountKey)
+        defaults.set(OpenGramConfig.defaultIdleDebounceSeconds, forKey: idleDebounceSecondsKey)
+        OpenGramConfig.postDidChange(to: center)
     }
 }

@@ -6,10 +6,11 @@ import AppKit
 @Suite("OverlayController rephrase card dispatch branch")
 struct OverlayControllerRephraseIntegrationTests {
 
-    private struct OnFlag: IncrementalConfig {
-        var minIssueCount: Int { 2 }
-        var minWordCount: Int { 12 }
-        var idleDebounceSeconds: TimeInterval { 1.5 }
+    private static func onFlagConfig() -> OpenGramConfig {
+        let name = UUID().uuidString
+        let suite = UserDefaults(suiteName: name)!
+        suite.removePersistentDomain(forName: name)
+        return OpenGramConfig(defaults: suite)
     }
 
     @Test func noSchedulerOrMonitor_doesNotDispatch() {
@@ -17,7 +18,7 @@ struct OverlayControllerRephraseIntegrationTests {
         let ctrl = OverlayController(
             scheduler: nil,
             textMonitor: nil,
-            incrementalConfig: OnFlag()
+            config: Self.onFlagConfig()
         )
         #expect(ctrl.hiddenParagraphScalarRange == nil)
     }
@@ -33,10 +34,11 @@ struct OverlayControllerRephraseIntegrationTests {
 @Suite("WIRE-01: LLM suggestions survive overlay update() round-trip")
 struct OverlayControllerWIRE01IntegrationTests {
 
-    private struct OnFlag: IncrementalConfig {
-        var minIssueCount: Int { 2 }
-        var minWordCount: Int { 12 }
-        var idleDebounceSeconds: TimeInterval { 1.5 }
+    private static func onFlagConfig() -> OpenGramConfig {
+        let name = UUID().uuidString
+        let suite = UserDefaults(suiteName: name)!
+        suite.removePersistentDomain(forName: name)
+        return OpenGramConfig(defaults: suite)
     }
 
     @Test func hotkeyFired_schedulerLLMSuggestions_reachOverlayController() {
@@ -69,7 +71,7 @@ struct OverlayControllerWIRE01IntegrationTests {
             paragraphHash: nil
         )
 
-        let overlayCtrl = OverlayController(incrementalConfig: OnFlag())
+        let overlayCtrl = OverlayController(config: Self.onFlagConfig())
 
         // Simulate the fixed coordinator's merge: accumulated (Harper) + llmSuggestions.
         let merged = [harperSuggestion, llmSuggestion]

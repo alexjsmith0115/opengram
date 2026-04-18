@@ -12,6 +12,13 @@ struct RephraseCardLifecycleTests {
         var idleDebounceSeconds: TimeInterval { 1.5 }
     }
 
+    private static func onFlagConfig() -> OpenGramConfig {
+        let name = UUID().uuidString
+        let suite = UserDefaults(suiteName: name)!
+        suite.removePersistentDomain(forName: name)
+        return OpenGramConfig(defaults: suite)
+    }
+
     private struct StubLLM: LLMProviderProtocol {
         func analyze(paragraph: String, config: LLMConfig, apiKey: String?, harperSpans: [String]) async -> [LLMStyleSuggestion] { [] }
         func analyze(target: String, previousContext: String?, nextContext: String?, config: LLMConfig, apiKey: String?, harperSpans: [String]) async -> [LLMStyleSuggestion] { [] }
@@ -35,7 +42,7 @@ struct RephraseCardLifecycleTests {
         #expect(entryBefore?.status == .active)
 
         // "Hide" is simply: OverlayController.showUnderlines() — it never touches the cache.
-        let ctrl = OverlayController(incrementalConfig: OnFlag())
+        let ctrl = OverlayController(config: Self.onFlagConfig())
         ctrl.hideUnderlines(inParagraphScalarRange: (scalarStart: 0, scalarLength: 70))
         ctrl.showUnderlines()
 
