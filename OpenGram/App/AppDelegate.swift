@@ -19,40 +19,46 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         let llmService = LLMService()
         let orchestrator = CheckOrchestrator(harper: harperService)
 
-        // D-13: Scheduler is DI-composed at the root. Concrete components passed in;
-        // flag is read live per-call via UserDefaultsIncrementalConfig (D-14).
-        let scheduler = LLMCheckScheduler(
-            splitter: DoubleNewlineSplitter(),
-            hasher: Sha256ParagraphHasher(),
-            cache: ParagraphSuggestionCache(),
-            clock: SystemClock(),
+        let config = OpenGramConfig()
+        let textBox = MainActorTextBox()
+
+        let queue = LLMRequestQueue(
             llm: llmService,
             configProvider: { ConfigManager.currentLLMConfig() },
             apiKeyProvider: { ConfigManager.currentAPIKey() },
-            incrementalConfig: UserDefaultsIncrementalConfig()
+            timeoutProvider: { TimeInterval(config.llmRequestTimeoutSeconds) }
         )
+
+        let splitter = ParagraphSplitter(capabilityCache: capabilityCache)
+
+        let store = ParagraphSuggestionStore(
+            queue: queue,
+            splitter: splitter,
+            config: config,
+            textProvider: { [textBox] bundleID in textBox.read(bundleID: bundleID) }
+        )
+        Task { await queue.setStore(store) }
 
         let statusBarController = StatusBarController()
 
-        // TextMonitor constructed before OverlayController so it can be DI-injected.
-        // RephraseCardPanelController installs its own onKeystroke subscription
-        // on show() and restores prior value on hide() — AppDelegate stays out of that chain.
         let textMonitor = TextMonitor(
             textEngine: textEngine,
             orchestrator: orchestrator,
-            capabilityCache: capabilityCache
+            capabilityCache: capabilityCache,
+            store: store,
+            splitter: splitter,
+            textBoxWriter: { [textBox] bundleID, text in textBox.write(bundleID: bundleID, text: text) }
         )
 
         let overlayController = OverlayController(
-            scheduler: scheduler,
             textMonitor: textMonitor,
-            config: OpenGramConfig()
+            config: config,
+            store: store
         )
 
         let coordinator = CheckCoordinator(
             textEngine: textEngine,
             orchestrator: orchestrator,
-            scheduler: scheduler,
             overlayController: overlayController,
             statusBarController: statusBarController,
             appWhitelist: AppWhitelist()

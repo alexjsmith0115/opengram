@@ -10,9 +10,6 @@ internal struct CardQualifier: Sendable {
     let llmIssues: [LLMStyleSuggestion]
     let harperInside: [Suggestion]
     let hash: ParagraphHash
-    /// Transitional UInt64 hash for the legacy `scheduler.markDismissed` call.
-    /// Scheduler + this field are slated for deletion; `hash` becomes the sole identifier.
-    let legacyHash: UInt64
 }
 
 /// Coordinates the overlay window and suggestion popover.
@@ -29,11 +26,9 @@ final class OverlayController {
     private static let maxDisplayedSuggestions = 50
 
     private let accessor: any AXAccessor
-    private let scheduler: LLMCheckScheduler?
     private let textMonitor: TextMonitor?
     private let config: OpenGramConfig
     private let splitter: any ParagraphSplitting
-    private let hasher: any ParagraphHashing
     private let store: ParagraphSuggestionStore?
     private var storeSubscriptionTask: Task<Void, Never>?
     private let heuristic: DisplayHeuristic
@@ -82,19 +77,15 @@ final class OverlayController {
 
     init(
         accessor: any AXAccessor = SystemAXAccessor(),
-        scheduler: LLMCheckScheduler? = nil,
         textMonitor: TextMonitor? = nil,
         config: OpenGramConfig = OpenGramConfig(),
         splitter: any ParagraphSplitting = DoubleNewlineSplitter(),
-        hasher: any ParagraphHashing = Sha256ParagraphHasher(),
         store: ParagraphSuggestionStore? = nil
     ) {
         self.accessor = accessor
-        self.scheduler = scheduler
         self.textMonitor = textMonitor
         self.config = config
         self.splitter = splitter
-        self.hasher = hasher
         self.store = store
         self.heuristic = DisplayHeuristic(config: config)
         self.overlayWindow = OverlayWindow()
@@ -426,8 +417,8 @@ final class OverlayController {
         let harperCount = suggestions.filter { $0.source == .harper }.count
         Self.logger.info("tryDispatchRephraseCard entry — suggestions=\(suggestions.count) llm=\(llmCount) harper=\(harperCount) bundleID=\(context.bundleID)")
 
-        guard let scheduler, let textMonitor else {
-            Self.logger.error("dispatch blocked: scheduler=\(self.scheduler != nil) textMonitor=\(self.textMonitor != nil) — one or both missing")
+        guard let textMonitor else {
+            Self.logger.error("dispatch blocked: textMonitor missing")
             return false
         }
 
@@ -441,7 +432,6 @@ final class OverlayController {
         var qualifiers: [CardQualifier] = []
         for (idx, paragraph) in paragraphs.enumerated() {
             let hash = ParagraphHash(bundleID: context.bundleID, paragraphText: paragraph.text)
-            let legacyHash = hasher.hash(paragraph.text)   // UInt64 — kept for scheduler.markDismissed only; slated for deletion
 
             let llmInRange = suggestions.filter { $0.source == .llm && $0.paragraphHash == hash }
             let llmIssues: [LLMStyleSuggestion] = llmInRange.compactMap { s in
@@ -472,7 +462,7 @@ final class OverlayController {
             if qualifies {
                 qualifiers.append(CardQualifier(
                     paragraph: paragraph, llmIssues: llmIssues,
-                    harperInside: harperInside, hash: hash, legacyHash: legacyHash
+                    harperInside: harperInside, hash: hash
                 ))
             }
         }
@@ -521,9 +511,6 @@ final class OverlayController {
         currentCardParagraphRange = paragraphScalarRange
         currentCardParagraphHash = selected.hash
 
-        let schedulerRef = scheduler
-        let bundleID = context.bundleID
-        let hashForDismiss = selected.legacyHash     // UInt64 — legacy bridge, slated for deletion
         let ax = context.axElement
         let writeRange = paragraphScalarRange
         let composedRephrase = rephrase
@@ -549,8 +536,6 @@ final class OverlayController {
             guard let self else { return }
             Task { @MainActor in
                 if let storeRef { await storeRef.markDismissed(hash: selected.hash) }
-                // Legacy bridge — slated for deletion together with scheduler:
-                await schedulerRef.markDismissed(bundleID: bundleID, hash: hashForDismiss)
                 self.hideCardAndRestore()
             }
         }

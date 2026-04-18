@@ -13,10 +13,9 @@ struct OverlayControllerRephraseIntegrationTests {
         return OpenGramConfig(defaults: suite)
     }
 
-    @Test func noSchedulerOrMonitor_doesNotDispatch() {
-        // Missing scheduler/monitor → tryDispatchRephraseCard early-returns false (safety fallback).
+    @Test func noMonitor_doesNotDispatch() {
+        // Missing textMonitor → tryDispatchRephraseCard early-returns false (safety fallback).
         let ctrl = OverlayController(
-            scheduler: nil,
             textMonitor: nil,
             config: Self.onFlagConfig()
         )

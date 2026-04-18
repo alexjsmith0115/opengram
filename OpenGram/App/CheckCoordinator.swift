@@ -4,6 +4,10 @@ import os.log
 
 /// Owns the check-display pipeline: hotkey handling, suggestion state, LLM application.
 /// Extracted from AppDelegate to separate lifecycle from check orchestration.
+///
+/// Hotkey path runs Harper only. Paragraph-LLM is event-driven via
+/// `ParagraphSuggestionStore` → `OverlayController` subscription (D-04) — not
+/// serviced by the hotkey.
 @MainActor
 final class CheckCoordinator {
     private static let logger = Log.logger(for: "CheckCoordinator")
@@ -12,7 +16,6 @@ final class CheckCoordinator {
 
     private let textEngine: any AXTextEngineProtocol
     private let orchestrator: CheckOrchestrator
-    private let scheduler: LLMCheckScheduler
     let overlayController: OverlayController
     let statusBarController: StatusBarController
     var appWhitelist: AppWhitelist
@@ -23,19 +26,16 @@ final class CheckCoordinator {
     private(set) var lastSuggestions: [Suggestion] = []
     private(set) var accumulatedSuggestions: [Suggestion] = []
     private var checkTask: Task<Void, Never>?
-    private var llmTask: Task<Void, Never>?
 
     init(
         textEngine: any AXTextEngineProtocol,
         orchestrator: CheckOrchestrator,
-        scheduler: LLMCheckScheduler,
         overlayController: OverlayController,
         statusBarController: StatusBarController,
         appWhitelist: AppWhitelist
     ) {
         self.textEngine = textEngine
         self.orchestrator = orchestrator
-        self.scheduler = scheduler
         self.overlayController = overlayController
         self.statusBarController = statusBarController
         self.appWhitelist = appWhitelist
@@ -89,7 +89,6 @@ final class CheckCoordinator {
         lastExtractedContext = context
 
         checkTask?.cancel()
-        llmTask?.cancel()
 
         checkTask = Task {
             let harperSuggestions = await orchestrator.harperOnly(text: context.text)
@@ -104,51 +103,6 @@ final class CheckCoordinator {
                     self.statusBarController.setState(.done)
                     self.statusBarController.updateStatusText("OpenGram: \(harperSuggestions.count) suggestion(s)")
                     self.overlayController.show(suggestions: harperSuggestions, context: context)
-                }
-            }
-        }
-
-        let config = ConfigManager.currentLLMConfig()
-        guard config.isEnabled else {
-            Self.logger.debug("LLM skipped — isEnabled=\(config.isEnabled)")
-            return
-        }
-
-        statusBarController.setState(.checkingLLM)
-        statusBarController.updateStatusText("Checking style\u{2026}")
-
-        let contextBundleID = context.bundleID
-        let contextText = context.text
-        let harperCheckTask = checkTask
-        let scheduler = self.scheduler
-
-        llmTask = Task {
-            await harperCheckTask?.value
-            guard !Task.isCancelled else {
-                Self.logger.info("llmTask cancelled after Harper wait")
-                return
-            }
-
-            let harperSpans = await MainActor.run { self.lastSuggestions.map { $0.original } }
-            Self.logger.info("llmTask calling scheduler.check — textLen=\(contextText.count) harperSpans=\(harperSpans.count)")
-            let schedulerSuggestions = await scheduler.check(text: contextText, bundleID: contextBundleID, harperSpans: harperSpans)
-            guard !Task.isCancelled else {
-                Self.logger.info("llmTask cancelled after scheduler.check")
-                return
-            }
-            Self.logger.info("llmTask scheduler returned \(schedulerSuggestions.count) total suggestion(s)")
-
-            await MainActor.run {
-                self.restoreStatusAfterLLM()
-
-                let llmSuggestions = schedulerSuggestions.filter { $0.source == .llm }
-                Self.logger.info("llmTask filter — llmSuggestions=\(llmSuggestions.count) accumulatedHarper=\(self.accumulatedSuggestions.count)")
-                if !llmSuggestions.isEmpty {
-                    let merged = self.accumulatedSuggestions + llmSuggestions
-                    Self.logger.info("llmTask calling overlayController.update with merged=\(merged.count)")
-                    self.overlayController.update(suggestions: merged, context: context)
-                } else {
-                    Self.logger.info("llmTask skipping update — no .llm suggestions in scheduler output")
                 }
             }
         }

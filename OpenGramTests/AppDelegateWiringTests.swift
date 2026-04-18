@@ -132,14 +132,13 @@ struct AppDelegateWiringTests {
         #expect(controller.suggestions.isEmpty)
     }
 
-    @Test("OverlayController accepts scheduler and config DI args without crashing")
-    func overlayControllerAcceptsSchedulerAndConfigDIArgs() {
+    @Test("OverlayController accepts config DI arg without crashing")
+    func overlayControllerAcceptsConfigDIArgs() {
         // Verifies the init overload compiles and constructs without crashing.
-        // scheduler and textMonitor are nil (no live LLM in test context); the card
-        // dispatch path will early-return on the nil guard — no side effects.
+        // textMonitor is nil (no live AX in test context); the card dispatch path
+        // will early-return on the nil guard — no side effects.
         let ctrl = OverlayController(
             accessor: MockAXAccessor(),
-            scheduler: nil,
             textMonitor: nil,
             config: OpenGramConfig()
         )
