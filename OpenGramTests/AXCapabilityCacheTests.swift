@@ -63,6 +63,70 @@ struct AXCapabilityCacheMemoryTests {
     }
 }
 
+@Suite struct AXCapabilityCacheSeparatorTests {
+    private func tempCacheURL() -> URL {
+        FileManager.default.temporaryDirectory
+            .appendingPathComponent("ax-cache-\(UUID().uuidString).json")
+    }
+
+    @Test func freshCacheReturnsNilSeparator() {
+        let url = tempCacheURL()
+        defer { try? FileManager.default.removeItem(at: url) }
+        let cache = AXCapabilityCache(cacheFileURL: url)
+        #expect(cache.separator(bundleID: "com.app", version: "1") == nil)
+    }
+
+    @Test func storeAndRecallSeparator() {
+        let url = tempCacheURL()
+        defer { try? FileManager.default.removeItem(at: url) }
+        let cache = AXCapabilityCache(cacheFileURL: url)
+        cache.storeSeparator(bundleID: "com.app", version: "1", separator: "\n\n")
+        #expect(cache.separator(bundleID: "com.app", version: "1") == "\n\n")
+    }
+
+    @Test func separatorKeyedByBundleAndVersion() {
+        let url = tempCacheURL()
+        defer { try? FileManager.default.removeItem(at: url) }
+        let cache = AXCapabilityCache(cacheFileURL: url)
+        cache.storeSeparator(bundleID: "com.app", version: "1", separator: "\n\n")
+        cache.storeSeparator(bundleID: "com.app", version: "2", separator: "\n")
+        #expect(cache.separator(bundleID: "com.app", version: "1") == "\n\n")
+        #expect(cache.separator(bundleID: "com.app", version: "2") == "\n")
+    }
+
+    @Test func separatorPersistsToDiskAcrossInstances() {
+        let url = tempCacheURL()
+        defer { try? FileManager.default.removeItem(at: url) }
+        do {
+            let cache = AXCapabilityCache(cacheFileURL: url)
+            cache.storeSeparator(bundleID: "com.app", version: "1", separator: "\n\n")
+        }
+        let reloaded = AXCapabilityCache(cacheFileURL: url)
+        #expect(reloaded.separator(bundleID: "com.app", version: "1") == "\n\n")
+    }
+
+    @Test func legacyTwoFieldJSONDecodesWithEmptySeparators() throws {
+        let url = tempCacheURL()
+        defer { try? FileManager.default.removeItem(at: url) }
+        let legacyJSON = "{\"capabilities\":{\"com.a:1\":true},\"notifications\":{\"com.a\":true}}"
+        try legacyJSON.data(using: .utf8)!.write(to: url)
+        let cache = AXCapabilityCache(cacheFileURL: url)
+        #expect(cache.isSupported(bundleID: "com.a", version: "1") == true)
+        #expect(cache.isNotificationReliable(bundleID: "com.a") == true)
+        #expect(cache.separator(bundleID: "com.a", version: "1") == nil)
+    }
+
+    @Test func legacyFlatDictJSONStillDecodes() throws {
+        let url = tempCacheURL()
+        defer { try? FileManager.default.removeItem(at: url) }
+        let flatJSON = "{\"com.a:1\":true}"
+        try flatJSON.data(using: .utf8)!.write(to: url)
+        let cache = AXCapabilityCache(cacheFileURL: url)
+        #expect(cache.isSupported(bundleID: "com.a", version: "1") == true)
+        #expect(cache.separator(bundleID: "com.a", version: "1") == nil)
+    }
+}
+
 @Suite("AXCapabilityCache disk persistence")
 struct AXCapabilityCacheDiskTests {
 

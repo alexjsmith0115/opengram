@@ -17,12 +17,33 @@ final class AXCapabilityCache: AXCapabilityCacheProtocol, @unchecked Sendable {
     private struct CacheData: Codable {
         var capabilities: [String: Bool]
         var notifications: [String: Bool]
+        var separators: [String: String]
+
+        enum CodingKeys: String, CodingKey {
+            case capabilities, notifications, separators
+        }
+
+        init(capabilities: [String: Bool],
+             notifications: [String: Bool],
+             separators: [String: String]) {
+            self.capabilities = capabilities
+            self.notifications = notifications
+            self.separators = separators
+        }
+
+        init(from decoder: Decoder) throws {
+            let c = try decoder.container(keyedBy: CodingKeys.self)
+            capabilities = (try? c.decode([String: Bool].self, forKey: .capabilities)) ?? [:]
+            notifications = (try? c.decode([String: Bool].self, forKey: .notifications)) ?? [:]
+            separators = (try? c.decode([String: String].self, forKey: .separators)) ?? [:]
+        }
     }
 
     // MARK: - State
 
     private var entries: [String: Bool] = [:]
     private var notificationEntries: [String: Bool] = [:]
+    private var separatorEntries: [String: String] = [:]
     private let lock = NSLock()
     private let cacheFileURL: URL
 
@@ -69,11 +90,28 @@ final class AXCapabilityCache: AXCapabilityCacheProtocol, @unchecked Sendable {
         saveToDisk()  // saveToDisk() snapshots under its own lock
     }
 
+    // MARK: - Paragraph separator (Phase 20 D-05)
+
+    func separator(bundleID: String, version: String?) -> String? {
+        let key = Self.capabilityKey(bundleID: bundleID, version: version)
+        lock.lock()
+        defer { lock.unlock() }
+        return separatorEntries[key]
+    }
+
+    func storeSeparator(bundleID: String, version: String?, separator: String) {
+        let key = Self.capabilityKey(bundleID: bundleID, version: version)
+        lock.lock()
+        separatorEntries[key] = separator
+        lock.unlock()
+        saveToDisk()
+    }
+
     // MARK: - Persistence
 
     func saveToDisk() {
         lock.lock()
-        let data = CacheData(capabilities: entries, notifications: notificationEntries)
+        let data = CacheData(capabilities: entries, notifications: notificationEntries, separators: separatorEntries)
         lock.unlock()
 
         do {
@@ -93,27 +131,39 @@ final class AXCapabilityCache: AXCapabilityCacheProtocol, @unchecked Sendable {
 
         do {
             let raw = try Data(contentsOf: cacheFileURL)
-            if let wrapper = try? JSONDecoder().decode(CacheData.self, from: raw) {
+            // Detect wrapper format by checking for the "capabilities" key in the JSON object.
+            // The legacy flat [String: Bool] format has only bundleID:version keys, never
+            // "capabilities". Without this check, CacheData.init(from:) would silently succeed
+            // on the flat dict (returning empty fields) and the legacy branch would never run.
+            let hasCapabilitiesKey: Bool = {
+                guard let obj = try? JSONSerialization.jsonObject(with: raw) as? [String: Any] else { return false }
+                return obj["capabilities"] != nil
+            }()
+            if hasCapabilitiesKey, let wrapper = try? JSONDecoder().decode(CacheData.self, from: raw) {
                 lock.lock()
                 entries = wrapper.capabilities
                 notificationEntries = wrapper.notifications
+                separatorEntries = wrapper.separators
                 lock.unlock()
             } else if let legacy = try? JSONDecoder().decode([String: Bool].self, from: raw) {
                 // Backward compat: old format was a plain [String: Bool] for capabilities only
                 lock.lock()
                 entries = legacy
                 notificationEntries = [:]
+                separatorEntries = [:]
                 lock.unlock()
             } else {
                 lock.lock()
                 entries = [:]
                 notificationEntries = [:]
+                separatorEntries = [:]
                 lock.unlock()
             }
         } catch {
             lock.lock()
             entries = [:]
             notificationEntries = [:]
+            separatorEntries = [:]
             lock.unlock()
         }
     }

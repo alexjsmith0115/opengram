@@ -62,6 +62,9 @@ final class TMockCapabilityCache: AXCapabilityCacheProtocol, @unchecked Sendable
         storeNotificationReliabilityCalls.append((bundleID: bundleID, reliable: reliable))
     }
 
+    func separator(bundleID: String, version: String?) -> String? { nil }
+    func storeSeparator(bundleID: String, version: String?, separator: String) {}
+
     func preloadReliability(bundleID: String, reliable: Bool) {
         notificationReliability[bundleID] = reliable
     }

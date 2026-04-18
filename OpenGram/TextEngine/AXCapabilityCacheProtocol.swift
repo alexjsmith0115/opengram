@@ -12,4 +12,8 @@ protocol AXCapabilityCacheProtocol: Sendable {
     /// does not change between app versions in practice.
     func isNotificationReliable(bundleID: String) -> Bool?
     func storeNotificationReliability(bundleID: String, reliable: Bool)
+
+    // Phase 20 D-05: paragraph separator probe cache
+    func separator(bundleID: String, version: String?) -> String?
+    func storeSeparator(bundleID: String, version: String?, separator: String)
 }

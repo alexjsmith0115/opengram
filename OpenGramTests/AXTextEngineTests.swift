@@ -108,6 +108,9 @@ final class StubCapabilityCache: AXCapabilityCacheProtocol, @unchecked Sendable 
         notificationEntries[bundleID] = reliable
     }
 
+    func separator(bundleID: String, version: String?) -> String? { nil }
+    func storeSeparator(bundleID: String, version: String?, separator: String) {}
+
     func preload(bundleID: String, version: String?, supported: Bool) {
         let key = bundleID + ":" + (version ?? "unknown")
         entries[key] = supported
