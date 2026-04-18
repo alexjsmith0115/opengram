@@ -138,6 +138,8 @@
 		B12000010000000000000002 /* OpenGramConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22000010000000000000002 /* OpenGramConfigTests.swift */; };
 		A12003010000000000000001 /* Phase20ParagraphSplitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22003010000000000000001 /* Phase20ParagraphSplitter.swift */; };
 		B12003010000000000000001 /* Phase20ParagraphSplitterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22003010000000000000001 /* Phase20ParagraphSplitterTests.swift */; };
+		A12004010000000000000001 /* WithTimeout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22004010000000000000001 /* WithTimeout.swift */; };
+		B12004010000000000000001 /* WithTimeoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22004010000000000000001 /* WithTimeoutTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -284,6 +286,8 @@
 		B22000010000000000000002 /* OpenGramConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGramConfigTests.swift; sourceTree = "<group>"; };
 		A22003010000000000000001 /* Phase20ParagraphSplitter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Phase20ParagraphSplitter.swift; sourceTree = "<group>"; };
 		B22003010000000000000001 /* Phase20ParagraphSplitterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Phase20ParagraphSplitterTests.swift; sourceTree = "<group>"; };
+		A22004010000000000000001 /* WithTimeout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WithTimeout.swift; sourceTree = "<group>"; };
+		B22004010000000000000001 /* WithTimeoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WithTimeoutTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -484,6 +488,7 @@
 				A22000010000000000000005 /* ParagraphCacheEntry.swift */,
 				A22000010000000000000006 /* OpenGramConfig.swift */,
 				A22003010000000000000001 /* Phase20ParagraphSplitter.swift */,
+				A22004010000000000000001 /* WithTimeout.swift */,
 			);
 			path = ParagraphStore;
 			sourceTree = "<group>";
@@ -650,6 +655,7 @@
 				B22000010000000000000001 /* ParagraphHashTests.swift */,
 				B22000010000000000000002 /* OpenGramConfigTests.swift */,
 				B22003010000000000000001 /* Phase20ParagraphSplitterTests.swift */,
+				B22004010000000000000001 /* WithTimeoutTests.swift */,
 			);
 			path = ParagraphStore;
 			sourceTree = "<group>";
@@ -870,6 +876,7 @@
 				A12000010000000000000005 /* ParagraphCacheEntry.swift in Sources */,
 				A12000010000000000000006 /* OpenGramConfig.swift in Sources */,
 				A12003010000000000000001 /* Phase20ParagraphSplitter.swift in Sources */,
+				A12004010000000000000001 /* WithTimeout.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -933,6 +940,7 @@
 				B12000010000000000000001 /* ParagraphHashTests.swift in Sources */,
 				B12000010000000000000002 /* OpenGramConfigTests.swift in Sources */,
 				B12003010000000000000001 /* Phase20ParagraphSplitterTests.swift in Sources */,
+				B12004010000000000000001 /* WithTimeoutTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
