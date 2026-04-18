@@ -11,7 +11,7 @@ internal struct CardQualifier: Sendable {
     let harperInside: [Suggestion]
     let hash: ParagraphHash
     /// Transitional UInt64 hash for the legacy `scheduler.markDismissed` call.
-    /// Plan 10b deletes the scheduler + this field; `hash` becomes the sole identifier.
+    /// Scheduler + this field are slated for deletion; `hash` becomes the sole identifier.
     let legacyHash: UInt64
 }
 
@@ -34,6 +34,8 @@ final class OverlayController {
     private let incrementalConfig: any IncrementalConfig
     private let splitter: any ParagraphSplitting
     private let hasher: any ParagraphHashing
+    private let store: ParagraphSuggestionStore?
+    private var storeSubscriptionTask: Task<Void, Never>?
     private let heuristic: DisplayHeuristic
     private let overlayWindow: OverlayWindow
     private let popoverPanel: SuggestionPopoverPanel
@@ -61,7 +63,7 @@ final class OverlayController {
 
     var textContext: TextContext?
 
-    /// Phase 18 D-13 / FR-19: while the rephrase card is visible for a paragraph, per-issue
+    /// D-13 / FR-19: while the rephrase card is visible for a paragraph, per-issue
     /// underlines for that paragraph are hidden. Stored as a scalar-offset range (NOT
     /// Range<String.Index> — research Pitfall #3) so it remains valid across text mutations.
     var hiddenParagraphScalarRange: (scalarStart: Int, scalarLength: Int)?
@@ -84,7 +86,8 @@ final class OverlayController {
         textMonitor: TextMonitor? = nil,
         incrementalConfig: any IncrementalConfig = UserDefaultsIncrementalConfig(),
         splitter: any ParagraphSplitting = DoubleNewlineSplitter(),
-        hasher: any ParagraphHashing = Sha256ParagraphHasher()
+        hasher: any ParagraphHashing = Sha256ParagraphHasher(),
+        store: ParagraphSuggestionStore? = nil
     ) {
         self.accessor = accessor
         self.scheduler = scheduler
@@ -92,6 +95,7 @@ final class OverlayController {
         self.incrementalConfig = incrementalConfig
         self.splitter = splitter
         self.hasher = hasher
+        self.store = store
         self.heuristic = DisplayHeuristic(config: incrementalConfig)
         self.overlayWindow = OverlayWindow()
         self.popoverPanel = SuggestionPopoverPanel()
@@ -111,6 +115,19 @@ final class OverlayController {
                 self.dismiss()
             }
         }
+
+        if let store {
+            self.storeSubscriptionTask = Task { @MainActor [weak self] in
+                for await event in store.events {
+                    guard let self else { return }
+                    self.handleStoreEvent(event)
+                }
+            }
+        }
+    }
+
+    deinit {
+        storeSubscriptionTask?.cancel()
     }
 
     // MARK: - Display lifecycle
@@ -126,14 +143,14 @@ final class OverlayController {
         // Populate parallel scalar offset array so repositionAfterAccept can shift indices
         self.suggestionScalarOffsets = computeScalarOffsets(for: self.suggestions, in: context.text)
 
-        // Phase 18: card takes over presentation if a paragraph qualifies under flag-on.
+        // Card takes over presentation if a paragraph qualifies under flag-on.
         _ = tryDispatchRephraseCard(suggestions: self.suggestions, context: context)
 
         let element = context.axElement
 
         var entries: [UnderlineEntry] = []
         for (idx, suggestion) in self.suggestions.enumerated() {
-            // Phase 18 D-13 / REPH-09: skip underlines inside the card's paragraph if any.
+            // D-13 / REPH-09: skip underlines inside the card's paragraph if any.
             let off = self.suggestionScalarOffsets[idx]
             if shouldHideUnderline(scalarStart: off.scalarStart, scalarLength: off.scalarLength) { continue }
             guard let rects = boundsValidator.validatedBoundsForRange(
@@ -158,9 +175,23 @@ final class OverlayController {
         view.entries = localEntries
         view.frame = NSRect(origin: .zero, size: windowRect.size)
 
-        // Wire click-to-show-popover
+        // Wire click-to-show-popover.
+        // PLL-02 / D-02: purple underline (source == .llm) routes to the rephrase card
+        // rather than the word-level SuggestionPopoverPanel. The card is the sole popover
+        // surface for paragraph rewrites.
         view.onClick = { [weak self] suggestion in
-            self?.showPopover(for: suggestion)
+            guard let self else { return }
+            if suggestion.source == .llm, let ctx = self.textContext {
+                let paragraphLLM = self.suggestions.filter {
+                    $0.source == .llm && $0.paragraphHash == suggestion.paragraphHash
+                }
+                _ = self.tryDispatchRephraseCard(
+                    suggestions: paragraphLLM.isEmpty ? [suggestion] : paragraphLLM,
+                    context: ctx
+                )
+            } else {
+                self.showPopover(for: suggestion)
+            }
         }
 
         underlineView = view
@@ -247,7 +278,7 @@ final class OverlayController {
 
         for (oldIndex, newIndex) in diff.unchanged {
             let off = newOffsets[newIndex]
-            // Phase 18 D-13 / REPH-09: skip underlines inside the card's paragraph if any.
+            // D-13 / REPH-09: skip underlines inside the card's paragraph if any.
             if shouldHideUnderline(scalarStart: off.scalarStart, scalarLength: off.scalarLength) {
                 survivingSuggestions.append(cappedNew[newIndex])
                 survivingOffsets.append(off)
@@ -264,7 +295,7 @@ final class OverlayController {
         for newIndex in diff.added {
             let suggestion = cappedNew[newIndex]
             let off = newOffsets[newIndex]
-            // Phase 18 D-13 / REPH-09: skip underlines inside the card's paragraph if any.
+            // D-13 / REPH-09: skip underlines inside the card's paragraph if any.
             if shouldHideUnderline(scalarStart: off.scalarStart, scalarLength: off.scalarLength) {
                 survivingSuggestions.append(suggestion)
                 survivingOffsets.append(off)
@@ -295,7 +326,7 @@ final class OverlayController {
         self.suggestionScalarOffsets = survivingOffsets
         self.textContext = newContext
 
-        // Phase 18: card takes over presentation if a paragraph qualifies under flag-on.
+        // Card takes over presentation if a paragraph qualifies under flag-on.
         _ = tryDispatchRephraseCard(suggestions: self.suggestions, context: newContext)
 
         if survivingEntries.isEmpty {
@@ -341,7 +372,48 @@ final class OverlayController {
         onDismissAll?()
     }
 
-    // MARK: - Rephrase card dispatch (Phase 18 REPH-01/02/12/14/15)
+    // MARK: - Store subscription (D-04)
+
+    @MainActor
+    private func handleStoreEvent(_ event: StoreEvent) {
+        guard case .suggestionsChanged(let bundleID) = event else { return }
+        guard let ctx = textContext, ctx.bundleID == bundleID, let store else { return }
+        Task { @MainActor [weak self] in
+            guard let self, let store = self.store,
+                  let ctx = self.textContext, ctx.bundleID == bundleID else { return }
+            let rawLLM = await store.renderableSuggestions(for: bundleID)
+            let liveResolved = self.resolveLLMRanges(rawLLM, in: ctx.text)
+            let merged = self.mergeHarperAndLLM(ctx: ctx, newLLM: liveResolved)
+            self.update(suggestions: merged, context: ctx)
+        }
+    }
+
+    @MainActor
+    private func resolveLLMRanges(_ llm: [Suggestion], in text: String) -> [Suggestion] {
+        llm.compactMap { s in
+            guard let live = text.range(of: s.original) else { return nil }
+            return Suggestion(
+                id: s.id,
+                range: live,
+                original: s.original,
+                primaryReplacement: s.primaryReplacement,
+                allReplacements: s.allReplacements,
+                message: s.message,
+                category: s.category,
+                source: .llm,
+                priority: s.priority,
+                paragraphHash: s.paragraphHash
+            )
+        }
+    }
+
+    @MainActor
+    private func mergeHarperAndLLM(ctx: TextContext, newLLM: [Suggestion]) -> [Suggestion] {
+        let harper = self.suggestions.filter { $0.source == .harper }
+        return harper + newLLM
+    }
+
+    // MARK: - Rephrase card dispatch (REPH-01/02/12/14/15)
 
     /// Entry point for card dispatch. Returns true when the card dispatched.
     /// Non-qualifying paragraphs continue through the caller's normal per-issue render path.
@@ -369,7 +441,7 @@ final class OverlayController {
         var qualifiers: [CardQualifier] = []
         for (idx, paragraph) in paragraphs.enumerated() {
             let hash = ParagraphHash(bundleID: context.bundleID, paragraphText: paragraph.text)
-            let legacyHash = hasher.hash(paragraph.text)   // UInt64 — kept for scheduler.markDismissed only (Plan 10b deletes)
+            let legacyHash = hasher.hash(paragraph.text)   // UInt64 — kept for scheduler.markDismissed only; slated for deletion
 
             let llmInRange = suggestions.filter { $0.source == .llm && $0.paragraphHash == hash }
             let llmIssues: [LLMStyleSuggestion] = llmInRange.compactMap { s in
@@ -451,17 +523,19 @@ final class OverlayController {
 
         let schedulerRef = scheduler
         let bundleID = context.bundleID
-        let hashForDismiss = selected.legacyHash     // UInt64 — legacy bridge, deleted in Plan 10b
+        let hashForDismiss = selected.legacyHash     // UInt64 — legacy bridge, slated for deletion
         let ax = context.axElement
         let writeRange = paragraphScalarRange
         let composedRephrase = rephrase
 
-        let acceptClosure: @MainActor () -> Void = { [weak self] in
+        let acceptClosure: @MainActor () -> Void = { [weak self, storeRef = self.store] in
             guard let self else {
                 OverlayController.logger.error("acceptClosure fired but self was released")
                 return
             }
             OverlayController.logger.info("acceptClosure fired — replacement len=\(composedRephrase.count) writeRange=(\(writeRange.scalarStart), \(writeRange.scalarLength))")
+            // PLL-11: store transition before AX write so eviction follows on next reconcile.
+            if let storeRef { Task { await storeRef.markAccepted(hash: selected.hash) } }
             // Explicitly hide the panel before hideCardAndRestore() so the panel's onHide callback
             // is cleared before teardown — prevents double-fire of hideCardAndRestore() via the
             // kAXValueChangedNotification → handleKeystroke → hide() path (WR-04).
@@ -471,9 +545,11 @@ final class OverlayController {
             let ok = replacer.replace(text: composedRephrase, in: writeRange, of: ax)
             OverlayController.logger.info("AXTextReplacer.replace returned \(ok)")
         }
-        let dismissClosure: @MainActor () -> Void = { [weak self] in
+        let dismissClosure: @MainActor () -> Void = { [weak self, storeRef = self.store] in
             guard let self else { return }
             Task { @MainActor in
+                if let storeRef { await storeRef.markDismissed(hash: selected.hash) }
+                // Legacy bridge — slated for deletion together with scheduler:
                 await schedulerRef.markDismissed(bundleID: bundleID, hash: hashForDismiss)
                 self.hideCardAndRestore()
             }
@@ -601,7 +677,7 @@ final class OverlayController {
         }) ?? qualifiers[0]
     }
 
-    // MARK: - Paragraph underline hide/show (Phase 18 FR-19 / D-13)
+    // MARK: - Paragraph underline hide/show (FR-19 / D-13)
 
     /// Hides all per-issue underlines whose scalar offset overlaps `range`. The card is the
     /// sole interaction surface for the target paragraph while visible (REPH-09 / FR-19).

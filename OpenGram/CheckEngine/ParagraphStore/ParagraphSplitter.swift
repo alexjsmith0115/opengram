@@ -1,9 +1,9 @@
 import Foundation
 
-/// Phase 20 splitter: caret-aware, separator-probe-cached, emits `ParagraphSet` keyed on
-/// `ParagraphHash`. Distinct from Phase 15 `DoubleNewlineSplitter` (different output
-/// type + separator strategy + caret identification). Phase 15 splitter remains until
-/// Plan 10 deletion cutover.
+/// Paragraph splitter: caret-aware, separator-probe-cached, emits `ParagraphSet` keyed on
+/// `ParagraphHash`. Distinct from `DoubleNewlineSplitter` (different output
+/// type + separator strategy + caret identification). DoubleNewlineSplitter is slated
+/// for deletion when migration completes.
 ///
 /// Separator strategy (D-05 / CONTEXT.md §Separator strategy):
 /// 1. Probe `AXCapabilityCache` for cached separator keyed on `bundleID + version`.

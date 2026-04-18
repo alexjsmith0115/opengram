@@ -2,7 +2,7 @@ import Testing
 import Foundation
 @testable import OpenGramLib
 
-@Suite struct ParagraphSplitterTests {
+@Suite struct DoubleNewlineSplitterTests {
 
     private let splitter = DoubleNewlineSplitter()
 

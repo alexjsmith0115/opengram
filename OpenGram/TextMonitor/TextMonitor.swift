@@ -30,10 +30,10 @@ final class TextMonitor {
     var onCheckComplete: ((@MainActor ([Suggestion], TextContext) -> Void))?
     var onLLMFinished: ((@MainActor () -> Void))?
     var onDismiss: ((@MainActor () -> Void))?
-    /// Phase 18 FR-18 edit-closes hook. Fires synchronously on every AX value-change
+    /// FR-18 edit-closes hook. Fires synchronously on every AX value-change
     /// notification BEFORE the 0.8s debounce, so subscribers (e.g., RephraseCardPanelController)
     /// can close transient UI on the user's first keystroke without waiting for the check cycle.
-    /// Sole subscriber as of Phase 18; if a second subscriber appears later, refactor to multicast.
+    /// Sole subscriber today; if a second subscriber appears later, refactor to multicast.
     var onKeystroke: ((@MainActor () -> Void))?
 
     // MARK: - Config (set by AppDelegate at init)
@@ -387,7 +387,7 @@ final class TextMonitor {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: work)
     }
 
-    // MARK: - Phase 20 store integration (D-03: reuse existing AX observer)
+    // MARK: - Store integration (D-03: reuse existing AX observer)
 
     /// PLL-04: keystroke → `store.invalidateDisplayed`. No reconcile, no queue submits.
     /// The next debounce tick's Harper path remains the driver for `reconcile`; this hook
@@ -428,9 +428,9 @@ final class TextMonitor {
     }
 
 #if DEBUG
-    // MARK: - Test seam (Phase 20, DEBUG only)
+    // MARK: - Test seam (DEBUG only)
 
-    /// Invokes the Phase 20 eager reconcile path as if the focused element had just
+    /// Invokes the eager reconcile path as if the focused element had just
     /// been installed. Test-only — production callers use the real AX focus-change
     /// notification path which fires `driveStoreOnFocusChange` from `installObserver`.
     /// Guarded by `#if DEBUG` so release builds cannot invoke this.

@@ -1,6 +1,6 @@
 import Foundation
 
-/// DI-friendly reader for Phase 17 live-read tunables used by the incremental LLM check path.
+/// DI-friendly reader for live-read tunables used by the incremental LLM check path.
 /// Scheduler holds this and re-reads per-call so a settings change takes effect on the next
 /// check without app relaunch.
 ///

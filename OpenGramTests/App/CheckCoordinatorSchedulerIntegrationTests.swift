@@ -45,7 +45,7 @@ private final class RecordingLLM: LLMProviderProtocol, @unchecked Sendable {
     func healthCheck(config: LLMConfig, apiKey: String?) async -> Bool { true }
 }
 
-/// Incremental config holding Phase 17 Advanced-tab tunables
+/// Incremental config holding Advanced-tab tunables
 /// (minIssueCount / minWordCount / idleDebounceSeconds).
 private final class MutableIncrementalConfig: IncrementalConfig, @unchecked Sendable {
     private let lock = NSLock()
@@ -75,7 +75,7 @@ private func style(original: String, revised: String = "revised", confidence: In
     LLMStyleSuggestion(category: .clarity, originalText: original, revisedText: revised, explanation: "why", confidence: confidence)
 }
 
-/// Builds a scheduler with real Phase 15 components (no mocks below the scheduler).
+/// Builds a scheduler with real components (no mocks below the scheduler).
 private func makeIntegrationScheduler(
     llm: RecordingLLM,
     cache: ParagraphSuggestionCache,
@@ -138,7 +138,7 @@ private func makeIntegrationScheduler(
     }
 
     // 5. harperSpans preserved end-to-end through the scheduler.
-    //    Closes Phase 13 LLM-03/LLM-04 regression risk.
+    //    Closes LLM-03/LLM-04 regression risk.
     @Test func integration_harperSpansPreservedThroughScheduler() async {
         let llm = RecordingLLM()
         let cache = ParagraphSuggestionCache()

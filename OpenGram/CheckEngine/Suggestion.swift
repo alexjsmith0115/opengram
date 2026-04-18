@@ -33,9 +33,9 @@ extension String {
 // MARK: - Suggestion Category (Swift-side, distinct from UniFFI-generated SuggestionCategory)
 
 enum CheckCategory: Sendable, Equatable, Hashable {
-    /// Harper LintKind.Spelling -- rendered red in Phase 3 (D-03)
+    /// Harper LintKind.Spelling -- rendered red (D-03)
     case spelling
-    /// All other LintKind variants -- rendered blue in Phase 3 (D-03)
+    /// All other LintKind variants -- rendered blue (D-03)
     case grammarPunctuation
     /// LLM: hedging, passive voice, weak phrasing -- rendered purple
     case tone
@@ -64,7 +64,7 @@ struct Suggestion: Identifiable, Sendable {
     let category: CheckCategory
     let source: SuggestionSource
     let priority: UInt8
-    /// Phase 20 D-23: non-nil for LLM-sourced suggestions carrying the paragraph's
+    /// D-23: non-nil for LLM-sourced suggestions carrying the paragraph's
     /// `ParagraphHash` for Dismiss-path and card-dedup (WR-02).
     /// Nil for Harper suggestions and flag-off LLM suggestions.
     let paragraphHash: ParagraphHash?

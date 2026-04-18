@@ -2,7 +2,7 @@ import Testing
 import Foundation
 @testable import OpenGramLib
 
-@Suite struct Phase20ParagraphSplitterTests {
+@Suite struct ParagraphSplitterTests {
     // MARK: - Stub cache
 
     private final class StubCapabilityCache: AXCapabilityCacheProtocol, @unchecked Sendable {

@@ -3,7 +3,7 @@ import AppKit
 import os.log
 import SwiftUI
 
-/// Phase 18 D-06: hosts `RephraseCardView` in a non-activating NSPanel.
+/// D-06: hosts `RephraseCardView` in a non-activating NSPanel.
 /// Owns subscriptions for click-outside hide (resignKey) and FR-18 edit-closes
 /// (TextMonitor.onKeystroke → caret-in-paragraph check).
 @MainActor
@@ -22,7 +22,7 @@ final class RephraseCardPanelController {
     private static let verticalSafeMargin: CGFloat = 40
 
     /// Test-only hook. Internal (not public) — `@testable import OpenGramLib` grants access
-    /// to Plan 03 D-11 test cases that need to inspect panel.contentView type and panel.frame size.
+    /// to D-11 test cases that need to inspect panel.contentView type and panel.frame size.
     /// Read-only; production code does not consume it.
     internal var testHookPanel: NSPanel? { panel }
 

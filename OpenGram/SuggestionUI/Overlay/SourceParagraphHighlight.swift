@@ -1,6 +1,6 @@
 import AppKit
 
-/// Phase 18 FR-13 / D-10: light-blue translucent background rendered in the overlay window
+/// FR-13 / D-10: light-blue translucent background rendered in the overlay window
 /// behind the target paragraph while the rephrase card is visible. Non-interactive — clicks
 /// pass through to the target app. The caller (OverlayController) sizes and positions this
 /// against AX line-rects for the paragraph.

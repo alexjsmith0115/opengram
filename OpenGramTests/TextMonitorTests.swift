@@ -290,7 +290,7 @@ struct TextMonitorTests {
     }
 }
 
-// MARK: - TextMonitor.onKeystroke tests (Phase 18 FR-18)
+// MARK: - TextMonitor.onKeystroke tests (FR-18)
 
 @Suite("TextMonitor.onKeystroke")
 @MainActor
@@ -314,7 +314,7 @@ struct TextMonitorOnKeystrokeTests {
     }
 }
 
-// MARK: - Phase 20 store integration tests (PLL-04, PLL-06, PLL-09)
+// MARK: - Store integration tests (PLL-04, PLL-06, PLL-09)
 
 @Suite("TextMonitorStoreIntegrationTests")
 @MainActor

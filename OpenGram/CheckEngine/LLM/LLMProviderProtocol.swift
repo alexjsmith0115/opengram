@@ -9,7 +9,7 @@ protocol LLMProviderProtocol: Sendable {
     /// system prompt so the LLM avoids duplicating grammar/spelling feedback.
     func analyze(paragraph: String, config: LLMConfig, apiKey: String?, harperSpans: [String]) async -> [LLMStyleSuggestion]
 
-    /// Analyze a target paragraph with labeled previous/next context (Phase 16, D-05/D-06).
+    /// Analyze a target paragraph with labeled previous/next context (D-05/D-06).
     /// The LLM is instructed to scope suggestions to `target` only; context paragraphs
     /// are supplied for coherence but not modified. `originalText` on returned
     /// suggestions equals `target` (NFR-7 substring-offset anchor).

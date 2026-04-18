@@ -93,8 +93,8 @@
 		A100000100000000000000C0 /* Paragraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000C0 /* Paragraph.swift */; };
 		A100000100000000000000C1 /* CacheClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000C1 /* CacheClock.swift */; };
 		B100000100000000000000D0 /* CacheClockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000D0 /* CacheClockTests.swift */; };
-		A100000100000000000000C2 /* ParagraphSplitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000C2 /* ParagraphSplitter.swift */; };
-		B100000100000000000000D1 /* ParagraphSplitterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000D1 /* ParagraphSplitterTests.swift */; };
+		A100000100000000000000C2 /* DoubleNewlineSplitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000C2 /* DoubleNewlineSplitter.swift */; };
+		B100000100000000000000D1 /* DoubleNewlineSplitterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000D1 /* DoubleNewlineSplitterTests.swift */; };
 		A100000100000000000000C3 /* ParagraphHasher.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000C3 /* ParagraphHasher.swift */; };
 		B100000100000000000000D2 /* ParagraphHasherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000D2 /* ParagraphHasherTests.swift */; };
 		A100000100000000000000C4 /* ParagraphSuggestionCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000C4 /* ParagraphSuggestionCache.swift */; };
@@ -136,8 +136,8 @@
 		B12000010000000000000001 /* ParagraphHashTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22000010000000000000001 /* ParagraphHashTests.swift */; };
 		A12000010000000000000006 /* OpenGramConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22000010000000000000006 /* OpenGramConfig.swift */; };
 		B12000010000000000000002 /* OpenGramConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22000010000000000000002 /* OpenGramConfigTests.swift */; };
-		A12003010000000000000001 /* Phase20ParagraphSplitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22003010000000000000001 /* Phase20ParagraphSplitter.swift */; };
-		B12003010000000000000001 /* Phase20ParagraphSplitterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22003010000000000000001 /* Phase20ParagraphSplitterTests.swift */; };
+		A12003010000000000000001 /* ParagraphSplitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22003010000000000000001 /* ParagraphSplitter.swift */; };
+		B12003010000000000000001 /* ParagraphSplitterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22003010000000000000001 /* ParagraphSplitterTests.swift */; };
 		A12004010000000000000001 /* WithTimeout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22004010000000000000001 /* WithTimeout.swift */; };
 		B12004010000000000000001 /* WithTimeoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22004010000000000000001 /* WithTimeoutTests.swift */; };
 		A12005010000000000000001 /* LLMRequestQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22005010000000000000001 /* LLMRequestQueue.swift */; };
@@ -246,8 +246,8 @@
 		A200000100000000000000C0 /* Paragraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paragraph.swift; sourceTree = "<group>"; };
 		A200000100000000000000C1 /* CacheClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheClock.swift; sourceTree = "<group>"; };
 		B200000100000000000000D0 /* CacheClockTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheClockTests.swift; sourceTree = "<group>"; };
-		A200000100000000000000C2 /* ParagraphSplitter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphSplitter.swift; sourceTree = "<group>"; };
-		B200000100000000000000D1 /* ParagraphSplitterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphSplitterTests.swift; sourceTree = "<group>"; };
+		A200000100000000000000C2 /* DoubleNewlineSplitter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoubleNewlineSplitter.swift; sourceTree = "<group>"; };
+		B200000100000000000000D1 /* DoubleNewlineSplitterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoubleNewlineSplitterTests.swift; sourceTree = "<group>"; };
 		A200000100000000000000C3 /* ParagraphHasher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphHasher.swift; sourceTree = "<group>"; };
 		B200000100000000000000D2 /* ParagraphHasherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphHasherTests.swift; sourceTree = "<group>"; };
 		A200000100000000000000C4 /* ParagraphSuggestionCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphSuggestionCache.swift; sourceTree = "<group>"; };
@@ -289,8 +289,8 @@
 		B22000010000000000000001 /* ParagraphHashTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphHashTests.swift; sourceTree = "<group>"; };
 		A22000010000000000000006 /* OpenGramConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGramConfig.swift; sourceTree = "<group>"; };
 		B22000010000000000000002 /* OpenGramConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGramConfigTests.swift; sourceTree = "<group>"; };
-		A22003010000000000000001 /* Phase20ParagraphSplitter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Phase20ParagraphSplitter.swift; sourceTree = "<group>"; };
-		B22003010000000000000001 /* Phase20ParagraphSplitterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Phase20ParagraphSplitterTests.swift; sourceTree = "<group>"; };
+		A22003010000000000000001 /* ParagraphSplitter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphSplitter.swift; sourceTree = "<group>"; };
+		B22003010000000000000001 /* ParagraphSplitterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphSplitterTests.swift; sourceTree = "<group>"; };
 		A22004010000000000000001 /* WithTimeout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WithTimeout.swift; sourceTree = "<group>"; };
 		B22004010000000000000001 /* WithTimeoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WithTimeoutTests.swift; sourceTree = "<group>"; };
 		A22005010000000000000001 /* LLMRequestQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMRequestQueue.swift; sourceTree = "<group>"; };
@@ -497,7 +497,7 @@
 				A22000010000000000000004 /* ParagraphSuggestionState.swift */,
 				A22000010000000000000005 /* ParagraphCacheEntry.swift */,
 				A22000010000000000000006 /* OpenGramConfig.swift */,
-				A22003010000000000000001 /* Phase20ParagraphSplitter.swift */,
+				A22003010000000000000001 /* ParagraphSplitter.swift */,
 				A22004010000000000000001 /* WithTimeout.swift */,
 				A22005010000000000000001 /* LLMRequestQueue.swift */,
 				A22005010000000000000002 /* LLMRequestQueueStoreProtocol.swift */,
@@ -520,7 +520,7 @@
 			children = (
 				A200000100000000000000C0 /* Paragraph.swift */,
 				A200000100000000000000C1 /* CacheClock.swift */,
-				A200000100000000000000C2 /* ParagraphSplitter.swift */,
+				A200000100000000000000C2 /* DoubleNewlineSplitter.swift */,
 				A200000100000000000000C3 /* ParagraphHasher.swift */,
 				A200000100000000000000C4 /* ParagraphSuggestionCache.swift */,
 			);
@@ -655,7 +655,7 @@
 			isa = PBXGroup;
 			children = (
 				B200000100000000000000D0 /* CacheClockTests.swift */,
-				B200000100000000000000D1 /* ParagraphSplitterTests.swift */,
+				B200000100000000000000D1 /* DoubleNewlineSplitterTests.swift */,
 				B200000100000000000000D2 /* ParagraphHasherTests.swift */,
 				B200000100000000000000D3 /* ParagraphSuggestionCacheTests.swift */,
 			);
@@ -667,7 +667,7 @@
 			children = (
 				B22000010000000000000001 /* ParagraphHashTests.swift */,
 				B22000010000000000000002 /* OpenGramConfigTests.swift */,
-				B22003010000000000000001 /* Phase20ParagraphSplitterTests.swift */,
+				B22003010000000000000001 /* ParagraphSplitterTests.swift */,
 				B22004010000000000000001 /* WithTimeoutTests.swift */,
 				B22005010000000000000001 /* LLMRequestQueueTests.swift */,
 				B22006010000000000000001 /* ParagraphSuggestionStoreTests.swift */,
@@ -870,7 +870,7 @@
 				A100000100000000000000B4 /* ConfigManager.swift in Sources */,
 				A100000100000000000000C0 /* Paragraph.swift in Sources */,
 				A100000100000000000000C1 /* CacheClock.swift in Sources */,
-				A100000100000000000000C2 /* ParagraphSplitter.swift in Sources */,
+				A100000100000000000000C2 /* DoubleNewlineSplitter.swift in Sources */,
 				A100000100000000000000C3 /* ParagraphHasher.swift in Sources */,
 				A100000100000000000000C4 /* ParagraphSuggestionCache.swift in Sources */,
 				A100000100000000000000E0 /* IncrementalConfig.swift in Sources */,
@@ -890,7 +890,7 @@
 				A12000010000000000000004 /* ParagraphSuggestionState.swift in Sources */,
 				A12000010000000000000005 /* ParagraphCacheEntry.swift in Sources */,
 				A12000010000000000000006 /* OpenGramConfig.swift in Sources */,
-				A12003010000000000000001 /* Phase20ParagraphSplitter.swift in Sources */,
+				A12003010000000000000001 /* ParagraphSplitter.swift in Sources */,
 				A12004010000000000000001 /* WithTimeout.swift in Sources */,
 				A12005010000000000000001 /* LLMRequestQueue.swift in Sources */,
 				A12005010000000000000002 /* LLMRequestQueueStoreProtocol.swift in Sources */,
@@ -934,7 +934,7 @@
 				B100000100000000000000A0 /* AppWhitelistTests.swift in Sources */,
 				B100000100000000000000C0 /* PanelPositionerTests.swift in Sources */,
 				B100000100000000000000D0 /* CacheClockTests.swift in Sources */,
-				B100000100000000000000D1 /* ParagraphSplitterTests.swift in Sources */,
+				B100000100000000000000D1 /* DoubleNewlineSplitterTests.swift in Sources */,
 				B100000100000000000000D2 /* ParagraphHasherTests.swift in Sources */,
 				B100000100000000000000D3 /* ParagraphSuggestionCacheTests.swift in Sources */,
 				B100000100000000000000E0 /* LLMCheckSchedulerTests.swift in Sources */,
@@ -957,7 +957,7 @@
 				B18080010000000000000001 /* RephraseCardLifecycleTests.swift in Sources */,
 				B12000010000000000000001 /* ParagraphHashTests.swift in Sources */,
 				B12000010000000000000002 /* OpenGramConfigTests.swift in Sources */,
-				B12003010000000000000001 /* Phase20ParagraphSplitterTests.swift in Sources */,
+				B12003010000000000000001 /* ParagraphSplitterTests.swift in Sources */,
 				B12004010000000000000001 /* WithTimeoutTests.swift in Sources */,
 				B12005010000000000000001 /* LLMRequestQueueTests.swift in Sources */,
 				B12006010000000000000001 /* ParagraphSuggestionStoreTests.swift in Sources */,

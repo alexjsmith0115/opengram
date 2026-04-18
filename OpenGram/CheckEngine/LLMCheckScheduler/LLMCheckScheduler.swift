@@ -6,8 +6,7 @@ import os.log
 /// Split → hash → cache lookup → neighbor-context assembly → per-paragraph LLM fan-out
 /// → substring-based offset rebasing → merged `[Suggestion]`. D-01, D-02, D-05, D-07, D-11.
 ///
-/// Plan 16-02 scope: flag-on flow only. Flag-off fallback lands in Plan 16-04.
-/// Plan 16-03 adds per-paragraph in-flight cancellation map (`inFlightByIndex`),
+/// Includes per-paragraph in-flight cancellation map (`inFlightByIndex`),
 /// keystroke idle-debounce (`onKeystroke` + `pendingIdleTask`), and focus-loss trigger
 /// (`checkOnFocusLoss`).
 actor LLMCheckScheduler {
@@ -57,7 +56,7 @@ actor LLMCheckScheduler {
     /// fan out LLM requests for changed/missing paragraphs with neighbor context,
     /// rebase returned style suggestions into source-string index space, merge.
     ///
-    /// `harperSpans` preserves Phase 13 LLM-03/LLM-04 duplicate-avoidance contract:
+    /// `harperSpans` preserves LLM-03/LLM-04 duplicate-avoidance contract:
     /// Harper's already-flagged spans are forwarded verbatim to every per-paragraph
     /// LLM call on the flag-on path.
     func check(text: String, bundleID: String, harperSpans: [String] = []) async -> [Suggestion] {
@@ -178,7 +177,7 @@ actor LLMCheckScheduler {
     // MARK: - Offset rebasing (NFR-7)
 
     /// Search `style.originalText` directly within the trimmed source slice for `paragraph.range`.
-    /// Paragraph.range is the untrimmed source span (Phase 15 D-03), so we advance past leading
+    /// Paragraph.range is the untrimmed source span (D-03), so we advance past leading
     /// whitespace/newlines first. Avoids the paragraph.text→source Character-offset translation,
     /// which can misalign on Unicode sequences where paragraph.text normalization differs from
     /// source[paragraph.range] (WR-04).
@@ -232,7 +231,7 @@ actor LLMCheckScheduler {
     func onKeystroke(text: String, bundleID: String, harperSpans: [String] = [], onComplete: @escaping @Sendable ([Suggestion]) -> Void) {
         pendingIdleTask?.cancel()
         // SET-10 / D-03: live-read per-call so Advanced tab Stepper changes take effect on next keystroke.
-        // Mirrors D-14 flag-read pattern — no cached snapshot.
+        // Mirrors flag-read pattern — no cached snapshot.
         let debounce = incrementalConfig.idleDebounceSeconds
         pendingIdleTask = Task { [weak self] in
             try? await Task.sleep(for: .seconds(debounce))
@@ -252,7 +251,7 @@ actor LLMCheckScheduler {
         return await check(text: text, bundleID: bundleID, harperSpans: harperSpans)
     }
 
-    /// Phase 18 D-17: card Dismiss action entry point.
+    /// Card Dismiss action entry point (D-17).
     /// Thin wrapper around `cache.markDismissed(...)` so the UI layer never touches the cache directly.
     /// No-op when no entry exists for the key (mirrors cache.markDismissed semantics).
     func markDismissed(bundleID: String, hash: UInt64) async {

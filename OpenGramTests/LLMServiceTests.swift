@@ -206,7 +206,7 @@ private final class HangingURLProtocol: URLProtocol {
     override func stopLoading() {}
 }
 
-// MARK: - Target Context Tests (Plan 16-01)
+// MARK: - Target Context Tests
 
 /// Records every request it sees; responds with a canned body + status.
 private final class RecordingURLProtocol: URLProtocol {

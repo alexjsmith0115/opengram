@@ -4,7 +4,7 @@ import Foundation
 ///
 /// Lifecycle:
 /// 1. Construct with `llm`, `configProvider`, `apiKeyProvider`, `timeoutProvider`.
-/// 2. Call `setStore(_:)` before any `submit(…)` (AppDelegate composition — Plan 10).
+/// 2. Call `setStore(_:)` before any `submit(…)` (AppDelegate composition).
 /// 3. `submit(…)` appends to FIFO and pumps if idle.
 /// 4. `cancel(hash:)` removes still-queued or cancels in-flight; store is NOT notified.
 ///

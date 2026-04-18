@@ -104,7 +104,7 @@ actor LLMService: LLMProviderProtocol {
         }
     }
 
-    /// Context-aware analyze for Phase 16 scheduler (D-05/D-06).
+    /// Context-aware analyze for incremental scheduler (D-05/D-06).
     /// Cancellation is per-call (caller owns the Task) — does NOT touch currentTask,
     /// so the legacy analyze(paragraph:) single-flight path is unaffected.
     func analyze(

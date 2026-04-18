@@ -74,7 +74,7 @@ struct RephraseCardViewTests {
 
     @Test func additionsOnlyMode_omitsRemovedSegments_conceptually() {
         // Data-level assertion: additions-only omits .removed segments.
-        // Actual visual verification deferred to Phase 19 UAT.
+        // Actual visual verification deferred to UAT.
         let segs: [DiffSegment] = [.unchanged("a"), .removed("b"), .added("c")]
         let expectedAdditionsOnly = segs.filter {
             if case .removed = $0 { return false } else { return true }

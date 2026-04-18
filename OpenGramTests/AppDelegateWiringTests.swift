@@ -134,7 +134,7 @@ struct AppDelegateWiringTests {
 
     @Test("OverlayController accepts scheduler and incrementalConfig DI args without crashing")
     func overlayControllerAcceptsPhase18DIArgs() {
-        // Verifies the Phase 18 init overload compiles and constructs without crashing.
+        // Verifies the init overload compiles and constructs without crashing.
         // scheduler and textMonitor are nil (no live LLM in test context); the card
         // dispatch path will early-return on the nil guard — no side effects.
         let ctrl = OverlayController(

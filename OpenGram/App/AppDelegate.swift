@@ -19,7 +19,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         let llmService = LLMService()
         let orchestrator = CheckOrchestrator(harper: harperService)
 
-        // D-13: Scheduler is DI-composed at the root. Concrete Phase 15 components passed in;
+        // D-13: Scheduler is DI-composed at the root. Concrete components passed in;
         // flag is read live per-call via UserDefaultsIncrementalConfig (D-14).
         let scheduler = LLMCheckScheduler(
             splitter: DoubleNewlineSplitter(),
@@ -35,7 +35,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         let statusBarController = StatusBarController()
 
         // TextMonitor constructed before OverlayController so it can be DI-injected.
-        // RephraseCardPanelController (Phase 18) installs its own onKeystroke subscription
+        // RephraseCardPanelController installs its own onKeystroke subscription
         // on show() and restores prior value on hide() — AppDelegate stays out of that chain.
         let textMonitor = TextMonitor(
             textEngine: textEngine,

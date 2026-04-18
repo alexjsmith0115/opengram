@@ -1,7 +1,7 @@
 import SwiftUI
 import Foundation
 
-/// Advanced tab — exposes Phase 17 tunables. Warning text per D-09. All bindings
+/// Advanced tab — exposes incremental check tunables. Warning text per D-09. All bindings
 /// are @AppStorage to the same UserDefaults keys read by UserDefaultsIncrementalConfig
 /// (single source of truth — D-10). Reset button reuses the static defaults on
 /// UserDefaultsIncrementalConfig so the default values live in one place.

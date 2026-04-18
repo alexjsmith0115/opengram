@@ -91,7 +91,7 @@ final class UnderlineView: NSView {
         }
     }
 
-    /// Phase 20 PLL-01: LLM suggestions render purple regardless of category;
+    /// PLL-01: LLM suggestions render purple regardless of category;
     /// Harper suggestions use the existing category color.
     nonisolated static func colorForSuggestion(_ suggestion: Suggestion) -> NSColor {
         if suggestion.source == .llm { return .systemPurple }

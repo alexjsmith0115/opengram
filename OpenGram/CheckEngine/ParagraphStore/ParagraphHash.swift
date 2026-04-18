@@ -1,7 +1,7 @@
 import Foundation
 import CryptoKit
 
-/// Cache key for Phase 20 paragraph-level LLM suggestions.
+/// Cache key for paragraph-level LLM suggestions.
 /// `bundleID` partitions entries so the same paragraph text across apps gets separate
 /// entries (per-app eviction sweeps stay safe). `sha256` is the full 64-char hex digest
 /// of the normalized paragraph text. CONTEXT.md §Data Model lines 104-113.
@@ -27,8 +27,8 @@ struct ParagraphHash: Hashable, Sendable {
         return digest.map { String(format: "%02x", $0) }.joined()
     }
 
-    /// Matches `Sha256ParagraphHasher.normalize` byte-for-byte so Phase 15 and Phase 20
-    /// hashing surfaces agree on what "same paragraph" means.
+    /// Matches `Sha256ParagraphHasher.normalize` byte-for-byte so both hashing
+    /// surfaces agree on what "same paragraph" means.
     private static func normalize(_ text: String) -> String {
         let nfc = text.precomposedStringWithCanonicalMapping
         let trimmed = nfc.trimmingCharacters(in: .whitespacesAndNewlines)

@@ -3,8 +3,8 @@ import Foundation
 import os.log
 
 /// Range-targeted AX text write with full-text fallback. Extracted from
-/// `OverlayController.acceptSuggestion` (D-15). Shared by the Phase 3 per-suggestion
-/// accept path and the Phase 18 rephrase-card accept path.
+/// `OverlayController.acceptSuggestion` (D-15). Shared by the per-suggestion
+/// accept path and the rephrase-card accept path.
 @MainActor
 struct AXTextReplacer {
     let accessor: any AXAccessor

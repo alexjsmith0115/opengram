@@ -1,7 +1,7 @@
 import SwiftUI
 
-/// Phase 18 rephrase card. Hosted inside a non-activating NSPanel by
-/// `RephraseCardPanelController`. Visual contract: see .planning/phases/18-paragraph-rephrase-card/18-UI-SPEC.md.
+/// Rephrase card. Hosted inside a non-activating NSPanel by
+/// `RephraseCardPanelController`. Visual contract: see UI spec.
 /// D-02, D-04, D-05, D-13. Teal accent (Color.teal) per D-04.
 struct RephraseCardView: View {
     let viewModel: RephraseCardViewModel

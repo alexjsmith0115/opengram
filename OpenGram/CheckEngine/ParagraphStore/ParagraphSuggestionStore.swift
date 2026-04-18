@@ -1,14 +1,14 @@
 import Foundation
 
-/// Phase 20 state-machine actor. See CONTEXT.md §State Machine, §Reconciliation, §Cache Eviction.
+/// Paragraph suggestion state-machine actor. See CONTEXT.md §State Machine, §Reconciliation, §Cache Eviction.
 ///
 /// Owns:
 ///   - `cache: [ParagraphHash: ParagraphCacheEntry]` — one source of truth for paragraph state
 ///   - `currentSet: [String: ParagraphSet]` — last-known live set per bundleID
 ///   - `eventContinuation` — broadcasts `.suggestionsChanged` on every cache/set mutation
 ///
-/// Consumers: TextMonitor (Plan 08) drives via `reconcile` + `invalidateDisplayed`;
-/// OverlayController (Plan 09) subscribes to `events` and reads `renderableSuggestions`.
+/// Consumers: TextMonitor drives via `reconcile` + `invalidateDisplayed`;
+/// OverlayController subscribes to `events` and reads `renderableSuggestions`.
 actor ParagraphSuggestionStore: LLMRequestQueueStore {
 
     // MARK: - State
@@ -186,7 +186,7 @@ actor ParagraphSuggestionStore: LLMRequestQueueStore {
     /// and builds a single paragraph-level `Suggestion`. Returns nil when no usable
     /// rewrite — caller transitions to `.readyEmpty`.
     ///
-    /// Range placeholder: covers the whole `originalText`. Plan 09 re-resolves against the
+    /// Range placeholder: covers the whole `originalText`. Overlay re-resolves against the
     /// CURRENT live text at render time (Pitfall #3 — never trust cached String.Index
     /// across mutations).
     static func mapToSuggestion(
@@ -206,7 +206,7 @@ actor ParagraphSuggestionStore: LLMRequestQueueStore {
         case .rephrase: category = .rephrase
         }
 
-        // Placeholder range covers the entire originalText. Plan 09 rebuilds the
+        // Placeholder range covers the entire originalText. Overlay rebuilds the
         // real range against live AX text before rendering.
         let range = originalText.startIndex..<originalText.endIndex
 

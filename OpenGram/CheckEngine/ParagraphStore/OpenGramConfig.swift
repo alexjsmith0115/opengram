@@ -1,6 +1,6 @@
 import Foundation
 
-/// Phase 20 tunables. UserDefaults-backed, live-read on every property access so a
+/// UserDefaults-backed tunables, live-read on every property access so a
 /// Settings UI write is visible on the next reconcile tick without restart.
 ///
 /// Callers who prefer event-driven hot reload observe `OpenGramConfig.didChangeNotification`
@@ -8,9 +8,9 @@ import Foundation
 ///
 /// `@unchecked Sendable` — `UserDefaults` is thread-safe by Foundation contract but not
 /// formally declared `Sendable` in the SDK. Matches the precedent set by
-/// `UserDefaultsIncrementalConfig` (Phase 17).
+/// `UserDefaultsIncrementalConfig`.
 struct OpenGramConfig: @unchecked Sendable {
-    // MARK: - Phase 20 keys
+    // MARK: - Paragraph store keys
 
     static let harperDebounceMsKey           = "harperDebounceMs"
     static let llmDebounceMsKey              = "llmDebounceMs"
@@ -18,8 +18,8 @@ struct OpenGramConfig: @unchecked Sendable {
     static let minParagraphLengthKey         = "minParagraphLength"
     static let minParagraphWordCountKey      = "minParagraphWordCount"
 
-    // MARK: - Phase 17 keys absorbed (kept verbatim so AdvancedSettingsView @AppStorage
-    //        literals continue to match — Plan 10 migrates the heuristic off
+    // MARK: - Absorbed legacy tunables (kept verbatim so AdvancedSettingsView @AppStorage
+    //        literals continue to match — heuristic is slated to migrate off
     //        `IncrementalConfig` onto this struct)
 
     static let minIssueCountKey              = "llmMinIssueCount"
@@ -44,7 +44,7 @@ struct OpenGramConfig: @unchecked Sendable {
     private let defaults: UserDefaults
     init(defaults: UserDefaults = .standard) { self.defaults = defaults }
 
-    // MARK: - Phase 20 tunables
+    // MARK: - Paragraph store tunables
 
     var harperDebounceMs: Int {
         defaults.object(forKey: Self.harperDebounceMsKey) as? Int ?? Self.defaultHarperDebounceMs
@@ -66,7 +66,7 @@ struct OpenGramConfig: @unchecked Sendable {
         defaults.object(forKey: Self.minParagraphWordCountKey) as? Int ?? Self.defaultMinParagraphWordCount
     }
 
-    // MARK: - Absorbed Phase 17 tunables (DisplayHeuristic consumers)
+    // MARK: - Absorbed legacy tunables (DisplayHeuristic consumers)
 
     var minIssueCount: Int {
         defaults.object(forKey: Self.minIssueCountKey) as? Int ?? Self.defaultMinIssueCount

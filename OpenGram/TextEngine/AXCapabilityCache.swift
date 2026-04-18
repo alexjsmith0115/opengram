@@ -90,7 +90,7 @@ final class AXCapabilityCache: AXCapabilityCacheProtocol, @unchecked Sendable {
         saveToDisk()  // saveToDisk() snapshots under its own lock
     }
 
-    // MARK: - Paragraph separator (Phase 20 D-05)
+    // MARK: - Paragraph separator (D-05)
 
     func separator(bundleID: String, version: String?) -> String? {
         let key = Self.capabilityKey(bundleID: bundleID, version: version)
