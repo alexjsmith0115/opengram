@@ -134,8 +134,8 @@ final class OverlayController {
         // Populate parallel scalar offset array so repositionAfterAccept can shift indices
         self.suggestionScalarOffsets = computeScalarOffsets(for: self.suggestions, in: context.text)
 
-        // Card takes over presentation if a paragraph qualifies under flag-on.
-        _ = tryDispatchRephraseCard(suggestions: self.suggestions, context: context)
+        // Card is click-only: dispatch lives in UnderlineView.onClick below. Do not
+        // auto-present on show() — purple underlines are the affordance for the user.
 
         let element = context.axElement
 
@@ -317,8 +317,8 @@ final class OverlayController {
         self.suggestionScalarOffsets = survivingOffsets
         self.textContext = newContext
 
-        // Card takes over presentation if a paragraph qualifies under flag-on.
-        _ = tryDispatchRephraseCard(suggestions: self.suggestions, context: newContext)
+        // Card is click-only: no auto-dispatch on update(). If a card is already
+        // visible its paragraph hiding state is preserved via currentCardParagraphHash.
 
         if survivingEntries.isEmpty {
             dismiss()
@@ -534,9 +534,12 @@ final class OverlayController {
         }
         let dismissClosure: @MainActor () -> Void = { [weak self, storeRef = self.store] in
             guard let self else { return }
-            Task { @MainActor in
-                if let storeRef { await storeRef.markDismissed(hash: selected.hash) }
-                self.hideCardAndRestore()
+            // Mirror acceptClosure: hide panel explicitly so onHide clears before the
+            // follow-up hideCardAndRestore() runs (WR-04 double-fire guard).
+            self.rephraseCardPanelController.hide()
+            self.hideCardAndRestore()
+            if let storeRef {
+                Task { @MainActor in await storeRef.markDismissed(hash: selected.hash) }
             }
         }
 

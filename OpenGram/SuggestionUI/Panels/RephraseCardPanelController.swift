@@ -17,7 +17,7 @@ final class RephraseCardPanelController {
     private var panel: NSPanel?
     private var hostingView: NSHostingView<RephraseCardView>?
     private var scrollWrapper: NSScrollView?
-    private var resignObserver: NSObjectProtocol?
+    private var clickOutsideMonitors: [Any] = []
 
     private static let verticalSafeMargin: CGFloat = 40
 
@@ -129,16 +129,26 @@ final class RephraseCardPanelController {
         self.panel = newPanel
         self.hostingView = hosting
 
-        // resignKey — click-outside hide (D-08).
-        resignObserver = NotificationCenter.default.addObserver(
-            forName: NSWindow.didResignKeyNotification,
-            object: newPanel,
-            queue: .main
-        ) { [weak self] _ in
-            Task { @MainActor [weak self] in
-                self?.hide()
+        // Click-outside hide (D-08). resignKey is unreliable here: the panel is
+        // .nonactivatingPanel + becomesKeyOnlyIfNeeded and has no text input, so it
+        // never becomes key and therefore never resigns. Use mouseDown monitors:
+        //   - local: clicks inside our own app outside the panel window → hide
+        //   - global: clicks in any other app (target app, Finder, etc.) → hide
+        let localMon = NSEvent.addLocalMonitorForEvents(
+            matching: [.leftMouseDown, .rightMouseDown, .otherMouseDown]
+        ) { [weak self] event in
+            guard let self, let currentPanel = self.panel else { return event }
+            if event.window !== currentPanel {
+                Task { @MainActor [weak self] in self?.hide() }
             }
+            return event
         }
+        let globalMon = NSEvent.addGlobalMonitorForEvents(
+            matching: [.leftMouseDown, .rightMouseDown, .otherMouseDown]
+        ) { [weak self] _ in
+            Task { @MainActor [weak self] in self?.hide() }
+        }
+        clickOutsideMonitors = [localMon, globalMon].compactMap { $0 }
 
         // TextMonitor.onKeystroke subscription — FR-18 edit-closes (D-09).
         // Closure-chaining preserves any prior subscriber (research A3 sole-subscriber note).
@@ -156,10 +166,10 @@ final class RephraseCardPanelController {
         hostingView = nil
         scrollWrapper = nil   // D-05 teardown symmetry
 
-        if let resignObserver {
-            NotificationCenter.default.removeObserver(resignObserver)
-            self.resignObserver = nil
+        for monitor in clickOutsideMonitors {
+            NSEvent.removeMonitor(monitor)
         }
+        clickOutsideMonitors.removeAll()
 
         // Restore prior keystroke callback so other subscribers survive.
         if let monitor = textMonitorRef {
