@@ -134,6 +134,8 @@
 		A12000010000000000000004 /* ParagraphSuggestionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22000010000000000000004 /* ParagraphSuggestionState.swift */; };
 		A12000010000000000000005 /* ParagraphCacheEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22000010000000000000005 /* ParagraphCacheEntry.swift */; };
 		B12000010000000000000001 /* ParagraphHashTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22000010000000000000001 /* ParagraphHashTests.swift */; };
+		A12000010000000000000006 /* OpenGramConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22000010000000000000006 /* OpenGramConfig.swift */; };
+		B12000010000000000000002 /* OpenGramConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22000010000000000000002 /* OpenGramConfigTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -276,6 +278,8 @@
 		A22000010000000000000004 /* ParagraphSuggestionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphSuggestionState.swift; sourceTree = "<group>"; };
 		A22000010000000000000005 /* ParagraphCacheEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphCacheEntry.swift; sourceTree = "<group>"; };
 		B22000010000000000000001 /* ParagraphHashTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphHashTests.swift; sourceTree = "<group>"; };
+		A22000010000000000000006 /* OpenGramConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGramConfig.swift; sourceTree = "<group>"; };
+		B22000010000000000000002 /* OpenGramConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGramConfigTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -474,7 +478,8 @@
 				A22000010000000000000003 /* StoreEvent.swift */,
 				A22000010000000000000004 /* ParagraphSuggestionState.swift */,
 				A22000010000000000000005 /* ParagraphCacheEntry.swift */,
-			);
+				A22000010000000000000006 /* OpenGramConfig.swift */,
+);
 			path = ParagraphStore;
 			sourceTree = "<group>";
 		};
@@ -638,6 +643,7 @@
 			isa = PBXGroup;
 			children = (
 				B22000010000000000000001 /* ParagraphHashTests.swift */,
+				B22000010000000000000002 /* OpenGramConfigTests.swift */,
 			);
 			path = ParagraphStore;
 			sourceTree = "<group>";
@@ -856,6 +862,7 @@
 				A12000010000000000000003 /* StoreEvent.swift in Sources */,
 				A12000010000000000000004 /* ParagraphSuggestionState.swift in Sources */,
 				A12000010000000000000005 /* ParagraphCacheEntry.swift in Sources */,
+				A12000010000000000000006 /* OpenGramConfig.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -917,6 +924,7 @@
 				B18070010000000000000002 /* OverlayControllerRephraseIntegrationTests.swift in Sources */,
 				B18080010000000000000001 /* RephraseCardLifecycleTests.swift in Sources */,
 				B12000010000000000000001 /* ParagraphHashTests.swift in Sources */,
+				B12000010000000000000002 /* OpenGramConfigTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
