@@ -1,0 +1,44 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-04-18T09:26:34Z",
+  "phase": "20",
+  "phase_name": "paragraph-level-llm-suggestions-with-cache-reconciliation",
+  "phase_dir": ".planning/phases/20-paragraph-level-llm-suggestions-with-cache-reconciliation",
+  "plan": "10c",
+  "task": 2,
+  "total_tasks": 2,
+  "status": "paused",
+  "completed_tasks": [
+    {"id": "20-01", "name": "ParagraphHash + ParagraphSet + state types", "status": "done", "commit": "e15c441"},
+    {"id": "20-02", "name": "OpenGramConfig live-read tunables", "status": "done", "commit": "8b5dc79"},
+    {"id": "20-03", "name": "ParagraphSplitter + AXCapabilityCache extension", "status": "done", "commit": "68ef109"},
+    {"id": "20-04", "name": "withTimeout primitive", "status": "done", "commit": "387bbb2"},
+    {"id": "20-05", "name": "LLMRequestQueue actor (FIFO + one-in-flight + cancel)", "status": "done", "commit": "4c9bd91"},
+    {"id": "20-06", "name": "ParagraphSuggestionStore actor + reconciliation state machine", "status": "done", "commit": "8443ac7"},
+    {"id": "20-07", "name": "UnderlineView color+z-order + Suggestion.paragraphHash flip", "status": "done", "commit": "6c23a9d"},
+    {"id": "20-08", "name": "TextMonitor store + splitter wiring", "status": "done", "commit": "22ebe0a"},
+    {"id": "scrub", "name": "Scrub GSD phase/plan refs from source + file renames", "status": "done", "commit": "aea982f"},
+    {"id": "20-09", "name": "OverlayController store subscription tests", "status": "done", "commit": "b343e9f"},
+    {"id": "20-10a", "name": "DisplayHeuristic/AdvancedSettingsView/OverlayController config migration to OpenGramConfig", "status": "done", "commit": "eba070f"},
+    {"id": "20-10b", "name": "AppDelegate composition root + CheckCoordinator scheduler removal", "status": "done", "commit": "9bbb2e3"},
+    {"id": "20-10c-task1", "name": "Delete LLMCheckScheduler + IncrementalConfig + ParagraphSuggestionCache + 7 test files + pbxproj cleanup", "status": "done", "commit": "949194b"}
+  ],
+  "remaining_tasks": [
+    {"id": "20-10c-task2", "name": "Manual validation via computer-use MCP against CONTEXT.md \u00a7Manual Validation items 1-7", "status": "not_started"}
+  ],
+  "blockers": [
+    {"description": "Claude Code lacks macOS Accessibility TCC permission \u2014 osascript cannot drive TextEdit/Notes/OpenGram to automate the 7-item smoke test", "type": "human_action", "workaround": "User validates manually and responds 'approved' (selected path), OR user grants Accessibility perm in System Settings \u2192 Privacy & Security \u2192 Accessibility to Claude, then new session can drive via osascript"}
+  ],
+  "human_actions_pending": [
+    {"action": "Run 7-item validation checklist against running /Applications/OpenGram.app and respond 'approved' or report failures", "context": "CONTEXT.md \u00a7Manual Validation lines 506-514; items test purple+red coexistence, invalidation, cross-app cache, click-to-card, eager processing, caret-skip, prior-paragraph-after-caret-moves", "blocking": true},
+    {"action": "Configure LLM endpoint in OpenGram settings before validation (Ollama local or user-preferred provider)", "context": "Items 1, 4, 5, 7 require LLM round-trip", "blocking": true}
+  ],
+  "decisions": [
+    {"decision": "Source code must never reference GSD phases or plans (e.g. 'Phase 20', 'Plan 10b', 'Phase20ParagraphSplitter.swift')", "rationale": "Planning artifacts live in .planning/; source should read without GSD context. Phase/plan labels rot as work reorganizes.", "phase": "20"},
+    {"decision": "File renames done in commit aea982f: ParagraphInfra/ParagraphSplitter.swift \u2192 DoubleNewlineSplitter.swift; ParagraphStore/Phase20ParagraphSplitter.swift \u2192 ParagraphStore/ParagraphSplitter.swift (+ matching test files and test suite structs)", "rationale": "Xcode object-file basename collision required distinguishing; semantic name chosen over phase prefix.", "phase": "20"},
+    {"decision": "Plan 10c deleted CheckCoordinatorSchedulerIntegrationTests.swift + RephraseCardLifecycleTests.swift wholesale rather than rewriting against store", "rationale": "Both coupled to deleted ParagraphCacheKey/ParagraphSuggestionCache/LLMCheckScheduler; rewriting not in plan scope.", "phase": "20"}
+  ],
+  "uncommitted_files": [],
+  "next_action": "User runs 7-item validation against /Applications/OpenGram.app (PID 28942 during pause, may need relaunch after session resume). On approval, continue orchestrator at code_review_gate \u2192 verify_phase_goal \u2192 update_roadmap \u2192 auto_copy_learnings \u2192 update_project_md \u2192 offer_next.",
+  "context_notes": "Plan 20-10c is autonomous: false (checkpoint plan). All automated work landed \u2014 444/444 xcodebuild test green, PLL-16 + PLL-17 grep gates zero. Only human-verify task remains. App is built + installed + running at /Applications/OpenGram.app. Plans 1-10b executed by sequential executor agents (pbxproj overlap forced sequential mode). Screen Recording TCC granted to Claude Code during this session; Accessibility TCC still denied."
+}
