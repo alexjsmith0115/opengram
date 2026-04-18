@@ -356,7 +356,8 @@ struct TextMonitorStoreIntegrationTests {
     private func makeFixture(
         initialText: String,
         bundleID: String = "com.test",
-        caret: CFIndex? = nil
+        caret: CFIndex? = nil,
+        config: OpenGramConfig? = nil
     ) -> (TextMonitor, TMockAXTextEngine, ParagraphSuggestionStore, StubLLM, TextBoxSpy) {
         let engine = TMockAXTextEngine()
         let selRange: CFRange? = caret.map { CFRange(location: $0, length: 0) }
@@ -393,9 +394,19 @@ struct TextMonitorStoreIntegrationTests {
             capabilityCache: cache,
             store: store,
             splitter: splitter,
-            textBoxWriter: { [spy] bid, txt in spy.record(bundleID: bid, text: txt) }
+            textBoxWriter: { [spy] bid, txt in spy.record(bundleID: bid, text: txt) },
+            config: config
         )
         return (monitor, engine, store, llm, spy)
+    }
+
+    /// Builds an OpenGramConfig backed by an isolated UserDefaults suite with the given
+    /// `llmDebounceMs`. Each test gets a unique suite name so parallel runs don't collide.
+    private func makeFastDebounceConfig(_ debounceMs: Int) -> OpenGramConfig {
+        let suiteName = "TextMonitorTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defaults.set(debounceMs, forKey: OpenGramConfig.llmDebounceMsKey)
+        return OpenGramConfig(defaults: defaults)
     }
 
     private func longParagraph(_ seed: String) -> String {
@@ -463,6 +474,58 @@ struct TextMonitorStoreIntegrationTests {
         #expect(writes.count == 1)
         #expect(writes.first?.bundleID == "com.writer.test")
         #expect(writes.first?.text == para)
+    }
+
+    // MARK: - Keystroke debounce → reconcile fires after delay
+
+    @Test("keystroke schedules debounced reconcile — LLM request fires after debounce")
+    func keystrokeSchedulesDebouncedReconcile() async throws {
+        let para = longParagraph("Text that is long enough")
+        let config = makeFastDebounceConfig(20)
+        let (monitor, _, _, llm, _) = makeFixture(initialText: para, config: config)
+
+        monitor.handleValueChanged()
+        // Well under debounce — no call yet.
+        try await Task.sleep(for: .milliseconds(5))
+        #expect(llm.calls.isEmpty, "LLM must not fire before debounce elapses")
+
+        // Past debounce — call must have fired.
+        try await Task.sleep(for: .milliseconds(100))
+        #expect(llm.calls.count == 1, "LLM must fire exactly once after debounce elapses")
+    }
+
+    @Test("rapid keystrokes coalesce — only one reconcile after debounce window")
+    func rapidKeystrokesCoalesce() async throws {
+        let para = longParagraph("Text that is long enough")
+        let config = makeFastDebounceConfig(30)
+        let (monitor, _, _, llm, _) = makeFixture(initialText: para, config: config)
+
+        // Fire 5 keystrokes at 5ms intervals — each cancels the prior debounce.
+        for _ in 0..<5 {
+            monitor.handleValueChanged()
+            try await Task.sleep(for: .milliseconds(5))
+        }
+        // Drain the final debounce window.
+        try await Task.sleep(for: .milliseconds(100))
+        #expect(llm.calls.count == 1, "rapid keystrokes must coalesce to a single reconcile")
+    }
+
+    @Test("reconcileNow bypasses debounce — fires immediately and cancels pending debounce")
+    func reconcileNowBypassesDebounce() async throws {
+        let para = longParagraph("Text that is long enough")
+        // Use a long debounce (500ms) so the only way the call fires fast is via reconcileNow.
+        let config = makeFastDebounceConfig(500)
+        let (monitor, _, _, llm, _) = makeFixture(initialText: para, config: config)
+
+        monitor.handleValueChanged()   // schedules 500ms debounce
+        monitor.reconcileNow()         // must fire synchronously before the debounce elapses
+
+        try await Task.sleep(for: .milliseconds(50))
+        #expect(llm.calls.count == 1, "reconcileNow must fire exactly once, immediately")
+
+        // Wait past the original debounce deadline — the cancelled work must NOT fire a second call.
+        try await Task.sleep(for: .milliseconds(600))
+        #expect(llm.calls.count == 1, "reconcileNow must cancel the pending debounce to avoid a duplicate")
     }
 
     // MARK: - nil store is no-op

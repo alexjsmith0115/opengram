@@ -24,6 +24,7 @@ final class TextMonitor {
     private let store: ParagraphSuggestionStore?
     private let splitter: ParagraphSplitter?
     private let textBoxWriter: (@Sendable (String, String) -> Void)?
+    private let config: OpenGramConfig?
 
     // MARK: - Callbacks
 
@@ -48,6 +49,10 @@ final class TextMonitor {
     private var observedBundleID: String?
 
     private var debounceWork: DispatchWorkItem?
+    /// Separate work item for the LLM reconcile debounce. Harper debounce (`debounceWork`)
+    /// runs on its own cadence at ~800ms; LLM reconcile runs at `config.llmDebounceMs`
+    /// (default 2000ms) so typing storms don't burn LLM calls mid-edit.
+    private var llmReconcileWork: DispatchWorkItem?
     private var pollTimer: Timer?
     private var lastKnownText: String?
     private var reliabilityDetector = ReliabilityDetector()
@@ -70,7 +75,8 @@ final class TextMonitor {
         watchdog: AXCallWatchdog = .shared,
         store: ParagraphSuggestionStore? = nil,
         splitter: ParagraphSplitter? = nil,
-        textBoxWriter: (@Sendable (String, String) -> Void)? = nil
+        textBoxWriter: (@Sendable (String, String) -> Void)? = nil,
+        config: OpenGramConfig? = nil
     ) {
         self.textEngine = textEngine
         self.orchestrator = orchestrator
@@ -80,6 +86,7 @@ final class TextMonitor {
         self.store = store
         self.splitter = splitter
         self.textBoxWriter = textBoxWriter
+        self.config = config
     }
 
     // MARK: - Public API
@@ -111,6 +118,8 @@ final class TextMonitor {
         appSwitchDebounce = nil
         checkTask?.cancel()
         checkTask = nil
+        llmReconcileWork?.cancel()
+        llmReconcileWork = nil
         uninstallCurrentObserver()
     }
 
@@ -223,7 +232,7 @@ final class TextMonitor {
         }
 
         // PLL-09: eager reconcile on focus install.
-        driveStoreOnFocusChange()
+        driveStoreReconcile()
     }
 
     private func uninstallCurrentObserver() {
@@ -242,6 +251,8 @@ final class TextMonitor {
         stopPollTimer()
         debounceWork?.cancel()
         debounceWork = nil
+        llmReconcileWork?.cancel()
+        llmReconcileWork = nil
         observedElement = nil
         observedPID = nil
         observedBundleID = nil
@@ -255,6 +266,7 @@ final class TextMonitor {
         onKeystroke?()
         scheduleDebounce()
         driveStoreOnValueChange()
+        scheduleLLMReconcile()
     }
 
     // MARK: - Debounce
@@ -389,9 +401,37 @@ final class TextMonitor {
 
     // MARK: - Store integration (D-03: reuse existing AX observer)
 
-    /// PLL-04: keystroke → `store.invalidateDisplayed`. No reconcile, no queue submits.
-    /// The next debounce tick's Harper path remains the driver for `reconcile`; this hook
-    /// ensures stale underlines disappear within one frame.
+    /// Debounced LLM reconcile driver. Keystrokes schedule this; each fresh keystroke
+    /// cancels and re-schedules. Delay resolved live from `config.llmDebounceMs` so
+    /// a Settings write takes effect on the next typing pause without relaunch.
+    /// A nil config (tests without full wiring) disables the debounce entirely.
+    @MainActor
+    private func scheduleLLMReconcile() {
+        guard store != nil, splitter != nil else { return }
+        let delayMs = config?.llmDebounceMs ?? OpenGramConfig.defaultLLMDebounceMs
+        llmReconcileWork?.cancel()
+        let work = DispatchWorkItem { [weak self] in
+            self?.driveStoreReconcile()
+        }
+        llmReconcileWork = work
+        DispatchQueue.main.asyncAfter(
+            deadline: .now() + .milliseconds(delayMs),
+            execute: work
+        )
+    }
+
+    /// Fires reconcile immediately, cancelling any pending debounced work. Used by the
+    /// hotkey path so users can force a fresh LLM pass without waiting out the debounce.
+    @MainActor
+    func reconcileNow() {
+        llmReconcileWork?.cancel()
+        llmReconcileWork = nil
+        driveStoreReconcile()
+    }
+
+    /// PLL-04: keystroke → `store.invalidateDisplayed` for instant underline invalidation.
+    /// LLM reconciliation is scheduled separately via `scheduleLLMReconcile()` so the
+    /// invalidate path stays synchronous and never fires queue submits.
     /// Caret offset is resolved from `TextContext.selectionRange.location` so the splitter
     /// identifies the caret paragraph correctly even on value-change ticks (PLL-06).
     @MainActor
@@ -408,13 +448,15 @@ final class TextMonitor {
         }
     }
 
-    /// PLL-09: focused element changed → eager `store.reconcile`. Fires LLM requests
-    /// for every non-caret, above-threshold paragraph in the new element immediately,
-    /// bypassing the Harper debounce. CONTEXT.md §Initial-Load Behavior.
+    /// Fires `store.reconcile`, submitting LLM requests for every non-caret, above-threshold
+    /// paragraph that isn't already cached. Called on:
+    ///   - Focus change (PLL-09 eager reconcile on new element)
+    ///   - Keystroke debounce tick (`scheduleLLMReconcile` after `llmDebounceMs`)
+    ///   - Hotkey (`reconcileNow` — bypasses debounce)
     /// Caret offset resolved from `TextContext.selectionRange.location` so PLL-06
-    /// caret-paragraph skip is honored from the very first eager reconcile.
+    /// caret-paragraph skip is honored.
     @MainActor
-    private func driveStoreOnFocusChange() {
+    private func driveStoreReconcile() {
         guard let store, let splitter else { return }
         guard let context = textEngine.extractText(), !context.text.isEmpty else { return }
         let bundleID = context.bundleID
@@ -435,7 +477,7 @@ final class TextMonitor {
     /// notification path which fires `driveStoreOnFocusChange` from `installObserver`.
     /// Guarded by `#if DEBUG` so release builds cannot invoke this.
     func triggerEagerReconcileForTesting() {
-        driveStoreOnFocusChange()
+        driveStoreReconcile()
     }
 #endif
 

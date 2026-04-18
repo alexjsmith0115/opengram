@@ -47,7 +47,8 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
             capabilityCache: capabilityCache,
             store: store,
             splitter: splitter,
-            textBoxWriter: { [textBox] bundleID, text in textBox.write(bundleID: bundleID, text: text) }
+            textBoxWriter: { [textBox] bundleID, text in textBox.write(bundleID: bundleID, text: text) },
+            config: config
         )
 
         let overlayController = OverlayController(
@@ -69,7 +70,8 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         self.checkCoordinator = coordinator
         self.textMonitor = textMonitor
 
-        hotkeyManager.onHotkeyFired = { [weak coordinator] in
+        hotkeyManager.onHotkeyFired = { [weak coordinator, weak textMonitor] in
+            textMonitor?.reconcileNow()
             coordinator?.handleHotkeyFired()
         }
 
