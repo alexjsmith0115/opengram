@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Incremental LLM Checking + Paragraph Rephrase Card
 status: executing
-stopped_at: Completed 20-10b-PLAN.md
-last_updated: "2026-04-17T23:40:00Z"
-last_activity: 2026-04-17 -- Phase 20 Plan 10b complete
+stopped_at: Paused at 20-10c Task 2 manual-validation checkpoint (computer-use MCP)
+last_updated: "2026-04-17T23:50:00Z"
+last_activity: 2026-04-17 -- Phase 20 Plan 10c Task 1 deletion complete; Task 2 awaiting human manual validation
 progress:
   total_phases: 10
   completed_phases: 7
@@ -17,9 +17,9 @@ progress:
 ## Current Position
 
 Phase: 20
-Plan: 10b complete
-Status: Executing
-Last activity: 2026-04-17 -- Phase 20 Plan 10b complete
+Plan: 10c Task 1 complete (Task 2 awaiting manual validation)
+Status: Paused at checkpoint
+Last activity: 2026-04-17 -- Phase 20 Plan 10c Task 1 deletion complete; Task 2 awaiting human manual validation
 
 Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out of 5 v1.2 phases)
 
@@ -109,6 +109,8 @@ Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out
 - [Phase 20-10b]: `hasher` param on OverlayController deleted alongside `legacyHash` — became unused after scheduler removal; zero external callers (conditional step 10 of plan confirmed deletable)
 - [Phase 20-10b]: CheckCoordinator LLM fan-out branch (~45 lines) removed from handleHotkeyFired; hotkey path is Harper-only, paragraph-LLM runs event-driven via store→overlay subscription (D-04)
 - [Phase 20-10b]: RephraseCardLifecycleTests + 4 LLMCheckScheduler* tests NOT modified — they exercise legacy scheduler which still compiles in isolation; wholesale deletion belongs to Plan 10c
+- [Phase 20-10c]: Deletion scope expanded beyond plan list — CheckCoordinatorSchedulerIntegrationTests.swift (100% scheduler, 154 lines) and RephraseCardLifecycleTests.swift (all 3 tests coupled to deleted ParagraphCacheKey/ParagraphSuggestionCache/LLMCheckScheduler) deleted wholesale. Rule 3 blocking — both would fail compile after scheduler/cache removal. Plan's pragmatic option chosen: delete rather than rewrite against store.
+- [Phase 20-10c]: Stale comment scrub in CheckOrchestrator/OpenGramConfig/LLMRequestQueue — inline refs to deleted LLMCheckScheduler/UserDefaultsIncrementalConfig rewritten to describe current architecture (paragraph-LLM via event-driven store, D-04).
 
 ### Roadmap Evolution
 
@@ -132,6 +134,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-17T23:40:00Z
-Stopped at: Completed 20-10b-PLAN.md
-Resume file: None
+Last session: 2026-04-17T23:50:00Z
+Stopped at: Paused at 20-10c Task 2 manual-validation checkpoint (computer-use MCP)
+Resume file: .planning/phases/20-paragraph-level-llm-suggestions-with-cache-reconciliation/20-10c-PLAN.md
