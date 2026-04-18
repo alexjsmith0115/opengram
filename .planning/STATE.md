@@ -3,23 +3,23 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Incremental LLM Checking + Paragraph Rephrase Card
 status: executing
-stopped_at: Completed 20-08-PLAN.md
-last_updated: "2026-04-17T22:58:00Z"
-last_activity: 2026-04-17 -- Phase 20 Plan 08 complete
+stopped_at: Completed 20-09-PLAN.md
+last_updated: "2026-04-17T23:30:00Z"
+last_activity: 2026-04-17 -- Phase 20 Plan 09 complete
 progress:
   total_phases: 10
   completed_phases: 7
   total_plans: 40
-  completed_plans: 37
-  percent: 93
+  completed_plans: 38
+  percent: 95
 ---
 
 ## Current Position
 
 Phase: 20
-Plan: 08 complete
+Plan: 09 complete
 Status: Executing
-Last activity: 2026-04-17 -- Phase 20 Plan 08 complete
+Last activity: 2026-04-17 -- Phase 20 Plan 09 complete
 
 Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out of 5 v1.2 phases)
 
@@ -52,6 +52,7 @@ Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out
 | Phase 18.3 P01 | 15min | 1 tasks | 2 files |
 | Phase 18.3 P02 | 8min | 2 tasks | 2 files |
 | Phase 18.3 P03 | 10min | 2 tasks | 3 files |
+| Phase 20 P09 | 25min | 1 task | 2 files |
 
 ### Decisions
 
@@ -95,6 +96,9 @@ Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out
 - [Phase 20-08]: store/splitter/textBoxWriter params default nil — all existing 5-arg TextMonitor call sites compile unchanged; Plan 10 supplies real values
 - [Phase 20-08]: textBoxWriter tied to store guard — absent store means no write; simpler single-wire semantics, no independent textBoxWriter fire
 - [Phase 20-08]: StubLLM uses NSLock not OSAllocatedUnfairLock — os module not imported in test target; NSLock already present via Foundation
+- [Phase 20-09]: Production OverlayController store DI + event handler + click routing already landed in 20-07 (c460237) + scrub pass (aea982f) + WR-02 dedup (8fa2326); Plan 09 execution reduced to adding the missing OverlayControllerStoreSubscriptionTests.swift + pbxproj registration
+- [Phase 20-09]: Test fixture polls controller.suggestions (20ms interval up to 2s) instead of fixed sleep — pipeline has 4 async hops (queue task → finishInFlight → handleQueueResponse → event yield → MainActor event loop); fixed sleep is CI-flaky
+- [Phase 20-09]: Legacy scheduler test LLMCheckSchedulerCancellationTests.idleDebounceSeconds_liveReadHonoredWithoutReinit is timing-flaky under parallel load but passes in isolation; flake pre-dates Plan 09 and lives in code slated for deletion in Plan 10b — no fix here
 
 ### Roadmap Evolution
 
@@ -114,9 +118,10 @@ None yet.
 |----------|------|--------|-------------|
 | Human verification | Phase 16-04 Task 5: flag-on/flag-off live behavior in Notes/TextEdit; `defaults write llmIncrementalCheckingEnabled` flip without relaunch; hotkey re-fire on unchanged text shows `LLM fan-out: 0 requests`; edit middle paragraph fires 1 request | Deferred to Phase 19 UAT | 2026-04-16 |
 | Human verification | Phase 18-08 Task 4: 12-step rephrase card validation in Notes.app with computer-use MCP screenshots (flag enable, card render, toggle, hide/dismiss/accept paths, edit-closes, flag-off parity) | Deferred to Phase 19 UAT | 2026-04-16 |
+| Test flake | `LLMCheckSchedulerCancellationTests.idleDebounceSeconds_liveReadHonoredWithoutReinit` — timing-flaky under parallel load, passes in isolation | Deferred to Plan 10b (scheduler deletion) | 2026-04-17 |
 
 ## Session Continuity
 
-Last session: 2026-04-18T02:40:56.807Z
-Stopped at: Completed 20-03-PLAN.md
+Last session: 2026-04-17T23:30:00Z
+Stopped at: Completed 20-09-PLAN.md
 Resume file: None
