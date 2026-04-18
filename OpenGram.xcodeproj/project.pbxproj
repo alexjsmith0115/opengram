@@ -140,6 +140,9 @@
 		B12003010000000000000001 /* Phase20ParagraphSplitterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22003010000000000000001 /* Phase20ParagraphSplitterTests.swift */; };
 		A12004010000000000000001 /* WithTimeout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22004010000000000000001 /* WithTimeout.swift */; };
 		B12004010000000000000001 /* WithTimeoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22004010000000000000001 /* WithTimeoutTests.swift */; };
+		A12005010000000000000001 /* LLMRequestQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22005010000000000000001 /* LLMRequestQueue.swift */; };
+		A12005010000000000000002 /* LLMRequestQueueStoreProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22005010000000000000002 /* LLMRequestQueueStoreProtocol.swift */; };
+		B12005010000000000000001 /* LLMRequestQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22005010000000000000001 /* LLMRequestQueueTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -288,6 +291,9 @@
 		B22003010000000000000001 /* Phase20ParagraphSplitterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Phase20ParagraphSplitterTests.swift; sourceTree = "<group>"; };
 		A22004010000000000000001 /* WithTimeout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WithTimeout.swift; sourceTree = "<group>"; };
 		B22004010000000000000001 /* WithTimeoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WithTimeoutTests.swift; sourceTree = "<group>"; };
+		A22005010000000000000001 /* LLMRequestQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMRequestQueue.swift; sourceTree = "<group>"; };
+		A22005010000000000000002 /* LLMRequestQueueStoreProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMRequestQueueStoreProtocol.swift; sourceTree = "<group>"; };
+		B22005010000000000000001 /* LLMRequestQueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMRequestQueueTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -489,6 +495,8 @@
 				A22000010000000000000006 /* OpenGramConfig.swift */,
 				A22003010000000000000001 /* Phase20ParagraphSplitter.swift */,
 				A22004010000000000000001 /* WithTimeout.swift */,
+				A22005010000000000000001 /* LLMRequestQueue.swift */,
+				A22005010000000000000002 /* LLMRequestQueueStoreProtocol.swift */,
 			);
 			path = ParagraphStore;
 			sourceTree = "<group>";
@@ -656,6 +664,7 @@
 				B22000010000000000000002 /* OpenGramConfigTests.swift */,
 				B22003010000000000000001 /* Phase20ParagraphSplitterTests.swift */,
 				B22004010000000000000001 /* WithTimeoutTests.swift */,
+				B22005010000000000000001 /* LLMRequestQueueTests.swift */,
 			);
 			path = ParagraphStore;
 			sourceTree = "<group>";
@@ -877,6 +886,8 @@
 				A12000010000000000000006 /* OpenGramConfig.swift in Sources */,
 				A12003010000000000000001 /* Phase20ParagraphSplitter.swift in Sources */,
 				A12004010000000000000001 /* WithTimeout.swift in Sources */,
+				A12005010000000000000001 /* LLMRequestQueue.swift in Sources */,
+				A12005010000000000000002 /* LLMRequestQueueStoreProtocol.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -941,6 +952,7 @@
 				B12000010000000000000002 /* OpenGramConfigTests.swift in Sources */,
 				B12003010000000000000001 /* Phase20ParagraphSplitterTests.swift in Sources */,
 				B12004010000000000000001 /* WithTimeoutTests.swift in Sources */,
+				B12005010000000000000001 /* LLMRequestQueueTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
