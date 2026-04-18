@@ -3,23 +3,23 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Incremental LLM Checking + Paragraph Rephrase Card
 status: executing
-stopped_at: Completed 20-07-PLAN.md
-last_updated: "2026-04-18T02:49:32Z"
-last_activity: 2026-04-18 -- Phase 20 Plan 07 complete
+stopped_at: Completed 20-08-PLAN.md
+last_updated: "2026-04-17T22:58:00Z"
+last_activity: 2026-04-17 -- Phase 20 Plan 08 complete
 progress:
   total_phases: 10
   completed_phases: 7
   total_plans: 40
-  completed_plans: 36
-  percent: 90
+  completed_plans: 37
+  percent: 93
 ---
 
 ## Current Position
 
 Phase: 20
-Plan: 07 complete
+Plan: 08 complete
 Status: Executing
-Last activity: 2026-04-18 -- Phase 20 Plan 07 complete
+Last activity: 2026-04-17 -- Phase 20 Plan 08 complete
 
 Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out of 5 v1.2 phases)
 
@@ -92,6 +92,9 @@ Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out
 - [Phase 20-07]: Suggestion.paragraphHash flipped UInt64? → ParagraphHash? atomically with color+z-order change; sha256Prefix8UInt64 shim deleted; LLMCheckScheduler.rebase updated to ParagraphHash in same commit
 - [Phase 20-07]: CardQualifier.legacyHash: UInt64 — transitional field bridges to legacy scheduler.markDismissed(UInt64); Plan 10b deletes it when scheduler is removed
 - [Phase 20-07]: os.log ParagraphHash interpolation uses hash.sha256 — ParagraphHash lacks CustomStringConvertible; logging via .sha256 property preserves diagnostic value
+- [Phase 20-08]: store/splitter/textBoxWriter params default nil — all existing 5-arg TextMonitor call sites compile unchanged; Plan 10 supplies real values
+- [Phase 20-08]: textBoxWriter tied to store guard — absent store means no write; simpler single-wire semantics, no independent textBoxWriter fire
+- [Phase 20-08]: StubLLM uses NSLock not OSAllocatedUnfairLock — os module not imported in test target; NSLock already present via Foundation
 
 ### Roadmap Evolution
 

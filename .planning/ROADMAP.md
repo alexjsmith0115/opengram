@@ -192,7 +192,7 @@ Plans:
 | 17. Advanced Settings Tab | v1.2 | 3/3 | Complete   | 2026-04-16 |
 | 18. Paragraph Rephrase Card | v1.2 | 8/8 | Complete   | 2026-04-17 |
 | 18.1. Rephrase Card Hotkey Wiring Fix | v1.2 | 2/2 | Complete   | 2026-04-17 |
-| 20. Paragraph-level LLM Suggestions | v1.2 | 7/12 | In Progress | - |
+| 20. Paragraph-level LLM Suggestions | v1.2 | 8/12 | In Progress | - |
 | 19. Integration & UAT | v1.2 | 0/TBD | Not started | - |
 
 ## Backlog
@@ -223,7 +223,7 @@ Plans:
 - [x] 20-05-PLAN.md — LLMRequestQueue actor (FIFO, one-in-flight, cancel, 30s timeout) + callback protocol
 - [x] 20-06-PLAN.md — ParagraphSuggestionStore actor (reconcile + invalidate + verify-on-response + state machine + event stream)
 - [x] 20-07-PLAN.md — UnderlineView.colorForSuggestion + z-order + Suggestion.paragraphHash UInt64 → ParagraphHash?
-- [ ] 20-08-PLAN.md — TextMonitor store/splitter DI + keystroke-invalidate + focus-change eager-reconcile (D-03)
+- [x] 20-08-PLAN.md — TextMonitor store/splitter DI + keystroke-invalidate + focus-change eager-reconcile (D-03)
 - [ ] 20-09-PLAN.md — OverlayController store subscription + click→rephrase card (D-02) + accept/dismiss store transitions (D-04)
 - [ ] 20-10a-PLAN.md — DisplayHeuristic/AdvancedSettingsView/OverlayController config param → OpenGramConfig
 - [ ] 20-10b-PLAN.md — AppDelegate rewire + CheckCoordinator Harper-only + OverlayController scheduler/legacyHash removal + MainActorTextBox
