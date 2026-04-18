@@ -3,23 +3,23 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Incremental LLM Checking + Paragraph Rephrase Card
 status: executing
-stopped_at: Completed 20-05-PLAN.md
-last_updated: "2026-04-18T02:25:00.000Z"
-last_activity: 2026-04-18 -- Phase 20 Plan 05 complete
+stopped_at: Completed 20-06-PLAN.md
+last_updated: "2026-04-17T22:35:00.000Z"
+last_activity: 2026-04-17 -- Phase 20 Plan 06 complete
 progress:
   total_phases: 10
   completed_phases: 7
   total_plans: 40
-  completed_plans: 33
-  percent: 82
+  completed_plans: 35
+  percent: 87
 ---
 
 ## Current Position
 
 Phase: 20
-Plan: 05 complete
+Plan: 06 complete
 Status: Executing
-Last activity: 2026-04-18 -- Phase 20 Plan 05 complete
+Last activity: 2026-04-17 -- Phase 20 Plan 06 complete
 
 Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out of 5 v1.2 phases)
 
@@ -85,6 +85,10 @@ Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out
 - [Phase 20-03]: Separator probe stores non-empty values only; empty-string separator skipped in resolveSeparator to allow re-probe when text gains separators
 - [Phase 20-04]: withThrowingTaskGroup race: operation + sleep tasks race; first winner returned; defer cancelAll cleans loser; guard let winner guards impossible-nil fallback
 - [Phase 20-05]: inFlightCancelled flag suppresses store callback on cancel without racily clearing inFlight; callback protocol LLMRequestQueueStore breaks Plan 05↔06 init-time circular dep; queue delivers raw [LLMStyleSuggestion], Plan 06 maps to Suggestion
+- [Phase 20-06]: textProvider closure (NSLock-backed MainActorTextBox) for verify-on-response — store re-reads live text synchronously without MainActor hop
+- [Phase 20-06]: Suggestion.range is placeholder in cache (originalText bounds); Plan 09 re-resolves against live AX text at render time (Pitfall #3)
+- [Phase 20-06]: sha256Prefix8UInt64 shim on ParagraphHash — temporary compat with Suggestion.paragraphHash: UInt64?; Plan 07 deletes shim + flips field to ParagraphHash? atomically
+- [Phase 20-06]: waitForKind polls store actor state directly — waiting on llm.calls.count has two-async-hop race (queue→store actor before cache write)
 
 ### Roadmap Evolution
 
@@ -107,6 +111,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-18T02:12:00Z
+Last session: 2026-04-18T02:40:56.807Z
 Stopped at: Completed 20-03-PLAN.md
 Resume file: None
