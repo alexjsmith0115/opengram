@@ -21,6 +21,9 @@ final class TextMonitor {
     private let capabilityCache: any AXCapabilityCacheProtocol
     private let quirksTable: AppQuirksTable
     private let watchdog: AXCallWatchdog
+    private let store: ParagraphSuggestionStore?
+    private let splitter: ParagraphSplitter?
+    private let textBoxWriter: (@Sendable (String, String) -> Void)?
 
     // MARK: - Callbacks
 
@@ -64,13 +67,19 @@ final class TextMonitor {
         orchestrator: CheckOrchestrator,
         capabilityCache: any AXCapabilityCacheProtocol,
         quirksTable: AppQuirksTable = .shared,
-        watchdog: AXCallWatchdog = .shared
+        watchdog: AXCallWatchdog = .shared,
+        store: ParagraphSuggestionStore? = nil,
+        splitter: ParagraphSplitter? = nil,
+        textBoxWriter: (@Sendable (String, String) -> Void)? = nil
     ) {
         self.textEngine = textEngine
         self.orchestrator = orchestrator
         self.capabilityCache = capabilityCache
         self.quirksTable = quirksTable
         self.watchdog = watchdog
+        self.store = store
+        self.splitter = splitter
+        self.textBoxWriter = textBoxWriter
     }
 
     // MARK: - Public API
@@ -212,6 +221,9 @@ final class TextMonitor {
         if preClassified || runtimeKnownUnreliable || reliabilityUnknown {
             startPollTimer()
         }
+
+        // PLL-09: eager reconcile on focus install.
+        driveStoreOnFocusChange()
     }
 
     private func uninstallCurrentObserver() {
@@ -242,6 +254,7 @@ final class TextMonitor {
         reliabilityDetector.recordNotification()
         onKeystroke?()
         scheduleDebounce()
+        driveStoreOnValueChange()
     }
 
     // MARK: - Debounce
@@ -373,6 +386,58 @@ final class TextMonitor {
         appSwitchDebounce = work
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: work)
     }
+
+    // MARK: - Phase 20 store integration (D-03: reuse existing AX observer)
+
+    /// PLL-04: keystroke → `store.invalidateDisplayed`. No reconcile, no queue submits.
+    /// The next debounce tick's Harper path remains the driver for `reconcile`; this hook
+    /// ensures stale underlines disappear within one frame.
+    /// Caret offset is resolved from `TextContext.selectionRange.location` so the splitter
+    /// identifies the caret paragraph correctly even on value-change ticks (PLL-06).
+    @MainActor
+    private func driveStoreOnValueChange() {
+        guard let store, let splitter else { return }
+        guard let context = textEngine.extractText(), !context.text.isEmpty else { return }
+        let bundleID = context.bundleID
+        let text = context.text
+        let caretOffset: Int? = context.selectionRange.map { Int($0.location) }
+        textBoxWriter?(bundleID, text)
+        let set = splitter.split(text: text, bundleID: bundleID, version: nil, caretOffset: caretOffset)
+        Task { [store] in
+            await store.invalidateDisplayed(bundleID: bundleID, currentSet: set)
+        }
+    }
+
+    /// PLL-09: focused element changed → eager `store.reconcile`. Fires LLM requests
+    /// for every non-caret, above-threshold paragraph in the new element immediately,
+    /// bypassing the Harper debounce. CONTEXT.md §Initial-Load Behavior.
+    /// Caret offset resolved from `TextContext.selectionRange.location` so PLL-06
+    /// caret-paragraph skip is honored from the very first eager reconcile.
+    @MainActor
+    private func driveStoreOnFocusChange() {
+        guard let store, let splitter else { return }
+        guard let context = textEngine.extractText(), !context.text.isEmpty else { return }
+        let bundleID = context.bundleID
+        let text = context.text
+        let caretOffset: Int? = context.selectionRange.map { Int($0.location) }
+        textBoxWriter?(bundleID, text)
+        let set = splitter.split(text: text, bundleID: bundleID, version: nil, caretOffset: caretOffset)
+        Task { [store] in
+            await store.reconcile(set: set)
+        }
+    }
+
+#if DEBUG
+    // MARK: - Test seam (Phase 20, DEBUG only)
+
+    /// Invokes the Phase 20 eager reconcile path as if the focused element had just
+    /// been installed. Test-only — production callers use the real AX focus-change
+    /// notification path which fires `driveStoreOnFocusChange` from `installObserver`.
+    /// Guarded by `#if DEBUG` so release builds cannot invoke this.
+    func triggerEagerReconcileForTesting() {
+        driveStoreOnFocusChange()
+    }
+#endif
 
     // MARK: - Role validation
 

@@ -313,3 +313,184 @@ struct TextMonitorOnKeystrokeTests {
         #expect(true)
     }
 }
+
+// MARK: - Phase 20 store integration tests (PLL-04, PLL-06, PLL-09)
+
+@Suite("TextMonitorStoreIntegrationTests")
+@MainActor
+struct TextMonitorStoreIntegrationTests {
+
+    // MARK: - Test doubles
+
+    private final class StubLLM: LLMProviderProtocol, @unchecked Sendable {
+        private let lock = NSLock()
+        private var _calls: [String] = []
+        var calls: [String] { lock.withLock { _calls } }
+
+        func analyze(paragraph: String, config: LLMConfig, apiKey: String?, harperSpans: [String]) async -> [LLMStyleSuggestion] { [] }
+
+        func analyze(target: String, previousContext: String?, nextContext: String?, config: LLMConfig, apiKey: String?, harperSpans: [String]) async -> [LLMStyleSuggestion] {
+            lock.withLock { _calls.append(target) }
+            return []
+        }
+
+        func healthCheck(config: LLMConfig, apiKey: String?) async -> Bool { true }
+    }
+
+    /// Thread-safe writer spy — records (bundleID, text) pairs for assertion.
+    private final class TextBoxSpy: @unchecked Sendable {
+        private let lock = NSLock()
+        private var writes: [(bundleID: String, text: String)] = []
+
+        func record(bundleID: String, text: String) {
+            lock.lock(); defer { lock.unlock() }
+            writes.append((bundleID, text))
+        }
+
+        func snapshot() -> [(bundleID: String, text: String)] {
+            lock.lock(); defer { lock.unlock() }
+            return writes
+        }
+    }
+
+    private func makeFixture(
+        initialText: String,
+        bundleID: String = "com.test",
+        caret: CFIndex? = nil
+    ) -> (TextMonitor, TMockAXTextEngine, ParagraphSuggestionStore, StubLLM, TextBoxSpy) {
+        let engine = TMockAXTextEngine()
+        let selRange: CFRange? = caret.map { CFRange(location: $0, length: 0) }
+        engine.stubbedContext = TextContext(
+            text: initialText,
+            bundleID: bundleID,
+            extractionMethod: .axDirectFull,
+            selectionRange: selRange,
+            elementBounds: nil,
+            axElement: AXUIElementCreateSystemWide()
+        )
+
+        let cache = TMockCapabilityCache()
+        let splitter = ParagraphSplitter(capabilityCache: cache)
+        let llm = StubLLM()
+        let queue = LLMRequestQueue(
+            llm: llm,
+            configProvider: { LLMConfig(baseURL: "https://x.invalid", model: "m", enabledChecks: Set(LLMCheckType.allCases), temperature: 0.2, maxTokens: 512, requestTimeout: 5, confidenceThreshold: 7) },
+            apiKeyProvider: { nil },
+            timeoutProvider: { 5 }
+        )
+        let store = ParagraphSuggestionStore(
+            queue: queue,
+            splitter: splitter,
+            textProvider: { [weak engine] _ in engine?.stubbedContext?.text }
+        )
+        Task { await queue.setStore(store) }
+
+        let orchestrator = CheckOrchestrator(harper: HarperService(dictionaryStore: DictionaryStore(), dialect: "US"))
+        let spy = TextBoxSpy()
+        let monitor = TextMonitor(
+            textEngine: engine,
+            orchestrator: orchestrator,
+            capabilityCache: cache,
+            store: store,
+            splitter: splitter,
+            textBoxWriter: { [spy] bid, txt in spy.record(bundleID: bid, text: txt) }
+        )
+        return (monitor, engine, store, llm, spy)
+    }
+
+    private func longParagraph(_ seed: String) -> String {
+        seed + String(repeating: " word", count: 10)
+    }
+
+    // MARK: - PLL-04: keystroke → invalidate only, no LLM
+
+    @Test("valueChange drives invalidate only — no LLM requests fired")
+    func valueChangeDrivesInvalidateOnly() async throws {
+        let para = longParagraph("Text that is long enough")
+        let (monitor, _, store, llm, _) = makeFixture(initialText: para)
+        monitor.handleValueChanged()
+        try await Task.sleep(for: .milliseconds(50))
+        #expect(llm.calls.isEmpty, "keystroke must not submit LLM requests")
+        let cacheCount = await store._cacheCount()
+        #expect(cacheCount == 0, "invalidateDisplayed must not populate cache")
+    }
+
+    // MARK: - PLL-09: focus change → eager reconcile
+
+    @Test("focusChange drives eager reconcile — LLM request fires")
+    func focusChangeDrivesEagerReconcile() async throws {
+        #if DEBUG
+        let para = longParagraph("Text that is long enough")
+        let (monitor, _, store, llm, _) = makeFixture(initialText: para)
+
+        monitor.triggerEagerReconcileForTesting()
+
+        try await Task.sleep(for: .milliseconds(50))
+        #expect(llm.calls.count == 1, "focus change must fire exactly one LLM request for the one paragraph")
+        let count = await store._cacheCount()
+        #expect(count == 1)
+        #endif
+    }
+
+    // MARK: - PLL-06: caret offset routed into splitter on focus change
+
+    @Test("focusChange routes caret offset so caret paragraph is skipped")
+    func focusChangeRoutesCaretOffsetSoCaretParagraphIsSkipped() async throws {
+        #if DEBUG
+        let a = longParagraph("First paragraph words")
+        let b = longParagraph("Second paragraph words")
+        let combined = a + "\n\n" + b
+        // Caret at offset 10 lands inside paragraph A.
+        let (monitor, _, _, llm, _) = makeFixture(initialText: combined, caret: 10)
+
+        monitor.triggerEagerReconcileForTesting()
+        try await Task.sleep(for: .milliseconds(80))
+        // PLL-06: caret paragraph A must NOT be submitted; B must be.
+        #expect(llm.calls.count == 1, "only the non-caret paragraph should submit")
+        #expect(llm.calls.first?.contains("Second") == true, "caret paragraph A skipped; only B submitted")
+        #endif
+    }
+
+    // MARK: - textBoxWriter contract
+
+    @Test("valueChange invokes textBoxWriter with bundleID and text")
+    func valueChangeInvokesTextBoxWriterWithBundleIDAndText() async throws {
+        let para = longParagraph("Text that is long enough")
+        let (monitor, _, _, _, spy) = makeFixture(initialText: para, bundleID: "com.writer.test")
+        monitor.handleValueChanged()
+        try await Task.sleep(for: .milliseconds(30))
+        let writes = spy.snapshot()
+        #expect(writes.count == 1)
+        #expect(writes.first?.bundleID == "com.writer.test")
+        #expect(writes.first?.text == para)
+    }
+
+    // MARK: - nil store is no-op
+
+    @Test("nil store — keystroke and eager reconcile do not crash")
+    func nilStoreIsNoOp() async throws {
+        let engine = TMockAXTextEngine()
+        engine.stubbedContext = TextContext(
+            text: "any text here",
+            bundleID: "b",
+            extractionMethod: .axDirectFull,
+            selectionRange: nil,
+            elementBounds: nil,
+            axElement: AXUIElementCreateSystemWide()
+        )
+        let cache = TMockCapabilityCache()
+        let orchestrator = CheckOrchestrator(harper: HarperService(dictionaryStore: DictionaryStore(), dialect: "US"))
+        let monitor = TextMonitor(
+            textEngine: engine,
+            orchestrator: orchestrator,
+            capabilityCache: cache
+            // store: nil, splitter: nil, textBoxWriter: nil (defaults)
+        )
+        monitor.handleValueChanged()
+        #if DEBUG
+        monitor.triggerEagerReconcileForTesting()
+        #endif
+        // No crash = pass.
+        #expect(true)
+    }
+}
