@@ -3,23 +3,23 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Incremental LLM Checking + Paragraph Rephrase Card
 status: executing
-stopped_at: Completed 20-09-PLAN.md
-last_updated: "2026-04-17T23:30:00Z"
-last_activity: 2026-04-17 -- Phase 20 Plan 09 complete
+stopped_at: Completed 20-10a-PLAN.md
+last_updated: "2026-04-17T23:35:00Z"
+last_activity: 2026-04-17 -- Phase 20 Plan 10a complete
 progress:
   total_phases: 10
   completed_phases: 7
-  total_plans: 40
-  completed_plans: 38
-  percent: 95
+  total_plans: 42
+  completed_plans: 39
+  percent: 93
 ---
 
 ## Current Position
 
 Phase: 20
-Plan: 09 complete
+Plan: 10a complete
 Status: Executing
-Last activity: 2026-04-17 -- Phase 20 Plan 09 complete
+Last activity: 2026-04-17 -- Phase 20 Plan 10a complete
 
 Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out of 5 v1.2 phases)
 
@@ -53,6 +53,7 @@ Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out
 | Phase 18.3 P02 | 8min | 2 tasks | 2 files |
 | Phase 18.3 P03 | 10min | 2 tasks | 3 files |
 | Phase 20 P09 | 25min | 1 task | 2 files |
+| Phase 20 P10a | 10min | 1 task | 9 files |
 
 ### Decisions
 
@@ -99,6 +100,9 @@ Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out
 - [Phase 20-09]: Production OverlayController store DI + event handler + click routing already landed in 20-07 (c460237) + scrub pass (aea982f) + WR-02 dedup (8fa2326); Plan 09 execution reduced to adding the missing OverlayControllerStoreSubscriptionTests.swift + pbxproj registration
 - [Phase 20-09]: Test fixture polls controller.suggestions (20ms interval up to 2s) instead of fixed sleep — pipeline has 4 async hops (queue task → finishInFlight → handleQueueResponse → event yield → MainActor event loop); fixed sleep is CI-flaky
 - [Phase 20-09]: Legacy scheduler test LLMCheckSchedulerCancellationTests.idleDebounceSeconds_liveReadHonoredWithoutReinit is timing-flaky under parallel load but passes in isolation; flake pre-dates Plan 09 and lives in code slated for deletion in Plan 10b — no fix here
+- [Phase 20-10a]: AdvancedSettingsView.resetDefaults(in:center:) takes injectable NotificationCenter (default .default); tests use isolated NotificationCenter() to avoid cross-suite pollution — mirrors Plan 20-02 pattern
+- [Phase 20-10a]: Tests migrated from IncrementalConfig fake-protocol stubs to UserDefaults-suite backed OpenGramConfig(defaults:) — eliminates parallel fake-impl surface; scheduler construction sites still pass `incrementalConfig:` (Plan 10b handles)
+- [Phase 20-10a]: Plan scope expanded to 9 files (plan named 5) — 4 OverlayController call sites needed `incrementalConfig:` → `config:` rename (AppDelegate + 3 test files); Rule 3 blocking fix, scheduler sites left intact
 
 ### Roadmap Evolution
 
@@ -122,6 +126,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-17T23:30:00Z
-Stopped at: Completed 20-09-PLAN.md
+Last session: 2026-04-17T23:35:00Z
+Stopped at: Completed 20-10a-PLAN.md
 Resume file: None
