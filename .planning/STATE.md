@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Incremental LLM Checking + Paragraph Rephrase Card
 status: executing
-stopped_at: Completed 20-10a-PLAN.md
-last_updated: "2026-04-17T23:35:00Z"
-last_activity: 2026-04-17 -- Phase 20 Plan 10a complete
+stopped_at: Completed 20-10b-PLAN.md
+last_updated: "2026-04-17T23:40:00Z"
+last_activity: 2026-04-17 -- Phase 20 Plan 10b complete
 progress:
   total_phases: 10
   completed_phases: 7
@@ -17,9 +17,9 @@ progress:
 ## Current Position
 
 Phase: 20
-Plan: 10a complete
+Plan: 10b complete
 Status: Executing
-Last activity: 2026-04-17 -- Phase 20 Plan 10a complete
+Last activity: 2026-04-17 -- Phase 20 Plan 10b complete
 
 Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out of 5 v1.2 phases)
 
@@ -54,6 +54,7 @@ Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out
 | Phase 18.3 P03 | 10min | 2 tasks | 3 files |
 | Phase 20 P09 | 25min | 1 task | 2 files |
 | Phase 20 P10a | 10min | 1 task | 9 files |
+| Phase 20 P10b | 15min | 1 task | 8 files |
 
 ### Decisions
 
@@ -103,6 +104,11 @@ Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out
 - [Phase 20-10a]: AdvancedSettingsView.resetDefaults(in:center:) takes injectable NotificationCenter (default .default); tests use isolated NotificationCenter() to avoid cross-suite pollution — mirrors Plan 20-02 pattern
 - [Phase 20-10a]: Tests migrated from IncrementalConfig fake-protocol stubs to UserDefaults-suite backed OpenGramConfig(defaults:) — eliminates parallel fake-impl surface; scheduler construction sites still pass `incrementalConfig:` (Plan 10b handles)
 - [Phase 20-10a]: Plan scope expanded to 9 files (plan named 5) — 4 OverlayController call sites needed `incrementalConfig:` → `config:` rename (AppDelegate + 3 test files); Rule 3 blocking fix, scheduler sites left intact
+- [Phase 20-10b]: MainActorTextBox as dedicated file in OpenGram/App/ — matches one-type-per-file convention; NSLock-backed, @unchecked Sendable; store reads via textProvider closure, TextMonitor writes via textBoxWriter hook
+- [Phase 20-10b]: AppDelegate `Task { await queue.setStore(store) }` is fire-and-forget — acceptable because TextMonitor.start() runs after sync init returns, worst-case one dropped first response (T-20.10b-01 mitigated)
+- [Phase 20-10b]: `hasher` param on OverlayController deleted alongside `legacyHash` — became unused after scheduler removal; zero external callers (conditional step 10 of plan confirmed deletable)
+- [Phase 20-10b]: CheckCoordinator LLM fan-out branch (~45 lines) removed from handleHotkeyFired; hotkey path is Harper-only, paragraph-LLM runs event-driven via store→overlay subscription (D-04)
+- [Phase 20-10b]: RephraseCardLifecycleTests + 4 LLMCheckScheduler* tests NOT modified — they exercise legacy scheduler which still compiles in isolation; wholesale deletion belongs to Plan 10c
 
 ### Roadmap Evolution
 
@@ -126,6 +132,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-17T23:35:00Z
-Stopped at: Completed 20-10a-PLAN.md
+Last session: 2026-04-17T23:40:00Z
+Stopped at: Completed 20-10b-PLAN.md
 Resume file: None
