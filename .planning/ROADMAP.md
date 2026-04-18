@@ -219,7 +219,7 @@ Plans:
 - [x] 20-02-PLAN.md — OpenGramConfig (8 live-read tunables, UserDefaults + NotificationCenter)
 - [x] 20-03-PLAN.md — Caret-aware ParagraphSplitter + AXCapabilityCache separator persistence (D-05)
 - [x] 20-04-PLAN.md — withTimeout primitive + tests
-- [ ] 20-05-PLAN.md — LLMRequestQueue actor (FIFO, one-in-flight, cancel, 30s timeout) + callback protocol
+- [x] 20-05-PLAN.md — LLMRequestQueue actor (FIFO, one-in-flight, cancel, 30s timeout) + callback protocol
 - [ ] 20-06-PLAN.md — ParagraphSuggestionStore actor (reconcile + invalidate + verify-on-response + state machine + event stream)
 - [ ] 20-07-PLAN.md — UnderlineView.colorForSuggestion + z-order + Suggestion.paragraphHash UInt64 → ParagraphHash?
 - [ ] 20-08-PLAN.md — TextMonitor store/splitter DI + keystroke-invalidate + focus-change eager-reconcile (D-03)
