@@ -3,23 +3,23 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Incremental LLM Checking + Paragraph Rephrase Card
 status: executing
-stopped_at: Completed 20-01-PLAN.md
-last_updated: "2026-04-18T00:42:39.119Z"
-last_activity: 2026-04-18 -- Phase 20 planning complete
+stopped_at: Completed 20-02-PLAN.md
+last_updated: "2026-04-18T02:05:00.000Z"
+last_activity: 2026-04-18 -- Phase 20 Plan 02 complete
 progress:
   total_phases: 10
   completed_phases: 7
   total_plans: 40
-  completed_plans: 28
-  percent: 70
+  completed_plans: 29
+  percent: 72
 ---
 
 ## Current Position
 
 Phase: 20
-Plan: 01 complete
+Plan: 02 complete
 Status: Executing
-Last activity: 2026-04-18 -- Phase 20 Plan 01 complete
+Last activity: 2026-04-18 -- Phase 20 Plan 02 complete
 
 Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out of 5 v1.2 phases)
 
@@ -78,6 +78,8 @@ Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out
 - [Phase 20-01]: ParagraphHash uses full 64-char SHA-256 hex (not compressed UInt64 prefix); bundleID partitions collision domain per-app
 - [Phase 20-01]: @unchecked Sendable on ParagraphSuggestionState + ParagraphCacheEntry — Error is not Sendable; safe because actor-owned, never mutated post-insert
 - [Phase 20-01]: ParagraphSet.Entry is a named struct (not tuple) — Swift tuples lack Sendable conformance across actor hops
+- [Phase 20-02]: postDidChange takes injectable NotificationCenter param (default .default) — posting to .default in tests caused cross-suite interference; injectable param is cleaner than wrapper
+- [Phase 20-02]: Notification test uses isolated NotificationCenter() instance — not .default — to prevent cross-test pollution in parallel Swift Testing runner
 
 ### Roadmap Evolution
 
