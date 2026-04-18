@@ -169,7 +169,7 @@ actor LLMCheckScheduler {
         var merged: [Suggestion] = []
         for paragraph in paragraphs {
             let styles = llmSuggestions[paragraph.index] ?? cachedSuggestions[paragraph.index] ?? []
-            let hash = keys[paragraph.index].paragraphHash
+            let hash = ParagraphHash(bundleID: bundleID, paragraphText: paragraph.text)
             merged.append(contentsOf: rebase(paragraph: paragraph, paragraphHash: hash, styleSuggestions: styles, source: text))
         }
         return merged
@@ -182,7 +182,7 @@ actor LLMCheckScheduler {
     /// whitespace/newlines first. Avoids the paragraph.text→source Character-offset translation,
     /// which can misalign on Unicode sequences where paragraph.text normalization differs from
     /// source[paragraph.range] (WR-04).
-    private func rebase(paragraph: Paragraph, paragraphHash: UInt64, styleSuggestions: [LLMStyleSuggestion], source: String) -> [Suggestion] {
+    private func rebase(paragraph: Paragraph, paragraphHash: ParagraphHash, styleSuggestions: [LLMStyleSuggestion], source: String) -> [Suggestion] {
         styleSuggestions.compactMap { style in
             guard let trimmedStart = source[paragraph.range].firstIndex(where: { !$0.isWhitespace && !$0.isNewline }) else {
                 return nil

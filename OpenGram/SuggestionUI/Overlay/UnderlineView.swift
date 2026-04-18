@@ -22,7 +22,14 @@ final class UnderlineView: NSView {
         ctx.saveGState()
         defer { ctx.restoreGState() }
 
-        for entry in entries {
+        // PLL-01b / PLL-13: draw LLM entries FIRST so Harper entries overlay on top.
+        let sorted = entries.sorted { a, b in
+            let aOrder = (a.suggestion.source == .llm) ? 0 : 1
+            let bOrder = (b.suggestion.source == .llm) ? 0 : 1
+            return aOrder < bOrder
+        }
+
+        for entry in sorted {
             let path = NSBezierPath()
             path.lineWidth = 2.0
             path.move(to: NSPoint(x: entry.underlineRect.minX, y: entry.underlineRect.midY))
@@ -33,7 +40,7 @@ final class UnderlineView: NSView {
                 path.setLineDash(pattern, count: 2, phase: 0)
             }
 
-            Self.colorForCategory(entry.suggestion.category).setStroke()
+            Self.colorForSuggestion(entry.suggestion).setStroke()
             path.stroke()
         }
     }
@@ -82,6 +89,13 @@ final class UnderlineView: NSView {
         case .harper: return false
         case .llm: return true
         }
+    }
+
+    /// Phase 20 PLL-01: LLM suggestions render purple regardless of category;
+    /// Harper suggestions use the existing category color.
+    nonisolated static func colorForSuggestion(_ suggestion: Suggestion) -> NSColor {
+        if suggestion.source == .llm { return .systemPurple }
+        return colorForCategory(suggestion.category)
     }
 
     /// Expands an underline rect by 6pt above and below to create a larger click target.

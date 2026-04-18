@@ -220,30 +220,8 @@ actor ParagraphSuggestionStore: LLMRequestQueueStore {
             category: category,
             source: .llm,
             priority: UInt8(max(0, min(255, pick.confidence))),
-            paragraphHash: hash.sha256Prefix8UInt64
+            paragraphHash: hash
         )
     }
 }
 
-// MARK: - UInt64 compression helper for Plan 06 → Plan 07 transition
-
-extension ParagraphHash {
-    /// Temporary compatibility shim: compresses first 8 hex bytes into UInt64 so this
-    /// plan compiles against the existing `Suggestion.paragraphHash: UInt64?`. Plan 07
-    /// deletes this helper AND flips the Suggestion field to `ParagraphHash?` in one
-    /// atomic change.
-    var sha256Prefix8UInt64: UInt64 {
-        var result: UInt64 = 0
-        var count = 0
-        var idx = sha256.startIndex
-        while idx < sha256.endIndex && count < 16 {
-            let byteEnd = sha256.index(idx, offsetBy: 2, limitedBy: sha256.endIndex) ?? sha256.endIndex
-            if byteEnd > idx, let byte = UInt64(sha256[idx..<byteEnd], radix: 16) {
-                result = (result << 8) | (byte & 0xFF)
-            }
-            idx = byteEnd
-            count += 2
-        }
-        return result
-    }
-}

@@ -13,7 +13,8 @@ struct MultiQualifierSelectionTests {
         let lower = startSI.samePosition(in: source) ?? source.startIndex
         let upper = endSI.samePosition(in: source) ?? source.endIndex
         let p = Paragraph(text: text, range: lower..<upper, index: 0)
-        return CardQualifier(paragraph: p, llmIssues: [], harperInside: [], hash: 0)
+        let hash = ParagraphHash(bundleID: "com.test", paragraphText: text)
+        return CardQualifier(paragraph: p, llmIssues: [], harperInside: [], hash: hash, legacyHash: 0)
     }
 
     @Test func caretInsideFirst_picksFirst() {

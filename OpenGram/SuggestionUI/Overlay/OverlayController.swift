@@ -9,7 +9,10 @@ internal struct CardQualifier: Sendable {
     let paragraph: Paragraph
     let llmIssues: [LLMStyleSuggestion]
     let harperInside: [Suggestion]
-    let hash: UInt64
+    let hash: ParagraphHash
+    /// Transitional UInt64 hash for the legacy `scheduler.markDismissed` call.
+    /// Plan 10b deletes the scheduler + this field; `hash` becomes the sole identifier.
+    let legacyHash: UInt64
 }
 
 /// Coordinates the overlay window and suggestion popover.
@@ -45,7 +48,7 @@ final class OverlayController {
     private var currentCardParagraphRange: (scalarStart: Int, scalarLength: Int)?
     /// Hash of the paragraph currently shown in the rephrase card. Guards against re-dispatching
     /// the card for the same paragraph on incremental update() calls (WR-02).
-    private var currentCardParagraphHash: UInt64? = nil
+    private var currentCardParagraphHash: ParagraphHash? = nil
 
     // MARK: - Public state
     // internal(set) allows @testable test targets to inject state directly
@@ -366,7 +369,8 @@ final class OverlayController {
 
         var qualifiers: [CardQualifier] = []
         for (idx, paragraph) in paragraphs.enumerated() {
-            let hash = hasher.hash(paragraph.text)
+            let hash = ParagraphHash(bundleID: context.bundleID, paragraphText: paragraph.text)
+            let legacyHash = hasher.hash(paragraph.text)   // UInt64 — kept for scheduler.markDismissed only (Plan 10b deletes)
 
             let llmInRange = suggestions.filter { $0.source == .llm && $0.paragraphHash == hash }
             let llmIssues: [LLMStyleSuggestion] = llmInRange.compactMap { s in
@@ -392,12 +396,12 @@ final class OverlayController {
             }
 
             let qualifies = heuristic.qualifies(paragraph: paragraph, issues: llmIssues)
-            Self.logger.info("  paragraph[\(idx)] len=\(paragraph.text.count) hash=\(hash) llmInRange=\(llmInRange.count) llmIssues=\(llmIssues.count) harperInside=\(harperInside.count) qualifies=\(qualifies)")
+            Self.logger.info("  paragraph[\(idx)] len=\(paragraph.text.count) hash=\(hash.sha256, privacy: .public) llmInRange=\(llmInRange.count) llmIssues=\(llmIssues.count) harperInside=\(harperInside.count) qualifies=\(qualifies)")
 
             if qualifies {
                 qualifiers.append(CardQualifier(
                     paragraph: paragraph, llmIssues: llmIssues,
-                    harperInside: harperInside, hash: hash
+                    harperInside: harperInside, hash: hash, legacyHash: legacyHash
                 ))
             }
         }
@@ -416,7 +420,7 @@ final class OverlayController {
 
         // WR-02: skip re-dispatch when the card is already showing for this paragraph.
         guard currentCardParagraphHash != selected.hash else {
-            Self.logger.info("dispatch skipped: card already showing for paragraph hash=\(selected.hash) (WR-02 dedup)")
+            Self.logger.info("dispatch skipped: card already showing for paragraph hash=\(selected.hash.sha256, privacy: .public) (WR-02 dedup)")
             return true
         }
 
@@ -448,7 +452,7 @@ final class OverlayController {
 
         let schedulerRef = scheduler
         let bundleID = context.bundleID
-        let hashForDismiss = selected.hash
+        let hashForDismiss = selected.legacyHash     // UInt64 — legacy bridge, deleted in Plan 10b
         let ax = context.axElement
         let writeRange = paragraphScalarRange
         let composedRephrase = rephrase

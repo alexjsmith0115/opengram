@@ -41,7 +41,7 @@ struct OverlayControllerWIRE01IntegrationTests {
 
     @Test func hotkeyFired_schedulerLLMSuggestions_reachOverlayController() {
         let paragraphText = "This is a test paragraph with enough words to qualify for the rephrase card dispatch path in OpenGram."
-        let hash = Sha256ParagraphHasher().hash(paragraphText)
+        let hash = ParagraphHash(bundleID: "com.test", paragraphText: paragraphText)
 
         let llmSuggestion = Suggestion(
             id: UUID(),

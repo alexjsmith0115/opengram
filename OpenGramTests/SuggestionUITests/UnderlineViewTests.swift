@@ -131,6 +131,96 @@ struct UnderlineViewEntryTests {
     }
 }
 
+@Suite("UnderlineView colorForSuggestion + z-order")
+struct UnderlineViewColorTests {
+
+    @Test("colorForSuggestion returns systemPurple for llm source")
+    func colorForSuggestion_llm_returnsPurple() {
+        let sug = Suggestion(
+            id: UUID(),
+            range: "x".startIndex..<"x".endIndex,
+            original: "x",
+            primaryReplacement: "y",
+            allReplacements: ["y"],
+            message: "m",
+            category: .clarity,
+            source: .llm,
+            priority: 1,
+            paragraphHash: nil
+        )
+        #expect(UnderlineView.colorForSuggestion(sug) == .systemPurple)
+    }
+
+    @Test("colorForSuggestion falls back to colorForCategory for harper source (spelling → red)")
+    func colorForSuggestion_harperSpelling_returnsRed() {
+        let sug = Suggestion(
+            id: UUID(),
+            range: "x".startIndex..<"x".endIndex,
+            original: "x",
+            primaryReplacement: "y",
+            allReplacements: ["y"],
+            message: "m",
+            category: .spelling,
+            source: .harper,
+            priority: 1,
+            paragraphHash: nil
+        )
+        #expect(UnderlineView.colorForSuggestion(sug) == .systemRed)
+    }
+
+    @Test("colorForSuggestion falls back to colorForCategory for harper source (grammar → blue)")
+    func colorForSuggestion_harperGrammar_returnsBlue() {
+        let sug = Suggestion(
+            id: UUID(),
+            range: "x".startIndex..<"x".endIndex,
+            original: "x",
+            primaryReplacement: "y",
+            allReplacements: ["y"],
+            message: "m",
+            category: .grammarPunctuation,
+            source: .harper,
+            priority: 1,
+            paragraphHash: nil
+        )
+        #expect(UnderlineView.colorForSuggestion(sug) == .systemBlue)
+    }
+
+    @MainActor
+    @Test("draw sorts LLM entries before Harper (z-order)")
+    func draw_sortsLLMBeforeHarper() {
+        let llm = makeZOrderEntry(source: .llm)
+        let harper = makeZOrderEntry(source: .harper)
+        let mixed = [harper, llm]
+        let sorted = mixed.sorted { a, b in
+            let aOrder = (a.suggestion.source == .llm) ? 0 : 1
+            let bOrder = (b.suggestion.source == .llm) ? 0 : 1
+            return aOrder < bOrder
+        }
+        #expect(sorted.map { $0.suggestion.source } == [llm, harper].map { $0.suggestion.source })
+    }
+}
+
+@MainActor
+private func makeZOrderEntry(source: SuggestionSource) -> UnderlineEntry {
+    let sug = Suggestion(
+        id: UUID(),
+        range: "x".startIndex..<"x".endIndex,
+        original: "x",
+        primaryReplacement: nil,
+        allReplacements: [],
+        message: "m",
+        category: .grammarPunctuation,
+        source: source,
+        priority: 1,
+        paragraphHash: nil
+    )
+    return UnderlineEntry(
+        underlineRect: NSRect(x: 0, y: 0, width: 10, height: 2),
+        hitRect: NSRect(x: 0, y: 0, width: 10, height: 10),
+        suggestion: sug
+    )
+}
+
 @Suite("UnderlineView hitTest passthrough")
 @MainActor
 struct UnderlineViewHitTestTests {
