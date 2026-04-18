@@ -51,21 +51,20 @@ final class OverlayController {
     private var currentCardParagraphHash: ParagraphHash? = nil
 
     // MARK: - Public state
-    // internal(set) allows @testable test targets to inject state directly
 
-    internal(set) var suggestions: [Suggestion] = []
+    var suggestions: [Suggestion] = []
 
     /// Parallel array of unicode scalar offsets for each suggestion in `suggestions`.
     /// Used to shift remaining suggestions after an accept changes text length.
     /// Index i in this array corresponds to index i in `suggestions`.
-    internal(set) var suggestionScalarOffsets: [(scalarStart: Int, scalarLength: Int)] = []
+    var suggestionScalarOffsets: [(scalarStart: Int, scalarLength: Int)] = []
 
-    internal(set) var textContext: TextContext?
+    var textContext: TextContext?
 
     /// Phase 18 D-13 / FR-19: while the rephrase card is visible for a paragraph, per-issue
     /// underlines for that paragraph are hidden. Stored as a scalar-offset range (NOT
     /// Range<String.Index> — research Pitfall #3) so it remains valid across text mutations.
-    internal(set) var hiddenParagraphScalarRange: (scalarStart: Int, scalarLength: Int)?
+    var hiddenParagraphScalarRange: (scalarStart: Int, scalarLength: Int)?
 
     private(set) var isPopoverVisible: Bool = false
     private(set) var currentPopoverSuggestion: Suggestion?
