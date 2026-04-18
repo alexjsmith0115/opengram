@@ -3,23 +3,23 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Incremental LLM Checking + Paragraph Rephrase Card
 status: executing
-stopped_at: Completed 18.3-03-PLAN.md
-last_updated: "2026-04-17T19:22:51.164Z"
-last_activity: 2026-04-17
+stopped_at: Completed 20-01-PLAN.md
+last_updated: "2026-04-18T00:42:39.119Z"
+last_activity: 2026-04-18 -- Phase 20 planning complete
 progress:
-  total_phases: 9
+  total_phases: 10
   completed_phases: 7
-  total_plans: 28
+  total_plans: 40
   completed_plans: 28
-  percent: 100
+  percent: 70
 ---
 
 ## Current Position
 
-Phase: 19
-Plan: Not started
-Status: Ready to execute
-Last activity: 2026-04-17
+Phase: 20
+Plan: 01 complete
+Status: Executing
+Last activity: 2026-04-18 -- Phase 20 Plan 01 complete
 
 Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out of 5 v1.2 phases)
 
@@ -75,6 +75,13 @@ Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out
 - [Phase 18.3]: capHeight placed before clampedY in PanelPositioner (option a opt-in); verticalSafeMargin=40pt private static; flooredSize computed before capped; testHookPanel lives in Plan 02 to keep Plan 03 test-only
 - [Phase 18.3]: testHookFittingSize seam: headless NSHostingView always returns idealHeight; inject oversized NSSize to force overflow branch in unit tests
 - [Phase 18.3]: Production fix: attach hosting to panel before layoutSubtreeIfNeeded — detached measurement was latent bug (matched LLMPanelController pattern)
+- [Phase 20-01]: ParagraphHash uses full 64-char SHA-256 hex (not compressed UInt64 prefix); bundleID partitions collision domain per-app
+- [Phase 20-01]: @unchecked Sendable on ParagraphSuggestionState + ParagraphCacheEntry — Error is not Sendable; safe because actor-owned, never mutated post-insert
+- [Phase 20-01]: ParagraphSet.Entry is a named struct (not tuple) — Swift tuples lack Sendable conformance across actor hops
+
+### Roadmap Evolution
+
+- Phase 20 added: Paragraph-level LLM suggestions with cache + reconciliation (PRD: phases/20-.../CONTEXT.md)
 
 ### Pending Todos
 
@@ -93,6 +100,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-17T16:24:04.130Z
-Stopped at: Completed 18.3-03-PLAN.md
+Last session: 2026-04-18T01:54:00Z
+Stopped at: Completed 20-01-PLAN.md
 Resume file: None

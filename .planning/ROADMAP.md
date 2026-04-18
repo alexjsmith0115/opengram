@@ -206,3 +206,24 @@ Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
 
 Surfaced during Phase 18.3 Plan 04 manual validation — 2026-04-17.
+
+### Phase 20: Paragraph-level LLM suggestions with cache + reconciliation
+
+**Goal:** Paragraph-level LLM suggestions render as purple dashed underlines alongside Harper red/blue, backed by a `ParagraphSuggestionStore` (actor) with per-paragraph cache, state machine (`pending/ready/readyEmpty/failed/dismissed/accepted`), reconciliation-on-tick, AX-text-change invalidation, FIFO 1-in-flight LLM queue with 30s timeout, and click-to-rephrase-card dispatch. Phase 16 `LLMCheckScheduler`, Phase 15 `ParagraphSuggestionCache`, and `IncrementalConfig` are deleted wholesale (D-01); tunables migrate into a new `OpenGramConfig` struct. No feature flag — direct replacement per CLAUDE.md "no deprecation cycles."
+**Requirements**: PLL-01..PLL-18 (see 20-VALIDATION.md — requirement IDs enumerated there)
+**Depends on:** Phase 19
+**Plans:** 12 plans
+
+Plans:
+- [x] 20-01-PLAN.md — Data-model primitives (ParagraphHash, ParagraphSet, state/entry, StoreEvent) + ParagraphHashTests
+- [ ] 20-02-PLAN.md — OpenGramConfig (8 live-read tunables, UserDefaults + NotificationCenter)
+- [ ] 20-03-PLAN.md — Caret-aware ParagraphSplitter + AXCapabilityCache separator persistence (D-05)
+- [ ] 20-04-PLAN.md — withTimeout primitive + tests
+- [ ] 20-05-PLAN.md — LLMRequestQueue actor (FIFO, one-in-flight, cancel, 30s timeout) + callback protocol
+- [ ] 20-06-PLAN.md — ParagraphSuggestionStore actor (reconcile + invalidate + verify-on-response + state machine + event stream)
+- [ ] 20-07-PLAN.md — UnderlineView.colorForSuggestion + z-order + Suggestion.paragraphHash UInt64 → ParagraphHash?
+- [ ] 20-08-PLAN.md — TextMonitor store/splitter DI + keystroke-invalidate + focus-change eager-reconcile (D-03)
+- [ ] 20-09-PLAN.md — OverlayController store subscription + click→rephrase card (D-02) + accept/dismiss store transitions (D-04)
+- [ ] 20-10a-PLAN.md — DisplayHeuristic/AdvancedSettingsView/OverlayController config param → OpenGramConfig
+- [ ] 20-10b-PLAN.md — AppDelegate rewire + CheckCoordinator Harper-only + OverlayController scheduler/legacyHash removal + MainActorTextBox
+- [ ] 20-10c-PLAN.md — Delete LLMCheckScheduler/ParagraphSuggestionCache/IncrementalConfig + legacy tests + manual validation checkpoint (D-01)
