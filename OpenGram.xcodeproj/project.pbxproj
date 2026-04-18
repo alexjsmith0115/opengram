@@ -74,6 +74,8 @@
 		B10000010000000000000032 /* TextMonitorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000032 /* TextMonitorTests.swift */; };
 		B10000010000000000000033 /* OverlayControllerDiffTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000033 /* OverlayControllerDiffTests.swift */; };
 		B10000010000000000000034 /* LLMServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000034 /* LLMServiceTests.swift */; };
+		B10000010000000000000200 /* LMStudioPipelineIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000200 /* LMStudioPipelineIntegrationTests.swift */; };
+		B10000010000000000000201 /* LMStudioLiveIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000201 /* LMStudioLiveIntegrationTests.swift */; };
 		B10000010000000000000035 /* LLMPromptsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000035 /* LLMPromptsTests.swift */; };
 		B10000010000000000000036 /* CheckOrchestratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000036 /* CheckOrchestratorTests.swift */; };
 		B10000010000000000000037 /* LLMSettingsPanelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000037 /* LLMSettingsPanelTests.swift */; };
@@ -220,6 +222,8 @@
 		B20000010000000000000032 /* TextMonitorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextMonitorTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000033 /* OverlayControllerDiffTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayControllerDiffTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000034 /* LLMServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMServiceTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000200 /* LMStudioPipelineIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LMStudioPipelineIntegrationTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000201 /* LMStudioLiveIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LMStudioLiveIntegrationTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000035 /* LLMPromptsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMPromptsTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000036 /* CheckOrchestratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckOrchestratorTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000037 /* LLMSettingsPanelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSettingsPanelTests.swift; sourceTree = "<group>"; };
@@ -437,6 +441,8 @@
 				B20000010000000000000001 /* IconStateMachineTests.swift */,
 				B20000010000000000000035 /* LLMPromptsTests.swift */,
 				B20000010000000000000034 /* LLMServiceTests.swift */,
+				B20000010000000000000200 /* LMStudioPipelineIntegrationTests.swift */,
+				B20000010000000000000201 /* LMStudioLiveIntegrationTests.swift */,
 				B20000010000000000000002 /* MenuBuilderTests.swift */,
 				B20000010000000000000030 /* SuggestionDiffEngineTests.swift */,
 				B20000010000000000000013 /* SuggestionTests.swift */,
@@ -892,6 +898,8 @@
 				B10000010000000000000032 /* TextMonitorTests.swift in Sources */,
 				B10000010000000000000033 /* OverlayControllerDiffTests.swift in Sources */,
 				B10000010000000000000034 /* LLMServiceTests.swift in Sources */,
+				B10000010000000000000200 /* LMStudioPipelineIntegrationTests.swift in Sources */,
+				B10000010000000000000201 /* LMStudioLiveIntegrationTests.swift in Sources */,
 				B10000010000000000000035 /* LLMPromptsTests.swift in Sources */,
 				B10000010000000000000036 /* CheckOrchestratorTests.swift in Sources */,
 				B10000010000000000000037 /* LLMSettingsPanelTests.swift in Sources */,
