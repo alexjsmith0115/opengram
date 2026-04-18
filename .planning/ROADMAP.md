@@ -192,7 +192,7 @@ Plans:
 | 17. Advanced Settings Tab | v1.2 | 3/3 | Complete   | 2026-04-16 |
 | 18. Paragraph Rephrase Card | v1.2 | 8/8 | Complete   | 2026-04-17 |
 | 18.1. Rephrase Card Hotkey Wiring Fix | v1.2 | 2/2 | Complete   | 2026-04-17 |
-| 20. Paragraph-level LLM Suggestions | v1.2 | 8/12 | In Progress | - |
+| 20. Paragraph-level LLM Suggestions | v1.2 | 12/12 | ✅ Complete | 2026-04-18 |
 | 19. Integration & UAT | v1.2 | 0/TBD | Not started | - |
 
 ## Backlog
@@ -227,4 +227,4 @@ Plans:
 - [x] 20-09-PLAN.md — OverlayController store subscription + click→rephrase card (D-02) + accept/dismiss store transitions (D-04)
 - [x] 20-10a-PLAN.md — DisplayHeuristic/AdvancedSettingsView/OverlayController config param → OpenGramConfig
 - [x] 20-10b-PLAN.md — AppDelegate rewire + CheckCoordinator Harper-only + OverlayController scheduler/legacyHash removal + MainActorTextBox
-- [ ] 20-10c-PLAN.md — Delete LLMCheckScheduler/ParagraphSuggestionCache/IncrementalConfig + legacy tests + manual validation checkpoint (D-01)
+- [x] 20-10c-PLAN.md — Delete LLMCheckScheduler/ParagraphSuggestionCache/IncrementalConfig + legacy tests + manual validation checkpoint (D-01) (completed 2026-04-18; includes post-checkpoint keystroke→debounced-reconcile fix + mocked/live LM Studio integration test suites)

@@ -3,23 +3,23 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Incremental LLM Checking + Paragraph Rephrase Card
 status: executing
-stopped_at: Paused at 20-10c Task 2 manual-validation checkpoint (computer-use MCP)
-last_updated: "2026-04-17T23:50:00Z"
-last_activity: 2026-04-17 -- Phase 20 Plan 10c Task 1 deletion complete; Task 2 awaiting human manual validation
+stopped_at: Phase 20 complete — ready to plan Phase 19 UAT
+last_updated: "2026-04-18T07:30:00Z"
+last_activity: 2026-04-18 -- Phase 20 closed; user approved manual validation; post-checkpoint keystroke→debounced-reconcile fix + LM Studio integration tests landed
 progress:
   total_phases: 10
-  completed_phases: 7
+  completed_phases: 8
   total_plans: 42
-  completed_plans: 39
-  percent: 93
+  completed_plans: 42
+  percent: 100
 ---
 
 ## Current Position
 
-Phase: 20
-Plan: 10c Task 1 complete (Task 2 awaiting manual validation)
-Status: Paused at checkpoint
-Last activity: 2026-04-17 -- Phase 20 Plan 10c Task 1 deletion complete; Task 2 awaiting human manual validation
+Phase: 20 (complete)
+Plan: 10c complete (Task 1 + Task 2 + post-checkpoint fixes)
+Status: Phase 20 closed; next → Phase 19 UAT
+Last activity: 2026-04-18 -- User approved manual validation; keystroke→debounced-reconcile gap fixed inline (edec49c); LM Studio integration tests added (b9bdab4)
 
 Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out of 5 v1.2 phases)
 
@@ -111,6 +111,8 @@ Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out
 - [Phase 20-10b]: RephraseCardLifecycleTests + 4 LLMCheckScheduler* tests NOT modified — they exercise legacy scheduler which still compiles in isolation; wholesale deletion belongs to Plan 10c
 - [Phase 20-10c]: Deletion scope expanded beyond plan list — CheckCoordinatorSchedulerIntegrationTests.swift (100% scheduler, 154 lines) and RephraseCardLifecycleTests.swift (all 3 tests coupled to deleted ParagraphCacheKey/ParagraphSuggestionCache/LLMCheckScheduler) deleted wholesale. Rule 3 blocking — both would fail compile after scheduler/cache removal. Plan's pragmatic option chosen: delete rather than rewrite against store.
 - [Phase 20-10c]: Stale comment scrub in CheckOrchestrator/OpenGramConfig/LLMRequestQueue — inline refs to deleted LLMCheckScheduler/UserDefaultsIncrementalConfig rewritten to describe current architecture (paragraph-LLM via event-driven store, D-04).
+- [Phase 20-10c post-checkpoint]: Manual validation surfaced that keystrokes never fired LLM — legacy scheduler owned the debounce→reconcile timer; its removal in 10b/10c left only focus-change as a reconcile trigger. Fix wires TextMonitor.scheduleLLMReconcile (debounced DispatchWorkItem, live-read config.llmDebounceMs) on handleValueChanged + TextMonitor.reconcileNow (bypass-debounce) on hotkey path. Renamed driveStoreOnFocusChange → driveStoreReconcile (shared by focus/debounce/hotkey). Commit edec49c.
+- [Phase 20-10c post-checkpoint]: Integration tests added for OG→LM Studio call chain. Mocked suite (URLProtocol, 8 tests) runs by default; live suite (4 tests) gated on TEST_RUNNER_OPENGRAM_LIVE_LLM=1 so default xcodebuild test skips with explicit reason. Commit b9bdab4.
 
 ### Roadmap Evolution
 
@@ -134,6 +136,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-17T23:50:00Z
-Stopped at: Paused at 20-10c Task 2 manual-validation checkpoint (computer-use MCP)
-Resume file: .planning/phases/20-paragraph-level-llm-suggestions-with-cache-reconciliation/20-10c-PLAN.md
+Last session: 2026-04-18T07:30:00Z
+Stopped at: Phase 20 complete — user approved manual validation; ready to advance to Phase 19 UAT
+Resume file: (none — Phase 20 closed; next command: /gsd-plan-phase 19 or /gsd-discuss-phase 19)
