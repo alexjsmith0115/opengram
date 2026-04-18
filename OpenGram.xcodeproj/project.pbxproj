@@ -143,6 +143,8 @@
 		A12005010000000000000001 /* LLMRequestQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22005010000000000000001 /* LLMRequestQueue.swift */; };
 		A12005010000000000000002 /* LLMRequestQueueStoreProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22005010000000000000002 /* LLMRequestQueueStoreProtocol.swift */; };
 		B12005010000000000000001 /* LLMRequestQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22005010000000000000001 /* LLMRequestQueueTests.swift */; };
+		A12006010000000000000001 /* ParagraphSuggestionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22006010000000000000001 /* ParagraphSuggestionStore.swift */; };
+		B12006010000000000000001 /* ParagraphSuggestionStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22006010000000000000001 /* ParagraphSuggestionStoreTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -294,6 +296,8 @@
 		A22005010000000000000001 /* LLMRequestQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMRequestQueue.swift; sourceTree = "<group>"; };
 		A22005010000000000000002 /* LLMRequestQueueStoreProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMRequestQueueStoreProtocol.swift; sourceTree = "<group>"; };
 		B22005010000000000000001 /* LLMRequestQueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMRequestQueueTests.swift; sourceTree = "<group>"; };
+		A22006010000000000000001 /* ParagraphSuggestionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphSuggestionStore.swift; sourceTree = "<group>"; };
+		B22006010000000000000001 /* ParagraphSuggestionStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphSuggestionStoreTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -497,6 +501,7 @@
 				A22004010000000000000001 /* WithTimeout.swift */,
 				A22005010000000000000001 /* LLMRequestQueue.swift */,
 				A22005010000000000000002 /* LLMRequestQueueStoreProtocol.swift */,
+				A22006010000000000000001 /* ParagraphSuggestionStore.swift */,
 			);
 			path = ParagraphStore;
 			sourceTree = "<group>";
@@ -665,6 +670,7 @@
 				B22003010000000000000001 /* Phase20ParagraphSplitterTests.swift */,
 				B22004010000000000000001 /* WithTimeoutTests.swift */,
 				B22005010000000000000001 /* LLMRequestQueueTests.swift */,
+				B22006010000000000000001 /* ParagraphSuggestionStoreTests.swift */,
 			);
 			path = ParagraphStore;
 			sourceTree = "<group>";
@@ -888,6 +894,7 @@
 				A12004010000000000000001 /* WithTimeout.swift in Sources */,
 				A12005010000000000000001 /* LLMRequestQueue.swift in Sources */,
 				A12005010000000000000002 /* LLMRequestQueueStoreProtocol.swift in Sources */,
+				A12006010000000000000001 /* ParagraphSuggestionStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -953,6 +960,7 @@
 				B12003010000000000000001 /* Phase20ParagraphSplitterTests.swift in Sources */,
 				B12004010000000000000001 /* WithTimeoutTests.swift in Sources */,
 				B12005010000000000000001 /* LLMRequestQueueTests.swift in Sources */,
+				B12006010000000000000001 /* ParagraphSuggestionStoreTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
