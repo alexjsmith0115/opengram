@@ -128,6 +128,12 @@
 		B18070010000000000000001 /* MultiQualifierSelectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28070010000000000000001 /* MultiQualifierSelectionTests.swift */; };
 		B18070010000000000000002 /* OverlayControllerRephraseIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28070010000000000000002 /* OverlayControllerRephraseIntegrationTests.swift */; };
 		B18080010000000000000001 /* RephraseCardLifecycleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28080010000000000000001 /* RephraseCardLifecycleTests.swift */; };
+		A12000010000000000000001 /* ParagraphHash.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22000010000000000000001 /* ParagraphHash.swift */; };
+		A12000010000000000000002 /* ParagraphSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22000010000000000000002 /* ParagraphSet.swift */; };
+		A12000010000000000000003 /* StoreEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22000010000000000000003 /* StoreEvent.swift */; };
+		A12000010000000000000004 /* ParagraphSuggestionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22000010000000000000004 /* ParagraphSuggestionState.swift */; };
+		A12000010000000000000005 /* ParagraphCacheEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22000010000000000000005 /* ParagraphCacheEntry.swift */; };
+		B12000010000000000000001 /* ParagraphHashTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22000010000000000000001 /* ParagraphHashTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -264,6 +270,12 @@
 		B28070010000000000000001 /* MultiQualifierSelectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiQualifierSelectionTests.swift; sourceTree = "<group>"; };
 		B28070010000000000000002 /* OverlayControllerRephraseIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayControllerRephraseIntegrationTests.swift; sourceTree = "<group>"; };
 		B28080010000000000000001 /* RephraseCardLifecycleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RephraseCardLifecycleTests.swift; sourceTree = "<group>"; };
+		A22000010000000000000001 /* ParagraphHash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphHash.swift; sourceTree = "<group>"; };
+		A22000010000000000000002 /* ParagraphSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphSet.swift; sourceTree = "<group>"; };
+		A22000010000000000000003 /* StoreEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreEvent.swift; sourceTree = "<group>"; };
+		A22000010000000000000004 /* ParagraphSuggestionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphSuggestionState.swift; sourceTree = "<group>"; };
+		A22000010000000000000005 /* ParagraphCacheEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphCacheEntry.swift; sourceTree = "<group>"; };
+		B22000010000000000000001 /* ParagraphHashTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphHashTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -446,11 +458,24 @@
 				A4000001000000000000C002 /* LLM */,
 				A4000001000000000000C007 /* ParagraphInfra */,
 				A4000001000000000000C008 /* LLMCheckScheduler */,
+				A4000001000000000000C010 /* ParagraphStore */,
 				A20000010000000000000094 /* CheckOrchestrator.swift */,
 				A20000010000000000000098 /* ParagraphExtractor.swift */,
 				A20000010000000000000031 /* Suggestion.swift */,
 			);
 			path = CheckEngine;
+			sourceTree = "<group>";
+		};
+		A4000001000000000000C010 /* ParagraphStore */ = {
+			isa = PBXGroup;
+			children = (
+				A22000010000000000000001 /* ParagraphHash.swift */,
+				A22000010000000000000002 /* ParagraphSet.swift */,
+				A22000010000000000000003 /* StoreEvent.swift */,
+				A22000010000000000000004 /* ParagraphSuggestionState.swift */,
+				A22000010000000000000005 /* ParagraphCacheEntry.swift */,
+			);
+			path = ParagraphStore;
 			sourceTree = "<group>";
 		};
 		A4000001000000000000C008 /* LLMCheckScheduler */ = {
@@ -587,6 +612,7 @@
 			isa = PBXGroup;
 			children = (
 				B4000001000000000000C001 /* ParagraphInfra */,
+				B4000001000000000000C010 /* ParagraphStore */,
 				B2000001000000000000003A /* LLMResponseDTOTests.swift */,
 				B2000001000000000000003B /* ParagraphExtractorTests.swift */,
 				B200000100000000000000E0 /* LLMCheckSchedulerTests.swift */,
@@ -606,6 +632,14 @@
 				B200000100000000000000D3 /* ParagraphSuggestionCacheTests.swift */,
 			);
 			path = ParagraphInfra;
+			sourceTree = "<group>";
+		};
+		B4000001000000000000C010 /* ParagraphStore */ = {
+			isa = PBXGroup;
+			children = (
+				B22000010000000000000001 /* ParagraphHashTests.swift */,
+			);
+			path = ParagraphStore;
 			sourceTree = "<group>";
 		};
 		B48000010000000000000021 /* Panels */ = {
@@ -817,6 +851,11 @@
 				A18050010000000000000001 /* RephraseCardView.swift in Sources */,
 				A18050010000000000000002 /* RephraseCardPanelController.swift in Sources */,
 				A18060010000000000000001 /* SourceParagraphHighlight.swift in Sources */,
+				A12000010000000000000001 /* ParagraphHash.swift in Sources */,
+				A12000010000000000000002 /* ParagraphSet.swift in Sources */,
+				A12000010000000000000003 /* StoreEvent.swift in Sources */,
+				A12000010000000000000004 /* ParagraphSuggestionState.swift in Sources */,
+				A12000010000000000000005 /* ParagraphCacheEntry.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -877,6 +916,7 @@
 				B18070010000000000000001 /* MultiQualifierSelectionTests.swift in Sources */,
 				B18070010000000000000002 /* OverlayControllerRephraseIntegrationTests.swift in Sources */,
 				B18080010000000000000001 /* RephraseCardLifecycleTests.swift in Sources */,
+				B12000010000000000000001 /* ParagraphHashTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
