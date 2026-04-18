@@ -3,23 +3,23 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Incremental LLM Checking + Paragraph Rephrase Card
 status: executing
-stopped_at: Completed 20-03-PLAN.md
-last_updated: "2026-04-18T02:12:00.000Z"
-last_activity: 2026-04-18 -- Phase 20 Plan 03 complete
+stopped_at: Completed 20-04-PLAN.md
+last_updated: "2026-04-18T02:25:00.000Z"
+last_activity: 2026-04-18 -- Phase 20 Plan 04 complete
 progress:
   total_phases: 10
   completed_phases: 7
   total_plans: 40
-  completed_plans: 31
-  percent: 78
+  completed_plans: 33
+  percent: 82
 ---
 
 ## Current Position
 
 Phase: 20
-Plan: 03 complete
+Plan: 04 complete
 Status: Executing
-Last activity: 2026-04-18 -- Phase 20 Plan 03 complete
+Last activity: 2026-04-18 -- Phase 20 Plan 04 complete
 
 Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out of 5 v1.2 phases)
 
@@ -83,6 +83,7 @@ Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out
 - [Phase 20-03]: Files renamed Phase20Paragraph* to avoid Xcode object-file collision with Phase 15 ParagraphSplitter.swift (same base name, both in same target)
 - [Phase 20-03]: Legacy flat-dict JSON detection via JSONSerialization key probe — CacheData custom init(from:) always succeeds via try? fallback, explicit hasCapabilitiesKey guard routes to legacy branch correctly
 - [Phase 20-03]: Separator probe stores non-empty values only; empty-string separator skipped in resolveSeparator to allow re-probe when text gains separators
+- [Phase 20-04]: withThrowingTaskGroup race: operation + sleep tasks race; first winner returned; defer cancelAll cleans loser; guard let winner guards impossible-nil fallback
 
 ### Roadmap Evolution
 
