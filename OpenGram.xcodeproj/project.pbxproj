@@ -128,6 +128,7 @@
 		B18070010000000000000001 /* MultiQualifierSelectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28070010000000000000001 /* MultiQualifierSelectionTests.swift */; };
 		B18070010000000000000002 /* OverlayControllerRephraseIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28070010000000000000002 /* OverlayControllerRephraseIntegrationTests.swift */; };
 		B18080010000000000000001 /* RephraseCardLifecycleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28080010000000000000001 /* RephraseCardLifecycleTests.swift */; };
+		B18090010000000000000001 /* OverlayControllerStoreSubscriptionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28090010000000000000001 /* OverlayControllerStoreSubscriptionTests.swift */; };
 		A12000010000000000000001 /* ParagraphHash.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22000010000000000000001 /* ParagraphHash.swift */; };
 		A12000010000000000000002 /* ParagraphSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22000010000000000000002 /* ParagraphSet.swift */; };
 		A12000010000000000000003 /* StoreEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22000010000000000000003 /* StoreEvent.swift */; };
@@ -281,6 +282,7 @@
 		B28070010000000000000001 /* MultiQualifierSelectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiQualifierSelectionTests.swift; sourceTree = "<group>"; };
 		B28070010000000000000002 /* OverlayControllerRephraseIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayControllerRephraseIntegrationTests.swift; sourceTree = "<group>"; };
 		B28080010000000000000001 /* RephraseCardLifecycleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RephraseCardLifecycleTests.swift; sourceTree = "<group>"; };
+		B28090010000000000000001 /* OverlayControllerStoreSubscriptionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayControllerStoreSubscriptionTests.swift; sourceTree = "<group>"; };
 		A22000010000000000000001 /* ParagraphHash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphHash.swift; sourceTree = "<group>"; };
 		A22000010000000000000002 /* ParagraphSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphSet.swift; sourceTree = "<group>"; };
 		A22000010000000000000003 /* StoreEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreEvent.swift; sourceTree = "<group>"; };
@@ -703,6 +705,7 @@
 				B28060010000000000000002 /* OverlayControllerHideUnderlinesTests.swift */,
 				B28070010000000000000001 /* MultiQualifierSelectionTests.swift */,
 				B28070010000000000000002 /* OverlayControllerRephraseIntegrationTests.swift */,
+				B28090010000000000000001 /* OverlayControllerStoreSubscriptionTests.swift */,
 				B48000010000000000000021 /* Panels */,
 				B48020010000000000000001 /* RephraseCard */,
 			);
@@ -955,6 +958,7 @@
 				B18070010000000000000001 /* MultiQualifierSelectionTests.swift in Sources */,
 				B18070010000000000000002 /* OverlayControllerRephraseIntegrationTests.swift in Sources */,
 				B18080010000000000000001 /* RephraseCardLifecycleTests.swift in Sources */,
+				B18090010000000000000001 /* OverlayControllerStoreSubscriptionTests.swift in Sources */,
 				B12000010000000000000001 /* ParagraphHashTests.swift in Sources */,
 				B12000010000000000000002 /* OpenGramConfigTests.swift in Sources */,
 				B12003010000000000000001 /* ParagraphSplitterTests.swift in Sources */,
