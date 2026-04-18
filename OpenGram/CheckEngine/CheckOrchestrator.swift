@@ -2,8 +2,8 @@ import Foundation
 import os.log
 
 /// Orchestrates the Harper checking pipeline. Delivers incremental updates to the UI
-/// via callbacks (D-01, D-02). LLM checks are handled by LLMCheckScheduler on the
-/// hotkey path (CheckCoordinator) — not here.
+/// via callbacks (D-01, D-02). Paragraph-level LLM checks run event-driven via
+/// ParagraphSuggestionStore (D-04) — not here.
 actor CheckOrchestrator {
 
     private let harper: any GrammarCheckerProtocol

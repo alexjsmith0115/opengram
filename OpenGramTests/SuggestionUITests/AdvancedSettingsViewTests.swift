@@ -14,7 +14,7 @@ import Foundation
         #expect(AdvancedSettingsView.warningText == expected)
     }
 
-    @Test func appStorageKeys_matchIncrementalConfigKeys() {
+    @Test func appStorageKeys_matchConfigLiterals() {
         #expect(AdvancedSettingsView.minIssueCountKey == "llmMinIssueCount")
         #expect(AdvancedSettingsView.minWordCountKey == "llmMinWordCount")
         #expect(AdvancedSettingsView.idleDebounceSecondsKey == "llmIdleDebounceSeconds")

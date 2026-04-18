@@ -7,8 +7,7 @@ import Foundation
 /// on `NotificationCenter.default` — `Settings` writers post it after `defaults.set(...)`.
 ///
 /// `@unchecked Sendable` — `UserDefaults` is thread-safe by Foundation contract but not
-/// formally declared `Sendable` in the SDK. Matches the precedent set by
-/// `UserDefaultsIncrementalConfig`.
+/// formally declared `Sendable` in the SDK.
 struct OpenGramConfig: @unchecked Sendable {
     // MARK: - Paragraph store keys
 
@@ -18,9 +17,9 @@ struct OpenGramConfig: @unchecked Sendable {
     static let minParagraphLengthKey         = "minParagraphLength"
     static let minParagraphWordCountKey      = "minParagraphWordCount"
 
-    // MARK: - Absorbed legacy tunables (kept verbatim so AdvancedSettingsView @AppStorage
-    //        literals continue to match — heuristic is slated to migrate off
-    //        `IncrementalConfig` onto this struct)
+    // MARK: - Display-heuristic tunables (AdvancedSettingsView @AppStorage literals
+    //        must match these keys verbatim — property wrappers require compile-time
+    //        string literals, so the pair is drift-guarded by AdvancedSettingsViewTests)
 
     static let minIssueCountKey              = "llmMinIssueCount"
     static let minWordCountKey               = "llmMinWordCount"

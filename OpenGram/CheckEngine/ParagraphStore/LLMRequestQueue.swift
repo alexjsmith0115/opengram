@@ -9,7 +9,7 @@ import Foundation
 /// 4. `cancel(hash:)` removes still-queued or cancels in-flight; store is NOT notified.
 ///
 /// Thread safety: all state mutations serialized by the actor. `llm.analyze` is called
-/// without the actor lock via `Task { … }` — matches LLMCheckScheduler pattern.
+/// without the actor lock via `Task { … }` so the analyze hop does not block the queue.
 actor LLMRequestQueue {
     private struct QueueEntry: Sendable {
         let hash: ParagraphHash

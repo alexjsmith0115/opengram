@@ -98,15 +98,6 @@
 		B100000100000000000000D1 /* DoubleNewlineSplitterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000D1 /* DoubleNewlineSplitterTests.swift */; };
 		A100000100000000000000C3 /* ParagraphHasher.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000C3 /* ParagraphHasher.swift */; };
 		B100000100000000000000D2 /* ParagraphHasherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000D2 /* ParagraphHasherTests.swift */; };
-		A100000100000000000000C4 /* ParagraphSuggestionCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000C4 /* ParagraphSuggestionCache.swift */; };
-		B100000100000000000000D3 /* ParagraphSuggestionCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000D3 /* ParagraphSuggestionCacheTests.swift */; };
-		A100000100000000000000E0 /* IncrementalConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000E0 /* IncrementalConfig.swift */; };
-		A100000100000000000000E1 /* LLMCheckScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000E1 /* LLMCheckScheduler.swift */; };
-		B100000100000000000000E0 /* LLMCheckSchedulerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000E0 /* LLMCheckSchedulerTests.swift */; };
-		B100000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift */; };
-		B100000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift */; };
-		B100000100000000000000E4 /* LLMCheckSchedulerMarkDismissedTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000E4 /* LLMCheckSchedulerMarkDismissedTests.swift */; };
-		B100000100000000000000F0 /* IncrementalConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000F0 /* IncrementalConfigTests.swift */; };
 		A100000100000000000000E2 /* AdvancedSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000E2 /* AdvancedSettingsView.swift */; };
 		B100000100000000000000F1 /* AdvancedSettingsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000F1 /* AdvancedSettingsViewTests.swift */; };
 		A18000010000000000000021 /* AXTextReplacer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28000010000000000000021 /* AXTextReplacer.swift */; };
@@ -128,7 +119,6 @@
 		B18060010000000000000002 /* OverlayControllerHideUnderlinesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28060010000000000000002 /* OverlayControllerHideUnderlinesTests.swift */; };
 		B18070010000000000000001 /* MultiQualifierSelectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28070010000000000000001 /* MultiQualifierSelectionTests.swift */; };
 		B18070010000000000000002 /* OverlayControllerRephraseIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28070010000000000000002 /* OverlayControllerRephraseIntegrationTests.swift */; };
-		B18080010000000000000001 /* RephraseCardLifecycleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28080010000000000000001 /* RephraseCardLifecycleTests.swift */; };
 		B18090010000000000000001 /* OverlayControllerStoreSubscriptionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28090010000000000000001 /* OverlayControllerStoreSubscriptionTests.swift */; };
 		A12000010000000000000001 /* ParagraphHash.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22000010000000000000001 /* ParagraphHash.swift */; };
 		A12000010000000000000002 /* ParagraphSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22000010000000000000002 /* ParagraphSet.swift */; };
@@ -253,15 +243,6 @@
 		B200000100000000000000D1 /* DoubleNewlineSplitterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoubleNewlineSplitterTests.swift; sourceTree = "<group>"; };
 		A200000100000000000000C3 /* ParagraphHasher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphHasher.swift; sourceTree = "<group>"; };
 		B200000100000000000000D2 /* ParagraphHasherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphHasherTests.swift; sourceTree = "<group>"; };
-		A200000100000000000000C4 /* ParagraphSuggestionCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphSuggestionCache.swift; sourceTree = "<group>"; };
-		B200000100000000000000D3 /* ParagraphSuggestionCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphSuggestionCacheTests.swift; sourceTree = "<group>"; };
-		A200000100000000000000E0 /* IncrementalConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementalConfig.swift; sourceTree = "<group>"; };
-		A200000100000000000000E1 /* LLMCheckScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCheckScheduler.swift; sourceTree = "<group>"; };
-		B200000100000000000000E0 /* LLMCheckSchedulerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCheckSchedulerTests.swift; sourceTree = "<group>"; };
-		B200000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCheckSchedulerCancellationTests.swift; sourceTree = "<group>"; };
-		B200000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckCoordinatorSchedulerIntegrationTests.swift; sourceTree = "<group>"; };
-		B200000100000000000000E4 /* LLMCheckSchedulerMarkDismissedTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCheckSchedulerMarkDismissedTests.swift; sourceTree = "<group>"; };
-		B200000100000000000000F0 /* IncrementalConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementalConfigTests.swift; sourceTree = "<group>"; };
 		A200000100000000000000E2 /* AdvancedSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSettingsView.swift; sourceTree = "<group>"; };
 		B200000100000000000000F1 /* AdvancedSettingsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSettingsViewTests.swift; sourceTree = "<group>"; };
 		A28000010000000000000021 /* AXTextReplacer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXTextReplacer.swift; sourceTree = "<group>"; };
@@ -283,7 +264,6 @@
 		B28060010000000000000002 /* OverlayControllerHideUnderlinesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayControllerHideUnderlinesTests.swift; sourceTree = "<group>"; };
 		B28070010000000000000001 /* MultiQualifierSelectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiQualifierSelectionTests.swift; sourceTree = "<group>"; };
 		B28070010000000000000002 /* OverlayControllerRephraseIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayControllerRephraseIntegrationTests.swift; sourceTree = "<group>"; };
-		B28080010000000000000001 /* RephraseCardLifecycleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RephraseCardLifecycleTests.swift; sourceTree = "<group>"; };
 		B28090010000000000000001 /* OverlayControllerStoreSubscriptionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayControllerStoreSubscriptionTests.swift; sourceTree = "<group>"; };
 		A22000010000000000000001 /* ParagraphHash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphHash.swift; sourceTree = "<group>"; };
 		A22000010000000000000002 /* ParagraphSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphSet.swift; sourceTree = "<group>"; };
@@ -429,7 +409,6 @@
 			isa = PBXGroup;
 			children = (
 				B200000100000000000000A0 /* AppWhitelistTests.swift */,
-				B200000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -484,7 +463,6 @@
 				A4000001000000000000C001 /* Harper */,
 				A4000001000000000000C002 /* LLM */,
 				A4000001000000000000C007 /* ParagraphInfra */,
-				A4000001000000000000C008 /* LLMCheckScheduler */,
 				A4000001000000000000C010 /* ParagraphStore */,
 				A20000010000000000000094 /* CheckOrchestrator.swift */,
 				A20000010000000000000098 /* ParagraphExtractor.swift */,
@@ -511,15 +489,6 @@
 			path = ParagraphStore;
 			sourceTree = "<group>";
 		};
-		A4000001000000000000C008 /* LLMCheckScheduler */ = {
-			isa = PBXGroup;
-			children = (
-				A200000100000000000000E0 /* IncrementalConfig.swift */,
-				A200000100000000000000E1 /* LLMCheckScheduler.swift */,
-			);
-			path = LLMCheckScheduler;
-			sourceTree = "<group>";
-		};
 		A4000001000000000000C007 /* ParagraphInfra */ = {
 			isa = PBXGroup;
 			children = (
@@ -527,7 +496,6 @@
 				A200000100000000000000C1 /* CacheClock.swift */,
 				A200000100000000000000C2 /* DoubleNewlineSplitter.swift */,
 				A200000100000000000000C3 /* ParagraphHasher.swift */,
-				A200000100000000000000C4 /* ParagraphSuggestionCache.swift */,
 			);
 			path = ParagraphInfra;
 			sourceTree = "<group>";
@@ -648,10 +616,6 @@
 				B4000001000000000000C010 /* ParagraphStore */,
 				B2000001000000000000003A /* LLMResponseDTOTests.swift */,
 				B2000001000000000000003B /* ParagraphExtractorTests.swift */,
-				B200000100000000000000E0 /* LLMCheckSchedulerTests.swift */,
-				B200000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift */,
-				B200000100000000000000E4 /* LLMCheckSchedulerMarkDismissedTests.swift */,
-				B200000100000000000000F0 /* IncrementalConfigTests.swift */,
 			);
 			path = CheckEngine;
 			sourceTree = "<group>";
@@ -662,7 +626,6 @@
 				B200000100000000000000D0 /* CacheClockTests.swift */,
 				B200000100000000000000D1 /* DoubleNewlineSplitterTests.swift */,
 				B200000100000000000000D2 /* ParagraphHasherTests.swift */,
-				B200000100000000000000D3 /* ParagraphSuggestionCacheTests.swift */,
 			);
 			path = ParagraphInfra;
 			sourceTree = "<group>";
@@ -723,7 +686,6 @@
 				B28020010000000000000003 /* RephraseComposerTests.swift */,
 				B28020010000000000000004 /* RephraseCardViewModelTests.swift */,
 				B28050010000000000000001 /* RephraseCardViewTests.swift */,
-				B28080010000000000000001 /* RephraseCardLifecycleTests.swift */,
 			);
 			path = RephraseCard;
 			sourceTree = "<group>";
@@ -879,9 +841,6 @@
 				A100000100000000000000C1 /* CacheClock.swift in Sources */,
 				A100000100000000000000C2 /* DoubleNewlineSplitter.swift in Sources */,
 				A100000100000000000000C3 /* ParagraphHasher.swift in Sources */,
-				A100000100000000000000C4 /* ParagraphSuggestionCache.swift in Sources */,
-				A100000100000000000000E0 /* IncrementalConfig.swift in Sources */,
-				A100000100000000000000E1 /* LLMCheckScheduler.swift in Sources */,
 				A100000100000000000000E2 /* AdvancedSettingsView.swift in Sources */,
 				A18000010000000000000021 /* AXTextReplacer.swift in Sources */,
 				A18020010000000000000001 /* TextDiff.swift in Sources */,
@@ -943,12 +902,6 @@
 				B100000100000000000000D0 /* CacheClockTests.swift in Sources */,
 				B100000100000000000000D1 /* DoubleNewlineSplitterTests.swift in Sources */,
 				B100000100000000000000D2 /* ParagraphHasherTests.swift in Sources */,
-				B100000100000000000000D3 /* ParagraphSuggestionCacheTests.swift in Sources */,
-				B100000100000000000000E0 /* LLMCheckSchedulerTests.swift in Sources */,
-				B100000100000000000000E1 /* LLMCheckSchedulerCancellationTests.swift in Sources */,
-				B100000100000000000000E3 /* CheckCoordinatorSchedulerIntegrationTests.swift in Sources */,
-				B100000100000000000000E4 /* LLMCheckSchedulerMarkDismissedTests.swift in Sources */,
-				B100000100000000000000F0 /* IncrementalConfigTests.swift in Sources */,
 				B100000100000000000000F1 /* AdvancedSettingsViewTests.swift in Sources */,
 				B18000010000000000000021 /* AXTextReplacerTests.swift in Sources */,
 				B18020010000000000000001 /* TextDiffTests.swift in Sources */,
@@ -961,7 +914,6 @@
 				B18060010000000000000002 /* OverlayControllerHideUnderlinesTests.swift in Sources */,
 				B18070010000000000000001 /* MultiQualifierSelectionTests.swift in Sources */,
 				B18070010000000000000002 /* OverlayControllerRephraseIntegrationTests.swift in Sources */,
-				B18080010000000000000001 /* RephraseCardLifecycleTests.swift in Sources */,
 				B18090010000000000000001 /* OverlayControllerStoreSubscriptionTests.swift in Sources */,
 				B12000010000000000000001 /* ParagraphHashTests.swift in Sources */,
 				B12000010000000000000002 /* OpenGramConfigTests.swift in Sources */,
