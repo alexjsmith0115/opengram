@@ -3,23 +3,23 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Incremental LLM Checking + Paragraph Rephrase Card
 status: executing
-stopped_at: Completed 20-02-PLAN.md
-last_updated: "2026-04-18T02:05:00.000Z"
-last_activity: 2026-04-18 -- Phase 20 Plan 02 complete
+stopped_at: Completed 20-03-PLAN.md
+last_updated: "2026-04-18T02:12:00.000Z"
+last_activity: 2026-04-18 -- Phase 20 Plan 03 complete
 progress:
   total_phases: 10
   completed_phases: 7
   total_plans: 40
-  completed_plans: 29
-  percent: 72
+  completed_plans: 31
+  percent: 78
 ---
 
 ## Current Position
 
 Phase: 20
-Plan: 02 complete
+Plan: 03 complete
 Status: Executing
-Last activity: 2026-04-18 -- Phase 20 Plan 02 complete
+Last activity: 2026-04-18 -- Phase 20 Plan 03 complete
 
 Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out of 5 v1.2 phases)
 
@@ -80,6 +80,9 @@ Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out
 - [Phase 20-01]: ParagraphSet.Entry is a named struct (not tuple) — Swift tuples lack Sendable conformance across actor hops
 - [Phase 20-02]: postDidChange takes injectable NotificationCenter param (default .default) — posting to .default in tests caused cross-suite interference; injectable param is cleaner than wrapper
 - [Phase 20-02]: Notification test uses isolated NotificationCenter() instance — not .default — to prevent cross-test pollution in parallel Swift Testing runner
+- [Phase 20-03]: Files renamed Phase20Paragraph* to avoid Xcode object-file collision with Phase 15 ParagraphSplitter.swift (same base name, both in same target)
+- [Phase 20-03]: Legacy flat-dict JSON detection via JSONSerialization key probe — CacheData custom init(from:) always succeeds via try? fallback, explicit hasCapabilitiesKey guard routes to legacy branch correctly
+- [Phase 20-03]: Separator probe stores non-empty values only; empty-string separator skipped in resolveSeparator to allow re-probe when text gains separators
 
 ### Roadmap Evolution
 
@@ -102,6 +105,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-18T01:54:00Z
-Stopped at: Completed 20-01-PLAN.md
+Last session: 2026-04-18T02:12:00Z
+Stopped at: Completed 20-03-PLAN.md
 Resume file: None

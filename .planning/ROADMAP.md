@@ -217,7 +217,7 @@ Surfaced during Phase 18.3 Plan 04 manual validation — 2026-04-17.
 Plans:
 - [x] 20-01-PLAN.md — Data-model primitives (ParagraphHash, ParagraphSet, state/entry, StoreEvent) + ParagraphHashTests
 - [x] 20-02-PLAN.md — OpenGramConfig (8 live-read tunables, UserDefaults + NotificationCenter)
-- [ ] 20-03-PLAN.md — Caret-aware ParagraphSplitter + AXCapabilityCache separator persistence (D-05)
+- [x] 20-03-PLAN.md — Caret-aware ParagraphSplitter + AXCapabilityCache separator persistence (D-05)
 - [ ] 20-04-PLAN.md — withTimeout primitive + tests
 - [ ] 20-05-PLAN.md — LLMRequestQueue actor (FIFO, one-in-flight, cancel, 30s timeout) + callback protocol
 - [ ] 20-06-PLAN.md — ParagraphSuggestionStore actor (reconcile + invalidate + verify-on-response + state machine + event stream)
