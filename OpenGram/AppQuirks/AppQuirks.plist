@@ -25,5 +25,25 @@
 		<key>notificationUnreliable</key>
 		<true/>
 	</dict>
+
+	<!-- Apps confirmed to handle CADisplayLink-pumped reposition during scroll
+	     (PERF-07). All other apps default to hideAndSettle. -->
+	<key>com.apple.Notes</key>
+	<dict>
+		<key>scrollMode</key>
+		<string>trackFrame</string>
+	</dict>
+
+	<key>com.apple.TextEdit</key>
+	<dict>
+		<key>scrollMode</key>
+		<string>trackFrame</string>
+	</dict>
+
+	<key>com.apple.mail</key>
+	<dict>
+		<key>scrollMode</key>
+		<string>trackFrame</string>
+	</dict>
 </dict>
 </plist>
