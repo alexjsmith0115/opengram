@@ -68,7 +68,7 @@ struct SettingsView: View {
 }
 
 /// SwiftUI view for LLM provider configuration (D-04, D-05, D-06, D-07).
-/// Standalone for now; Phase 5 will embed it into a tabbed Settings window.
+/// Standalone for now; future work will embed it into a tabbed Settings window.
 struct LLMSettingsView: View {
 
     // Non-secret config stored in UserDefaults via @AppStorage (D-05)

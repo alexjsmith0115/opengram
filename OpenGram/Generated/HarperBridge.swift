@@ -687,7 +687,7 @@ public func FfiConverterTypeHarperChecker_lower(_ value: HarperChecker) -> UInt6
 
 
 /**
- * Carries all Harper replacements so Phase 3 can decide presentation (D-01).
+ * Carries all Harper replacements so callers can decide presentation (D-01).
  * Char offsets index into the Swift String.unicodeScalars view.
  */
 public struct GrammarSuggestion: Equatable, Hashable {
