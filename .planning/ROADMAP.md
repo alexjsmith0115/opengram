@@ -195,7 +195,7 @@ Plans:
 | 18.1. Rephrase Card Hotkey Wiring Fix | v1.2 | 2/2 | Complete   | 2026-04-17 |
 | 20. Paragraph-level LLM Suggestions | v1.2 | 12/12 | ✅ Complete | 2026-04-18 |
 | 19. Integration & UAT | v1.2 | 0/TBD | Not started | - |
-| 01. AX Call Queue | v1.3 | 0/3 | Planned | - |
+| 01. AX Call Queue | v1.3 | 1/3 | Executing | 2026-04-18 |
 
 ## Backlog
 

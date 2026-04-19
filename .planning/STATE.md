@@ -1,29 +1,29 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.3
-milestone_name: Performance & Scroll-Tracking
-status: planning
-stopped_at: Defining requirements — v1.3 started
-last_updated: "2026-04-18T00:00:00Z"
-last_activity: 2026-04-18 -- Milestone v1.3 started (perf + scroll tracking); v1.2 Phase 19 UAT still pending
+milestone: v1.2
+milestone_name: Incremental LLM Checking + Paragraph Rephrase Card
+status: executing
+stopped_at: Phase 20 complete — user approved manual validation; ready to advance to Phase 19 UAT
+last_updated: "2026-04-19T01:02:18.476Z"
+last_activity: 2026-04-19 -- Phase 1 execution started
 progress:
-  total_phases: 0
+  total_phases: 15
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_plans: 3
+  completed_plans: 1
+  percent: 33
 ---
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-04-18 — Milestone v1.3 started; v1.2 phase dirs archived to milestones/v1.2-phases/
+Phase: 1 (AX Call Queue) — EXECUTING
+Plan: 2 of 3
+Status: Executing Phase 1
+Last activity: 2026-04-18 -- Plan 01-01 complete (busy-guard removed from AXCallWatchdog.shouldSkip)
 
 **v1.2 parallel status:** Phase 19 UAT pending. v1.2 ships via `/gsd-complete-milestone v1.2` after UAT closes. See `.planning/milestones/v1.2-phases/` for archived phase dirs.
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [███░░░░░░░] 33%
 
 ## Performance Metrics
 
@@ -57,6 +57,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 20 P09 | 25min | 1 task | 2 files |
 | Phase 20 P10a | 10min | 1 task | 9 files |
 | Phase 20 P10b | 15min | 1 task | 8 files |
+| Phase 01 P01 | 4min | 2 tasks | 2 files |
 
 ### Decisions
 
@@ -115,6 +116,7 @@ Progress: [░░░░░░░░░░] 0%
 - [Phase 20-10c]: Stale comment scrub in CheckOrchestrator/OpenGramConfig/LLMRequestQueue — inline refs to deleted LLMCheckScheduler/UserDefaultsIncrementalConfig rewritten to describe current architecture (paragraph-LLM via event-driven store, D-04).
 - [Phase 20-10c post-checkpoint]: Manual validation surfaced that keystrokes never fired LLM — legacy scheduler owned the debounce→reconcile timer; its removal in 10b/10c left only focus-change as a reconcile trigger. Fix wires TextMonitor.scheduleLLMReconcile (debounced DispatchWorkItem, live-read config.llmDebounceMs) on handleValueChanged + TextMonitor.reconcileNow (bypass-debounce) on hotkey path. Renamed driveStoreOnFocusChange → driveStoreReconcile (shared by focus/debounce/hotkey). Commit edec49c.
 - [Phase 20-10c post-checkpoint]: Integration tests added for OG→LM Studio call chain. Mocked suite (URLProtocol, 8 tests) runs by default; live suite (4 tests) gated on TEST_RUNNER_OPENGRAM_LIVE_LLM=1 so default xcodebuild test skips with explicit reason. Commit b9bdab4.
+- [Phase 01-01]: Busy-guard branch deleted from AXCallWatchdog.shouldSkip; blocklist-only gating; activeCall/beginCall/endCall/checkForHang preserved — hang detection intact. shouldSkipReturnsFalseDuringInFlightCall test locks new contract.
 
 ### Roadmap Evolution
 
@@ -138,6 +140,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-18T07:30:00Z
-Stopped at: Phase 20 complete — user approved manual validation; ready to advance to Phase 19 UAT
-Resume file: (none — Phase 20 closed; next command: /gsd-plan-phase 19 or /gsd-discuss-phase 19)
+Last session: 2026-04-18T21:07:00Z
+Stopped at: Phase 01 Plan 01 complete — busy-guard removed from AXCallWatchdog; ready for Plan 01-02 (AXCallQueue actor)
+Resume file: none
