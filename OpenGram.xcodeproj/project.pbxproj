@@ -60,6 +60,7 @@
 		B10000010000000000000102 /* ScrollTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000102 /* ScrollTrackerTests.swift */; };
 		B10000010000000000000103 /* ScrollAreaObserverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000103 /* ScrollAreaObserverTests.swift */; };
 		B10000010000000000000104 /* OverlayControllerScrollModeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000104 /* OverlayControllerScrollModeTests.swift */; };
+		B10000010000000000000105 /* OverlayControllerMirrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000105 /* OverlayControllerMirrorTests.swift */; };
 		B10000010000000000000024 /* OverlayWindowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000024 /* OverlayWindowTests.swift */; };
 		B10000010000000000000025 /* PopoverViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000025 /* PopoverViewTests.swift */; };
 		B10000010000000000000026 /* SuggestionPopoverPanelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000026 /* SuggestionPopoverPanelTests.swift */; };
@@ -221,6 +222,7 @@
 		B20000010000000000000102 /* ScrollTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollTrackerTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000103 /* ScrollAreaObserverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollAreaObserverTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000104 /* OverlayControllerScrollModeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayControllerScrollModeTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000105 /* OverlayControllerMirrorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayControllerMirrorTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000024 /* OverlayWindowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayWindowTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000025 /* PopoverViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverViewTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000026 /* SuggestionPopoverPanelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionPopoverPanelTests.swift; sourceTree = "<group>"; };
@@ -695,6 +697,7 @@
 				B20000010000000000000102 /* ScrollTrackerTests.swift */,
 				B20000010000000000000103 /* ScrollAreaObserverTests.swift */,
 				B20000010000000000000104 /* OverlayControllerScrollModeTests.swift */,
+				B20000010000000000000105 /* OverlayControllerMirrorTests.swift */,
 				B20000010000000000000024 /* OverlayWindowTests.swift */,
 				B20000010000000000000025 /* PopoverViewTests.swift */,
 				B20000010000000000000026 /* SuggestionPopoverPanelTests.swift */,
@@ -943,6 +946,7 @@
 				B10000010000000000000102 /* ScrollTrackerTests.swift in Sources */,
 				B10000010000000000000103 /* ScrollAreaObserverTests.swift in Sources */,
 				B10000010000000000000104 /* OverlayControllerScrollModeTests.swift in Sources */,
+				B10000010000000000000105 /* OverlayControllerMirrorTests.swift in Sources */,
 				B10000010000000000000024 /* OverlayWindowTests.swift in Sources */,
 				B10000010000000000000025 /* PopoverViewTests.swift in Sources */,
 				B10000010000000000000026 /* SuggestionPopoverPanelTests.swift in Sources */,
