@@ -38,6 +38,7 @@ final class OverlayController {
     private let rephraseCardPanelController: RephraseCardPanelController
     private let sourceParagraphHighlight: SourceParagraphHighlight
     private let boundsValidator = BoundsValidator()
+    private let axQueue: AXCallQueue
     private var scrollMonitor: Any?
     private var keyMonitor: Any?
     private var underlineView: UnderlineView?
@@ -80,13 +81,15 @@ final class OverlayController {
         textMonitor: TextMonitor? = nil,
         config: OpenGramConfig = OpenGramConfig(),
         splitter: any ParagraphSplitting = DoubleNewlineSplitter(),
-        store: ParagraphSuggestionStore? = nil
+        store: ParagraphSuggestionStore? = nil,
+        axQueue: AXCallQueue? = nil
     ) {
         self.accessor = accessor
         self.textMonitor = textMonitor
         self.config = config
         self.splitter = splitter
         self.store = store
+        self.axQueue = axQueue ?? AXCallQueue(accessor: accessor)
         self.heuristic = DisplayHeuristic(config: config)
         self.overlayWindow = OverlayWindow()
         self.popoverPanel = SuggestionPopoverPanel()
