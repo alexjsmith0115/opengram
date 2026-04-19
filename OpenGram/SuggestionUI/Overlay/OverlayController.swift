@@ -465,9 +465,12 @@ final class OverlayController {
             )
             if Task.isCancelled { return }
             applyBounds(results, reason: reason)
+        } catch is CancellationError {
+            // Expected — a newer reposition cancelled this one.
         } catch {
-            // CancellationError expected; other errors rare — silent per D-05.
-            // Future work may add os.log once scroll path is production-active.
+            // PERF-07/D-22: scroll path is live this phase; surface non-cancellation
+            // failures so real bugs aren't silently swallowed.
+            Self.logger.error("reposition failed: \(String(describing: error), privacy: .public)")
         }
     }
 
