@@ -363,4 +363,44 @@ struct OverlayControllerMirrorTests {
         #expect(frame.minX < 250, "expected SCREEN-space x < 250 (near 196), got \(frame.minX)")
         #expect(frame.minY > 400, "expected SCREEN-space y > 400 (near 500), got \(frame.minY) — Gap 2 regression")
     }
+
+    // PERF-12 GAP-2: zero-AX early-bail inside reposition() must recompute the
+    // overlay frame BEFORE rebuilding underline entries — mirrors the invariant
+    // applyBounds + repositionAfterAccept already enforce. On this branch all
+    // survivors are strictly-before the edit site, so union minX is anchored by
+    // the leftmost survivor pre- and post-accept; LOCAL translation produces
+    // identical entries in either order. The ordering defect is defensive-
+    // correctness-only, so the regression lock is a source-position check.
+    // Precedent: OverlayControllerRepositionTests.scrollPathCancels uses the
+    // same approach because NSEvent global monitors aren't in-process observable.
+    @Test("zero-AX early-bail recomputes frame before rebuilding entries (GAP-2 ordering invariant)")
+    func zeroAXEarlyBail_recomputesFrameBeforeRebuildingEntries() throws {
+        // Walk up from the test file to the repo root, then into the source path.
+        // `#filePath` is: <repo>/OpenGramTests/SuggestionUITests/OverlayControllerMirrorTests.swift
+        let url = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()   // SuggestionUITests
+            .deletingLastPathComponent()   // OpenGramTests
+            .deletingLastPathComponent()   // <repo>
+            .appendingPathComponent("OpenGram/SuggestionUI/Overlay/OverlayController.swift")
+
+        let source = try String(contentsOf: url, encoding: .utf8)
+
+        guard let anchorRange = source.range(of: "PERF-12 D-07") else {
+            Issue.record("Anchor comment 'PERF-12 D-07' missing from OverlayController.swift — rebase or Task 1 unapplied")
+            return
+        }
+        let tail = String(source[anchorRange.upperBound...])
+        let snippet = String(tail.prefix(600))  // covers the block from comment through `return`
+
+        guard let recomputeRange = snippet.range(of: "recomputeOverlayFrame()"),
+              let rebuildRange = snippet.range(of: "rebuildUnderlineEntries()") else {
+            Issue.record("Expected both recomputeOverlayFrame() and rebuildUnderlineEntries() within the zero-AX early-bail block")
+            return
+        }
+
+        #expect(
+            recomputeRange.lowerBound < rebuildRange.lowerBound,
+            "GAP-2 regression: zero-AX early-bail must call recomputeOverlayFrame() BEFORE rebuildUnderlineEntries() — matches applyBounds + repositionAfterAccept invariant"
+        )
+    }
 }
