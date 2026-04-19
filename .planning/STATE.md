@@ -3,22 +3,22 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Incremental LLM Checking + Paragraph Rephrase Card
 status: verifying
-stopped_at: Phase 5 context gathered
-last_updated: "2026-04-19T17:54:14.682Z"
+stopped_at: Phase 5 Plan 03 complete — Gaps 1+2 closed
+last_updated: "2026-04-19T19:50:00.000Z"
 last_activity: 2026-04-19
 progress:
   total_phases: 10
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
-  percent: 93
+  percent: 95
 ---
 
 ## Current Position
 
 Phase: 05 (session-local-mirror-improvements) — EXECUTING
-Plan: 2 of 2
-Status: Phase complete — ready for verification
+Plan: 3 of 3
+Status: Plan 03 complete — UAT Gaps 1+2 closed, Gap 3 carved out
 Last activity: 2026-04-19
 
 **v1.2 parallel status:** Phase 19 UAT pending. v1.2 ships via `/gsd-complete-milestone v1.2` after UAT closes. See `.planning/milestones/v1.2-phases/` for archived phase dirs.
@@ -45,6 +45,7 @@ Progress: [█████████▎] 93%
 | Phase 03 P2 | 480 | 4 tasks | 3 files |
 | Phase 05-session-local-mirror-improvements P01 | 5min | 3 tasks | 3 files |
 | Phase 05-session-local-mirror-improvements P02 | 10min | 2 tasks | 3 files |
+| Phase 05-session-local-mirror-improvements P03 | 15min | 3 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -162,6 +163,12 @@ Progress: [█████████▎] 93%
 - [Phase 05-01]: recomputeOverlayFrame() kept private and separate from rebuildUnderlineEntries — rebuildUnderlineEntries runs in many contexts where caller manages the frame; frame recompute belongs in its own helper (D-08/D-16)
 - [Phase 05-01]: textChanged_queriesAllRegardlessOfCache renamed to textChanged_queriesOnlyUncachedSuggestions — old name encoded the superseded contract; updated alongside acceptRemovesOnlyAcceptedID to keep the ViewportCullTests suite internally consistent (Rule 1 deviation)
 - [Phase ?]: OverlayControllerTests async fixes — both tests encoded superseded sync BoundsValidator loop (D-03); updated to await currentRepositionTask?.value before assertions (PERF-12)
+- [Phase 05-03]: UAT Gap 1 closed — sync rebuildUnderlineEntries + recomputeOverlayFrame inserted at tail of repositionAfterAccept before scheduleReposition(.textChanged); closes AppKit draw-cycle gap where pre-accept entries painted over shifted text
+- [Phase 05-03]: UAT Gap 2 closed — update() diff.unchanged branch rebuilds UnderlineEntry from lastKnownRects[oldSuggestion.id] (SCREEN) instead of reusing underlineView.entries (LOCAL); fixes trailing-accept window jump to LOCAL-origin screen coords
+- [Phase 05-03]: applyBounds ordering flipped — recomputeOverlayFrame before rebuildUnderlineEntries so toLocalEntries translates against up-to-date overlayWindow.frame origin (secondary latent bug, defensive correctness zero-cost)
+- [Phase 05-03]: OverlayController.overlayWindow flipped private → internal for @testable access — plan assumed accessibility but `private` cannot cross @testable boundary; mirrors Phase 2/3/4 test-observable state precedent
+- [Phase 05-03]: Test B bypasses show() — makeSuggestion's Suggestion.range is bound to literal "recieve", not context text; show()'s computeScalarOffsets would crash or collapse SuggestionKeys. Test constructs ranges from actual "aaa bbb ccc" unicode-scalar indices and uses orderFrontRegardless to satisfy update()'s isVisible guard
+- [Phase 05-03]: Gap 3 (rapid multi-accept cascade) deliberately carved out — requires persistent dismissed-set in CheckCoordinator + Harper/LLM update-contract preservation + ParagraphSuggestionStore dismissal across hash change; belongs to separate inserted phase
 
 ### Roadmap Evolution
 
@@ -187,6 +194,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-19T17:54:11.768Z
-Stopped at: Phase 5 context gathered
+Last session: 2026-04-19T19:50:00.000Z
+Stopped at: Phase 5 Plan 03 complete — UAT Gaps 1+2 closed, Gap 3 carved out for separate phase
 Resume file: None
