@@ -3,27 +3,27 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Performance & Scroll-Tracking
 status: executing
-stopped_at: Phase 4 executing — Wave 3 plan 03 complete (ScrollAreaObserver for programmatic scrolls landed)
-last_updated: "2026-04-19T14:10:40Z"
-last_activity: 2026-04-19 -- Phase 4 Plan 03 complete (ScrollAreaObserver @MainActor class + 3 lifecycle tests)
+stopped_at: Phase 4 executing — Wave 4 plan 04 complete (OverlayController scroll state machine + fade + demotion + AX observer wiring)
+last_updated: "2026-04-19T14:20:24Z"
+last_activity: 2026-04-19 -- Phase 4 Plan 04 complete (PERF-07/08/09/10/11 — full scroll state machine wired in OverlayController)
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 14
-  completed_plans: 11
-  percent: 79
+  completed_plans: 12
+  percent: 86
 ---
 
 ## Current Position
 
-Phase: 4 (Scroll Handling — trackFrame + hideAndSettle) — Wave 3 plan 03 complete
-Plan: 04-03 done; 04-04 next
+Phase: 4 (Scroll Handling — trackFrame + hideAndSettle) — Wave 4 plan 04 complete
+Plan: 04-04 done; 04-05 next
 Status: Executing
-Last activity: 2026-04-19 -- Phase 4 Plan 03 complete
+Last activity: 2026-04-19 -- Phase 4 Plan 04 complete
 
 **v1.2 parallel status:** Phase 19 UAT pending. v1.2 ships via `/gsd-complete-milestone v1.2` after UAT closes. See `.planning/milestones/v1.2-phases/` for archived phase dirs.
 
-Progress: [████████░░] 79%
+Progress: [████████▌░] 86%
 
 ## Performance Metrics
 
@@ -67,6 +67,7 @@ Progress: [████████░░] 79%
 | Phase 04 P01 | 12min | 3 tasks | 3 files |
 | Phase 04 P02 | 8min | 3 tasks | 3 files |
 | Phase 04 P03 | 5min | 3 tasks | 3 files |
+| Phase 04 P04 | 6min | 5 tasks | 1 files |
 
 ### Decisions
 
@@ -145,6 +146,10 @@ Progress: [████████░░] 79%
 - [Phase 04-02]: CADisplayLink unit tests need shared static NSWindow + .serialized suite + RunLoop.main.run pump — per-test NSWindow + orderFrontRegardless crashes WindowServer between sequential tests (NSCGS pre-commit fence); Task.sleep alone does not advance NSRunLoop in test host
 - [Phase 04-03]: Swift overlay of HIServices/AXNotificationConstants.h (macOS 14 SDK) omits kAXScrolledVisibleChildrenChangedNotification — used private static CFString literal "AXScrolledVisibleChildrenChanged" (Apple's documented key, WebKit-identical). Canonical constant name kept in doc comment so verify-grep passes unchanged.
 - [Phase 04-03]: ScrollAreaObserver test element uses AXUIElementCreateSystemWide() + no-op handler — test host has no scroll-area element; mirrors TargetAppObserverTests PID-1 strategy. Critical assertion is retain/release balance (no crash), not notification delivery.
+- [Phase 04-04]: Tasks 1+2 merged into single feat commit because show()'s scroll monitor closure (Task 1) calls handleScrollEvent / findScrollAreaAncestor / resolveScrollMode (Task 2) — splitting would create build-broken intermediate, violating plan's <verify> gate. Tasks 3, 4, 5 each as own commits since their hunks build independently.
+- [Phase 04-04]: Self.logger reused for D-22 reposition error logging — existing private static Logger declared at top of OverlayController (subsystem=bundle ID, category="OverlayController") matches "use existing or add per convention" guidance.
+- [Phase 04-04]: pid binding hoist NOT required — existing `let pid = NSRunningApplication...processIdentifier` already at show() top scope; both TargetAppObserver and ScrollAreaObserver installs reach it via `if let pid` guard pattern.
+- [Phase 04-04]: All scroll handlers + fade primitive + ancestor lookup placed in dedicated MARK block between freshElementBounds and rebuildUnderlineEntries — keeps reposition/cull/apply intact, groups all scroll machinery cohesively.
 
 ### Roadmap Evolution
 
@@ -168,6 +173,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-19T14:10:40Z
-Stopped at: Completed 04-03-PLAN.md
+Last session: 2026-04-19T14:20:24Z
+Stopped at: Completed 04-04-PLAN.md
 Resume file: None
