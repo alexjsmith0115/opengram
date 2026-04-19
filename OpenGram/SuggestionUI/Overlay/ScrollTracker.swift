@@ -52,6 +52,8 @@ final class ScrollTracker {
     }
 
     deinit {
-        displayLink?.invalidate()
+        MainActor.assumeIsolated {
+            displayLink?.invalidate()
+        }
     }
 }
