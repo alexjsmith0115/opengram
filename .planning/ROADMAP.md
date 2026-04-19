@@ -198,7 +198,7 @@ Plans:
 | 01. AX Call Queue | v1.3 | 3/3 | Complete | 2026-04-19 |
 | 02. Cancellable Bounds Queries | v1.3 | 3/3 | Complete   | 2026-04-19 |
 | 03. Viewport Cull + Rect Cache | v1.3 | 0/2 | Not started | - |
-| 04. Scroll Handling — trackFrame + hideAndSettle | v1.3 | 1/5 | In progress | 2026-04-19 |
+| 04. Scroll Handling — trackFrame + hideAndSettle | v1.3 | 2/5 | In progress | 2026-04-19 |
 
 ## Backlog
 
@@ -318,7 +318,7 @@ Plans:
 
 Plans:
 - [x] 04-01-PLAN.md — AppQuirk ScrollMode enum + plist allowlist + tests (PERF-07) — completed 2026-04-19
-- [ ] 04-02-PLAN.md — ScrollTracker CADisplayLink pump + tests + pbxproj (PERF-09)
+- [x] 04-02-PLAN.md — ScrollTracker CADisplayLink pump + tests + pbxproj (PERF-09) — completed 2026-04-19
 - [ ] 04-03-PLAN.md — ScrollAreaObserver kAXScrolledVisibleChildrenChanged + tests + pbxproj (PERF-11)
 - [ ] 04-04-PLAN.md — OverlayController scroll state machine + fade + demotion + observer wire (PERF-07/08/09/10/11)
 - [ ] 04-05-PLAN.md — OverlayControllerScrollModeTests + recordFrameCost seam + full-suite gate (PERF-07/08/10)
