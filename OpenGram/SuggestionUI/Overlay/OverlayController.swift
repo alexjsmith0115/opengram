@@ -29,6 +29,12 @@ final class OverlayController {
     // Hardcoded per D-05 — tune only if real-world friction surfaces.
     private static let scrollCullPaddingY: CGFloat = 40
 
+    // PERF-10 frame-budget demotion thresholds.
+    private static let frameBudget: TimeInterval = 0.012    // 12ms
+    private static let frameBudgetMissLimit = 3
+    // PERF-08 hideAndSettle debounce window.
+    private static let hideAndSettleDelay: TimeInterval = 0.15
+
     private let accessor: any AXAccessor
     private let textMonitor: TextMonitor?
     private let config: OpenGramConfig
@@ -61,9 +67,34 @@ final class OverlayController {
     /// per-ID cleared on acceptSuggestion. `internal` so @testable tests assert cache state.
     var lastKnownRects: [UUID: [NSRect]] = [:]
 
+    /// PERF-07/08/09/10: overlay scroll state machine. Transitions:
+    /// - .idle → .scrolling on first trackFrame scroll event
+    /// - .idle → .faded on first hideAndSettle scroll event
+    /// - .scrolling → .idle on scrollTracker onIdle
+    /// - .faded → .idle on handleHideAndSettleComplete
+    /// `internal` so @testable tests can assert state directly (D-27).
+    enum ScrollState {
+        case idle
+        case scrolling  // trackFrame only
+        case faded      // hideAndSettle only
+    }
+
+    /// PERF-07/08/09/10 scroll state machine storage. All internal so
+    /// OverlayControllerScrollModeTests can assert transitions (D-27).
+    var scrollState: ScrollState = .idle
+    var scrollTracker: ScrollTracker?
+    var hideSettleTimer: Timer?
+    var frameBudgetMisses: Int = 0
+    var effectiveScrollMode: ScrollMode = .hideAndSettle
+
+    /// PERF-11 observer for programmatic scrolls (arrow keys / find-nav / scrollToVisible:).
+    var scrollAreaObserver: ScrollAreaObserver?
+
     private var scrollMonitor: Any?
     private var keyMonitor: Any?
-    private var underlineView: UnderlineView?
+    /// `internal` per D-27 so OverlayControllerScrollModeTests can assert
+    /// `underlineView?.alphaValue` after fadeUnderlines calls.
+    var underlineView: UnderlineView?
     private var targetAppPID: pid_t?
     private var currentCardParagraphRange: (scalarStart: Int, scalarLength: Int)?
     /// Hash of the paragraph currently shown in the rephrase card. Guards against re-dispatching
@@ -227,12 +258,33 @@ final class OverlayController {
             }
         }
 
-        // Dismiss on any scroll: cgEvent is often nil for native Cocoa scroll events,
-        // making PID-filtered dismissal unreliable. Any scroll while visible means
-        // underline positions are stale, so unconditional dismiss is correct.
+        // PERF-07/09: resolve effective scroll mode and prime trackFrame tracker.
+        effectiveScrollMode = resolveScrollMode(bundleID: context.bundleID)
+        frameBudgetMisses = 0
+        scrollState = .idle
+
+        if effectiveScrollMode == .trackFrame, let view = underlineView {
+            let tracker = ScrollTracker(hostView: view)
+            tracker.onTick = { [weak self] in self?.handleScrollTick() }
+            tracker.onIdle = { [weak self] in self?.handleScrollIdle() }
+            scrollTracker = tracker
+        }
+
+        // PERF-07/08/09/10: route all scroll events through the state machine.
+        // No direct dismiss on scroll — per-app mode determines reposition vs fade.
         scrollMonitor = NSEvent.addGlobalMonitorForEvents(matching: .scrollWheel) { [weak self] _ in
-            self?.currentRepositionTask?.cancel()
-            self?.dismiss()
+            self?.handleScrollEvent()
+        }
+
+        // PERF-11: programmatic scroll observer on nearest scroll-area ancestor.
+        if let pid, let scrollArea = findScrollAreaAncestor(context.axElement) {
+            let observer = ScrollAreaObserver()
+            observer.install(
+                pid: pid,
+                element: scrollArea,
+                onScrollChanged: { [weak self] in self?.handleScrollEvent() }
+            )
+            scrollAreaObserver = observer
         }
 
         // D-14: Only Escape remains as a global key monitor. Tab and Enter monitors removed.
@@ -466,6 +518,125 @@ final class OverlayController {
     /// D-08: used by `reposition` early-bail when zero target suggestions.
     private func clearUnderlines() {
         underlineView?.entries = []
+    }
+
+    /// PERF-07: bundleID → scroll mode. Unknown apps default to hideAndSettle.
+    /// Internal so tests assert resolution directly.
+    func resolveScrollMode(bundleID: String) -> ScrollMode {
+        AppQuirksTable.shared.quirk(for: bundleID)?.scrollMode ?? .hideAndSettle
+    }
+
+    // MARK: - Scroll state machine (PERF-07/08/09/10/11)
+
+    /// Entry point from NSEvent scroll monitor AND ScrollAreaObserver callback.
+    /// Routes by effectiveScrollMode (D-10).
+    func handleScrollEvent() {
+        switch effectiveScrollMode {
+        case .trackFrame:
+            scrollState = .scrolling
+            scrollTracker?.noteScrollEvent()
+        case .hideAndSettle:
+            handleScrollEvent_hideAndSettle()
+        }
+    }
+
+    /// trackFrame per-tick handler. Cancels any in-flight reposition, kicks a new
+    /// one, and records elapsed frame cost on completion (D-11).
+    func handleScrollTick() {
+        let start = CACurrentMediaTime()
+        currentRepositionTask?.cancel()
+        currentRepositionTask = Task { [weak self] in
+            await self?.reposition(reason: .scrollDuring)
+            await MainActor.run { [weak self] in
+                self?.recordFrameCost(start: start)
+            }
+        }
+    }
+
+    /// trackFrame idle handler — fired once by ScrollTracker after idleTimeout (D-12).
+    func handleScrollIdle() {
+        scrollState = .idle
+        scheduleReposition(reason: .scrollSettled)
+    }
+
+    /// hideAndSettle: fade on first event, debounce subsequent events (D-13).
+    func handleScrollEvent_hideAndSettle() {
+        currentRepositionTask?.cancel()
+        if scrollState != .faded {
+            fadeUnderlines(to: 0, duration: 0.08)
+            scrollState = .faded
+        }
+        resetHideSettleTimer()
+    }
+
+    /// Arms a one-shot timer for hideAndSettleDelay; on fire, calls
+    /// handleHideAndSettleComplete on MainActor (D-14).
+    func resetHideSettleTimer() {
+        hideSettleTimer?.invalidate()
+        hideSettleTimer = Timer.scheduledTimer(
+            withTimeInterval: Self.hideAndSettleDelay,
+            repeats: false
+        ) { [weak self] _ in
+            Task { @MainActor in self?.handleHideAndSettleComplete() }
+        }
+    }
+
+    /// hideAndSettle settle handler — reposition, then applyBounds fades back in (D-15).
+    func handleHideAndSettleComplete() {
+        scrollState = .idle
+        scheduleReposition(reason: .scrollSettled)
+    }
+
+    /// Tracks frame cost against Self.frameBudget; 3 consecutive misses demote
+    /// the session to hideAndSettle (D-16). Good frames decay the miss counter.
+    func recordFrameCost(start: CFTimeInterval) {
+        let elapsed = CACurrentMediaTime() - start
+        if elapsed > Self.frameBudget {
+            frameBudgetMisses += 1
+            if frameBudgetMisses >= Self.frameBudgetMissLimit {
+                demoteToHideAndSettle()
+            }
+        } else {
+            frameBudgetMisses = max(0, frameBudgetMisses - 1)
+        }
+    }
+
+    /// Converts the current trackFrame session to hideAndSettle. Session-scoped —
+    /// dismiss() resets everything so the next overlay session starts fresh (D-17).
+    func demoteToHideAndSettle() {
+        effectiveScrollMode = .hideAndSettle
+        scrollTracker?.stop()
+        scrollTracker = nil
+        fadeUnderlines(to: 0, duration: 0.08)
+        scrollState = .faded
+        resetHideSettleTimer()
+    }
+
+    /// Animated alpha transition on the underline view (D-19).
+    func fadeUnderlines(to alpha: CGFloat, duration: TimeInterval) {
+        guard let view = underlineView else { return }
+        NSAnimationContext.runAnimationGroup { ctx in
+            ctx.duration = duration
+            view.animator().alphaValue = alpha
+        }
+    }
+
+    /// Walks kAXParentAttribute up to 10 levels looking for a kAXScrollAreaRole
+    /// ancestor. Returns nil if none found — scrollAreaObserver stays nil, NSEvent
+    /// monitor still catches mouse-wheel scrolls (D-20).
+    func findScrollAreaAncestor(_ element: AXUIElement) -> AXUIElement? {
+        var current = element
+        for _ in 0..<10 {
+            let (err, ref) = accessor.copyAttributeValue(current, kAXParentAttribute)
+            guard err == .success, let parent = ref else { return nil }
+            let parentEl = parent as! AXUIElement
+            let (roleErr, roleRef) = accessor.copyAttributeValue(parentEl, kAXRoleAttribute)
+            if roleErr == .success, (roleRef as? String) == kAXScrollAreaRole {
+                return parentEl
+            }
+            current = parentEl
+        }
+        return nil
     }
 
     /// PERF-06: sync MainActor AX read of element position + size. Skips axQueue
