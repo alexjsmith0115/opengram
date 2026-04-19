@@ -33,6 +33,7 @@
 		A10000010000000000000042 /* PopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000042 /* PopoverView.swift */; };
 		A10000010000000000000043 /* SuggestionPopoverPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000043 /* SuggestionPopoverPanel.swift */; };
 		A10000010000000000000044 /* UnderlineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000044 /* UnderlineView.swift */; };
+		A10000010000000000000101 /* ScrollTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000101 /* ScrollTracker.swift */; };
 		A10000010000000000000045 /* TargetAppObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000045 /* TargetAppObserver.swift */; };
 		A10000010000000000000046 /* BoundsValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000046 /* BoundsValidator.swift */; };
 		A10000010000000000000047 /* AXCallWatchdog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000047 /* AXCallWatchdog.swift */; };
@@ -188,6 +189,7 @@
 		A20000010000000000000042 /* PopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverView.swift; sourceTree = "<group>"; };
 		A20000010000000000000043 /* SuggestionPopoverPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionPopoverPanel.swift; sourceTree = "<group>"; };
 		A20000010000000000000044 /* UnderlineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnderlineView.swift; sourceTree = "<group>"; };
+		A20000010000000000000101 /* ScrollTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollTracker.swift; sourceTree = "<group>"; };
 		A20000010000000000000045 /* TargetAppObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetAppObserver.swift; sourceTree = "<group>"; };
 		A20000010000000000000046 /* BoundsValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoundsValidator.swift; sourceTree = "<group>"; };
 		A20000010000000000000047 /* AXCallWatchdog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXCallWatchdog.swift; sourceTree = "<group>"; };
@@ -572,6 +574,7 @@
 				A20000010000000000000040 /* OverlayController.swift */,
 				A20000010000000000000041 /* OverlayWindow.swift */,
 				A28060010000000000000001 /* SourceParagraphHighlight.swift */,
+				A20000010000000000000101 /* ScrollTracker.swift */,
 				A20000010000000000000044 /* UnderlineView.swift */,
 			);
 			path = Overlay;
@@ -851,6 +854,7 @@
 				A10000010000000000000042 /* PopoverView.swift in Sources */,
 				A10000010000000000000043 /* SuggestionPopoverPanel.swift in Sources */,
 				A10000010000000000000044 /* UnderlineView.swift in Sources */,
+				A10000010000000000000101 /* ScrollTracker.swift in Sources */,
 				A10000010000000000000045 /* TargetAppObserver.swift in Sources */,
 				A10000010000000000000046 /* BoundsValidator.swift in Sources */,
 				A10000010000000000000047 /* AXCallWatchdog.swift in Sources */,
