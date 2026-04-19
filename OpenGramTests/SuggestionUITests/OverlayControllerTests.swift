@@ -422,13 +422,13 @@ struct OverlayControllerAcceptTests {
     }
 
     @Test("repositionDropsSuggestionsOnBoundsFailure")
-    func repositionDropsSuggestionsOnBoundsFailure() {
+    func repositionDropsSuggestionsOnBoundsFailure() async throws {
         let mock = MockAXAccessor()
         mock.setAttributeResult = .success
         mock.attributeSettable[kAXSelectedTextRangeAttribute] = (.success, true)
         // After accept, re-read succeeds but bounds queries return nil (watchdog skip path)
         mock.attributeValues[kAXValueAttribute] = (.success, "aaa B ccc" as CFString)
-        // No parameterized attribute values set — BoundsValidator will get nil bounds for all
+        // No parameterized attribute values set — BoundsValidator returns nil for all
 
         let controller = OverlayController(accessor: mock)
         let text = "aaa bb ccc"
@@ -438,9 +438,17 @@ struct OverlayControllerAcceptTests {
         controller.suggestions = [s1, s2]
         controller.acceptSuggestion(s2, context: context)
 
-        // Remaining suggestion s1 should be dropped because bounds re-query fails (nil from BoundsValidator)
-        // and all suggestions dropped means dismiss() is called
-        #expect(controller.suggestions.isEmpty)
+        // Accept removes s2 synchronously; s1 survives in the array because the
+        // async reposition path (scheduleReposition(.textChanged)) does not drop
+        // suggestions with nil bounds — it simply omits them from lastKnownRects.
+        #expect(controller.suggestions.count == 1)
+        #expect(controller.suggestions.first?.id == s1.id)
+
+        // Drain the async reposition task so the test doesn't leak a pending Task.
+        await controller.currentRepositionTask?.value
+
+        // After the async path completes, s1 has no cached rect (bounds failed).
+        #expect(controller.lastKnownRects[s1.id] == nil)
     }
 
     @Test("acceptWritesFullTextReplacementInFallback")
@@ -500,7 +508,7 @@ private func extractCFRange(from parameter: CFTypeRef) -> CFRange? {
 struct OverlayControllerRepositionIntegrationTests {
 
     @Test("bounds queries use shifted scalar offsets after accept changes text length")
-    func boundsQueriesUseShiftedOffsets() {
+    func boundsQueriesUseShiftedOffsets() async throws {
         let mock = MockAXAccessor()
         mock.setAttributeResult = .success
         mock.attributeSettable[kAXSelectedTextRangeAttribute] = (.success, true)
@@ -521,6 +529,10 @@ struct OverlayControllerRepositionIntegrationTests {
         mock.parameterizedAttributeCalls = []
 
         controller.acceptSuggestion(s1, context: context)
+
+        // Bounds queries now happen asynchronously via scheduleReposition(.textChanged).
+        // Await the reposition task before sampling parameterizedAttributeCalls.
+        await controller.currentRepositionTask?.value
 
         // Filter to kAXBoundsForRangeParameterizedAttribute calls during reposition
         let boundsCalls = mock.parameterizedAttributeCalls.filter {
