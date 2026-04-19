@@ -139,6 +139,8 @@
 		B12005010000000000000001 /* LLMRequestQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22005010000000000000001 /* LLMRequestQueueTests.swift */; };
 		A12006010000000000000001 /* ParagraphSuggestionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22006010000000000000001 /* ParagraphSuggestionStore.swift */; };
 		B12006010000000000000001 /* ParagraphSuggestionStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22006010000000000000001 /* ParagraphSuggestionStoreTests.swift */; };
+		A10000010000000000000024 /* AXCallQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000024 /* AXCallQueue.swift */; };
+		B10000010000000000000040 /* AXCallQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000040 /* AXCallQueueTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -170,6 +172,8 @@
 		A20000010000000000000021 /* AXCapabilityCacheProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXCapabilityCacheProtocol.swift; sourceTree = "<group>"; };
 		A20000010000000000000022 /* AXTextEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXTextEngine.swift; sourceTree = "<group>"; };
 		A20000010000000000000023 /* AXCapabilityCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXCapabilityCache.swift; sourceTree = "<group>"; };
+		A20000010000000000000024 /* AXCallQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXCallQueue.swift; sourceTree = "<group>"; };
+		B20000010000000000000040 /* AXCallQueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXCallQueueTests.swift; sourceTree = "<group>"; };
 		A20000010000000000000030 /* GrammarCheckerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrammarCheckerProtocol.swift; sourceTree = "<group>"; };
 		A20000010000000000000031 /* Suggestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Suggestion.swift; sourceTree = "<group>"; };
 		A20000010000000000000032 /* DictionaryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryStore.swift; sourceTree = "<group>"; };
@@ -386,6 +390,7 @@
 				A20000010000000000000006 /* AXTextEngineProtocol.swift */,
 				A20000010000000000000007 /* TextContext.swift */,
 				A20000010000000000000020 /* AXAccessor.swift */,
+				A20000010000000000000024 /* AXCallQueue.swift */,
 				A20000010000000000000021 /* AXCapabilityCacheProtocol.swift */,
 				A20000010000000000000022 /* AXTextEngine.swift */,
 				A20000010000000000000023 /* AXCapabilityCache.swift */,
@@ -448,6 +453,7 @@
 				B20000010000000000000013 /* SuggestionTests.swift */,
 				B4000001000000000000000B /* CheckEngine */,
 				B4000001000000000000000A /* SuggestionUITests */,
+				B4000001000000000000000C /* TextEngineTests */,
 				B20000010000000000000006 /* TextContextTests.swift */,
 				B20000010000000000000032 /* TextMonitorTests.swift */,
 			);
@@ -696,6 +702,14 @@
 			path = RephraseCard;
 			sourceTree = "<group>";
 		};
+		B4000001000000000000000C /* TextEngineTests */ = {
+			isa = PBXGroup;
+			children = (
+				B20000010000000000000040 /* AXCallQueueTests.swift */,
+			);
+			path = TextEngineTests;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -806,6 +820,7 @@
 				A1000001000000000000000B /* PermissionGuide.swift in Sources */,
 				A10000010000000000000011 /* HotkeyManager.swift in Sources */,
 				A10000010000000000000020 /* AXAccessor.swift in Sources */,
+				A10000010000000000000024 /* AXCallQueue.swift in Sources */,
 				A10000010000000000000021 /* AXCapabilityCacheProtocol.swift in Sources */,
 				A10000010000000000000022 /* AXTextEngine.swift in Sources */,
 				A10000010000000000000023 /* AXCapabilityCache.swift in Sources */,
@@ -885,6 +900,7 @@
 				B10000010000000000000012 /* HarperServiceTests.swift in Sources */,
 				B10000010000000000000013 /* SuggestionTests.swift in Sources */,
 				B10000010000000000000020 /* AXCallWatchdogTests.swift in Sources */,
+				B10000010000000000000040 /* AXCallQueueTests.swift in Sources */,
 				B10000010000000000000021 /* BoundsForRangeTests.swift in Sources */,
 				B10000010000000000000022 /* BoundsValidatorTests.swift in Sources */,
 				B10000010000000000000023 /* OverlayControllerTests.swift in Sources */,
