@@ -503,7 +503,8 @@ final class OverlayController {
 
     /// PERF-05: populate lastKnownRects with every successful bounds result, then
     /// rebuild the underline view entries. `applyBoundsCallCount` spy stays —
-    /// cancellation tests depend on it. Fade-in on .scrollSettled is deferred.
+    /// cancellation tests depend on it.
+    /// PERF-08/D-18: fade back in after hideAndSettle settle OR post-demotion reposition.
     private func applyBounds(
         _ results: [(suggestion: Suggestion, rects: [NSRect])],
         reason: RepositionReason
@@ -513,6 +514,10 @@ final class OverlayController {
             lastKnownRects[suggestion.id] = rects
         }
         rebuildUnderlineEntries()
+        // PERF-08/D-18: fade back in after hideAndSettle settle OR post-demotion reposition.
+        if reason == .scrollSettled, underlineView?.alphaValue != 1 {
+            fadeUnderlines(to: 1, duration: 0.12)
+        }
     }
 
     /// D-08: used by `reposition` early-bail when zero target suggestions.
