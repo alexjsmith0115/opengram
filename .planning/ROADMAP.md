@@ -198,7 +198,7 @@ Plans:
 | 01. AX Call Queue | v1.3 | 3/3 | Complete | 2026-04-19 |
 | 02. Cancellable Bounds Queries | v1.3 | 3/3 | Complete   | 2026-04-19 |
 | 03. Viewport Cull + Rect Cache | v1.3 | 0/2 | Not started | - |
-| 04. Scroll Handling — trackFrame + hideAndSettle | v1.3 | 4/5 | In progress | 2026-04-19 |
+| 04. Scroll Handling — trackFrame + hideAndSettle | v1.3 | 5/5 | Complete | 2026-04-19 |
 
 ## Backlog
 
@@ -247,7 +247,7 @@ Plans:
 - [x] **Phase 1: AX Call Queue** — FIFO actor queue off main actor; watchdog busy-guard removed (PERF-01, PERF-02) (completed 2026-04-19)
 - [x] **Phase 2: Cancellable Bounds Queries** — Task-based reposition; cancel at accept/dismiss/scroll sites (PERF-03, PERF-04) (completed 2026-04-19)
 - [x] **Phase 3: Viewport Cull + Rect Cache** — `lastKnownRects` + scroll-time cull; initial/textChanged query all (PERF-05, PERF-06) (completed 2026-04-19)
-- [ ] **Phase 4: Scroll Handling — `trackFrame` + `hideAndSettle`** — per-app via AppQuirks; CADisplayLink pump; 12ms-budget demotion; scroll-area AX observer (PERF-07, PERF-08, PERF-09, PERF-10, PERF-11)
+- [x] **Phase 4: Scroll Handling — `trackFrame` + `hideAndSettle`** — per-app via AppQuirks; CADisplayLink pump; 12ms-budget demotion; scroll-area AX observer (PERF-07, PERF-08, PERF-09, PERF-10, PERF-11) (completed 2026-04-19)
 - [ ] **Phase 5: Session-Local Mirror Improvements** — preserve cached rects before edit site on accept; `.textChanged` queries only invalidated (PERF-12)
 
 ### v1.3 Phase Details
@@ -321,7 +321,7 @@ Plans:
 - [x] 04-02-PLAN.md — ScrollTracker CADisplayLink pump + tests + pbxproj (PERF-09) — completed 2026-04-19
 - [x] 04-03-PLAN.md — ScrollAreaObserver kAXScrolledVisibleChildrenChanged + tests + pbxproj (PERF-11) — completed 2026-04-19
 - [x] 04-04-PLAN.md — OverlayController scroll state machine + fade + demotion + observer wire (PERF-07/08/09/10/11) — completed 2026-04-19
-- [ ] 04-05-PLAN.md — OverlayControllerScrollModeTests + recordFrameCost seam + full-suite gate (PERF-07/08/10)
+- [x] 04-05-PLAN.md — OverlayControllerScrollModeTests + recordFrameCost seam + full-suite gate (PERF-07/08/10) — completed 2026-04-19
 
 
 #### Phase 5: Session-Local Mirror Improvements

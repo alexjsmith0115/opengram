@@ -3,27 +3,27 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Performance & Scroll-Tracking
 status: executing
-stopped_at: Phase 4 executing — Wave 4 plan 04 complete (OverlayController scroll state machine + fade + demotion + AX observer wiring)
-last_updated: "2026-04-19T14:20:24Z"
-last_activity: 2026-04-19 -- Phase 4 Plan 04 complete (PERF-07/08/09/10/11 — full scroll state machine wired in OverlayController)
+stopped_at: Phase 4 complete — all 5 plans shipped (trackFrame + hideAndSettle state machine + tests); Phase 5 next
+last_updated: "2026-04-19T14:35:00Z"
+last_activity: 2026-04-19 -- Phase 4 Plan 05 complete (PERF-07/08/10 — OverlayControllerScrollModeTests 6 cases + recordFrameCost(elapsed:) seam)
 progress:
   total_phases: 5
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 14
-  completed_plans: 12
-  percent: 86
+  completed_plans: 13
+  percent: 93
 ---
 
 ## Current Position
 
-Phase: 4 (Scroll Handling — trackFrame + hideAndSettle) — Wave 4 plan 04 complete
-Plan: 04-04 done; 04-05 next
+Phase: 4 (Scroll Handling — trackFrame + hideAndSettle) — COMPLETE; Phase 5 next
+Plan: 04-05 done; 05-01 (Session-Local Mirror Improvements) next
 Status: Executing
-Last activity: 2026-04-19 -- Phase 4 Plan 04 complete
+Last activity: 2026-04-19 -- Phase 4 Plan 05 complete (Phase 4 fully closed)
 
 **v1.2 parallel status:** Phase 19 UAT pending. v1.2 ships via `/gsd-complete-milestone v1.2` after UAT closes. See `.planning/milestones/v1.2-phases/` for archived phase dirs.
 
-Progress: [████████▌░] 86%
+Progress: [█████████▎] 93%
 
 ## Performance Metrics
 
@@ -68,6 +68,7 @@ Progress: [████████▌░] 86%
 | Phase 04 P02 | 8min | 3 tasks | 3 files |
 | Phase 04 P03 | 5min | 3 tasks | 3 files |
 | Phase 04 P04 | 6min | 5 tasks | 1 files |
+| Phase 04 P05 | 4min | 3 tasks | 5 files |
 
 ### Decisions
 
@@ -150,6 +151,11 @@ Progress: [████████▌░] 86%
 - [Phase 04-04]: Self.logger reused for D-22 reposition error logging — existing private static Logger declared at top of OverlayController (subsystem=bundle ID, category="OverlayController") matches "use existing or add per convention" guidance.
 - [Phase 04-04]: pid binding hoist NOT required — existing `let pid = NSRunningApplication...processIdentifier` already at show() top scope; both TargetAppObserver and ScrollAreaObserver installs reach it via `if let pid` guard pattern.
 - [Phase 04-04]: All scroll handlers + fade primitive + ancestor lookup placed in dedicated MARK block between freshElementBounds and rebuildUnderlineEntries — keeps reposition/cull/apply intact, groups all scroll machinery cohesively.
+- [Phase 04-05]: recordFrameCost(start:) delegates to new recordFrameCost(elapsed:) overload — single home for demotion arithmetic; test seam bypasses wall-clock race, production path unchanged.
+- [Phase 04-05]: Fade test uses async poll (10ms interval, 1s budget) — NSAnimationContext animator proxy updates model alphaValue on main run loop, not synchronously inside runAnimationGroup. Plan's sync assertion was wrong; test corrected, production code untouched.
+- [Phase 04-05]: scrollPathCancels test in Phase 2 suite NOT updated — already calls dismiss() directly rather than synthesizing the closure body, so 04-04's closure swap is not invalidating.
+- [Phase 04-05]: Scrubbed 3 stale "Phase N" comments (LLMSettingsView.swift, HarperBridge.swift, harper-bridge/src/lib.rs) predating Phase 4; Rust source scrubbed alongside generated Swift so regen stays clean.
+- [Phase 04-05 flakes]: 3 pre-existing parallel-load timing flakes confirmed (AXCallWatchdogTests x2, TextMonitorStoreIntegrationTests keystroke-debounce x1) — all pass solo; out of scope per SCOPE BOUNDARY; AXCallWatchdog flake already documented at Phase 04-01.
 
 ### Roadmap Evolution
 
@@ -170,9 +176,11 @@ None yet.
 | Human verification | Phase 16-04 Task 5: flag-on/flag-off live behavior in Notes/TextEdit; `defaults write llmIncrementalCheckingEnabled` flip without relaunch; hotkey re-fire on unchanged text shows `LLM fan-out: 0 requests`; edit middle paragraph fires 1 request | Deferred to Phase 19 UAT | 2026-04-16 |
 | Human verification | Phase 18-08 Task 4: 12-step rephrase card validation in Notes.app with computer-use MCP screenshots (flag enable, card render, toggle, hide/dismiss/accept paths, edit-closes, flag-off parity) | Deferred to Phase 19 UAT | 2026-04-16 |
 | Test flake | `LLMCheckSchedulerCancellationTests.idleDebounceSeconds_liveReadHonoredWithoutReinit` — timing-flaky under parallel load, passes in isolation | Deferred to Plan 10b (scheduler deletion) | 2026-04-17 |
+| Test flake | `AXCallWatchdogTests.shouldSkipReturnsTrueForBundle...` + `...blocklistExpires...` — parallel-load timing, pass solo | Deferred (pre-existing, Phase 04-01 documented) | 2026-04-19 |
+| Test flake | `TextMonitorStoreIntegrationTests.keystrokeSchedulesDebouncedReconcile` — parallel-load debounce timing, passes solo | Deferred (pre-existing, out of scope) | 2026-04-19 |
 
 ## Session Continuity
 
-Last session: 2026-04-19T14:20:24Z
-Stopped at: Completed 04-04-PLAN.md
+Last session: 2026-04-19T14:35:00Z
+Stopped at: Completed 04-05-PLAN.md — Phase 4 fully closed
 Resume file: None
