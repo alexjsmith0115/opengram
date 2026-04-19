@@ -155,7 +155,7 @@ Requirements for the v1.3 milestone. Bring overlay UX closer to Grammarly-qualit
 
 #### Session-Local Mirror (Task 5)
 
-- [ ] **PERF-12**: On accept, cached rects are preserved for suggestions strictly before the edit site; rects for overlapping and shifted (after-edit) suggestions are invalidated; `.textChanged` reposition queries only the invalidated suggestions (Spec Task 5)
+- [x] **PERF-12**: On accept, cached rects are preserved for suggestions strictly before the edit site; rects for overlapping and shifted (after-edit) suggestions are invalidated; `.textChanged` reposition queries only the invalidated suggestions (Spec Task 5)
 
 ## v2 Requirements
 
@@ -297,7 +297,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PERF-09 | v1.3 Phase 4 | Complete (04-02: ScrollTracker class; 04-04: OverlayController.show() trackFrame mode tracker install + handleScrollTick/handleScrollIdle wire) |
 | PERF-10 | v1.3 Phase 4 | Complete (04-04: recordFrameCost + 12ms budget threshold + 3-miss limit + decay-on-good-frame + demoteToHideAndSettle session conversion) |
 | PERF-11 | v1.3 Phase 4 | Complete (04-03: ScrollAreaObserver class; 04-04: findScrollAreaAncestor 10-level walk + show()-time install on nearest kAXScrollAreaRole ancestor + handleScrollEvent dispatch) |
-| PERF-12 | v1.3 Phase 5 | Pending |
+| PERF-12 | v1.3 Phase 5 | Complete |
 
 **Coverage:**
 - v1 requirements: 44 total (UI-08, UI-09 dropped per D-01; 42 active)

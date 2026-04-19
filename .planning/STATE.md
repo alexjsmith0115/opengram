@@ -1,25 +1,25 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.3
-milestone_name: Performance & Scroll-Tracking
+milestone: v1.2
+milestone_name: Incremental LLM Checking + Paragraph Rephrase Card
 status: executing
-stopped_at: Phase 4 complete — all 5 plans shipped (trackFrame + hideAndSettle state machine + tests); Phase 5 next
-last_updated: "2026-04-19T14:35:00Z"
-last_activity: 2026-04-19 -- Phase 4 Plan 05 complete (PERF-07/08/10 — OverlayControllerScrollModeTests 6 cases + recordFrameCost(elapsed:) seam)
+stopped_at: Phase 5 context gathered
+last_updated: "2026-04-19T17:44:08.323Z"
+last_activity: 2026-04-19
 progress:
-  total_phases: 5
-  completed_phases: 4
-  total_plans: 14
-  completed_plans: 13
+  total_phases: 10
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
   percent: 93
 ---
 
 ## Current Position
 
-Phase: 4 (Scroll Handling — trackFrame + hideAndSettle) — COMPLETE; Phase 5 next
-Plan: 04-05 done; 05-01 (Session-Local Mirror Improvements) next
-Status: Executing
-Last activity: 2026-04-19 -- Phase 4 Plan 05 complete (Phase 4 fully closed)
+Phase: 05 (session-local-mirror-improvements) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
+Last activity: 2026-04-19
 
 **v1.2 parallel status:** Phase 19 UAT pending. v1.2 ships via `/gsd-complete-milestone v1.2` after UAT closes. See `.planning/milestones/v1.2-phases/` for archived phase dirs.
 
@@ -43,6 +43,7 @@ Progress: [█████████▎] 93%
 | Phase 02-cancellable-bounds-queries P03 | 3min | 3 tasks | 2 files |
 | Phase 03-viewport-cull-rect-cache P1 | 420 | 2 tasks | 1 files |
 | Phase 03 P2 | 480 | 4 tasks | 3 files |
+| Phase 05-session-local-mirror-improvements P01 | 5min | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -156,6 +157,9 @@ Progress: [█████████▎] 93%
 - [Phase 04-05]: scrollPathCancels test in Phase 2 suite NOT updated — already calls dismiss() directly rather than synthesizing the closure body, so 04-04's closure swap is not invalidating.
 - [Phase 04-05]: Scrubbed 3 stale "Phase N" comments (LLMSettingsView.swift, HarperBridge.swift, harper-bridge/src/lib.rs) predating Phase 4; Rust source scrubbed alongside generated Swift so regen stays clean.
 - [Phase 04-05 flakes]: 3 pre-existing parallel-load timing flakes confirmed (AXCallWatchdogTests x2, TextMonitorStoreIntegrationTests keystroke-debounce x1) — all pass solo; out of scope per SCOPE BOUNDARY; AXCallWatchdog flake already documented at Phase 04-01.
+- [Phase 05-01]: boundsBatchCallCount spy placed on AXCallQueue actor (not mock) — spy lives at production boundary so test assertions survive mock swap-outs (PERF-12)
+- [Phase 05-01]: recomputeOverlayFrame() kept private and separate from rebuildUnderlineEntries — rebuildUnderlineEntries runs in many contexts where caller manages the frame; frame recompute belongs in its own helper (D-08/D-16)
+- [Phase 05-01]: textChanged_queriesAllRegardlessOfCache renamed to textChanged_queriesOnlyUncachedSuggestions — old name encoded the superseded contract; updated alongside acceptRemovesOnlyAcceptedID to keep the ViewportCullTests suite internally consistent (Rule 1 deviation)
 
 ### Roadmap Evolution
 
@@ -181,6 +185,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-19T14:35:00Z
-Stopped at: Completed 04-05-PLAN.md — Phase 4 fully closed
+Last session: 2026-04-19T17:44:08.319Z
+Stopped at: Phase 5 context gathered
 Resume file: None
