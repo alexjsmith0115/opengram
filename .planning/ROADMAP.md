@@ -249,7 +249,7 @@ Plans:
 - [x] **Phase 2: Cancellable Bounds Queries** — Task-based reposition; cancel at accept/dismiss/scroll sites (PERF-03, PERF-04) (completed 2026-04-19)
 - [x] **Phase 3: Viewport Cull + Rect Cache** — `lastKnownRects` + scroll-time cull; initial/textChanged query all (PERF-05, PERF-06) (completed 2026-04-19)
 - [x] **Phase 4: Scroll Handling — `trackFrame` + `hideAndSettle`** — per-app via AppQuirks; CADisplayLink pump; 12ms-budget demotion; scroll-area AX observer (PERF-07, PERF-08, PERF-09, PERF-10, PERF-11) (completed 2026-04-19)
-- [ ] **Phase 5: Session-Local Mirror Improvements** — preserve cached rects before edit site on accept; `.textChanged` queries only invalidated (PERF-12)
+- [x] **Phase 5: Session-Local Mirror Improvements** — preserve cached rects before edit site on accept; `.textChanged` queries only invalidated (PERF-12) (completed 2026-04-19)
 
 ### v1.3 Phase Details
 
@@ -335,11 +335,11 @@ Plans:
 3. If filtered list is empty, reposition exits early with zero AX calls
 4. Unit tests cover: accept-preserves-earlier, accept-invalidates-later, zero-AX-on-end-edit
 
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 
 Plans:
 - [x] 05-01-PLAN.md — OverlayController refactor: D-05 pre-shift invalidation + D-09 .textChanged filter + D-07 empty-filter zero-AX branch + D-08 recomputeOverlayFrame helper + D-01/D-03 BoundsValidator loop deletion + scheduleReposition tail call + AXCallQueue.boundsBatchCallCount spy + Phase 3 test flip (PERF-12)
-- [ ] 05-02-PLAN.md — OverlayControllerMirrorTests.swift (4 tests: preserve-earlier, invalidate-later, zero-AX-on-end-edit, filter-only-uncached) + pbxproj registration (PERF-12)
+- [x] 05-02-PLAN.md — OverlayControllerMirrorTests.swift (4 tests: preserve-earlier, invalidate-later, zero-AX-on-end-edit, filter-only-uncached) + pbxproj registration (PERF-12)
 
 ### v1.3 Final Verification
 

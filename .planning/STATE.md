@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Incremental LLM Checking + Paragraph Rephrase Card
-status: executing
+status: verifying
 stopped_at: Phase 5 context gathered
-last_updated: "2026-04-19T17:44:08.323Z"
+last_updated: "2026-04-19T17:54:14.682Z"
 last_activity: 2026-04-19
 progress:
   total_phases: 10
@@ -18,7 +18,7 @@ progress:
 
 Phase: 05 (session-local-mirror-improvements) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-19
 
 **v1.2 parallel status:** Phase 19 UAT pending. v1.2 ships via `/gsd-complete-milestone v1.2` after UAT closes. See `.planning/milestones/v1.2-phases/` for archived phase dirs.
@@ -44,6 +44,7 @@ Progress: [█████████▎] 93%
 | Phase 03-viewport-cull-rect-cache P1 | 420 | 2 tasks | 1 files |
 | Phase 03 P2 | 480 | 4 tasks | 3 files |
 | Phase 05-session-local-mirror-improvements P01 | 5min | 3 tasks | 3 files |
+| Phase 05-session-local-mirror-improvements P02 | 10min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -160,6 +161,7 @@ Progress: [█████████▎] 93%
 - [Phase 05-01]: boundsBatchCallCount spy placed on AXCallQueue actor (not mock) — spy lives at production boundary so test assertions survive mock swap-outs (PERF-12)
 - [Phase 05-01]: recomputeOverlayFrame() kept private and separate from rebuildUnderlineEntries — rebuildUnderlineEntries runs in many contexts where caller manages the frame; frame recompute belongs in its own helper (D-08/D-16)
 - [Phase 05-01]: textChanged_queriesAllRegardlessOfCache renamed to textChanged_queriesOnlyUncachedSuggestions — old name encoded the superseded contract; updated alongside acceptRemovesOnlyAcceptedID to keep the ViewportCullTests suite internally consistent (Rule 1 deviation)
+- [Phase ?]: OverlayControllerTests async fixes — both tests encoded superseded sync BoundsValidator loop (D-03); updated to await currentRepositionTask?.value before assertions (PERF-12)
 
 ### Roadmap Evolution
 
@@ -185,6 +187,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-19T17:44:08.319Z
+Last session: 2026-04-19T17:54:11.768Z
 Stopped at: Phase 5 context gathered
 Resume file: None
