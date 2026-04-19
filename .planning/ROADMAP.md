@@ -262,8 +262,8 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Remove AXCallWatchdog busy-guard branch + swap test coverage (PERF-02)
-- [ ] 01-02-PLAN.md — AXCallQueue actor + 4 tests + pbxproj registration (PERF-01)
+- [x] 01-01-PLAN.md — Remove AXCallWatchdog busy-guard branch + swap test coverage (PERF-02) — completed 2026-04-18
+- [x] 01-02-PLAN.md — AXCallQueue actor + 4 tests + pbxproj registration (PERF-01) — completed 2026-04-18
 - [ ] 01-03-PLAN.md — OverlayController init seam for axQueue DI (PERF-01 wiring prep)
 
 #### Phase 2: Cancellable Bounds Queries

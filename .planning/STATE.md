@@ -10,20 +10,20 @@ progress:
   total_phases: 15
   completed_phases: 0
   total_plans: 3
-  completed_plans: 1
-  percent: 33
+  completed_plans: 2
+  percent: 67
 ---
 
 ## Current Position
 
 Phase: 1 (AX Call Queue) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Executing Phase 1
-Last activity: 2026-04-18 -- Plan 01-01 complete (busy-guard removed from AXCallWatchdog.shouldSkip)
+Last activity: 2026-04-18 -- Plan 01-02 complete (AXCallQueue actor created, 4 tests green)
 
 **v1.2 parallel status:** Phase 19 UAT pending. v1.2 ships via `/gsd-complete-milestone v1.2` after UAT closes. See `.planning/milestones/v1.2-phases/` for archived phase dirs.
 
-Progress: [███░░░░░░░] 33%
+Progress: [██████░░░░] 67%
 
 ## Performance Metrics
 
@@ -58,6 +58,7 @@ Progress: [███░░░░░░░] 33%
 | Phase 20 P10a | 10min | 1 task | 9 files |
 | Phase 20 P10b | 15min | 1 task | 8 files |
 | Phase 01 P01 | 4min | 2 tasks | 2 files |
+| Phase 01 P02 | 15min | 3 tasks | 3 files |
 
 ### Decisions
 
@@ -117,6 +118,7 @@ Progress: [███░░░░░░░] 33%
 - [Phase 20-10c post-checkpoint]: Manual validation surfaced that keystrokes never fired LLM — legacy scheduler owned the debounce→reconcile timer; its removal in 10b/10c left only focus-change as a reconcile trigger. Fix wires TextMonitor.scheduleLLMReconcile (debounced DispatchWorkItem, live-read config.llmDebounceMs) on handleValueChanged + TextMonitor.reconcileNow (bypass-debounce) on hotkey path. Renamed driveStoreOnFocusChange → driveStoreReconcile (shared by focus/debounce/hotkey). Commit edec49c.
 - [Phase 20-10c post-checkpoint]: Integration tests added for OG→LM Studio call chain. Mocked suite (URLProtocol, 8 tests) runs by default; live suite (4 tests) gated on TEST_RUNNER_OPENGRAM_LIVE_LLM=1 so default xcodebuild test skips with explicit reason. Commit b9bdab4.
 - [Phase 01-01]: Busy-guard branch deleted from AXCallWatchdog.shouldSkip; blocklist-only gating; activeCall/beginCall/endCall/checkForHang preserved — hang detection intact. shouldSkipReturnsFalseDuringInFlightCall test locks new contract.
+- [Phase 01-02]: AXCallQueue actor: FIFO AX serialization via actor isolation; boundsBatch cancels via CancellationError; elementBounds wraps each raw AX read in watchdog beginCall/endCall (D-06); constructor DI with .shared defaults (D-04). PERF-01 complete.
 
 ### Roadmap Evolution
 
@@ -140,6 +142,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-18T21:07:00Z
-Stopped at: Phase 01 Plan 01 complete — busy-guard removed from AXCallWatchdog; ready for Plan 01-02 (AXCallQueue actor)
+Last session: 2026-04-18T21:23:00Z
+Stopped at: Phase 01 Plan 02 complete — AXCallQueue actor created; 4/4 tests green; ready for Plan 01-03 (OverlayController init wiring)
 Resume file: none
