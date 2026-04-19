@@ -199,6 +199,7 @@ Plans:
 | 02. Cancellable Bounds Queries | v1.3 | 3/3 | Complete   | 2026-04-19 |
 | 03. Viewport Cull + Rect Cache | v1.3 | 0/2 | Not started | - |
 | 04. Scroll Handling — trackFrame + hideAndSettle | v1.3 | 5/5 | Complete | 2026-04-19 |
+| 05. Session-Local Mirror Improvements | v1.3 | 0/2 | Not started | - |
 
 ## Backlog
 
@@ -333,6 +334,12 @@ Plans:
 2. `.textChanged` reposition filter queries only `{suggestion | lastKnownRects[id] == nil}`
 3. If filtered list is empty, reposition exits early with zero AX calls
 4. Unit tests cover: accept-preserves-earlier, accept-invalidates-later, zero-AX-on-end-edit
+
+**Plans:** 2 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — OverlayController refactor: D-05 pre-shift invalidation + D-09 .textChanged filter + D-07 empty-filter zero-AX branch + D-08 recomputeOverlayFrame helper + D-01/D-03 BoundsValidator loop deletion + scheduleReposition tail call + AXCallQueue.boundsBatchCallCount spy + Phase 3 test flip (PERF-12)
+- [ ] 05-02-PLAN.md — OverlayControllerMirrorTests.swift (4 tests: preserve-earlier, invalidate-later, zero-AX-on-end-edit, filter-only-uncached) + pbxproj registration (PERF-12)
 
 ### v1.3 Final Verification
 
