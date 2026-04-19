@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Incremental LLM Checking + Paragraph Rephrase Card
-status: verifying
+status: executing
 stopped_at: Phase 01 complete — all 3 plans done; AXCallQueue DI seam wired into OverlayController; ready for Phase 2
-last_updated: "2026-04-19T01:22:33.126Z"
+last_updated: "2026-04-19T05:06:55.891Z"
 last_activity: 2026-04-19
 progress:
   total_phases: 10
@@ -16,9 +16,9 @@ progress:
 
 ## Current Position
 
-Phase: 1 (AX Call Queue) — EXECUTING
-Plan: 3 of 3
-Status: Phase complete — ready for verification
+Phase: 2 (Cancellable Bounds Queries) — EXECUTING
+Plan: 2 of 3
+Status: Ready to execute
 Last activity: 2026-04-19
 
 **v1.2 parallel status:** Phase 19 UAT pending. v1.2 ships via `/gsd-complete-milestone v1.2` after UAT closes. See `.planning/milestones/v1.2-phases/` for archived phase dirs.
@@ -39,6 +39,7 @@ Progress: [██████░░░░] 67%
 |-------|-------|-------|----------|
 | 18.3 | 4 | - | - |
 | Phase 01-ax-call-queue P03 | 5min | 1 tasks | 1 files |
+| Phase 02-cancellable-bounds-queries P01 | 15min | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -121,6 +122,8 @@ Progress: [██████░░░░] 67%
 - [Phase 01-01]: Busy-guard branch deleted from AXCallWatchdog.shouldSkip; blocklist-only gating; activeCall/beginCall/endCall/checkForHang preserved — hang detection intact. shouldSkipReturnsFalseDuringInFlightCall test locks new contract.
 - [Phase 01-02]: AXCallQueue actor: FIFO AX serialization via actor isolation; boundsBatch cancels via CancellationError; elementBounds wraps each raw AX read in watchdog beginCall/endCall (D-06); constructor DI with .shared defaults (D-04). PERF-01 complete.
 - [Phase ?]: [Phase 01-03]: axQueue field stored but unused this phase (D-09) — Phase 2 introduces first invocation via currentRepositionTask
+- [Phase 02-cancellable-bounds-queries]: currentRepositionTask + scheduleReposition use internal visibility for @testable test access
+- [Phase 02-cancellable-bounds-queries]: show() synchronous bounds loop untouched per D-12; async reposition has no production caller this plan
 
 ### Roadmap Evolution
 
@@ -144,6 +147,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-19T01:22:33.121Z
+Last session: 2026-04-19T05:06:55.886Z
 Stopped at: Phase 01 complete — all 3 plans done; AXCallQueue DI seam wired into OverlayController; ready for Phase 2
-Resume file: none
+Resume file: None

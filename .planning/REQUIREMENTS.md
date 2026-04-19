@@ -133,12 +133,12 @@ Requirements for the v1.3 milestone. Bring overlay UX closer to Grammarly-qualit
 #### AX Queue (Task 1)
 
 - [x] **PERF-01**: AX bounds reads are serialized through a FIFO actor queue off the main actor; concurrent read requests execute in order without being dropped under burst load (Spec Task 1)
-- [ ] **PERF-02**: `AXCallWatchdog.shouldSkip` no longer returns true due to an in-flight call for non-blocklisted apps; hang detection and per-app blocklist behavior are preserved (Spec Task 1)
+- [x] **PERF-02**: `AXCallWatchdog.shouldSkip` no longer returns true due to an in-flight call for non-blocklisted apps; hang detection and per-app blocklist behavior are preserved (Spec Task 1)
 
 #### Cancellable Bounds (Task 2)
 
-- [ ] **PERF-03**: Each bounds reposition campaign runs inside a cancellable `Task`; a new `scheduleReposition` call cancels the previous one before its bounds are applied (Spec Task 2)
-- [ ] **PERF-04**: Accepting a suggestion, dismissing the overlay, and receiving a scroll event each cancel any pending reposition before proceeding (Spec Task 2)
+- [x] **PERF-03**: Each bounds reposition campaign runs inside a cancellable `Task`; a new `scheduleReposition` call cancels the previous one before its bounds are applied (Spec Task 2)
+- [x] **PERF-04**: Accepting a suggestion, dismissing the overlay, and receiving a scroll event each cancel any pending reposition before proceeding (Spec Task 2)
 
 #### Viewport Cull + Rect Cache (Task 3)
 
@@ -287,9 +287,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SET-10 | Phase 17 | Complete |
 
 | PERF-01 | v1.3 Phase 1 | Complete |
-| PERF-02 | v1.3 Phase 1 | Pending |
-| PERF-03 | v1.3 Phase 2 | Pending |
-| PERF-04 | v1.3 Phase 2 | Pending |
+| PERF-02 | v1.3 Phase 1 | Complete |
+| PERF-03 | v1.3 Phase 2 | Complete |
+| PERF-04 | v1.3 Phase 2 | Complete |
 | PERF-05 | v1.3 Phase 3 | Pending |
 | PERF-06 | v1.3 Phase 3 | Pending |
 | PERF-07 | v1.3 Phase 4 | Pending |

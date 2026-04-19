@@ -195,7 +195,8 @@ Plans:
 | 18.1. Rephrase Card Hotkey Wiring Fix | v1.2 | 2/2 | Complete   | 2026-04-17 |
 | 20. Paragraph-level LLM Suggestions | v1.2 | 12/12 | ✅ Complete | 2026-04-18 |
 | 19. Integration & UAT | v1.2 | 0/TBD | Not started | - |
-| 01. AX Call Queue | v1.3 | 1/3 | Executing | 2026-04-18 |
+| 01. AX Call Queue | v1.3 | 3/3 | Complete | 2026-04-19 |
+| 02. Cancellable Bounds Queries | v1.3 | 0/3 | Planning | - |
 
 ## Backlog
 
@@ -215,7 +216,7 @@ Surfaced during Phase 18.3 Plan 04 manual validation — 2026-04-17.
 **Goal:** Paragraph-level LLM suggestions render as purple dashed underlines alongside Harper red/blue, backed by a `ParagraphSuggestionStore` (actor) with per-paragraph cache, state machine (`pending/ready/readyEmpty/failed/dismissed/accepted`), reconciliation-on-tick, AX-text-change invalidation, FIFO 1-in-flight LLM queue with 30s timeout, and click-to-rephrase-card dispatch. Phase 16 `LLMCheckScheduler`, Phase 15 `ParagraphSuggestionCache`, and `IncrementalConfig` are deleted wholesale (D-01); tunables migrate into a new `OpenGramConfig` struct. No feature flag — direct replacement per CLAUDE.md "no deprecation cycles."
 **Requirements**: PLL-01..PLL-18 (see 20-VALIDATION.md — requirement IDs enumerated there)
 **Depends on:** Phase 19
-**Plans:** 12 plans
+**Plans:** 1/3 plans executed
 
 Plans:
 - [x] 20-01-PLAN.md — Data-model primitives (ParagraphHash, ParagraphSet, state/entry, StoreEvent) + ParagraphHashTests
@@ -275,6 +276,13 @@ Plans:
 2. `acceptSuggestion` and `dismiss()` each cancel `currentRepositionTask` before mutating state
 3. Scroll monitor cancels pending reposition on every event (pre-Phase 4 placeholder — Phase 4 replaces with state machine)
 4. No task leaks — every `currentRepositionTask` reaches a terminal state before the next is assigned
+
+**Plans:** 3 plans
+
+Plans:
+- [x] 02-01-PLAN.md — OverlayController reposition infra: currentRepositionTask + RepositionReason + 5 methods + 3 cancel sites + applyBoundsCallCount spy (PERF-03, PERF-04)
+- [ ] 02-02-PLAN.md — SlowMockAXAccessor test helper + TestHelpers pbxproj group (PERF-03 infra)
+- [ ] 02-03-PLAN.md — OverlayControllerRepositionTests (5 tests: cancellation, acceptSuggestion-cancels, dismiss-cancels, scroll-path-cancels, no-task-leaks) + pbxproj registration (PERF-03, PERF-04)
 
 #### Phase 3: Viewport Cull + Rect Cache
 **Goal:** Per-suggestion last-known screen rects are cached; scroll repositions skip suggestions whose cached rects do not intersect the padded visible element bounds; initial and textChanged repositions still query all.
