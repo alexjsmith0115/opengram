@@ -54,6 +54,58 @@ struct AppQuirksTests {
     }
 }
 
+@Suite("AppQuirksTable scrollMode")
+struct AppQuirksTableScrollModeTests {
+
+    @Test("injected trackFrame bundle resolves to .trackFrame")
+    func injectedTrackFrame() {
+        let table = AppQuirksTable(quirks: [
+            "com.apple.Notes": AppQuirk(scrollMode: .trackFrame)
+        ])
+        #expect(table.quirk(for: "com.apple.Notes")?.scrollMode == .trackFrame)
+    }
+
+    @Test("unknown bundle returns nil quirk (caller falls back to hideAndSettle)")
+    func unknownBundleNil() {
+        let table = AppQuirksTable(quirks: [:])
+        #expect(table.quirk(for: "com.unknown.app") == nil)
+    }
+
+    @Test("plist round-trip decodes scrollMode=trackFrame")
+    func plistRoundTrip() throws {
+        let xml = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+            <key>com.apple.Notes</key>
+            <dict>
+                <key>scrollMode</key>
+                <string>trackFrame</string>
+            </dict>
+        </dict>
+        </plist>
+        """
+        let data = xml.data(using: .utf8)!
+        let decoded = try PropertyListDecoder().decode([String: AppQuirk].self, from: data)
+        #expect(decoded["com.apple.Notes"]?.scrollMode == .trackFrame)
+    }
+
+    @Test("bundled AppQuirks.plist allowlists Notes, TextEdit, Mail as trackFrame")
+    func bundledAllowlist() {
+        let table = AppQuirksTable.shared
+        #expect(table.quirk(for: "com.apple.Notes")?.scrollMode == .trackFrame)
+        #expect(table.quirk(for: "com.apple.TextEdit")?.scrollMode == .trackFrame)
+        #expect(table.quirk(for: "com.apple.mail")?.scrollMode == .trackFrame)
+    }
+
+    @Test("notificationUnreliable apps have nil scrollMode (default hideAndSettle)")
+    func chromeHasNoScrollMode() {
+        let table = AppQuirksTable.shared
+        #expect(table.quirk(for: "com.google.Chrome")?.scrollMode == nil)
+    }
+}
+
 @Suite("AXCapabilityCache notification reliability")
 struct AXCapabilityCacheNotificationTests {
 
