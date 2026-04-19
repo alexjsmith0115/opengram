@@ -73,7 +73,7 @@ struct OverlayControllerRepositionTests {
     func repositionCancellation() async throws {
         let (controller, _) = makeRepositionController(suggestionCount: 20, delayMs: 50)
 
-        controller.scheduleReposition(reason: .initial)
+        controller.scheduleReposition(reason: .textChanged)
         controller.scheduleReposition(reason: .textChanged)   // cancels first
 
         // Await the second (current) task's completion.
@@ -89,7 +89,7 @@ struct OverlayControllerRepositionTests {
     func acceptSuggestionCancels() async throws {
         let (controller, _) = makeRepositionController(suggestionCount: 20, delayMs: 50)
 
-        controller.scheduleReposition(reason: .initial)
+        controller.scheduleReposition(reason: .textChanged)
         guard let pending = controller.currentRepositionTask else {
             Issue.record("scheduleReposition did not assign currentRepositionTask")
             return
@@ -114,7 +114,7 @@ struct OverlayControllerRepositionTests {
     func dismissCancels() async throws {
         let (controller, _) = makeRepositionController(suggestionCount: 20, delayMs: 50)
 
-        controller.scheduleReposition(reason: .initial)
+        controller.scheduleReposition(reason: .textChanged)
         guard let pending = controller.currentRepositionTask else {
             Issue.record("scheduleReposition did not assign currentRepositionTask")
             return
@@ -153,7 +153,7 @@ struct OverlayControllerRepositionTests {
     func scrollPathCancels() async throws {
         let (controller, _) = makeRepositionController(suggestionCount: 20, delayMs: 50)
 
-        controller.scheduleReposition(reason: .initial)
+        controller.scheduleReposition(reason: .textChanged)
         guard let pending = controller.currentRepositionTask else {
             Issue.record("scheduleReposition did not assign currentRepositionTask")
             return
@@ -177,7 +177,7 @@ struct OverlayControllerRepositionTests {
         let (controller, _) = makeRepositionController(suggestionCount: 10, delayMs: 20)
 
         for _ in 0..<10 {
-            controller.scheduleReposition(reason: .initial)
+            controller.scheduleReposition(reason: .textChanged)
         }
 
         // Await the final task. All prior tasks were cancelled when the next

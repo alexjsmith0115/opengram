@@ -98,23 +98,6 @@ struct OverlayControllerViewportCullTests {
         #expect(result.map(\.id) == [idA])
     }
 
-    // PERF-06: .initial returns all suggestions regardless of cache state.
-    @Test(".initial queries all regardless of cache")
-    func initial_queriesAllRegardlessOfCache() async throws {
-        let idA = UUID(); let idB = UUID(); let idC = UUID()
-        let (controller, _, _) = makeViewportCullController(suggestionCount: 3, ids: [idA, idB, idC])
-
-        // Only A cached; B and C absent. .initial must still return all three.
-        controller.lastKnownRects[idA] = [NSRect(x: 10, y: 100, width: 50, height: 14)]
-
-        let result = controller.suggestionsForReposition(
-            reason: .initial,
-            context: controller.textContext!
-        )
-        #expect(result.count == 3)
-        #expect(Set(result.map(\.id)) == Set([idA, idB, idC]))
-    }
-
     // PERF-12 D-09: .textChanged queries only cache-invalidated suggestions.
     // Strictly-before survivors whose rects are preserved stay out of the batch.
     @Test(".textChanged queries only uncached suggestions")

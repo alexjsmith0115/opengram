@@ -455,16 +455,12 @@ final class OverlayController {
 
     // MARK: - Reposition
 
-    /// Reason tag threaded through reposition campaigns. All 4 cases introduced
-    /// upfront to lock the signature — later work consumes `.scrollDuring/.scrollSettled`
-    /// for viewport culling, wires the scroll state machine, and emits
-    /// `.textChanged` post-accept. Placeholders this revision ignore `reason`.
-    /// `internal` so @testable tests can construct values directly.
+    /// Reason tag threaded through reposition campaigns. `internal` so @testable
+    /// tests can construct values directly.
     enum RepositionReason {
-        case initial        // first render after show()
-        case scrollDuring   // per-frame scroll (trackFrame, future)
+        case scrollDuring   // per-frame scroll (trackFrame)
         case scrollSettled  // after scroll ends
-        case textChanged    // post-accept (future)
+        case textChanged    // post-accept
     }
 
     /// PERF-03: cancels any in-flight reposition and kicks off a fresh one.
@@ -518,7 +514,7 @@ final class OverlayController {
     }
 
     /// PERF-06 viewport cull.
-    /// - `.initial` / `.textChanged`: query all (capped at maxDisplayedSuggestions).
+    /// - `.textChanged`: query only cache-invalidated suggestions (enables zero-AX end-of-doc path).
     /// - `.scrollDuring` / `.scrollSettled`: fetch fresh element bounds; if nil fall
     ///   back to prefix; else pad vertically and filter to suggestions whose cached
     ///   rects intersect. Suggestions with no cached entry are pessimistically included
@@ -531,8 +527,6 @@ final class OverlayController {
     ) -> [Suggestion] {
         let capped = Array(suggestions.prefix(Self.maxDisplayedSuggestions))
         switch reason {
-        case .initial:
-            return capped
         case .textChanged:
             // PERF-12 D-09: query only cache-invalidated suggestions. Strictly-before
             // survivors (whose rects were preserved by the accept-time invalidation
