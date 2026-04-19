@@ -597,8 +597,16 @@ final class OverlayController {
 
     /// Tracks frame cost against Self.frameBudget; 3 consecutive misses demote
     /// the session to hideAndSettle (D-16). Good frames decay the miss counter.
+    /// Production path delegates to `recordFrameCost(elapsed:)` so the demotion
+    /// arithmetic has a single home.
     func recordFrameCost(start: CFTimeInterval) {
-        let elapsed = CACurrentMediaTime() - start
+        recordFrameCost(elapsed: CACurrentMediaTime() - start)
+    }
+
+    /// Test seam for deterministic demotion tests. Production uses
+    /// `recordFrameCost(start:)`; tests inject explicit elapsed durations to avoid
+    /// racing a wall clock. Internal visibility per D-27 (test-observable).
+    func recordFrameCost(elapsed: TimeInterval) {
         if elapsed > Self.frameBudget {
             frameBudgetMisses += 1
             if frameBudgetMisses >= Self.frameBudgetMissLimit {
