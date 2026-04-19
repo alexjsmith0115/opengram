@@ -344,21 +344,52 @@ final class OverlayController {
         var survivingOffsets: [(scalarStart: Int, scalarLength: Int)] = []
         var survivingEntries: [UnderlineEntry] = []
 
-        let existingEntries = underlineView?.entries ?? []
-
         for (oldIndex, newIndex) in diff.unchanged {
             let off = newOffsets[newIndex]
+            let newSuggestion = cappedNew[newIndex]
             // D-13 / REPH-09: skip underlines inside the card's paragraph if any.
             if shouldHideUnderline(scalarStart: off.scalarStart, scalarLength: off.scalarLength) {
-                survivingSuggestions.append(cappedNew[newIndex])
+                survivingSuggestions.append(newSuggestion)
                 survivingOffsets.append(off)
                 continue
             }
-            survivingSuggestions.append(cappedNew[newIndex])
+            survivingSuggestions.append(newSuggestion)
             survivingOffsets.append(off)
+
             let oldSuggestion = self.suggestions[oldIndex]
-            let kept = existingEntries.filter { $0.suggestion.id == oldSuggestion.id }
-            survivingEntries.append(contentsOf: kept)
+            // PERF-12 Gap 2: source survivor rects from lastKnownRects (SCREEN-space),
+            // NOT from underlineView.entries (LOCAL-space). Mirrors
+            // rebuildUnderlineEntries pattern — entries built here flow into the
+            // unionRect → setFrame chain below which expects SCREEN coords.
+            let screenRects: [NSRect]
+            if let cached = lastKnownRects[oldSuggestion.id] {
+                screenRects = cached
+            } else {
+                // Defensive fallback: cache miss should not happen for diff.unchanged
+                // (unchanged survivors had successful bounds in a prior cycle), but
+                // re-query via boundsValidator preserves SCREEN space and keeps the
+                // contract sound.
+                guard let rects = boundsValidator.validatedBoundsForRange(
+                    oldSuggestion, in: newContext.text, element: newContext.axElement,
+                    bundleID: newContext.bundleID, accessor: accessor
+                ) else { continue }
+                lastKnownRects[oldSuggestion.id] = rects
+                screenRects = rects
+            }
+            for screenRect in screenRects {
+                let underlineRect = NSRect(
+                    x: screenRect.origin.x,
+                    y: screenRect.origin.y,
+                    width: screenRect.width,
+                    height: 2
+                )
+                let hitRect = UnderlineView.expandedHitRect(from: underlineRect)
+                survivingEntries.append(UnderlineEntry(
+                    underlineRect: underlineRect,
+                    hitRect: hitRect,
+                    suggestion: newSuggestion
+                ))
+            }
         }
 
         let element = newContext.axElement
