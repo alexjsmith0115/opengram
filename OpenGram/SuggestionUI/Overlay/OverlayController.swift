@@ -39,6 +39,18 @@ final class OverlayController {
     private let sourceParagraphHighlight: SourceParagraphHighlight
     private let boundsValidator = BoundsValidator()
     private let axQueue: AXCallQueue
+
+    /// PERF-03: campaign-scoped cancellable Task for bounds reposition work.
+    /// A new scheduleReposition cancels any previous task before assigning.
+    /// `internal` (not `private`) so @testable unit tests can `await` the task's
+    /// completion — e.g. `await controller.currentRepositionTask?.value`.
+    var currentRepositionTask: Task<Void, Never>?
+
+    /// Test-observable counter incremented on every applyBounds invocation.
+    /// The cancellation test asserts `applyBoundsCallCount <= 1` after a double-schedule
+    /// sequence to prove cancellation-before-apply. `internal` — @testable visible.
+    var applyBoundsCallCount: Int = 0
+
     private var scrollMonitor: Any?
     private var keyMonitor: Any?
     private var underlineView: UnderlineView?
@@ -208,6 +220,7 @@ final class OverlayController {
         // making PID-filtered dismissal unreliable. Any scroll while visible means
         // underline positions are stale, so unconditional dismiss is correct.
         scrollMonitor = NSEvent.addGlobalMonitorForEvents(matching: .scrollWheel) { [weak self] _ in
+            self?.currentRepositionTask?.cancel()
             self?.dismiss()
         }
 
@@ -343,9 +356,85 @@ final class OverlayController {
         overlayWindow.setFrame(windowRect, display: false)
     }
 
+    // MARK: - Reposition
+
+    /// Reason tag threaded through reposition campaigns. All 4 cases introduced
+    /// upfront to lock the signature — later work consumes `.scrollDuring/.scrollSettled`
+    /// for viewport culling, wires the scroll state machine, and emits
+    /// `.textChanged` post-accept. Placeholders this revision ignore `reason`.
+    /// `internal` so @testable tests can construct values directly.
+    enum RepositionReason {
+        case initial        // first render after show()
+        case scrollDuring   // per-frame scroll (trackFrame, future)
+        case scrollSettled  // after scroll ends
+        case textChanged    // post-accept (future)
+    }
+
+    /// PERF-03: cancels any in-flight reposition and kicks off a fresh one.
+    /// Main-actor entry; the Task hop dispatches the actual bounds work to the
+    /// AXCallQueue actor so the main thread stays responsive.
+    /// `internal` — tests invoke this directly to exercise cancellation semantics.
+    func scheduleReposition(reason: RepositionReason) {
+        currentRepositionTask?.cancel()
+        currentRepositionTask = Task { [weak self] in
+            await self?.reposition(reason: reason)
+        }
+    }
+
+    /// Campaign body. Reads the live text context, picks suggestions to query
+    /// via `suggestionsForReposition`, awaits `axQueue.boundsBatch`, and applies
+    /// on the main actor. Silently aborts on cancellation or error — a fresh
+    /// campaign will follow.
+    private func reposition(reason: RepositionReason) async {
+        guard let context = textContext else { return }
+        let targetSuggestions = suggestionsForReposition(reason: reason, context: context)
+        guard !targetSuggestions.isEmpty else {
+            clearUnderlines()
+            return
+        }
+        do {
+            let results = try await axQueue.boundsBatch(
+                suggestions: targetSuggestions,
+                in: context.text,
+                element: context.axElement,
+                bundleID: context.bundleID
+            )
+            if Task.isCancelled { return }
+            applyBounds(results, reason: reason)
+        } catch {
+            // CancellationError expected; other errors rare — silent per D-05.
+            // Future work may add os.log once scroll path is production-active.
+        }
+    }
+
+    /// Placeholder (D-06). Future work replaces with viewport culling against
+    /// `lastKnownRects`. This revision mirrors the synchronous loop's behavior.
+    private func suggestionsForReposition(
+        reason: RepositionReason,
+        context: TextContext
+    ) -> [Suggestion] {
+        Array(suggestions.prefix(Self.maxDisplayedSuggestions))
+    }
+
+    /// Placeholder (D-07). Future work populates `lastKnownRects` and rebuilds
+    /// underline entries, adds the `.scrollSettled` fade-in branch.
+    /// This revision only increments the test-spy counter.
+    private func applyBounds(
+        _ results: [(suggestion: Suggestion, rects: [NSRect])],
+        reason: RepositionReason
+    ) {
+        applyBoundsCallCount += 1
+    }
+
+    /// D-08: used by `reposition` early-bail when zero target suggestions.
+    private func clearUnderlines() {
+        underlineView?.entries = []
+    }
+
     /// Dismisses the overlay, closes any open popover, uninstalls the AX observer,
     /// and removes the scroll monitor.
     func dismiss() {
+        currentRepositionTask?.cancel()
         closePopover()
         overlayWindow.orderOut(nil)
         overlayWindow.contentView = nil
@@ -830,6 +919,7 @@ final class OverlayController {
     /// Fails silently (suggestion stays) if AX write fails (T-03-07).
     /// `replacementOverride` substitutes an alternative replacement string (D-09 alternative accept).
     func acceptSuggestion(_ suggestion: Suggestion, context: TextContext, replacementOverride: String? = nil) {
+        currentRepositionTask?.cancel()
         guard let replacement = replacementOverride ?? suggestion.primaryReplacement else { return }
 
         guard let offsetIndex = suggestions.firstIndex(where: { $0.id == suggestion.id }) else { return }
