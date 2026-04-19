@@ -53,6 +53,7 @@
 		B10000010000000000000021 /* BoundsForRangeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000021 /* BoundsForRangeTests.swift */; };
 		B10000010000000000000022 /* BoundsValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000022 /* BoundsValidatorTests.swift */; };
 		B10000010000000000000023 /* OverlayControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000023 /* OverlayControllerTests.swift */; };
+		B10000010000000000000051 /* OverlayControllerRepositionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000051 /* OverlayControllerRepositionTests.swift */; };
 		B10000010000000000000024 /* OverlayWindowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000024 /* OverlayWindowTests.swift */; };
 		B10000010000000000000025 /* PopoverViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000025 /* PopoverViewTests.swift */; };
 		B10000010000000000000026 /* SuggestionPopoverPanelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000026 /* SuggestionPopoverPanelTests.swift */; };
@@ -207,6 +208,7 @@
 		B20000010000000000000021 /* BoundsForRangeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoundsForRangeTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000022 /* BoundsValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoundsValidatorTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000023 /* OverlayControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayControllerTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000051 /* OverlayControllerRepositionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayControllerRepositionTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000024 /* OverlayWindowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayWindowTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000025 /* PopoverViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverViewTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000026 /* SuggestionPopoverPanelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionPopoverPanelTests.swift; sourceTree = "<group>"; };
@@ -674,6 +676,7 @@
 				B20000010000000000000021 /* BoundsForRangeTests.swift */,
 				B20000010000000000000022 /* BoundsValidatorTests.swift */,
 				B20000010000000000000023 /* OverlayControllerTests.swift */,
+				B20000010000000000000051 /* OverlayControllerRepositionTests.swift */,
 				B20000010000000000000024 /* OverlayWindowTests.swift */,
 				B20000010000000000000025 /* PopoverViewTests.swift */,
 				B20000010000000000000026 /* SuggestionPopoverPanelTests.swift */,
@@ -915,6 +918,7 @@
 				B10000010000000000000021 /* BoundsForRangeTests.swift in Sources */,
 				B10000010000000000000022 /* BoundsValidatorTests.swift in Sources */,
 				B10000010000000000000023 /* OverlayControllerTests.swift in Sources */,
+				B10000010000000000000051 /* OverlayControllerRepositionTests.swift in Sources */,
 				B10000010000000000000024 /* OverlayWindowTests.swift in Sources */,
 				B10000010000000000000025 /* PopoverViewTests.swift in Sources */,
 				B10000010000000000000026 /* SuggestionPopoverPanelTests.swift in Sources */,
