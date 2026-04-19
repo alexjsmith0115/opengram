@@ -425,7 +425,9 @@ final class OverlayController {
     ///   back to prefix; else pad vertically and filter to suggestions whose cached
     ///   rects intersect. Suggestions with no cached entry are pessimistically included
     ///   so new suggestions get positioned on first-query.
-    private func suggestionsForReposition(
+    // internal so @testable unit tests exercise the cull filter directly without
+    // spinning up an async reposition campaign (mirrors Phase 2 `applyBoundsCallCount` precedent).
+    func suggestionsForReposition(
         reason: RepositionReason,
         context: TextContext
     ) -> [Suggestion] {

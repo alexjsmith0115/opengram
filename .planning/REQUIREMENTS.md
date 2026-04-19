@@ -142,8 +142,8 @@ Requirements for the v1.3 milestone. Bring overlay UX closer to Grammarly-qualit
 
 #### Viewport Cull + Rect Cache (Task 3)
 
-- [ ] **PERF-05**: Per-suggestion last-known screen rects are cached on every successful bounds application and cleared on `dismiss()` and on an accepted suggestion's ID (Spec Task 3)
-- [ ] **PERF-06**: Scroll-driven repositions (`.scrollDuring`, `.scrollSettled`) query only suggestions whose cached rects intersect the padded visible element bounds; `.initial` and `.textChanged` repositions query all suggestions regardless of cache (Spec Task 3)
+- [x] **PERF-05**: Per-suggestion last-known screen rects are cached on every successful bounds application and cleared on `dismiss()` and on an accepted suggestion's ID (Spec Task 3)
+- [x] **PERF-06**: Scroll-driven repositions (`.scrollDuring`, `.scrollSettled`) query only suggestions whose cached rects intersect the padded visible element bounds; `.initial` and `.textChanged` repositions query all suggestions regardless of cache (Spec Task 3)
 
 #### Scroll Handling (Task 4)
 
@@ -290,8 +290,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PERF-02 | v1.3 Phase 1 | Complete |
 | PERF-03 | v1.3 Phase 2 | Complete |
 | PERF-04 | v1.3 Phase 2 | Complete |
-| PERF-05 | v1.3 Phase 3 | Pending |
-| PERF-06 | v1.3 Phase 3 | Pending |
+| PERF-05 | v1.3 Phase 3 | Complete |
+| PERF-06 | v1.3 Phase 3 | Complete |
 | PERF-07 | v1.3 Phase 4 | Pending |
 | PERF-08 | v1.3 Phase 4 | Pending |
 | PERF-09 | v1.3 Phase 4 | Pending |

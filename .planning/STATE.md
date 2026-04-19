@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Incremental LLM Checking + Paragraph Rephrase Card
-status: verifying
+status: executing
 stopped_at: Phase 01 complete — all 3 plans done; AXCallQueue DI seam wired into OverlayController; ready for Phase 2
-last_updated: "2026-04-19T05:20:10.878Z"
+last_updated: "2026-04-19T12:27:18.691Z"
 last_activity: 2026-04-19
 progress:
   total_phases: 10
@@ -16,9 +16,9 @@ progress:
 
 ## Current Position
 
-Phase: 2 (Cancellable Bounds Queries) — EXECUTING
-Plan: 3 of 3
-Status: Phase complete — ready for verification
+Phase: 3 (Viewport Cull + Rect Cache) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
 Last activity: 2026-04-19
 
 **v1.2 parallel status:** Phase 19 UAT pending. v1.2 ships via `/gsd-complete-milestone v1.2` after UAT closes. See `.planning/milestones/v1.2-phases/` for archived phase dirs.
@@ -41,6 +41,7 @@ Progress: [██████░░░░] 67%
 | Phase 01-ax-call-queue P03 | 5min | 1 tasks | 1 files |
 | Phase 02-cancellable-bounds-queries P01 | 15min | 2 tasks | 1 files |
 | Phase 02-cancellable-bounds-queries P03 | 3min | 3 tasks | 2 files |
+| Phase 03-viewport-cull-rect-cache P1 | 420 | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -127,6 +128,9 @@ Progress: [██████░░░░] 67%
 - [Phase 02-cancellable-bounds-queries]: show() synchronous bounds loop untouched per D-12; async reposition has no production caller this plan
 - [Phase ?]: Used applyBoundsCallCount spy (Option C) for cancellation verification — deterministic, no wall-clock race
 - [Phase ?]: scrollPathCancels tests literal closure body rather than synthesizing NSEvent — global monitors only fire for other-process events
+- [Phase ?]: lastKnownRects internal visibility — @testable tests assert cache state directly
+- [Phase ?]: freshElementBounds skips axQueue — sync MainActor read cheap for single element per scroll tick
+- [Phase ?]: scroll cull nil-entry pessimistic include — uncached suggestions always queried on first scroll
 
 ### Roadmap Evolution
 
@@ -150,6 +154,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-19T05:20:06.040Z
+Last session: 2026-04-19T12:27:05.714Z
 Stopped at: Phase 01 complete — all 3 plans done; AXCallQueue DI seam wired into OverlayController; ready for Phase 2
 Resume file: None

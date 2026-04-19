@@ -295,10 +295,10 @@ Plans:
 3. `.initial` / `.textChanged` reposition queries all suggestions regardless of cache
 4. Viewport-cull unit tests cover: offscreen filter, initial-queries-all, cache cleared on dismiss
 
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 
 Plans:
-- [ ] 03-01-PLAN.md — OverlayController lastKnownRects cache + scrollCullPaddingY + freshElementBounds + rebuildUnderlineEntries; replace Phase 2 placeholders; cache seed in show()/update()/applyBounds; clear in dismiss + per-ID in accept (PERF-05, PERF-06)
+- [x] 03-01-PLAN.md — OverlayController lastKnownRects cache + scrollCullPaddingY + freshElementBounds + rebuildUnderlineEntries; replace Phase 2 placeholders; cache seed in show()/update()/applyBounds; clear in dismiss + per-ID in accept (PERF-05, PERF-06)
 - [ ] 03-02-PLAN.md — OverlayControllerViewportCullTests (5 tests: scrollDuring-cull, initial-queries-all, textChanged-queries-all, dismiss-clears, accept-removes-accepted-ID) + visibility flip + pbxproj registration (PERF-05, PERF-06)
 
 #### Phase 4: Scroll Handling — `trackFrame` + `hideAndSettle`
