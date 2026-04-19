@@ -530,8 +530,12 @@ final class OverlayController {
             lastKnownRects[suggestion.id] = rects
         }
         rebuildUnderlineEntries()
-        // PERF-08/D-18: fade back in after hideAndSettle settle OR post-demotion reposition.
-        if reason == .scrollSettled, underlineView?.alphaValue != 1 {
+        recomputeOverlayFrame()
+        // PERF-08/D-18: fade back in after hideAndSettle settle. Gate on
+        // effectiveScrollMode so trackFrame idle path doesn't trigger spurious fade.
+        if reason == .scrollSettled,
+           effectiveScrollMode == .hideAndSettle,
+           underlineView?.alphaValue != 1 {
             fadeUnderlines(to: 1, duration: 0.12)
         }
     }
@@ -687,10 +691,10 @@ final class OverlayController {
         return CGRect(origin: position, size: size)
     }
 
-    /// PERF-05: rebuild underline entries from lastKnownRects. Mirrors show()'s
-    /// UnderlineEntry construction block (direct rect pass-through, no
-    /// windowOrigin subtraction, no toLocalEntries helper). Respects shouldHideUnderline
-    /// for card-hidden paragraph ranges (D-08). Skips suggestions with no cached rects.
+    /// PERF-05: rebuild underline entries from lastKnownRects. Respects
+    /// shouldHideUnderline for card-hidden paragraph ranges (D-08). Skips
+    /// suggestions with no cached rects. Converts screen-space rects to
+    /// window-local via toLocalEntries, matching show()/update() contract.
     private func rebuildUnderlineEntries() {
         guard let view = underlineView else { return }
         var entries: [UnderlineEntry] = []
@@ -716,7 +720,8 @@ final class OverlayController {
                 ))
             }
         }
-        view.entries = entries
+        // Convert screen-space entries to window-local, matching show()/update().
+        view.entries = Self.toLocalEntries(entries, in: overlayWindow.frame)
     }
 
     /// PERF-12 D-08: recompute the overlay window frame from the union of preserved
