@@ -141,6 +141,7 @@
 		B12006010000000000000001 /* ParagraphSuggestionStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22006010000000000000001 /* ParagraphSuggestionStoreTests.swift */; };
 		A10000010000000000000024 /* AXCallQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000024 /* AXCallQueue.swift */; };
 		B10000010000000000000040 /* AXCallQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000040 /* AXCallQueueTests.swift */; };
+		B10000010000000000000050 /* SlowMockAXAccessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000050 /* SlowMockAXAccessor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -174,6 +175,7 @@
 		A20000010000000000000023 /* AXCapabilityCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXCapabilityCache.swift; sourceTree = "<group>"; };
 		A20000010000000000000024 /* AXCallQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXCallQueue.swift; sourceTree = "<group>"; };
 		B20000010000000000000040 /* AXCallQueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXCallQueueTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000050 /* SlowMockAXAccessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlowMockAXAccessor.swift; sourceTree = "<group>"; };
 		A20000010000000000000030 /* GrammarCheckerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrammarCheckerProtocol.swift; sourceTree = "<group>"; };
 		A20000010000000000000031 /* Suggestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Suggestion.swift; sourceTree = "<group>"; };
 		A20000010000000000000032 /* DictionaryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryStore.swift; sourceTree = "<group>"; };
@@ -453,6 +455,7 @@
 				B20000010000000000000013 /* SuggestionTests.swift */,
 				B4000001000000000000000B /* CheckEngine */,
 				B4000001000000000000000A /* SuggestionUITests */,
+				B4000001000000000000000D /* TestHelpers */,
 				B4000001000000000000000C /* TextEngineTests */,
 				B20000010000000000000006 /* TextContextTests.swift */,
 				B20000010000000000000032 /* TextMonitorTests.swift */,
@@ -710,6 +713,14 @@
 			path = TextEngineTests;
 			sourceTree = "<group>";
 		};
+		B4000001000000000000000D /* TestHelpers */ = {
+			isa = PBXGroup;
+			children = (
+				B20000010000000000000050 /* SlowMockAXAccessor.swift */,
+			);
+			path = TestHelpers;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -945,6 +956,7 @@
 				B12004010000000000000001 /* WithTimeoutTests.swift in Sources */,
 				B12005010000000000000001 /* LLMRequestQueueTests.swift in Sources */,
 				B12006010000000000000001 /* ParagraphSuggestionStoreTests.swift in Sources */,
+				B10000010000000000000050 /* SlowMockAXAccessor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
