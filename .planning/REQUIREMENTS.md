@@ -126,6 +126,37 @@ Requirements for the Advanced settings tab introduced in v1.2. Source: FR-22.
 - [ ] **SET-05**: API keys stored securely in macOS Keychain (never plaintext in UserDefaults/plist)
 - [ ] **SET-06**: All settings persist across app restarts
 
+### v1.3 Performance & Scroll-Tracking
+
+Requirements for the v1.3 milestone. Bring overlay UX closer to Grammarly-quality scroll-following in native AX-friendly apps; degrade gracefully elsewhere. Phase numbering resets for v1.3 (phases 1–5). Source: `.planning/OPENGRAM_PERFORMANCE_SPEC.md`.
+
+#### AX Queue (Task 1)
+
+- [ ] **PERF-01**: AX bounds reads are serialized through a FIFO actor queue off the main actor; concurrent read requests execute in order without being dropped under burst load (Spec Task 1)
+- [ ] **PERF-02**: `AXCallWatchdog.shouldSkip` no longer returns true due to an in-flight call for non-blocklisted apps; hang detection and per-app blocklist behavior are preserved (Spec Task 1)
+
+#### Cancellable Bounds (Task 2)
+
+- [ ] **PERF-03**: Each bounds reposition campaign runs inside a cancellable `Task`; a new `scheduleReposition` call cancels the previous one before its bounds are applied (Spec Task 2)
+- [ ] **PERF-04**: Accepting a suggestion, dismissing the overlay, and receiving a scroll event each cancel any pending reposition before proceeding (Spec Task 2)
+
+#### Viewport Cull + Rect Cache (Task 3)
+
+- [ ] **PERF-05**: Per-suggestion last-known screen rects are cached on every successful bounds application and cleared on `dismiss()` and on an accepted suggestion's ID (Spec Task 3)
+- [ ] **PERF-06**: Scroll-driven repositions (`.scrollDuring`, `.scrollSettled`) query only suggestions whose cached rects intersect the padded visible element bounds; `.initial` and `.textChanged` repositions query all suggestions regardless of cache (Spec Task 3)
+
+#### Scroll Handling (Task 4)
+
+- [ ] **PERF-07**: Scroll mode per target app is resolved from `AppQuirks.plist`; `com.apple.Notes`, `com.apple.TextEdit`, and `com.apple.mail` use `trackFrame`; all other apps default to `hideAndSettle` (Spec Task 4)
+- [ ] **PERF-08**: `hideAndSettle` fades underlines to 0 on the first scroll event, debounces until scrolling stops, repositions on settle, then fades underlines back to 1 (Spec Task 4)
+- [ ] **PERF-09**: `trackFrame` drives reposition off a `CADisplayLink` pump while scroll events arrive; the pump stops and emits one `onIdle` when no event arrives within `idleTimeout` (Spec Task 4)
+- [ ] **PERF-10**: Three consecutive `trackFrame` frames exceeding the 12ms frame budget demote the current overlay session to `hideAndSettle` until dismiss (Spec Task 4)
+- [ ] **PERF-11**: A scroll-area `AXObserver` on the focused element's nearest `kAXScrollAreaRole` ancestor catches programmatic scrolls (arrow keys, find-navigation, `scrollToVisible:`) via `kAXScrolledVisibleChildrenChangedNotification` (Spec Task 4)
+
+#### Session-Local Mirror (Task 5)
+
+- [ ] **PERF-12**: On accept, cached rects are preserved for suggestions strictly before the edit site; rects for overlapping and shifted (after-edit) suggestions are invalidated; `.textChanged` reposition queries only the invalidated suggestions (Spec Task 5)
+
 ## v2 Requirements
 
 Deferred to future release. Not in current roadmap.
@@ -259,11 +290,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 - v1 requirements: 44 total (UI-08, UI-09 dropped per D-01; 42 active)
 - v1.1 requirements: 4 (LLMR-01 through LLMR-04)
 - v1.2 requirements: 33 (INCR-01..14, REPH-01..15, SET-07..10)
-- Mapped to phases: 81
+- v1.3 requirements: 12 (PERF-01..12)
+- Mapped to phases: 93
 - Dropped: 2 (UI-08, UI-09)
 - Superseded: 1 (UI-03 replaced by LLMR-04)
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-13*
-*Last updated: 2026-04-16 -- v1.2 requirements added (INCR-01..14, REPH-01..15, SET-07..10); traceability rows added for Phases 15–18*
+*Last updated: 2026-04-18 -- v1.3 Performance & Scroll-Tracking requirements added (PERF-01..12)*

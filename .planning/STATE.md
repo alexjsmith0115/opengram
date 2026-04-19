@@ -1,27 +1,29 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.2
-milestone_name: Incremental LLM Checking + Paragraph Rephrase Card
-status: executing
-stopped_at: Phase 20 complete — ready to plan Phase 19 UAT
-last_updated: "2026-04-18T07:30:00Z"
-last_activity: 2026-04-18 -- Phase 20 closed; user approved manual validation; post-checkpoint keystroke→debounced-reconcile fix + LM Studio integration tests landed
+milestone: v1.3
+milestone_name: Performance & Scroll-Tracking
+status: planning
+stopped_at: Defining requirements — v1.3 started
+last_updated: "2026-04-18T00:00:00Z"
+last_activity: 2026-04-18 -- Milestone v1.3 started (perf + scroll tracking); v1.2 Phase 19 UAT still pending
 progress:
-  total_phases: 10
-  completed_phases: 8
-  total_plans: 42
-  completed_plans: 42
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 ## Current Position
 
-Phase: 20 (complete)
-Plan: 10c complete (Task 1 + Task 2 + post-checkpoint fixes)
-Status: Phase 20 closed; next → Phase 19 UAT
-Last activity: 2026-04-18 -- User approved manual validation; keystroke→debounced-reconcile gap fixed inline (edec49c); LM Studio integration tests added (b9bdab4)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-04-18 — Milestone v1.3 started; v1.2 phase dirs archived to milestones/v1.2-phases/
 
-Progress: [██░░░░░░░░] 20% (Phase 15 + Phase 16 complete out of 5 v1.2 phases)
+**v1.2 parallel status:** Phase 19 UAT pending. v1.2 ships via `/gsd-complete-milestone v1.2` after UAT closes. See `.planning/milestones/v1.2-phases/` for archived phase dirs.
+
+Progress: [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 

@@ -3,7 +3,8 @@
 ## Milestones
 
 - ✅ **v1.1 LLM Integration Refinement** — Phases 09-14 (shipped 2026-04-15)
-- 🚧 **v1.2 Incremental LLM Checking + Paragraph Rephrase Card** — Phases 15-19 (in progress)
+- 🚧 **v1.2 Incremental LLM Checking + Paragraph Rephrase Card** — Phases 15-19 (in progress; UAT pending)
+- 🚧 **v1.3 Performance & Scroll-Tracking** — Phases 1-5 (reset numbering; in progress)
 
 ## Phases
 
@@ -194,6 +195,7 @@ Plans:
 | 18.1. Rephrase Card Hotkey Wiring Fix | v1.2 | 2/2 | Complete   | 2026-04-17 |
 | 20. Paragraph-level LLM Suggestions | v1.2 | 12/12 | ✅ Complete | 2026-04-18 |
 | 19. Integration & UAT | v1.2 | 0/TBD | Not started | - |
+| 01. AX Call Queue | v1.3 | 0/3 | Planned | - |
 
 ## Backlog
 
@@ -228,3 +230,89 @@ Plans:
 - [x] 20-10a-PLAN.md — DisplayHeuristic/AdvancedSettingsView/OverlayController config param → OpenGramConfig
 - [x] 20-10b-PLAN.md — AppDelegate rewire + CheckCoordinator Harper-only + OverlayController scheduler/legacyHash removal + MainActorTextBox
 - [x] 20-10c-PLAN.md — Delete LLMCheckScheduler/ParagraphSuggestionCache/IncrementalConfig + legacy tests + manual validation checkpoint (D-01) (completed 2026-04-18; includes post-checkpoint keystroke→debounced-reconcile fix + mocked/live LM Studio integration test suites)
+
+---
+
+## 🚧 v1.3 Performance & Scroll-Tracking (In Progress)
+
+**Milestone Goal:** Bring overlay UX closer to Grammarly-quality scroll-following in native AX-friendly apps (Notes, TextEdit, Mail); degrade gracefully elsewhere. Phase numbering reset for v1.3 — phases 1–5.
+
+**Source:** `.planning/OPENGRAM_PERFORMANCE_SPEC.md`
+**Requirements:** PERF-01..12
+**Dependency order:** 1 → 2 → 3 → 4 → 5 (each phase unblocks the next; earlier tasks are shippable standalone)
+
+- [ ] **Phase 1: AX Call Queue** — FIFO actor queue off main actor; watchdog busy-guard removed (PERF-01, PERF-02)
+- [ ] **Phase 2: Cancellable Bounds Queries** — Task-based reposition; cancel at accept/dismiss/scroll sites (PERF-03, PERF-04)
+- [ ] **Phase 3: Viewport Cull + Rect Cache** — `lastKnownRects` + scroll-time cull; initial/textChanged query all (PERF-05, PERF-06)
+- [ ] **Phase 4: Scroll Handling — `trackFrame` + `hideAndSettle`** — per-app via AppQuirks; CADisplayLink pump; 12ms-budget demotion; scroll-area AX observer (PERF-07, PERF-08, PERF-09, PERF-10, PERF-11)
+- [ ] **Phase 5: Session-Local Mirror Improvements** — preserve cached rects before edit site on accept; `.textChanged` queries only invalidated (PERF-12)
+
+### v1.3 Phase Details
+
+#### Phase 1: AX Call Queue
+**Goal:** AX bounds reads are serialized through a FIFO actor queue running off the main actor; concurrent reads no longer drop under burst load; watchdog busy-guard is removed while hang detection and per-app blocklist remain.
+**Depends on:** —
+**Requirements:** PERF-01, PERF-02
+**Success Criteria:**
+1. `AXCallQueue` actor exists and all bounds/element reads from `OverlayController` route through it
+2. `AXCallWatchdog.shouldSkip` returns `false` for non-blocklisted apps regardless of in-flight call state; hang detection + blocklist expiry still work
+3. Existing `OverlayController` tests pass; new `AXCallQueueTests` cover success, cancellation, and failure paths
+4. `xcodebuild test` passes with zero warnings
+
+**Plans:** 3 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Remove AXCallWatchdog busy-guard branch + swap test coverage (PERF-02)
+- [ ] 01-02-PLAN.md — AXCallQueue actor + 4 tests + pbxproj registration (PERF-01)
+- [ ] 01-03-PLAN.md — OverlayController init seam for axQueue DI (PERF-01 wiring prep)
+
+#### Phase 2: Cancellable Bounds Queries
+**Goal:** Every reposition campaign runs inside a cancellable `Task`; accept/dismiss/scroll action sites cancel any pending reposition before proceeding.
+**Depends on:** Phase 1
+**Requirements:** PERF-03, PERF-04
+**Success Criteria:**
+1. A second `scheduleReposition` call cancels the first before any bounds apply (verified via spy on apply count)
+2. `acceptSuggestion` and `dismiss()` each cancel `currentRepositionTask` before mutating state
+3. Scroll monitor cancels pending reposition on every event (pre-Phase 4 placeholder — Phase 4 replaces with state machine)
+4. No task leaks — every `currentRepositionTask` reaches a terminal state before the next is assigned
+
+#### Phase 3: Viewport Cull + Rect Cache
+**Goal:** Per-suggestion last-known screen rects are cached; scroll repositions skip suggestions whose cached rects do not intersect the padded visible element bounds; initial and textChanged repositions still query all.
+**Depends on:** Phase 2
+**Requirements:** PERF-05, PERF-06
+**Success Criteria:**
+1. `lastKnownRects` populated on every successful `applyBounds`; cleared on `dismiss()` and for accepted suggestion's ID
+2. `.scrollDuring` / `.scrollSettled` reposition filters via `padded.intersects(rect)` against fresh element bounds
+3. `.initial` / `.textChanged` reposition queries all suggestions regardless of cache
+4. Viewport-cull unit tests cover: offscreen filter, initial-queries-all, cache cleared on dismiss
+
+#### Phase 4: Scroll Handling — `trackFrame` + `hideAndSettle`
+**Goal:** Per-app scroll mode drives either a CADisplayLink-pumped `trackFrame` reposition (Notes/TextEdit/Mail) or a `hideAndSettle` fade-reposition-fade fallback (all others); 3 consecutive frames >12ms demote the session; scroll-area AX observer catches programmatic scrolls.
+**Depends on:** Phase 3
+**Requirements:** PERF-07, PERF-08, PERF-09, PERF-10, PERF-11
+**Success Criteria:**
+1. `ScrollMode` field added to `AppQuirk`; `AppQuirks.plist` allowlists `com.apple.Notes`, `com.apple.TextEdit`, `com.apple.mail` as `trackFrame`; unknown apps default to `hideAndSettle`
+2. `hideAndSettle` fades underlines to 0 on first scroll event, repositions on settle (`.scrollSettled`), fades back to 1
+3. `trackFrame` `ScrollTracker` pumps `onTick` while `noteScrollEvent()` fires; emits one `onIdle` after `idleTimeout`
+4. Three consecutive frames exceeding 12ms demote the current session to `hideAndSettle` until `dismiss()`
+5. `ScrollAreaObserver` installed on nearest `kAXScrollAreaRole` ancestor catches `kAXScrolledVisibleChildrenChangedNotification`; fires `handleScrollEvent()`
+6. `dismiss()` tears down tracker, timer, observer; resets `frameBudgetMisses` and `scrollState`
+
+#### Phase 5: Session-Local Mirror Improvements
+**Goal:** After accept, cached rects are preserved for suggestions strictly before the edit site; overlapping and shifted suggestions are invalidated; `.textChanged` reposition queries only the invalidated subset, producing a zero-AX-call path for edits at document end.
+**Depends on:** Phase 4
+**Requirements:** PERF-12
+**Success Criteria:**
+1. `acceptSuggestion` removes `lastKnownRects` entries only for suggestions overlapping or strictly after the edit site
+2. `.textChanged` reposition filter queries only `{suggestion | lastKnownRects[id] == nil}`
+3. If filtered list is empty, reposition exits early with zero AX calls
+4. Unit tests cover: accept-preserves-earlier, accept-invalidates-later, zero-AX-on-end-edit
+
+### v1.3 Final Verification
+
+Before archiving v1.3:
+1. `xcodebuild -project OpenGram.xcodeproj -scheme OpenGram build` and `xcodebuild test` both pass with zero warnings for both app and test targets
+2. Manual validation per CLAUDE.md: build, launch, type text with errors in Notes; scroll while underlines visible — verify trackFrame follow in Notes and fade-settle-fade in a non-allowlisted app (Pages or TextEdit-baseline)
+3. Accessibility permission removed + re-added — no first-run regressions
+4. `AppQuirks.plist` loads without errors (check `AppQuirksTable` log)
+5. Dismiss after various scroll states — verify `currentRepositionTask` reaches terminal state every time (no leaks)
