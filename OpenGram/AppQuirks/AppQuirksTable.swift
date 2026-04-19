@@ -6,21 +6,31 @@ enum BoundsStrategy: String, Codable {
     case skipMultiLine
 }
 
+/// Scroll mode for per-app overlay behavior during scroll (PERF-07).
+/// - trackFrame: CADisplayLink-driven reposition during scroll (Notes/TextEdit/Mail).
+/// - hideAndSettle: fade underlines out on scroll, reposition on settle, fade back in (default).
+enum ScrollMode: String, Codable {
+    case trackFrame
+    case hideAndSettle
+}
+
 /// Per-app AX behavior configuration loaded from the bundled AppQuirks.plist.
 ///
 /// All fields are optional. A nil field means "use the default behavior."
 struct AppQuirk: Codable {
     /// Horizontal pixel offset to apply to all AX-returned bounds for this app.
-    var coordinateOffsetX: CGFloat?
+    var coordinateOffsetX: CGFloat? = nil
     /// Vertical pixel offset to apply to all AX-returned bounds for this app.
-    var coordinateOffsetY: CGFloat?
+    var coordinateOffsetY: CGFloat? = nil
     /// Multiplier for estimated line height (affects multi-line detection threshold).
-    var lineHeightFactor: CGFloat?
+    var lineHeightFactor: CGFloat? = nil
     /// Override for the bounds query strategy.
-    var boundsStrategy: BoundsStrategy?
+    var boundsStrategy: BoundsStrategy? = nil
     /// Pre-classifies apps known to have unreliable AX notifications (D-02).
     /// When true, TextMonitor uses polling instead of notification-driven updates.
-    var notificationUnreliable: Bool?
+    var notificationUnreliable: Bool? = nil
+    /// Per-app scroll mode override (PERF-07). nil -> hideAndSettle default at resolve site.
+    var scrollMode: ScrollMode? = nil
 }
 
 /// Loads per-app AX quirks from the bundled AppQuirks.plist and provides O(1) lookup.
