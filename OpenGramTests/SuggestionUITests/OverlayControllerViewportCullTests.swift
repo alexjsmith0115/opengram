@@ -115,9 +115,10 @@ struct OverlayControllerViewportCullTests {
         #expect(Set(result.map(\.id)) == Set([idA, idB, idC]))
     }
 
-    // PERF-06: .textChanged returns all suggestions regardless of cache state.
-    @Test(".textChanged queries all regardless of cache")
-    func textChanged_queriesAllRegardlessOfCache() async throws {
+    // PERF-12 D-09: .textChanged queries only cache-invalidated suggestions.
+    // Strictly-before survivors whose rects are preserved stay out of the batch.
+    @Test(".textChanged queries only uncached suggestions")
+    func textChanged_queriesOnlyUncachedSuggestions() async throws {
         let idA = UUID(); let idB = UUID(); let idC = UUID()
         let (controller, _, _) = makeViewportCullController(suggestionCount: 3, ids: [idA, idB, idC])
         controller.lastKnownRects[idA] = [NSRect(x: 10, y: 100, width: 50, height: 14)]
@@ -126,8 +127,9 @@ struct OverlayControllerViewportCullTests {
             reason: .textChanged,
             context: controller.textContext!
         )
-        #expect(result.count == 3)
-        #expect(Set(result.map(\.id)) == Set([idA, idB, idC]))
+        // idA is cached — excluded from the batch. idB and idC are uncached — included.
+        #expect(result.count == 2)
+        #expect(Set(result.map(\.id)) == Set([idB, idC]))
     }
 
     // PERF-05: dismiss() empties lastKnownRects.
@@ -143,18 +145,17 @@ struct OverlayControllerViewportCullTests {
         #expect(controller.lastKnownRects.isEmpty)
     }
 
-    // PERF-05: acceptSuggestion removes only the accepted ID from lastKnownRects.
-    // Mock wired for deterministic write-path success (kAXSelectedTextRangeAttribute settable
-    // + both set calls return .success). kAXValueAttribute and kAXBoundsForRangeParameterizedAttribute
-    // wired so repositionAfterAccept does not call dismiss() and invalidate the assertion.
-    @Test("acceptSuggestion removes only the accepted ID")
-    func acceptRemovesOnlyAcceptedID() async throws {
+    // PERF-12 D-05: acceptSuggestion invalidates lastKnownRects for overlapping
+    // and after-edit suggestions (tightens the minimal-invalidation contract —
+    // strictly-before survivors preserved; everything else invalidated).
+    @Test("acceptSuggestion invalidates after-edit cache entries")
+    func acceptInvalidatesAfterEditCacheEntries() async throws {
         let idA = UUID(); let idB = UUID(); let idC = UUID()
         let (controller, mock, seeded) = makeViewportCullController(suggestionCount: 3, ids: [idA, idB, idC])
 
         // Non-overlapping offsets: idA at 0-7, idB at 10-17, idC at 20-27.
-        // repositionAfterAccept marks suggestions as overlapping when scalarRanges intersect
-        // the accepted range — identical offsets would zero out idB and idC, causing dismiss().
+        // Accepting idA means idB and idC are both after-edit — both cache entries
+        // must be invalidated under the D-05 predicate `beforeEnd > editStart`.
         controller.suggestionScalarOffsets = [
             (scalarStart: 0,  scalarLength: 7),
             (scalarStart: 10, scalarLength: 7),
@@ -174,17 +175,23 @@ struct OverlayControllerViewportCullTests {
         let updatedText = "receive   recieve   recieve"
         mock.attributeValues[kAXValueAttribute] = (.success, updatedText as CFString)
 
-        // repositionAfterAccept re-queries bounds for remaining suggestions; wire a non-nil
-        // rect so surviving suggestions produce entries and dismiss() is not called.
+        // Wire kAXBoundsForRangeParameterizedAttribute so the async reposition tail's
+        // boundsBatch can resolve rects for the two invalidated suggestions.
         mock.parameterizedAttributeValues[kAXBoundsForRangeParameterizedAttribute] =
             (.success, axRectValue(CGRect(x: 10, y: 100, width: 50, height: 14)))
 
         let ctx = controller.textContext!
         controller.acceptSuggestion(seeded[0], context: ctx, replacementOverride: "receive")
 
-        // D-15 contract — strict assertions, no fallback, no hedging.
+        // D-05 predicate runs SYNCHRONOUSLY inside repositionAfterAccept before the
+        // async scheduleReposition tail. Assertions capture the post-sync, pre-async
+        // state: all three entries invalidated (idA via accept eviction, idB and idC
+        // via D-05 after-edit predicate).
         #expect(controller.lastKnownRects[idA] == nil)
-        #expect(controller.lastKnownRects[idB] != nil)
-        #expect(controller.lastKnownRects[idC] != nil)
+        #expect(controller.lastKnownRects[idB] == nil)
+        #expect(controller.lastKnownRects[idC] == nil)
+
+        // Drain the async tail so the test doesn't leak a pending Task.
+        await controller.currentRepositionTask?.value
     }
 }
