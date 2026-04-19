@@ -529,8 +529,12 @@ final class OverlayController {
         for (suggestion, rects) in results {
             lastKnownRects[suggestion.id] = rects
         }
-        rebuildUnderlineEntries()
+        // PERF-12 Gap 1 secondary: set the new window frame BEFORE translating
+        // entries to window-local coords. rebuildUnderlineEntries reads
+        // overlayWindow.frame inside toLocalEntries; stale frame origin here
+        // produces mis-located LOCAL entries on cross-line or leftmost accepts.
         recomputeOverlayFrame()
+        rebuildUnderlineEntries()
         // PERF-08/D-18: fade back in after hideAndSettle settle. Gate on
         // effectiveScrollMode so trackFrame idle path doesn't trigger spurious fade.
         if reason == .scrollSettled,
@@ -1385,6 +1389,16 @@ final class OverlayController {
         }
         suggestions = rebuiltSuggestions
         suggestionScalarOffsets = rebuiltOffsets
+
+        // PERF-12 Gap 1: synchronously rebuild view.entries from post-invalidation
+        // lastKnownRects so AppKit has no draw cycle where pre-accept entries
+        // paint over shifted text. rebuildUnderlineEntries skips any suggestion
+        // without a cached rect (line 707 guard), so invalidated survivors
+        // correctly omit — the async scheduleReposition fills them in when
+        // bounds return. Frame before entries matches applyBounds ordering so
+        // toLocalEntries translates against the up-to-date overlayWindow.frame.
+        recomputeOverlayFrame()
+        rebuildUnderlineEntries()
 
         // PERF-12 D-01: unify accept path with scroll path. scheduleReposition
         // spawns a cancellable task that either (a) short-circuits via the
