@@ -10,6 +10,12 @@ import Foundation
 /// One observer at a time; install() implicitly uninstalls any prior observer.
 @MainActor
 final class ScrollAreaObserver {
+    /// Apple documents the notification key as the bare string
+    /// `"AXScrolledVisibleChildrenChanged"`. The Swift overlay does not export a
+    /// named constant, so we use the documented literal directly.
+    private static let scrolledVisibleChildrenChangedNotification: CFString =
+        "AXScrolledVisibleChildrenChanged" as CFString
+
     private var axObserver: AXObserver?
     private var scrollContext: ScrollContext?
     /// Stores the Unmanaged reference from passRetained so we release the SAME
@@ -43,7 +49,7 @@ final class ScrollAreaObserver {
         AXObserverAddNotification(
             observer,
             element,
-            kAXScrolledVisibleChildrenChangedNotification as CFString,
+            Self.scrolledVisibleChildrenChangedNotification,
             ptr
         )
 
