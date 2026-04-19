@@ -199,7 +199,7 @@ Plans:
 | 02. Cancellable Bounds Queries | v1.3 | 3/3 | Complete   | 2026-04-19 |
 | 03. Viewport Cull + Rect Cache | v1.3 | 0/2 | Not started | - |
 | 04. Scroll Handling — trackFrame + hideAndSettle | v1.3 | 5/5 | Complete | 2026-04-19 |
-| 05. Session-Local Mirror Improvements | v1.3 | 2/3 | In Progress (gap closure) |  |
+| 05. Session-Local Mirror Improvements | v1.3 | 3/3 | Complete | 2026-04-19 |
 
 ## Backlog
 

@@ -1,9 +1,13 @@
 ---
-status: diagnosed
+status: resolved
 phase: 05-session-local-mirror-improvements
-source: [05-01-SUMMARY.md, 05-02-SUMMARY.md]
+source: [05-01-SUMMARY.md, 05-02-SUMMARY.md, 05-03-SUMMARY.md]
 started: 2026-04-19T00:00:00Z
-updated: 2026-04-19T00:06:00Z
+updated: 2026-04-19T18:20:00Z
+resolution:
+  gap_1: "resolved by 05-03 — user UAT re-run pass 2026-04-19"
+  gap_2: "resolved by 05-03 — user UAT re-run pass 2026-04-19"
+  gap_3: "carved out to future phase 5.1-rapid-multi-accept-policy per 05-03 scope_note; tracked separately"
 ---
 
 ## Current Test
@@ -52,7 +56,10 @@ blocked: 1
 ## Gaps
 
 - truth: "With 3+ underlined suggestions in a line, accepting the middle one leaves earlier underlines in the exact same screen position with no flicker. Later underlines shift cleanly."
-  status: failed
+  status: resolved
+  resolved_by: 05-03
+  resolved_at: 2026-04-19T18:20:00Z
+  resolution: "Sync rebuildUnderlineEntries() added at tail of repositionAfterAccept (commit abef708); applyBounds ordering flipped (frame before entries). Regression test accept_rebuildsViewEntriesSynchronously passes. User UAT re-run 2026-04-19 confirms pass."
   reason: "User reported: The new implementation largely works, but I do see random issue like this screenshot. The blue lines appear in the wrong place for a short time before moving to the correct spot"
   severity: major
   test: 1
@@ -73,7 +80,10 @@ blocked: 1
   debug_session: .planning/debug/middle-accept-transient-flicker.md
 
 - truth: "With suggestions only trailing toward end of text, accepting the last one causes the overlay to dismiss or shrink smoothly in a single frame. No stutter, no half-drawn underlines, no delay."
-  status: failed
+  status: resolved
+  resolved_by: 05-03
+  resolved_at: 2026-04-19T18:20:00Z
+  resolution: "update() diff.unchanged branch now sources survivor rects from lastKnownRects[oldSuggestion.id] (SCREEN-space) instead of reusing underlineView.entries (LOCAL) — commit 2edcaba. Regression test update_windowFrameOriginIsScreenSpaceForDiffUnchangedSurvivors passes. User UAT re-run 2026-04-19 confirms pass."
   reason: "User reported: the underlines jump and all on the line are gone after accepting the trailing one"
   severity: major
   test: 2
@@ -92,7 +102,10 @@ blocked: 1
   debug_session: .planning/debug/trailing-accept-wipes-line.md
 
 - truth: "Accepting 3+ suggestions back-to-back (as fast as you can click) feels instant each time. No queue-up lag, no overlay glitch between accepts. Remaining underlines stay stable."
-  status: failed
+  status: carved_out
+  carved_to: "future phase 5.1-rapid-multi-accept-policy"
+  carved_at: 2026-04-19T18:20:00Z
+  carve_reason: "Three independent architectural defects (BUG 1/2/3) across CheckCoordinator, CheckOrchestrator, ParagraphSuggestionStore — not a Phase 5 race. Per debug session rapid-multi-accept-cascade.md: 'Phase 5 reposition race itself does not need a fix — underlying policy gaps are the real bug.' Scope carved out in 05-03 plan scope_note."
   reason: "User reported: I cant accept 3 back to back because dismissed suggestions reappear, existing underlines disappear, and dismissed llm suggestions override harper"
   severity: blocker
   test: 3

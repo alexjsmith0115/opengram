@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Incremental LLM Checking + Paragraph Rephrase Card
-status: verifying
-stopped_at: Phase 5 Plan 03 complete — Gaps 1+2 closed
-last_updated: "2026-04-19T19:50:00.000Z"
+status: phase_complete
+stopped_at: Phase 5 complete — UAT Gaps 1+2 user-confirmed pass; Gap 3 carved to future 5.1
+last_updated: "2026-04-19T18:20:00.000Z"
 last_activity: 2026-04-19
 progress:
   total_phases: 10
@@ -16,9 +16,9 @@ progress:
 
 ## Current Position
 
-Phase: 05 (session-local-mirror-improvements) — EXECUTING
+Phase: 05 (session-local-mirror-improvements) — COMPLETE
 Plan: 3 of 3
-Status: Plan 03 complete — UAT Gaps 1+2 closed, Gap 3 carved out
+Status: Phase complete — UAT Gaps 1+2 user-confirmed pass 2026-04-19; Gap 3 carved to future 5.1-rapid-multi-accept-policy
 Last activity: 2026-04-19
 
 **v1.2 parallel status:** Phase 19 UAT pending. v1.2 ships via `/gsd-complete-milestone v1.2` after UAT closes. See `.planning/milestones/v1.2-phases/` for archived phase dirs.
