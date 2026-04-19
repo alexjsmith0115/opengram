@@ -487,11 +487,13 @@ final class OverlayController {
         let targetSuggestions = suggestionsForReposition(reason: reason, context: context)
         guard !targetSuggestions.isEmpty else {
             if reason == .textChanged {
-                // PERF-12 D-07: zero-AX path. All survivors' rects preserved by the
-                // accept-time invalidation predicate. Rebuild the underline view and
-                // the overlay window frame from cached rects, skip axQueue entirely.
-                rebuildUnderlineEntries()
+                // PERF-12 D-07 + GAP-2: zero-AX path. All survivors' rects preserved by
+                // the accept-time invalidation predicate. Recompute the overlay frame
+                // BEFORE rebuilding underline entries — rebuildUnderlineEntries reads
+                // overlayWindow.frame inside toLocalEntries; stale frame origin would
+                // mis-translate LOCAL entries. Matches applyBounds + repositionAfterAccept.
                 recomputeOverlayFrame()
+                rebuildUnderlineEntries()
                 return
             }
             clearUnderlines()
