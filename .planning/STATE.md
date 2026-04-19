@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Incremental LLM Checking + Paragraph Rephrase Card
-status: executing
-stopped_at: Phase 01 complete — all 3 plans done; AXCallQueue DI seam wired into OverlayController; ready for Phase 2
-last_updated: "2026-04-19T12:27:18.691Z"
+status: verifying
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-04-19T12:36:53.023Z"
 last_activity: 2026-04-19
 progress:
   total_phases: 10
@@ -18,7 +18,7 @@ progress:
 
 Phase: 3 (Viewport Cull + Rect Cache) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-19
 
 **v1.2 parallel status:** Phase 19 UAT pending. v1.2 ships via `/gsd-complete-milestone v1.2` after UAT closes. See `.planning/milestones/v1.2-phases/` for archived phase dirs.
@@ -42,6 +42,7 @@ Progress: [██████░░░░] 67%
 | Phase 02-cancellable-bounds-queries P01 | 15min | 2 tasks | 1 files |
 | Phase 02-cancellable-bounds-queries P03 | 3min | 3 tasks | 2 files |
 | Phase 03-viewport-cull-rect-cache P1 | 420 | 2 tasks | 1 files |
+| Phase 03 P2 | 480 | 4 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -131,6 +132,8 @@ Progress: [██████░░░░] 67%
 - [Phase ?]: lastKnownRects internal visibility — @testable tests assert cache state directly
 - [Phase ?]: freshElementBounds skips axQueue — sync MainActor read cheap for single element per scroll tick
 - [Phase ?]: scroll cull nil-entry pessimistic include — uncached suggestions always queried on first scroll
+- [Phase 03]: suggestionsForReposition flipped to internal — @testable access for cull unit tests
+- [Phase 03]: Test 5 non-overlapping offsets required — identical offsets cause repositionAfterAccept overlap detection to zero scalarLength and call dismiss()
 
 ### Roadmap Evolution
 
@@ -154,6 +157,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-19T12:27:05.714Z
-Stopped at: Phase 01 complete — all 3 plans done; AXCallQueue DI seam wired into OverlayController; ready for Phase 2
+Last session: 2026-04-19T12:36:53.018Z
+Stopped at: Completed 03-02-PLAN.md
 Resume file: None

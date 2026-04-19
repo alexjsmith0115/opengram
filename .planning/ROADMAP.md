@@ -245,7 +245,7 @@ Plans:
 
 - [x] **Phase 1: AX Call Queue** — FIFO actor queue off main actor; watchdog busy-guard removed (PERF-01, PERF-02) (completed 2026-04-19)
 - [x] **Phase 2: Cancellable Bounds Queries** — Task-based reposition; cancel at accept/dismiss/scroll sites (PERF-03, PERF-04) (completed 2026-04-19)
-- [ ] **Phase 3: Viewport Cull + Rect Cache** — `lastKnownRects` + scroll-time cull; initial/textChanged query all (PERF-05, PERF-06)
+- [x] **Phase 3: Viewport Cull + Rect Cache** — `lastKnownRects` + scroll-time cull; initial/textChanged query all (PERF-05, PERF-06) (completed 2026-04-19)
 - [ ] **Phase 4: Scroll Handling — `trackFrame` + `hideAndSettle`** — per-app via AppQuirks; CADisplayLink pump; 12ms-budget demotion; scroll-area AX observer (PERF-07, PERF-08, PERF-09, PERF-10, PERF-11)
 - [ ] **Phase 5: Session-Local Mirror Improvements** — preserve cached rects before edit site on accept; `.textChanged` queries only invalidated (PERF-12)
 
@@ -295,11 +295,11 @@ Plans:
 3. `.initial` / `.textChanged` reposition queries all suggestions regardless of cache
 4. Viewport-cull unit tests cover: offscreen filter, initial-queries-all, cache cleared on dismiss
 
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 - [x] 03-01-PLAN.md — OverlayController lastKnownRects cache + scrollCullPaddingY + freshElementBounds + rebuildUnderlineEntries; replace Phase 2 placeholders; cache seed in show()/update()/applyBounds; clear in dismiss + per-ID in accept (PERF-05, PERF-06)
-- [ ] 03-02-PLAN.md — OverlayControllerViewportCullTests (5 tests: scrollDuring-cull, initial-queries-all, textChanged-queries-all, dismiss-clears, accept-removes-accepted-ID) + visibility flip + pbxproj registration (PERF-05, PERF-06)
+- [x] 03-02-PLAN.md — OverlayControllerViewportCullTests (5 tests: scrollDuring-cull, initial-queries-all, textChanged-queries-all, dismiss-clears, accept-removes-accepted-ID) + visibility flip + pbxproj registration (PERF-05, PERF-06)
 
 #### Phase 4: Scroll Handling — `trackFrame` + `hideAndSettle`
 **Goal:** Per-app scroll mode drives either a CADisplayLink-pumped `trackFrame` reposition (Notes/TextEdit/Mail) or a `hideAndSettle` fade-reposition-fade fallback (all others); 3 consecutive frames >12ms demote the session; scroll-area AX observer catches programmatic scrolls.
