@@ -1,29 +1,29 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.2
-milestone_name: Incremental LLM Checking + Paragraph Rephrase Card
-status: verifying
-stopped_at: Completed 03-02-PLAN.md
-last_updated: "2026-04-19T12:36:53.023Z"
-last_activity: 2026-04-19
+milestone: v1.3
+milestone_name: Performance & Scroll-Tracking
+status: executing
+stopped_at: Phase 4 executing — Wave 1 complete (04-01 AppQuirks scrollMode field landed)
+last_updated: "2026-04-19T13:49:21Z"
+last_activity: 2026-04-19 -- Phase 4 Plan 01 complete (ScrollMode enum + AppQuirk.scrollMode + Notes/TextEdit/Mail allowlist + 5 tests)
 progress:
-  total_phases: 10
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 67
+  total_phases: 5
+  completed_phases: 3
+  total_plans: 14
+  completed_plans: 9
+  percent: 64
 ---
 
 ## Current Position
 
-Phase: 3 (Viewport Cull + Rect Cache) — EXECUTING
-Plan: 2 of 2
-Status: Phase complete — ready for verification
-Last activity: 2026-04-19
+Phase: 4 (Scroll Handling — trackFrame + hideAndSettle) — Wave 1 complete
+Plan: 04-01 done; 04-02 next
+Status: Executing
+Last activity: 2026-04-19 -- Phase 4 Plan 01 complete
 
 **v1.2 parallel status:** Phase 19 UAT pending. v1.2 ships via `/gsd-complete-milestone v1.2` after UAT closes. See `.planning/milestones/v1.2-phases/` for archived phase dirs.
 
-Progress: [██████░░░░] 67%
+Progress: [██████░░░░] 64%
 
 ## Performance Metrics
 
@@ -64,6 +64,7 @@ Progress: [██████░░░░] 67%
 | Phase 20 P10b | 15min | 1 task | 8 files |
 | Phase 01 P01 | 4min | 2 tasks | 2 files |
 | Phase 01 P02 | 15min | 3 tasks | 3 files |
+| Phase 04 P01 | 12min | 3 tasks | 3 files |
 
 ### Decisions
 
@@ -134,6 +135,9 @@ Progress: [██████░░░░] 67%
 - [Phase ?]: scroll cull nil-entry pessimistic include — uncached suggestions always queried on first scroll
 - [Phase 03]: suggestionsForReposition flipped to internal — @testable access for cull unit tests
 - [Phase 03]: Test 5 non-overlapping offsets required — identical offsets cause repositionAfterAccept overlap detection to zero scalarLength and call dismiss()
+- [Phase 04-01]: AppQuirk Codable optional fields gain `= nil` inline defaults so adding `var scrollMode: ScrollMode?` does not break existing positional memberwise inits in 3 prior tests; alternative was per-test mutation
+- [Phase 04-01]: Tests appended to existing OpenGramTests/AppQuirksTests.swift — file already pbxproj-registered, no project mutation needed
+- [Phase 04-01]: Pre-existing AXCallWatchdogTests timing flake under parallel load (passes in isolation); out of scope, not fixed
 
 ### Roadmap Evolution
 
@@ -157,6 +161,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-19T12:36:53.018Z
-Stopped at: Completed 03-02-PLAN.md
+Last session: 2026-04-19T13:49:21Z
+Stopped at: Completed 04-01-PLAN.md
 Resume file: None

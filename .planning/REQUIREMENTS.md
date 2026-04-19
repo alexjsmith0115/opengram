@@ -292,7 +292,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PERF-04 | v1.3 Phase 2 | Complete |
 | PERF-05 | v1.3 Phase 3 | Complete |
 | PERF-06 | v1.3 Phase 3 | Complete |
-| PERF-07 | v1.3 Phase 4 | Pending |
+| PERF-07 | v1.3 Phase 4 | In progress (04-01: AppQuirks resolution landed; full state machine in 04-04) |
 | PERF-08 | v1.3 Phase 4 | Pending |
 | PERF-09 | v1.3 Phase 4 | Pending |
 | PERF-10 | v1.3 Phase 4 | Pending |
