@@ -699,6 +699,18 @@ final class OverlayController {
     /// and removes the scroll monitor.
     func dismiss() {
         currentRepositionTask?.cancel()
+        // PERF-07/08/09/10/11 scroll-state teardown (D-21). Must run before observer
+        // uninstall and before lastKnownRects clear so timer fires don't re-trigger
+        // a reposition on a torn-down controller.
+        scrollTracker?.stop()
+        scrollTracker = nil
+        hideSettleTimer?.invalidate()
+        hideSettleTimer = nil
+        scrollAreaObserver?.uninstall()
+        scrollAreaObserver = nil
+        scrollState = .idle
+        frameBudgetMisses = 0
+        effectiveScrollMode = .hideAndSettle
         closePopover()
         overlayWindow.orderOut(nil)
         overlayWindow.contentView = nil
