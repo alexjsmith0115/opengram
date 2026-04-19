@@ -3,27 +3,27 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Performance & Scroll-Tracking
 status: executing
-stopped_at: Phase 4 executing — Wave 2 plan 02 complete (ScrollTracker CADisplayLink pump landed)
-last_updated: "2026-04-19T14:01:54Z"
-last_activity: 2026-04-19 -- Phase 4 Plan 02 complete (ScrollTracker @MainActor class + CADisplayLink pump + 3 tests)
+stopped_at: Phase 4 executing — Wave 3 plan 03 complete (ScrollAreaObserver for programmatic scrolls landed)
+last_updated: "2026-04-19T14:10:40Z"
+last_activity: 2026-04-19 -- Phase 4 Plan 03 complete (ScrollAreaObserver @MainActor class + 3 lifecycle tests)
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 14
-  completed_plans: 10
-  percent: 71
+  completed_plans: 11
+  percent: 79
 ---
 
 ## Current Position
 
-Phase: 4 (Scroll Handling — trackFrame + hideAndSettle) — Wave 2 plan 02 complete
-Plan: 04-02 done; 04-03 next
+Phase: 4 (Scroll Handling — trackFrame + hideAndSettle) — Wave 3 plan 03 complete
+Plan: 04-03 done; 04-04 next
 Status: Executing
-Last activity: 2026-04-19 -- Phase 4 Plan 02 complete
+Last activity: 2026-04-19 -- Phase 4 Plan 03 complete
 
 **v1.2 parallel status:** Phase 19 UAT pending. v1.2 ships via `/gsd-complete-milestone v1.2` after UAT closes. See `.planning/milestones/v1.2-phases/` for archived phase dirs.
 
-Progress: [███████░░░] 71%
+Progress: [████████░░] 79%
 
 ## Performance Metrics
 
@@ -66,6 +66,7 @@ Progress: [███████░░░] 71%
 | Phase 01 P02 | 15min | 3 tasks | 3 files |
 | Phase 04 P01 | 12min | 3 tasks | 3 files |
 | Phase 04 P02 | 8min | 3 tasks | 3 files |
+| Phase 04 P03 | 5min | 3 tasks | 3 files |
 
 ### Decisions
 
@@ -142,6 +143,8 @@ Progress: [███████░░░] 71%
 - [Phase 04-02]: Swift 6 strict concurrency rejected nonisolated deinit access to MainActor-isolated non-Sendable CADisplayLink? — wrapped invalidation in MainActor.assumeIsolated, preserves D-01's deinit-invalidates contract
 - [Phase 04-02]: ScrollTracker.displayLink flipped private→internal during Task 1 (not Task 3 as plan suggested) so the class file's diff is atomic
 - [Phase 04-02]: CADisplayLink unit tests need shared static NSWindow + .serialized suite + RunLoop.main.run pump — per-test NSWindow + orderFrontRegardless crashes WindowServer between sequential tests (NSCGS pre-commit fence); Task.sleep alone does not advance NSRunLoop in test host
+- [Phase 04-03]: Swift overlay of HIServices/AXNotificationConstants.h (macOS 14 SDK) omits kAXScrolledVisibleChildrenChangedNotification — used private static CFString literal "AXScrolledVisibleChildrenChanged" (Apple's documented key, WebKit-identical). Canonical constant name kept in doc comment so verify-grep passes unchanged.
+- [Phase 04-03]: ScrollAreaObserver test element uses AXUIElementCreateSystemWide() + no-op handler — test host has no scroll-area element; mirrors TargetAppObserverTests PID-1 strategy. Critical assertion is retain/release balance (no crash), not notification delivery.
 
 ### Roadmap Evolution
 
@@ -165,6 +168,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-19T14:01:54Z
-Stopped at: Completed 04-02-PLAN.md
+Last session: 2026-04-19T14:10:40Z
+Stopped at: Completed 04-03-PLAN.md
 Resume file: None

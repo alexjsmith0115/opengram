@@ -151,7 +151,7 @@ Requirements for the v1.3 milestone. Bring overlay UX closer to Grammarly-qualit
 - [ ] **PERF-08**: `hideAndSettle` fades underlines to 0 on the first scroll event, debounces until scrolling stops, repositions on settle, then fades underlines back to 1 (Spec Task 4)
 - [~] **PERF-09**: `trackFrame` drives reposition off a `CADisplayLink` pump while scroll events arrive; the pump stops and emits one `onIdle` when no event arrives within `idleTimeout` (Spec Task 4)
 - [ ] **PERF-10**: Three consecutive `trackFrame` frames exceeding the 12ms frame budget demote the current overlay session to `hideAndSettle` until dismiss (Spec Task 4)
-- [ ] **PERF-11**: A scroll-area `AXObserver` on the focused element's nearest `kAXScrollAreaRole` ancestor catches programmatic scrolls (arrow keys, find-navigation, `scrollToVisible:`) via `kAXScrolledVisibleChildrenChangedNotification` (Spec Task 4)
+- [~] **PERF-11**: A scroll-area `AXObserver` on the focused element's nearest `kAXScrollAreaRole` ancestor catches programmatic scrolls (arrow keys, find-navigation, `scrollToVisible:`) via `kAXScrolledVisibleChildrenChangedNotification` (Spec Task 4)
 
 #### Session-Local Mirror (Task 5)
 
@@ -296,7 +296,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PERF-08 | v1.3 Phase 4 | Pending |
 | PERF-09 | v1.3 Phase 4 | In progress (04-02: ScrollTracker @MainActor class + CADisplayLink pump + onTick/onIdle/stop; OverlayController wire-up in 04-04) |
 | PERF-10 | v1.3 Phase 4 | Pending |
-| PERF-11 | v1.3 Phase 4 | Pending |
+| PERF-11 | v1.3 Phase 4 | In progress (04-03: ScrollAreaObserver @MainActor class + single-element subscription + retain/release discipline + 3 lifecycle tests; OverlayController findScrollAreaAncestor + wire-up in 04-04) |
 | PERF-12 | v1.3 Phase 5 | Pending |
 
 **Coverage:**
