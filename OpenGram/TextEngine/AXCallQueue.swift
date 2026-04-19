@@ -11,6 +11,12 @@ actor AXCallQueue {
     private let validator: BoundsValidator
     private let watchdog: AXCallWatchdog
 
+    /// PERF-12: test-observable counter incremented on every `boundsBatch` call.
+    /// Mirrors `OverlayController.applyBoundsCallCount` precedent — `internal` so
+    /// `@testable` tests can `await queue.boundsBatchCallCount` to assert the
+    /// zero-AX accept path.
+    var boundsBatchCallCount: Int = 0
+
     init(
         accessor: any AXAccessor = SystemAXAccessor(),
         validator: BoundsValidator = BoundsValidator(),
@@ -45,6 +51,7 @@ actor AXCallQueue {
         element: AXUIElement,
         bundleID: String
     ) async throws -> [(suggestion: Suggestion, rects: [NSRect])] {
+        boundsBatchCallCount += 1
         var results: [(suggestion: Suggestion, rects: [NSRect])] = []
         results.reserveCapacity(suggestions.count)
         for suggestion in suggestions {
