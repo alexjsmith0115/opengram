@@ -45,12 +45,14 @@ struct AXCallWatchdogTests {
         #expect(watchdog.shouldSkip(for: "com.test.clean") == false)
     }
 
-    @Test("shouldSkip returns true while a different call is in flight (busy guard)")
-    func busyGuardSkipsWhileCallInFlight() {
+    @Test("shouldSkip returns false for non-blocklisted bundle during in-flight call (busy guard removed)")
+    func shouldSkipReturnsFalseDuringInFlightCall() {
         let watchdog = AXCallWatchdog(hangThreshold: 0.8, blocklistDuration: 30.0)
         watchdog.beginCall(bundleID: "com.test.busy", attribute: kAXBoundsForRangeParameterizedAttribute)
-        // Another bundle ID should be skipped while a call is in flight (< 1.2s)
-        #expect(watchdog.shouldSkip(for: "com.other.app") == true)
+        // A different bundle must NOT be skipped while a call is in flight — serialization is now the queue's job.
+        #expect(watchdog.shouldSkip(for: "com.other.app") == false)
+        // The bundle currently making the call must also not be skipped (no self-busy-guard).
+        #expect(watchdog.shouldSkip(for: "com.test.busy") == false)
         watchdog.endCall()
     }
 }
