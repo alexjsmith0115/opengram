@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Incremental LLM Checking + Paragraph Rephrase Card
-status: executing
+status: verifying
 stopped_at: Phase 01 complete — all 3 plans done; AXCallQueue DI seam wired into OverlayController; ready for Phase 2
-last_updated: "2026-04-19T05:13:43.012Z"
+last_updated: "2026-04-19T05:20:10.878Z"
 last_activity: 2026-04-19
 progress:
   total_phases: 10
@@ -18,7 +18,7 @@ progress:
 
 Phase: 2 (Cancellable Bounds Queries) — EXECUTING
 Plan: 3 of 3
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-19
 
 **v1.2 parallel status:** Phase 19 UAT pending. v1.2 ships via `/gsd-complete-milestone v1.2` after UAT closes. See `.planning/milestones/v1.2-phases/` for archived phase dirs.
@@ -40,6 +40,7 @@ Progress: [██████░░░░] 67%
 | 18.3 | 4 | - | - |
 | Phase 01-ax-call-queue P03 | 5min | 1 tasks | 1 files |
 | Phase 02-cancellable-bounds-queries P01 | 15min | 2 tasks | 1 files |
+| Phase 02-cancellable-bounds-queries P03 | 3min | 3 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -124,6 +125,8 @@ Progress: [██████░░░░] 67%
 - [Phase ?]: [Phase 01-03]: axQueue field stored but unused this phase (D-09) — Phase 2 introduces first invocation via currentRepositionTask
 - [Phase 02-cancellable-bounds-queries]: currentRepositionTask + scheduleReposition use internal visibility for @testable test access
 - [Phase 02-cancellable-bounds-queries]: show() synchronous bounds loop untouched per D-12; async reposition has no production caller this plan
+- [Phase ?]: Used applyBoundsCallCount spy (Option C) for cancellation verification — deterministic, no wall-clock race
+- [Phase ?]: scrollPathCancels tests literal closure body rather than synthesizing NSEvent — global monitors only fire for other-process events
 
 ### Roadmap Evolution
 
@@ -147,6 +150,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-19T05:13:43.007Z
+Last session: 2026-04-19T05:20:06.040Z
 Stopped at: Phase 01 complete — all 3 plans done; AXCallQueue DI seam wired into OverlayController; ready for Phase 2
 Resume file: None

@@ -216,7 +216,7 @@ Surfaced during Phase 18.3 Plan 04 manual validation — 2026-04-17.
 **Goal:** Paragraph-level LLM suggestions render as purple dashed underlines alongside Harper red/blue, backed by a `ParagraphSuggestionStore` (actor) with per-paragraph cache, state machine (`pending/ready/readyEmpty/failed/dismissed/accepted`), reconciliation-on-tick, AX-text-change invalidation, FIFO 1-in-flight LLM queue with 30s timeout, and click-to-rephrase-card dispatch. Phase 16 `LLMCheckScheduler`, Phase 15 `ParagraphSuggestionCache`, and `IncrementalConfig` are deleted wholesale (D-01); tunables migrate into a new `OpenGramConfig` struct. No feature flag — direct replacement per CLAUDE.md "no deprecation cycles."
 **Requirements**: PLL-01..PLL-18 (see 20-VALIDATION.md — requirement IDs enumerated there)
 **Depends on:** Phase 19
-**Plans:** 1/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 - [x] 20-01-PLAN.md — Data-model primitives (ParagraphHash, ParagraphSet, state/entry, StoreEvent) + ParagraphHashTests
@@ -243,7 +243,7 @@ Plans:
 **Dependency order:** 1 → 2 → 3 → 4 → 5 (each phase unblocks the next; earlier tasks are shippable standalone)
 
 - [x] **Phase 1: AX Call Queue** — FIFO actor queue off main actor; watchdog busy-guard removed (PERF-01, PERF-02) (completed 2026-04-19)
-- [ ] **Phase 2: Cancellable Bounds Queries** — Task-based reposition; cancel at accept/dismiss/scroll sites (PERF-03, PERF-04)
+- [x] **Phase 2: Cancellable Bounds Queries** — Task-based reposition; cancel at accept/dismiss/scroll sites (PERF-03, PERF-04) (completed 2026-04-19)
 - [ ] **Phase 3: Viewport Cull + Rect Cache** — `lastKnownRects` + scroll-time cull; initial/textChanged query all (PERF-05, PERF-06)
 - [ ] **Phase 4: Scroll Handling — `trackFrame` + `hideAndSettle`** — per-app via AppQuirks; CADisplayLink pump; 12ms-budget demotion; scroll-area AX observer (PERF-07, PERF-08, PERF-09, PERF-10, PERF-11)
 - [ ] **Phase 5: Session-Local Mirror Improvements** — preserve cached rects before edit site on accept; `.textChanged` queries only invalidated (PERF-12)
@@ -282,7 +282,7 @@ Plans:
 Plans:
 - [x] 02-01-PLAN.md — OverlayController reposition infra: currentRepositionTask + RepositionReason + 5 methods + 3 cancel sites + applyBoundsCallCount spy (PERF-03, PERF-04)
 - [x] 02-02-PLAN.md — SlowMockAXAccessor test helper + TestHelpers pbxproj group (PERF-03 infra)
-- [ ] 02-03-PLAN.md — OverlayControllerRepositionTests (5 tests: cancellation, acceptSuggestion-cancels, dismiss-cancels, scroll-path-cancels, no-task-leaks) + pbxproj registration (PERF-03, PERF-04)
+- [x] 02-03-PLAN.md — OverlayControllerRepositionTests (5 tests: cancellation, acceptSuggestion-cancels, dismiss-cancels, scroll-path-cancels, no-task-leaks) + pbxproj registration (PERF-03, PERF-04)
 
 #### Phase 3: Viewport Cull + Rect Cache
 **Goal:** Per-suggestion last-known screen rects are cached; scroll repositions skip suggestions whose cached rects do not intersect the padded visible element bounds; initial and textChanged repositions still query all.
