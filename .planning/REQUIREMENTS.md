@@ -132,7 +132,7 @@ Requirements for the v1.3 milestone. Bring overlay UX closer to Grammarly-qualit
 
 #### AX Queue (Task 1)
 
-- [ ] **PERF-01**: AX bounds reads are serialized through a FIFO actor queue off the main actor; concurrent read requests execute in order without being dropped under burst load (Spec Task 1)
+- [x] **PERF-01**: AX bounds reads are serialized through a FIFO actor queue off the main actor; concurrent read requests execute in order without being dropped under burst load (Spec Task 1)
 - [ ] **PERF-02**: `AXCallWatchdog.shouldSkip` no longer returns true due to an in-flight call for non-blocklisted apps; hang detection and per-app blocklist behavior are preserved (Spec Task 1)
 
 #### Cancellable Bounds (Task 2)
@@ -285,6 +285,19 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SET-08 | Phase 17 | Complete |
 | SET-09 | Phase 17 | Complete |
 | SET-10 | Phase 17 | Complete |
+
+| PERF-01 | v1.3 Phase 1 | Complete |
+| PERF-02 | v1.3 Phase 1 | Pending |
+| PERF-03 | v1.3 Phase 2 | Pending |
+| PERF-04 | v1.3 Phase 2 | Pending |
+| PERF-05 | v1.3 Phase 3 | Pending |
+| PERF-06 | v1.3 Phase 3 | Pending |
+| PERF-07 | v1.3 Phase 4 | Pending |
+| PERF-08 | v1.3 Phase 4 | Pending |
+| PERF-09 | v1.3 Phase 4 | Pending |
+| PERF-10 | v1.3 Phase 4 | Pending |
+| PERF-11 | v1.3 Phase 4 | Pending |
+| PERF-12 | v1.3 Phase 5 | Pending |
 
 **Coverage:**
 - v1 requirements: 44 total (UI-08, UI-09 dropped per D-01; 42 active)

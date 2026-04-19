@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Incremental LLM Checking + Paragraph Rephrase Card
-status: executing
-stopped_at: Phase 20 complete — user approved manual validation; ready to advance to Phase 19 UAT
-last_updated: "2026-04-19T01:02:18.476Z"
-last_activity: 2026-04-19 -- Phase 1 execution started
+status: verifying
+stopped_at: Phase 01 complete — all 3 plans done; AXCallQueue DI seam wired into OverlayController; ready for Phase 2
+last_updated: "2026-04-19T01:22:33.126Z"
+last_activity: 2026-04-19
 progress:
-  total_phases: 15
+  total_phases: 10
   completed_phases: 0
-  total_plans: 3
-  completed_plans: 2
+  total_plans: 0
+  completed_plans: 0
   percent: 67
 ---
 
@@ -18,8 +18,8 @@ progress:
 
 Phase: 1 (AX Call Queue) — EXECUTING
 Plan: 3 of 3
-Status: Executing Phase 1
-Last activity: 2026-04-18 -- Plan 01-02 complete (AXCallQueue actor created, 4 tests green)
+Status: Phase complete — ready for verification
+Last activity: 2026-04-19
 
 **v1.2 parallel status:** Phase 19 UAT pending. v1.2 ships via `/gsd-complete-milestone v1.2` after UAT closes. See `.planning/milestones/v1.2-phases/` for archived phase dirs.
 
@@ -38,6 +38,7 @@ Progress: [██████░░░░] 67%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 18.3 | 4 | - | - |
+| Phase 01-ax-call-queue P03 | 5min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -119,6 +120,7 @@ Progress: [██████░░░░] 67%
 - [Phase 20-10c post-checkpoint]: Integration tests added for OG→LM Studio call chain. Mocked suite (URLProtocol, 8 tests) runs by default; live suite (4 tests) gated on TEST_RUNNER_OPENGRAM_LIVE_LLM=1 so default xcodebuild test skips with explicit reason. Commit b9bdab4.
 - [Phase 01-01]: Busy-guard branch deleted from AXCallWatchdog.shouldSkip; blocklist-only gating; activeCall/beginCall/endCall/checkForHang preserved — hang detection intact. shouldSkipReturnsFalseDuringInFlightCall test locks new contract.
 - [Phase 01-02]: AXCallQueue actor: FIFO AX serialization via actor isolation; boundsBatch cancels via CancellationError; elementBounds wraps each raw AX read in watchdog beginCall/endCall (D-06); constructor DI with .shared defaults (D-04). PERF-01 complete.
+- [Phase ?]: [Phase 01-03]: axQueue field stored but unused this phase (D-09) — Phase 2 introduces first invocation via currentRepositionTask
 
 ### Roadmap Evolution
 
@@ -142,6 +144,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-18T21:23:00Z
-Stopped at: Phase 01 Plan 02 complete — AXCallQueue actor created; 4/4 tests green; ready for Plan 01-03 (OverlayController init wiring)
+Last session: 2026-04-19T01:22:33.121Z
+Stopped at: Phase 01 complete — all 3 plans done; AXCallQueue DI seam wired into OverlayController; ready for Phase 2
 Resume file: none

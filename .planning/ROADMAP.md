@@ -121,7 +121,7 @@ Full details: [milestones/v1.1-ROADMAP.md](milestones/v1.1-ROADMAP.md)
   4. Flag-off regression test updated to assert `LLMPanelController` path when flag=false, and NOT invoked when flag=true.
   5. Full `xcodebuild test` green; no regression in Phase 15-18 suites.
   6. `REQUIREMENTS.md` traceability updated: INCR-02, INCR-04, INCR-09, INCR-13, SET-08, SET-09 flipped from `[ ]` to `[x]`.
-**Plans:** 2/2 plans complete
+**Plans:** 3/3 plans complete
 
 Plans:
 - [x] 18.1-01-PLAN.md — CheckCoordinator LLM routing fix + integration test + flag-off/on regression (WIRE-01, REPH-01..REPH-15)
@@ -241,7 +241,7 @@ Plans:
 **Requirements:** PERF-01..12
 **Dependency order:** 1 → 2 → 3 → 4 → 5 (each phase unblocks the next; earlier tasks are shippable standalone)
 
-- [ ] **Phase 1: AX Call Queue** — FIFO actor queue off main actor; watchdog busy-guard removed (PERF-01, PERF-02)
+- [x] **Phase 1: AX Call Queue** — FIFO actor queue off main actor; watchdog busy-guard removed (PERF-01, PERF-02) (completed 2026-04-19)
 - [ ] **Phase 2: Cancellable Bounds Queries** — Task-based reposition; cancel at accept/dismiss/scroll sites (PERF-03, PERF-04)
 - [ ] **Phase 3: Viewport Cull + Rect Cache** — `lastKnownRects` + scroll-time cull; initial/textChanged query all (PERF-05, PERF-06)
 - [ ] **Phase 4: Scroll Handling — `trackFrame` + `hideAndSettle`** — per-app via AppQuirks; CADisplayLink pump; 12ms-budget demotion; scroll-area AX observer (PERF-07, PERF-08, PERF-09, PERF-10, PERF-11)
@@ -264,7 +264,7 @@ Plans:
 Plans:
 - [x] 01-01-PLAN.md — Remove AXCallWatchdog busy-guard branch + swap test coverage (PERF-02) — completed 2026-04-18
 - [x] 01-02-PLAN.md — AXCallQueue actor + 4 tests + pbxproj registration (PERF-01) — completed 2026-04-18
-- [ ] 01-03-PLAN.md — OverlayController init seam for axQueue DI (PERF-01 wiring prep)
+- [x] 01-03-PLAN.md — OverlayController init seam for axQueue DI (PERF-01 wiring prep)
 
 #### Phase 2: Cancellable Bounds Queries
 **Goal:** Every reposition campaign runs inside a cancellable `Task`; accept/dismiss/scroll action sites cancel any pending reposition before proceeding.
