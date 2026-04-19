@@ -37,27 +37,16 @@ final class AXCallWatchdog: @unchecked Sendable {
 
     // MARK: - Public API
 
-    /// Returns true if the given bundle ID should be skipped: either blocklisted or
-    /// another AX call is currently in flight (busy guard).
+    /// Returns true if the given bundle ID is on the blocklist. Busy-guard removed —
+    /// call serialization is the queue's responsibility.
     func shouldSkip(for bundleID: String) -> Bool {
         lock.lock()
         defer { lock.unlock() }
-
-        // Check and prune blocklist
         if let expiration = blocklist[bundleID] {
-            if Date() < expiration {
-                return true
-            }
+            if Date() < expiration { return true }
             blocklist.removeValue(forKey: bundleID)
         }
-
-        // Busy guard: skip if any call is in flight (regardless of which bundle)
-        if let call = activeCall,
-           Date().timeIntervalSince(call.startTime) < 1.2 {
-            return true
-        }
-
-        return false
+        return false  // No busy guard — queue handles serialization.
     }
 
     /// Marks the start of an AX call for the given bundle ID.
