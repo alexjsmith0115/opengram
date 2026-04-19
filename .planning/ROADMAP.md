@@ -196,7 +196,8 @@ Plans:
 | 20. Paragraph-level LLM Suggestions | v1.2 | 12/12 | ✅ Complete | 2026-04-18 |
 | 19. Integration & UAT | v1.2 | 0/TBD | Not started | - |
 | 01. AX Call Queue | v1.3 | 3/3 | Complete | 2026-04-19 |
-| 02. Cancellable Bounds Queries | v1.3 | 2/3 | In Progress|  |
+| 02. Cancellable Bounds Queries | v1.3 | 3/3 | Complete   | 2026-04-19 |
+| 03. Viewport Cull + Rect Cache | v1.3 | 0/2 | Not started | - |
 
 ## Backlog
 
@@ -293,6 +294,12 @@ Plans:
 2. `.scrollDuring` / `.scrollSettled` reposition filters via `padded.intersects(rect)` against fresh element bounds
 3. `.initial` / `.textChanged` reposition queries all suggestions regardless of cache
 4. Viewport-cull unit tests cover: offscreen filter, initial-queries-all, cache cleared on dismiss
+
+**Plans:** 2 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — OverlayController lastKnownRects cache + scrollCullPaddingY + freshElementBounds + rebuildUnderlineEntries; replace Phase 2 placeholders; cache seed in show()/update()/applyBounds; clear in dismiss + per-ID in accept (PERF-05, PERF-06)
+- [ ] 03-02-PLAN.md — OverlayControllerViewportCullTests (5 tests: scrollDuring-cull, initial-queries-all, textChanged-queries-all, dismiss-clears, accept-removes-accepted-ID) + visibility flip + pbxproj registration (PERF-05, PERF-06)
 
 #### Phase 4: Scroll Handling — `trackFrame` + `hideAndSettle`
 **Goal:** Per-app scroll mode drives either a CADisplayLink-pumped `trackFrame` reposition (Notes/TextEdit/Mail) or a `hideAndSettle` fade-reposition-fade fallback (all others); 3 consecutive frames >12ms demote the session; scroll-area AX observer catches programmatic scrolls.

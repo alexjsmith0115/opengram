@@ -25,6 +25,10 @@ final class OverlayController {
     // T-03-02: cap displayed suggestions to prevent blocking the main thread with AX queries
     private static let maxDisplayedSuggestions = 50
 
+    // PERF-06: vertical padding applied to visible element bounds before culling.
+    // Hardcoded per D-05 — tune only if real-world friction surfaces.
+    private static let scrollCullPaddingY: CGFloat = 40
+
     private let accessor: any AXAccessor
     private let textMonitor: TextMonitor?
     private let config: OpenGramConfig
@@ -50,6 +54,12 @@ final class OverlayController {
     /// The cancellation test asserts `applyBoundsCallCount <= 1` after a double-schedule
     /// sequence to prove cancellation-before-apply. `internal` — @testable visible.
     var applyBoundsCallCount: Int = 0
+
+    /// PERF-05: per-suggestion last-known screen-space rects (same coord space
+    /// BoundsValidator.validatedBoundsForRange returns). Populated on every successful
+    /// bounds application and on show()/update() sync-loop seed; cleared on dismiss();
+    /// per-ID cleared on acceptSuggestion. `internal` so @testable tests assert cache state.
+    var lastKnownRects: [UUID: [NSRect]] = [:]
 
     private var scrollMonitor: Any?
     private var keyMonitor: Any?
@@ -163,6 +173,7 @@ final class OverlayController {
                 suggestion, in: context.text, element: element,
                 bundleID: context.bundleID, accessor: accessor
             ) else { continue }
+            lastKnownRects[suggestion.id] = rects
             for rect in rects {
                 let underlineRect = NSRect(x: rect.origin.x, y: rect.origin.y, width: rect.width, height: 2)
                 let hitRect = UnderlineView.expandedHitRect(from: underlineRect)
@@ -312,6 +323,7 @@ final class OverlayController {
                 suggestion, in: newContext.text, element: element,
                 bundleID: newContext.bundleID, accessor: accessor
             ) else { continue }
+            lastKnownRects[suggestion.id] = rects
             survivingSuggestions.append(suggestion)
             survivingOffsets.append(off)
             for rect in rects {
@@ -407,28 +419,102 @@ final class OverlayController {
         }
     }
 
-    /// Placeholder (D-06). Future work replaces with viewport culling against
-    /// `lastKnownRects`. This revision mirrors the synchronous loop's behavior.
+    /// PERF-06 viewport cull.
+    /// - `.initial` / `.textChanged`: query all (capped at maxDisplayedSuggestions).
+    /// - `.scrollDuring` / `.scrollSettled`: fetch fresh element bounds; if nil fall
+    ///   back to prefix; else pad vertically and filter to suggestions whose cached
+    ///   rects intersect. Suggestions with no cached entry are pessimistically included
+    ///   so new suggestions get positioned on first-query.
     private func suggestionsForReposition(
         reason: RepositionReason,
         context: TextContext
     ) -> [Suggestion] {
-        Array(suggestions.prefix(Self.maxDisplayedSuggestions))
+        let capped = Array(suggestions.prefix(Self.maxDisplayedSuggestions))
+        switch reason {
+        case .initial, .textChanged:
+            return capped
+        case .scrollDuring, .scrollSettled:
+            guard let elementBounds = freshElementBounds(context: context) else {
+                return capped
+            }
+            let padded = elementBounds.insetBy(dx: 0, dy: -Self.scrollCullPaddingY)
+            return capped.filter { suggestion in
+                guard let cached = lastKnownRects[suggestion.id] else {
+                    return true  // D-04 pessimistic include for uncached suggestions
+                }
+                return cached.contains { padded.intersects($0) }
+            }
+        }
     }
 
-    /// Placeholder (D-07). Future work populates `lastKnownRects` and rebuilds
-    /// underline entries, adds the `.scrollSettled` fade-in branch.
-    /// This revision only increments the test-spy counter.
+    /// PERF-05: populate lastKnownRects with every successful bounds result, then
+    /// rebuild the underline view entries. `applyBoundsCallCount` spy stays —
+    /// cancellation tests depend on it. Fade-in on .scrollSettled is deferred.
     private func applyBounds(
         _ results: [(suggestion: Suggestion, rects: [NSRect])],
         reason: RepositionReason
     ) {
         applyBoundsCallCount += 1
+        for (suggestion, rects) in results {
+            lastKnownRects[suggestion.id] = rects
+        }
+        rebuildUnderlineEntries()
     }
 
     /// D-08: used by `reposition` early-bail when zero target suggestions.
     private func clearUnderlines() {
         underlineView?.entries = []
+    }
+
+    /// PERF-06: sync MainActor AX read of element position + size. Skips axQueue
+    /// (D-06) — one cheap read per scroll tick doesn't warrant actor serialization,
+    /// and sync return keeps suggestionsForReposition non-async. nil on any failure
+    /// (cull filter falls back to prefix).
+    private func freshElementBounds(context: TextContext) -> CGRect? {
+        let element = context.axElement
+        let (posErr, posRef) = accessor.copyAttributeValue(element, kAXPositionAttribute)
+        let (sizeErr, sizeRef) = accessor.copyAttributeValue(element, kAXSizeAttribute)
+        guard posErr == .success, sizeErr == .success,
+              let posRef, let sizeRef,
+              CFGetTypeID(posRef) == AXValueGetTypeID(),
+              CFGetTypeID(sizeRef) == AXValueGetTypeID() else { return nil }
+        var position = CGPoint.zero
+        var size = CGSize.zero
+        guard AXValueGetValue(posRef as! AXValue, .cgPoint, &position),
+              AXValueGetValue(sizeRef as! AXValue, .cgSize, &size) else { return nil }
+        return CGRect(origin: position, size: size)
+    }
+
+    /// PERF-05: rebuild underline entries from lastKnownRects. Mirrors show()'s
+    /// UnderlineEntry construction block (direct rect pass-through, no
+    /// windowOrigin subtraction, no toLocalEntries helper). Respects shouldHideUnderline
+    /// for card-hidden paragraph ranges (D-08). Skips suggestions with no cached rects.
+    private func rebuildUnderlineEntries() {
+        guard let view = underlineView else { return }
+        var entries: [UnderlineEntry] = []
+        for (idx, suggestion) in suggestions.enumerated() {
+            guard idx < suggestionScalarOffsets.count else { continue }
+            let off = suggestionScalarOffsets[idx]
+            if shouldHideUnderline(scalarStart: off.scalarStart, scalarLength: off.scalarLength) {
+                continue
+            }
+            guard let rects = lastKnownRects[suggestion.id] else { continue }
+            for screenRect in rects {
+                let underlineRect = NSRect(
+                    x: screenRect.origin.x,
+                    y: screenRect.origin.y,
+                    width: screenRect.width,
+                    height: 2
+                )
+                let hitRect = UnderlineView.expandedHitRect(from: underlineRect)
+                entries.append(UnderlineEntry(
+                    underlineRect: underlineRect,
+                    hitRect: hitRect,
+                    suggestion: suggestion
+                ))
+            }
+        }
+        view.entries = entries
     }
 
     /// Dismisses the overlay, closes any open popover, uninstalls the AX observer,
@@ -452,6 +538,7 @@ final class OverlayController {
             keyMonitor = nil
         }
         targetAppPID = nil
+        lastKnownRects.removeAll()
         onDismissAll?()
     }
 
@@ -945,6 +1032,7 @@ final class OverlayController {
 
         guard writeSucceeded else { return }
 
+        lastKnownRects.removeValue(forKey: suggestion.id)
         closePopover()
         onAcceptSuggestion?(suggestion)
 
