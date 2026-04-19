@@ -783,7 +783,7 @@ final class OverlayController {
     @MainActor
     private func handleStoreEvent(_ event: StoreEvent) {
         guard case .suggestionsChanged(let bundleID) = event else { return }
-        guard let ctx = textContext, ctx.bundleID == bundleID, let store else { return }
+        guard let ctx = textContext, ctx.bundleID == bundleID, store != nil else { return }
         Task { @MainActor [weak self] in
             guard let self, let store = self.store,
                   let ctx = self.textContext, ctx.bundleID == bundleID else { return }
