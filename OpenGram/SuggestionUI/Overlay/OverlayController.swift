@@ -453,6 +453,14 @@ final class OverlayController {
         guard let context = textContext else { return }
         let targetSuggestions = suggestionsForReposition(reason: reason, context: context)
         guard !targetSuggestions.isEmpty else {
+            if reason == .textChanged {
+                // PERF-12 D-07: zero-AX path. All survivors' rects preserved by the
+                // accept-time invalidation predicate. Rebuild the underline view and
+                // the overlay window frame from cached rects, skip axQueue entirely.
+                rebuildUnderlineEntries()
+                recomputeOverlayFrame()
+                return
+            }
             clearUnderlines()
             return
         }
@@ -488,8 +496,13 @@ final class OverlayController {
     ) -> [Suggestion] {
         let capped = Array(suggestions.prefix(Self.maxDisplayedSuggestions))
         switch reason {
-        case .initial, .textChanged:
+        case .initial:
             return capped
+        case .textChanged:
+            // PERF-12 D-09: query only cache-invalidated suggestions. Strictly-before
+            // survivors (whose rects were preserved by the accept-time invalidation
+            // predicate) stay out of the batch — enables the zero-AX end-of-doc path.
+            return capped.filter { lastKnownRects[$0.id] == nil }
         case .scrollDuring, .scrollSettled:
             guard let elementBounds = freshElementBounds(context: context) else {
                 return capped
@@ -704,6 +717,28 @@ final class OverlayController {
             }
         }
         view.entries = entries
+    }
+
+    /// PERF-12 D-08: recompute the overlay window frame from the union of preserved
+    /// `lastKnownRects` rects, without an AX round-trip. Called from the empty-filter
+    /// `.textChanged` branch after an accept that invalidated no remaining survivors.
+    /// Padding (4pt) mirrors `repositionAfterAccept`'s former window-frame pattern and
+    /// `show()`'s window-sizing pattern.
+    private func recomputeOverlayFrame() {
+        guard let view = underlineView else { return }
+        let padding: CGFloat = 4
+        let union = suggestions
+            .compactMap { lastKnownRects[$0.id] }
+            .flatMap { $0 }
+            .reduce(CGRect.null) { $0.union($1) }
+        guard !union.isNull else {
+            // Defensive — should not occur in empty-filter path (all survivors cached).
+            dismiss()
+            return
+        }
+        let newFrame = union.insetBy(dx: -padding, dy: -padding)
+        view.frame = NSRect(origin: .zero, size: newFrame.size)
+        overlayWindow.setFrame(newFrame, display: false)
     }
 
     /// Dismisses the overlay, closes any open popover, uninstalls the AX observer,
@@ -1275,6 +1310,21 @@ final class OverlayController {
             return
         }
 
+        // PERF-12 D-05: pre-shift cache invalidation. Runs over PRE-SHIFT
+        // suggestionScalarOffsets so the predicate classifies screen-stable
+        // (strictly-before) vs. screen-shifted (overlap + after-edit) suggestions.
+        // Predicate `beforeEnd <= editStart` preserves the exact-boundary case
+        // (suggestion ending at editStart has unchanged screen position).
+        let editStart = acceptedStart
+        for (i, suggestion) in suggestions.enumerated() where i < suggestionScalarOffsets.count {
+            let before = suggestionScalarOffsets[i]
+            let beforeEnd = before.scalarStart + before.scalarLength
+            let strictlyBefore = beforeEnd <= editStart
+            if !strictlyBefore {
+                lastKnownRects.removeValue(forKey: suggestion.id)
+            }
+        }
+
         // Shift offsets for suggestions after the accepted range; zero out overlapping ones.
         for i in 0..<suggestionScalarOffsets.count {
             let off = suggestionScalarOffsets[i]
@@ -1331,52 +1381,12 @@ final class OverlayController {
         suggestions = rebuiltSuggestions
         suggestionScalarOffsets = rebuiltOffsets
 
-        // Rebuild underline entries using BoundsValidator — drop suggestions whose re-query fails (D-12).
-        // Survivor computation always runs to keep suggestions consistent with reality.
-        guard suggestionScalarOffsets.count == suggestions.count else { return }
-
-        // Build entries in screen coordinates first so we can compute the new window frame.
-        var screenEntries: [UnderlineEntry] = []
-        var survivingSuggestions: [Suggestion] = []
-        var survivingOffsets: [(scalarStart: Int, scalarLength: Int)] = []
-
-        for (i, suggestion) in suggestions.enumerated() {
-            guard let rects = boundsValidator.validatedBoundsForRange(
-                suggestion, in: newText, element: context.axElement,
-                bundleID: context.bundleID, accessor: accessor
-            ) else { continue }
-
-            survivingSuggestions.append(suggestion)
-            survivingOffsets.append(suggestionScalarOffsets[i])
-
-            for rect in rects {
-                let underlineRect = NSRect(x: rect.origin.x, y: rect.origin.y, width: rect.width, height: 2)
-                let hitRect = UnderlineView.expandedHitRect(from: underlineRect)
-                screenEntries.append(UnderlineEntry(underlineRect: underlineRect, hitRect: hitRect, suggestion: suggestion))
-            }
-        }
-
-        suggestions = survivingSuggestions
-        suggestionScalarOffsets = survivingOffsets
-
-        if screenEntries.isEmpty {
-            dismiss()
-            return
-        }
-
-        // Recalculate window frame from new screen-coord entry union (mirrors show() pattern).
-        let unionRect = screenEntries.reduce(CGRect.null) { $0.union($1.hitRect) }
-        let padding: CGFloat = 4
-        let newWindowRect = unionRect.insetBy(dx: -padding, dy: -padding)
-
-        let localEntries = Self.toLocalEntries(screenEntries, in: newWindowRect)
-
-        if let view = underlineView {
-            view.entries = localEntries
-            view.frame = NSRect(origin: .zero, size: newWindowRect.size)
-            view.needsDisplay = true
-        }
-        overlayWindow.setFrame(newWindowRect, display: false)
+        // PERF-12 D-01: unify accept path with scroll path. scheduleReposition
+        // spawns a cancellable task that either (a) short-circuits via the
+        // zero-AX empty-filter branch when all survivors are strictly before
+        // the edit site, or (b) routes through axQueue.boundsBatch for the
+        // invalidated subset. Error logging inherits from reposition()'s catch.
+        scheduleReposition(reason: .textChanged)
     }
 
     // MARK: - Keyboard Navigation
