@@ -42,7 +42,9 @@ final class OverlayController {
     private let store: ParagraphSuggestionStore?
     private var storeSubscriptionTask: Task<Void, Never>?
     private let heuristic: DisplayHeuristic
-    private let overlayWindow: OverlayWindow
+    /// PERF-12 test seam: @testable tests assert `overlayWindow.frame` origin
+    /// after update() to verify SCREEN-space survivor rebuild (Gap 2).
+    let overlayWindow: OverlayWindow
     private let popoverPanel: SuggestionPopoverPanel
     private let targetAppObserver: TargetAppObserver
     private let rephraseCardPanelController: RephraseCardPanelController

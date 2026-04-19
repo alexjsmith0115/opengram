@@ -201,4 +201,166 @@ struct OverlayControllerMirrorTests {
         #expect(controller.lastKnownRects[idA] == [rectA])
         #expect(controller.lastKnownRects[idB] == [rectB])
     }
+
+    // PERF-12 Gap 1: accept synchronously rebuilds view.entries so AppKit has no
+    // draw cycle where pre-accept entries paint over shifted text.
+    @Test("accept synchronously rebuilds view.entries (no draw-cycle gap between accept and async applyBounds)")
+    func accept_rebuildsViewEntriesSynchronously() async throws {
+        let idA = UUID(); let idB = UUID(); let idC = UUID()
+        let (controller, mock, _, seeded) = makeMirrorController(
+            suggestionCount: 3, ids: [idA, idB, idC], text: "aaa bbb ccc"
+        )
+
+        // idA at 0-3 (strictly before idB), idB at 4-7 (accept target), idC at 8-11 (after edit).
+        controller.suggestionScalarOffsets = [
+            (scalarStart: 0, scalarLength: 3),
+            (scalarStart: 4, scalarLength: 3),
+            (scalarStart: 8, scalarLength: 3),
+        ]
+        let rectA = NSRect(x: 100, y: 500, width: 30, height: 14)
+        let rectB = NSRect(x: 140, y: 500, width: 30, height: 14)
+        let rectC = NSRect(x: 180, y: 500, width: 30, height: 14)
+        controller.lastKnownRects[idA] = [rectA]
+        controller.lastKnownRects[idB] = [rectB]
+        controller.lastKnownRects[idC] = [rectC]
+
+        // Seed a live underlineView so the sync rebuildUnderlineEntries at tail of
+        // repositionAfterAccept has a view to mutate. Mirrors the show() pattern.
+        let view = UnderlineView()
+        let entries: [UnderlineEntry] = [
+            UnderlineEntry(underlineRect: rectA, hitRect: UnderlineView.expandedHitRect(from: rectA), suggestion: seeded[0]),
+            UnderlineEntry(underlineRect: rectB, hitRect: UnderlineView.expandedHitRect(from: rectB), suggestion: seeded[1]),
+            UnderlineEntry(underlineRect: rectC, hitRect: UnderlineView.expandedHitRect(from: rectC), suggestion: seeded[2]),
+        ]
+        view.entries = entries
+        view.frame = NSRect(x: 0, y: 0, width: 200, height: 20)
+        controller.underlineView = view
+
+        // Pre-accept sanity.
+        #expect(controller.underlineView?.entries.count == 3)
+
+        wireAcceptPath(mock: mock, updatedText: "aaa XXX ccc")
+        mock.parameterizedAttributeValues[kAXBoundsForRangeParameterizedAttribute] =
+            (.success, axRectValue(CGRect(x: 180, y: 500, width: 30, height: 14)))
+
+        // Accept middle (idB). SYNC assertion BEFORE draining the async tail —
+        // this is the defining check: if the sync rebuildUnderlineEntries at
+        // tail of repositionAfterAccept is missing, entries remain [idA, idB, idC]
+        // until applyBounds fires async.
+        controller.acceptSuggestion(seeded[1], context: controller.textContext!, replacementOverride: "XXX")
+
+        let entriesJustAfterAccept = controller.underlineView?.entries ?? []
+        let syncIDs = Set(entriesJustAfterAccept.map { $0.suggestion.id })
+        // idB must be gone sync (accepted + rebuilt). idA must be present sync
+        // (strictly-before survivor preserved via lastKnownRects). idC allowed
+        // either way (cache invalidated → rebuildUnderlineEntries skips it until
+        // async; if the async already landed, it's back — both acceptable).
+        #expect(!syncIDs.contains(idB), "idB underline must be removed synchronously after accept")
+        #expect(syncIDs.contains(idA), "idA (strictly-before survivor) must remain synchronously after accept")
+
+        // Drain the async tail; reassert coherence.
+        await controller.currentRepositionTask?.value
+        let finalIDs = Set((controller.underlineView?.entries ?? []).map { $0.suggestion.id })
+        #expect(finalIDs.contains(idA))
+        #expect(!finalIDs.contains(idB))
+    }
+
+    // PERF-12 Gap 2: update() with diff.unchanged survivors places overlayWindow
+    // at SCREEN-space union of lastKnownRects, NOT at LOCAL-space union of
+    // underlineView.entries.
+    @Test("update() with diff.unchanged survivors places overlayWindow in SCREEN space, not LOCAL space")
+    func update_windowFrameOriginIsScreenSpaceForDiffUnchangedSurvivors() async throws {
+        let idA = UUID(); let idB = UUID(); let idC = UUID()
+        let mock = MockAXAccessor()
+        let queue = AXCallQueue(accessor: mock)
+        let controller = OverlayController(accessor: mock, axQueue: queue)
+
+        // Build suggestions with ranges bound to the actual context text so that
+        // computeScalarOffsets (called by update()) yields distinct offsets per id
+        // matching the pre-seeded suggestionScalarOffsets. Without this, Swift's
+        // cross-string String.Index use collapses keys and the diff classifies
+        // survivors unpredictably.
+        let text = "aaa bbb ccc"
+        let scalars = text.unicodeScalars
+        func rangeAt(_ start: Int, _ end: Int) -> Range<String.Index> {
+            let s = scalars.index(scalars.startIndex, offsetBy: start).samePosition(in: text)!
+            let e = scalars.index(scalars.startIndex, offsetBy: end).samePosition(in: text)!
+            return s..<e
+        }
+        func mkSuggestion(id: UUID, original: String, range: Range<String.Index>) -> Suggestion {
+            Suggestion(
+                id: id, range: range, original: original,
+                primaryReplacement: original, allReplacements: [original],
+                message: "", category: .spelling, source: .harper,
+                priority: 5, paragraphHash: nil
+            )
+        }
+        let sA = mkSuggestion(id: idA, original: "aaa", range: rangeAt(0, 3))
+        let sB = mkSuggestion(id: idB, original: "bbb", range: rangeAt(4, 7))
+        let sC = mkSuggestion(id: idC, original: "ccc", range: rangeAt(8, 11))
+        let seeded = [sA, sB, sC]
+
+        controller.suggestions = seeded
+        controller.suggestionScalarOffsets = [
+            (scalarStart: 0, scalarLength: 3),
+            (scalarStart: 4, scalarLength: 3),
+            (scalarStart: 8, scalarLength: 3),
+        ]
+        controller.textContext = TextContext(
+            text: text, bundleID: "com.apple.TextEdit",
+            extractionMethod: .axDirectSelection, selectionRange: nil,
+            elementBounds: nil, axElement: AXUIElementCreateSystemWide()
+        )
+
+        // Seed underline view with LOCAL-space entries (what a prior show()/update()
+        // would have produced after toLocalEntries translation). Pre-fix, update()
+        // reused these LOCAL entries → unionRect LOCAL → setFrame LOCAL. Post-fix,
+        // update() ignores these and sources from lastKnownRects (SCREEN).
+        let localRectA = NSRect(x: 0, y: 0, width: 30, height: 22)
+        let localRectB = NSRect(x: 40, y: 0, width: 30, height: 22)
+        let localRectC = NSRect(x: 80, y: 0, width: 30, height: 22)
+        let view = UnderlineView()
+        view.entries = [
+            UnderlineEntry(underlineRect: localRectA, hitRect: localRectA, suggestion: sA),
+            UnderlineEntry(underlineRect: localRectB, hitRect: localRectB, suggestion: sB),
+            UnderlineEntry(underlineRect: localRectC, hitRect: localRectC, suggestion: sC),
+        ]
+        view.frame = NSRect(x: 0, y: 0, width: 120, height: 22)
+        controller.underlineView = view
+
+        // Seed lastKnownRects with deterministic SCREEN-space rects.
+        let rectA = NSRect(x: 200, y: 500, width: 30, height: 14)
+        let rectB = NSRect(x: 240, y: 500, width: 30, height: 14)
+        let rectC = NSRect(x: 280, y: 500, width: 30, height: 14)
+        controller.lastKnownRects[idA] = [rectA]
+        controller.lastKnownRects[idB] = [rectB]
+        controller.lastKnownRects[idC] = [rectC]
+
+        // Bring overlayWindow to front so update()'s isVisible guard passes.
+        controller.overlayWindow.contentView = view
+        controller.overlayWindow.setFrame(NSRect(x: 10, y: 10, width: 120, height: 22), display: false)
+        controller.overlayWindow.orderFrontRegardless()
+        #expect(controller.overlayWindow.isVisible)
+
+        // Construct newSuggestions with only idA + idB (idC dropped → diff.removed
+        // non-empty → bypasses update()'s early-return at line 336 AND sends idA/idB
+        // through the diff.unchanged branch + buggy union/setFrame at 409-420).
+        // Keep originals + category identical so SuggestionKey matches.
+        let newSuggestions: [Suggestion] = [sA, sB]
+        let ctx = controller.textContext!
+
+        controller.update(suggestions: newSuggestions, context: ctx)
+
+        // SCREEN-space origin assertion — the smoking gun.
+        //   union(rectA, rectB) = (x=200, y=500, w=70, h=14)
+        //   hitRect expansion via UnderlineView.expandedHitRect adds vertical
+        //   padding around the 2pt underline row, so we assert on padded
+        //   union origin ignoring exact height/width.
+        // Pre-fix (buggy): survivingEntries sourced from view.entries (LOCAL),
+        // union lands near (x≈0, y≈0). Post-fix: SCREEN, lands near (x≈196, y near 500).
+        let frame = controller.overlayWindow.frame
+        #expect(frame.minX > 150, "expected SCREEN-space x > 150 (near 196), got \(frame.minX) — Gap 2 regression")
+        #expect(frame.minX < 250, "expected SCREEN-space x < 250 (near 196), got \(frame.minX)")
+        #expect(frame.minY > 400, "expected SCREEN-space y > 400 (near 500), got \(frame.minY) — Gap 2 regression")
+    }
 }
