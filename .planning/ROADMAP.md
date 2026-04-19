@@ -196,7 +196,7 @@ Plans:
 | 20. Paragraph-level LLM Suggestions | v1.2 | 12/12 | ✅ Complete | 2026-04-18 |
 | 19. Integration & UAT | v1.2 | 0/TBD | Not started | - |
 | 01. AX Call Queue | v1.3 | 3/3 | Complete | 2026-04-19 |
-| 02. Cancellable Bounds Queries | v1.3 | 0/3 | Planning | - |
+| 02. Cancellable Bounds Queries | v1.3 | 2/3 | In Progress|  |
 
 ## Backlog
 
@@ -281,7 +281,7 @@ Plans:
 
 Plans:
 - [x] 02-01-PLAN.md — OverlayController reposition infra: currentRepositionTask + RepositionReason + 5 methods + 3 cancel sites + applyBoundsCallCount spy (PERF-03, PERF-04)
-- [ ] 02-02-PLAN.md — SlowMockAXAccessor test helper + TestHelpers pbxproj group (PERF-03 infra)
+- [x] 02-02-PLAN.md — SlowMockAXAccessor test helper + TestHelpers pbxproj group (PERF-03 infra)
 - [ ] 02-03-PLAN.md — OverlayControllerRepositionTests (5 tests: cancellation, acceptSuggestion-cancels, dismiss-cancels, scroll-path-cancels, no-task-leaks) + pbxproj registration (PERF-03, PERF-04)
 
 #### Phase 3: Viewport Cull + Rect Cache
