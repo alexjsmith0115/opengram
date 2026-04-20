@@ -1,5 +1,7 @@
 planning/
 .planning/
+__pycache__/
+*.pyc
 .claude/worktrees/
 .DS_Store
 harper-bridge/target/
@@ -9,3 +11,5 @@ harper-bridge/bindings/
 OpenGram.xcodeproj/project.xcworkspace/
 HarperBridge.xcframework/
 graphify-out/
+.claire/
+build/
