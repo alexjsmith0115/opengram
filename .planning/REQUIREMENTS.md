@@ -56,7 +56,7 @@
 
 - [x] **CLAR-15**: `PhraseEntry` schema includes `dialects: Option<Vec<Dialect>>` (default None = universal). Phase 2 curation tags US-specific entries (e.g., "whilst" excluded from US-only set). Phase 4 matcher filters by the user's dialect config at runtime.
 
-- [ ] **CLAR-16**: `THIRD_PARTY.md` at repo root cites retext-simplify (MIT, Titus Wormer) and plainlanguage.gov (US public domain — attribution noted for provenance, not required). MIT license text embedded verbatim.
+- [x] **CLAR-16**: `THIRD_PARTY.md` at repo root cites retext-simplify (MIT, Titus Wormer) and plainlanguage.gov (US public domain — attribution noted for provenance, not required). MIT license text embedded verbatim.
 
 ### Settings + Runtime
 
@@ -141,7 +141,7 @@ Measurement checkpoint: Phase 11 logs all four values to test output; shipping n
 | CLAR-13 | Phase 9 | Pending |
 | CLAR-14 | Phase 8 | Complete |
 | CLAR-15 | Phase 8 | Complete |
-| CLAR-16 | Phase 8 | Pending |
+| CLAR-16 | Phase 8 | Complete |
 | CLAR-17 | Phase 12 | Pending |
 | CLAR-18 | Phase 12 | Pending |
 | CLAR-19 | Phase 12 | Pending |
