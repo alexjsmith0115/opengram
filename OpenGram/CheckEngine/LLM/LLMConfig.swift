@@ -1,11 +1,10 @@
 import Foundation
 
 /// Per-category check type used to let users enable/disable individual LLM check dimensions
-/// (tone, clarity, rephrase) from Settings. Filtered in LLMConfig.isEnabled and passed to
+/// (tone, rephrase) from Settings. Filtered in LLMConfig.isEnabled and passed to
 /// LLMService so only the configured dimensions are requested.
 enum LLMCheckType: String, Sendable, CaseIterable, Codable {
     case tone
-    case clarity
     case rephrase
 }
 

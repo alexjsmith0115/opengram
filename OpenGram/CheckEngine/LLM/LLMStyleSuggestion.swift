@@ -7,7 +7,6 @@ import Foundation
 struct LLMStyleSuggestion: Sendable, Equatable, Hashable {
 
     enum Category: String, Sendable, CaseIterable {
-        case clarity
         case tone
         case rephrase
     }
