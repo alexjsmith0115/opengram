@@ -2,20 +2,18 @@ import Foundation
 
 enum LLMPrompts {
 
-    /// Unified system prompt that evaluates clarity, tone, and rephrase in a single pass.
-    /// Harper-flagged spans are injected to prevent duplicate suggestions (D-11).
+    /// Unified system prompt that evaluates tone, rephrase, and grammar/spelling in a single pass.
+    /// Harper-flagged spans are injected to prevent duplicate suggestions.
     static func systemPrompt(
         harperSpans: [String] = [],
         confidenceThreshold: Int = LLMConfig.defaultConfidenceThreshold
     ) -> String {
         var prompt = """
-        You are a writing assistant that analyzes text for style, grammar, and spelling improvements. You evaluate four dimensions: clarity, tone, rephrase, and grammar/spelling. You ONLY suggest improvements that are genuinely meaningful — do not suggest changes for text that is already well-written.
+        You are a writing assistant that analyzes text for style, grammar, and spelling improvements. You evaluate three dimensions: tone, rephrase, and grammar/spelling. You ONLY suggest improvements that are genuinely meaningful — do not suggest changes for text that is already well-written.
 
         For each dimension, internally score your confidence (1-10) that the suggestion is a real improvement. Only include suggestions with confidence >= \(confidenceThreshold).
 
         ## Dimensions
-
-        **clarity**: The text is unnecessarily complex, redundant, or hard to follow. Simplify sentence structure, remove filler words, eliminate redundancy. Do NOT flag text that is already clear.
 
         **tone**: The text has hedging language ("I think maybe", "sort of"), inappropriate formality for context, or lacks confidence. Adjust to be more direct and professional. Do NOT flag text with an already appropriate tone.
 
@@ -30,8 +28,8 @@ enum LLMPrompts {
         {
           "suggestions": [
             {
-              "category": "clarity",
-              "revised_text": "The improved version of the full input text with clarity fixes applied.",
+              "category": "tone",
+              "revised_text": "The improved version of the full input text with tone fixes applied.",
               "explanation": "Brief explanation of what was changed and why.",
               "confidence": 8
             }
@@ -39,9 +37,9 @@ enum LLMPrompts {
         }
 
         Rules:
-        - "suggestions" is an array of 0 to 3 objects.
+        - "suggestions" is an array of 0 to 2 objects.
         - Return an EMPTY array if the text is already well-written: {"suggestions": []}
-        - Each object must have: category (string: "clarity"|"tone"|"rephrase"), revised_text (string), explanation (string), confidence (integer 1-10).
+        - Each object must have: category (string: "tone"|"rephrase"), revised_text (string), explanation (string), confidence (integer 1-10).
         - revised_text must be a complete rewrite of the ENTIRE input text with that dimension's improvements applied. Do not return a partial snippet.
         - Only include suggestions with confidence >= \(confidenceThreshold).
         - Never include more than one suggestion per category.
