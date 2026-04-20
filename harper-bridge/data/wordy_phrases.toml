@@ -430,12 +430,12 @@ severity = "medium"
 sources = ["plainlanguage.gov"]
 id = "be advised"
 
-# JUDGMENT: replacement >3 tokens shorter than phrase (phrase=5, replacement=1)
 [[entries]]
 phrase = "because of the fact that"
 replacement = "because"
-severity = "low"
+severity = "medium"
 sources = ["retext-simplify"]
+note = "Common verbose filler; replacement is concise and unambiguous."
 id = "because of the fact that"
 
 [[entries]]
@@ -677,12 +677,12 @@ severity = "high"
 sources = ["retext-simplify", "plainlanguage.gov"]
 id = "disseminate"
 
-# JUDGMENT: replacement >3 tokens shorter than phrase (phrase=5, replacement=1)
 [[entries]]
 phrase = "due to the fact that"
 replacement = "because"
-severity = "low"
+severity = "high"
 sources = ["retext-simplify", "plainlanguage.gov"]
+note = "Common verbose filler; both sources confirm this is a strong signal."
 id = "due to the fact that"
 
 [[entries]]
@@ -1154,12 +1154,12 @@ severity = "high"
 sources = ["retext-simplify", "plainlanguage.gov"]
 id = "in lieu of"
 
-# JUDGMENT: replacement >3 tokens shorter than phrase (phrase=6, replacement=1)
 [[entries]]
 phrase = "in light of the fact that"
 replacement = "because"
-severity = "low"
+severity = "medium"
 sources = ["retext-simplify"]
+note = "Common verbose filler; replacement is concise and unambiguous."
 id = "in light of the fact that"
 
 [[entries]]
@@ -1254,12 +1254,12 @@ severity = "high"
 sources = ["retext-simplify", "plainlanguage.gov"]
 id = "in view of"
 
-# JUDGMENT: replacement >3 tokens shorter than phrase (phrase=5, replacement=1)
 [[entries]]
 phrase = "in view of the above"
 replacement = "so"
-severity = "low"
+severity = "high"
 sources = ["retext-simplify", "plainlanguage.gov"]
+note = "Both sources flag this phrase; 'so' is the intended concise replacement."
 id = "in view of the above"
 
 [[entries]]
@@ -1656,12 +1656,12 @@ severity = "high"
 sources = ["retext-simplify", "plainlanguage.gov"]
 id = "option"
 
-# JUDGMENT: replacement >3 tokens shorter than phrase (phrase=5, replacement=1)
 [[entries]]
 phrase = "owing to the fact that"
 replacement = "because"
-severity = "low"
+severity = "medium"
 sources = ["retext-simplify"]
+note = "Common verbose filler; replacement is concise and unambiguous."
 id = "owing to the fact that"
 
 [[entries]]

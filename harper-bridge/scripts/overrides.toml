@@ -4,4 +4,29 @@
 # Ops: drop | severity | replacement | dialects | note.
 
 [overrides]
-# Populated in Task 3 after judgment-call curation pass.
+
+# Rule 2 judgment entries — all are legitimate verbose-filler phrases; keep + restore severity.
+# "because of the fact that → because": classic filler; single source → medium.
+[overrides."because of the fact that"]
+severity = "medium"
+note = "Common verbose filler; replacement is concise and unambiguous."
+
+# "due to the fact that → because": present in both sources → high.
+[overrides."due to the fact that"]
+severity = "high"
+note = "Common verbose filler; both sources confirm this is a strong signal."
+
+# "in light of the fact that → because": single source, common filler → medium.
+[overrides."in light of the fact that"]
+severity = "medium"
+note = "Common verbose filler; replacement is concise and unambiguous."
+
+# "in view of the above → so": present in both sources → high.
+[overrides."in view of the above"]
+severity = "high"
+note = "Both sources flag this phrase; 'so' is the intended concise replacement."
+
+# "owing to the fact that → because": single source, common filler → medium.
+[overrides."owing to the fact that"]
+severity = "medium"
+note = "Common verbose filler; replacement is concise and unambiguous."
