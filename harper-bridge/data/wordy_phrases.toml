@@ -1,0 +1,2366 @@
+# Generated from retext-simplify@c7686ac, plainlanguage.gov@fd76947 on 2026-04-20
+# Do not hand-edit — see scripts/overrides.toml for curation overrides.
+
+[[entries]]
+phrase = "/ (slash)"
+replacement = "and"
+severity = "medium"
+sources = ["plainlanguage.gov"]
+id = "/ (slash)"
+
+[[entries]]
+phrase = "\\_\\_\\_\\_\\_\\_etc."
+replacement = "for example"
+severity = "medium"
+sources = ["plainlanguage.gov"]
+id = "\\_\\_\\_\\_\\_\\_etc."
+
+[[entries]]
+phrase = "a and/or b"
+replacement = "a or b or both"
+severity = "medium"
+sources = ["plainlanguage.gov"]
+id = "a and/or b"
+
+[[entries]]
+phrase = "a number of"
+replacement = "many"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "a number of"
+
+[[entries]]
+phrase = "abundance"
+replacement = "enough"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "abundance"
+
+[[entries]]
+phrase = "accede to"
+replacement = "agree to"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "accede to"
+
+[[entries]]
+phrase = "accelerate"
+replacement = "speed up"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "accelerate"
+
+[[entries]]
+phrase = "accentuate"
+replacement = "stress"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "accentuate"
+
+[[entries]]
+phrase = "accompany"
+replacement = "go with"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "accompany"
+
+[[entries]]
+phrase = "accomplish"
+replacement = "carry out"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "accomplish"
+
+[[entries]]
+phrase = "accorded"
+replacement = "given"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "accorded"
+
+[[entries]]
+phrase = "accordingly"
+replacement = "so"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "accordingly"
+
+[[entries]]
+phrase = "accrue"
+replacement = "add"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "accrue"
+
+[[entries]]
+phrase = "accurate"
+replacement = "correct"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "accurate"
+
+[[entries]]
+phrase = "acquiesce"
+replacement = "agree"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "acquiesce"
+
+[[entries]]
+phrase = "acquire"
+replacement = "get"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "acquire"
+
+[[entries]]
+phrase = "additional"
+replacement = "added"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "additional"
+
+[[entries]]
+phrase = "address"
+replacement = "discuss"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "address"
+
+[[entries]]
+phrase = "addressees"
+replacement = "you"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "addressees"
+
+[[entries]]
+phrase = "addressees are requested"
+replacement = "please"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+note = "Upstream also supports deletion."
+id = "addressees are requested"
+
+[[entries]]
+phrase = "adjacent to"
+replacement = "next to"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "adjacent to"
+
+[[entries]]
+phrase = "adjustment"
+replacement = "change"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "adjustment"
+
+[[entries]]
+phrase = "admissible"
+replacement = "accepted"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "admissible"
+
+[[entries]]
+phrase = "advantageous"
+replacement = "helpful"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "advantageous"
+
+[[entries]]
+phrase = "adversely impact"
+replacement = "hurt"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "adversely impact"
+
+[[entries]]
+phrase = "adversely impact on"
+replacement = "hurt"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "adversely impact on"
+
+[[entries]]
+phrase = "advise"
+replacement = "recommend"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "advise"
+
+[[entries]]
+phrase = "afford an opportunity"
+replacement = "allow"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "afford an opportunity"
+
+[[entries]]
+phrase = "aforementioned"
+replacement = "remove"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "aforementioned"
+
+[[entries]]
+phrase = "aggregate"
+replacement = "add"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "aggregate"
+
+[[entries]]
+phrase = "aircraft"
+replacement = "plane"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "aircraft"
+
+[[entries]]
+phrase = "all of"
+replacement = "all"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "all of"
+
+[[entries]]
+phrase = "alleviate"
+replacement = "ease"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "alleviate"
+
+[[entries]]
+phrase = "allocate"
+replacement = "divide"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "allocate"
+
+[[entries]]
+phrase = "along the lines of"
+replacement = "as in"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "along the lines of"
+
+[[entries]]
+phrase = "already existing"
+replacement = "existing"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "already existing"
+
+[[entries]]
+phrase = "alternatively"
+replacement = "or"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "alternatively"
+
+[[entries]]
+phrase = "ameliorate"
+replacement = "help"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "ameliorate"
+
+[[entries]]
+phrase = "and/or"
+replacement = "… or … or both"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "and/or"
+
+[[entries]]
+phrase = "anticipate"
+replacement = "expect"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "anticipate"
+
+[[entries]]
+phrase = "apparent"
+replacement = "clear"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "apparent"
+
+[[entries]]
+phrase = "appreciable"
+replacement = "many"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "appreciable"
+
+[[entries]]
+phrase = "appropriate"
+replacement = "proper"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+note = "Upstream also supports deletion."
+id = "appropriate"
+
+[[entries]]
+phrase = "approximate"
+replacement = "about"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "approximate"
+
+[[entries]]
+phrase = "arrive onboard"
+replacement = "arrive"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "arrive onboard"
+
+[[entries]]
+phrase = "as a means of"
+replacement = "to"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "as a means of"
+
+[[entries]]
+phrase = "as of yet"
+replacement = "yet"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "as of yet"
+
+[[entries]]
+phrase = "as prescribed by"
+replacement = "in"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "as prescribed by"
+
+[[entries]]
+phrase = "as to"
+replacement = "about"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "as to"
+
+[[entries]]
+phrase = "as yet"
+replacement = "yet"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "as yet"
+
+[[entries]]
+phrase = "ascertain"
+replacement = "find out"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "ascertain"
+
+[[entries]]
+phrase = "assist"
+replacement = "aid"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "assist"
+
+[[entries]]
+phrase = "assistance"
+replacement = "aid"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "assistance"
+
+[[entries]]
+phrase = "at the present time"
+replacement = "at present"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "at the present time"
+
+[[entries]]
+phrase = "at this time"
+replacement = "now"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "at this time"
+
+[[entries]]
+phrase = "attain"
+replacement = "meet"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "attain"
+
+[[entries]]
+phrase = "attempt"
+replacement = "try"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "attempt"
+
+[[entries]]
+phrase = "attributable to"
+replacement = "because"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "attributable to"
+
+[[entries]]
+phrase = "authorise"
+replacement = "allow"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "authorise"
+
+[[entries]]
+phrase = "authorize"
+replacement = "allow"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "authorize"
+
+[[entries]]
+phrase = "be advised"
+replacement = "(omit)"
+severity = "medium"
+sources = ["plainlanguage.gov"]
+id = "be advised"
+
+# JUDGMENT: replacement >3 tokens shorter than phrase (phrase=5, replacement=1)
+[[entries]]
+phrase = "because of the fact that"
+replacement = "because"
+severity = "low"
+sources = ["retext-simplify"]
+id = "because of the fact that"
+
+[[entries]]
+phrase = "belated"
+replacement = "late"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "belated"
+
+[[entries]]
+phrase = "benefit"
+replacement = "help"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "benefit"
+
+[[entries]]
+phrase = "benefit from"
+replacement = "enjoy"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "benefit from"
+
+[[entries]]
+phrase = "bestow"
+replacement = "award"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "bestow"
+
+[[entries]]
+phrase = "by means of"
+replacement = "by"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "by means of"
+
+[[entries]]
+phrase = "by virtue of"
+replacement = "by"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "by virtue of"
+
+[[entries]]
+phrase = "capability"
+replacement = "ability"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "capability"
+
+[[entries]]
+phrase = "caveat"
+replacement = "warning"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "caveat"
+
+[[entries]]
+phrase = "cease"
+replacement = "stop"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "cease"
+
+[[entries]]
+phrase = "close proximity"
+replacement = "near"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "close proximity"
+
+[[entries]]
+phrase = "combat environment"
+replacement = "combat"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "combat environment"
+
+[[entries]]
+phrase = "combined"
+replacement = "joint"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "combined"
+
+[[entries]]
+phrase = "command"
+replacement = "us"
+severity = "high"
+sources = ["plainlanguage.gov"]
+id = "command"
+
+[[entries]]
+phrase = "commence"
+replacement = "begin"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "commence"
+
+[[entries]]
+phrase = "comply with"
+replacement = "follow"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "comply with"
+
+[[entries]]
+phrase = "component"
+replacement = "part"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "component"
+
+[[entries]]
+phrase = "comprise"
+replacement = "form"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "comprise"
+
+[[entries]]
+phrase = "concerning"
+replacement = "about"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "concerning"
+
+[[entries]]
+phrase = "consequently"
+replacement = "so"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "consequently"
+
+[[entries]]
+phrase = "consolidate"
+replacement = "combine"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "consolidate"
+
+[[entries]]
+phrase = "constitutes"
+replacement = "forms"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "constitutes"
+
+[[entries]]
+phrase = "contains"
+replacement = "has"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "contains"
+
+[[entries]]
+phrase = "convene"
+replacement = "meet"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "convene"
+
+[[entries]]
+phrase = "currently"
+replacement = "now"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+note = "Upstream also supports deletion."
+id = "currently"
+
+[[entries]]
+phrase = "deem"
+replacement = "believe"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "deem"
+
+[[entries]]
+phrase = "delete"
+replacement = "cut"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "delete"
+
+[[entries]]
+phrase = "demonstrate"
+replacement = "prove"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "demonstrate"
+
+[[entries]]
+phrase = "depart"
+replacement = "go"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "depart"
+
+[[entries]]
+phrase = "designate"
+replacement = "appoint"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "designate"
+
+[[entries]]
+phrase = "desire"
+replacement = "want"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "desire"
+
+[[entries]]
+phrase = "determine"
+replacement = "decide"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "determine"
+
+[[entries]]
+phrase = "disclose"
+replacement = "show"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "disclose"
+
+[[entries]]
+phrase = "discontinue"
+replacement = "drop"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "discontinue"
+
+[[entries]]
+phrase = "disseminate"
+replacement = "give"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "disseminate"
+
+# JUDGMENT: replacement >3 tokens shorter than phrase (phrase=5, replacement=1)
+[[entries]]
+phrase = "due to the fact that"
+replacement = "because"
+severity = "low"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "due to the fact that"
+
+[[entries]]
+phrase = "during the period"
+replacement = "during"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "during the period"
+
+[[entries]]
+phrase = "e.g."
+replacement = "for example"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "e.g."
+
+[[entries]]
+phrase = "each and every"
+replacement = "each"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "each and every"
+
+[[entries]]
+phrase = "economical"
+replacement = "cheap"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "economical"
+
+[[entries]]
+phrase = "effect"
+replacement = "choose"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "effect"
+
+[[entries]]
+phrase = "effect modifications"
+replacement = "make changes"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "effect modifications"
+
+[[entries]]
+phrase = "elect"
+replacement = "choose"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "elect"
+
+[[entries]]
+phrase = "eliminate"
+replacement = "cut"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "eliminate"
+
+[[entries]]
+phrase = "elucidate"
+replacement = "explain"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "elucidate"
+
+[[entries]]
+phrase = "employ"
+replacement = "use"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "employ"
+
+[[entries]]
+phrase = "encounter"
+replacement = "meet"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "encounter"
+
+[[entries]]
+phrase = "endeavor"
+replacement = "try"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "endeavor"
+
+[[entries]]
+phrase = "ensure"
+replacement = "make sure"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "ensure"
+
+[[entries]]
+phrase = "enumerate"
+replacement = "count"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "enumerate"
+
+[[entries]]
+phrase = "equipments"
+replacement = "equipment"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "equipments"
+
+[[entries]]
+phrase = "equitable"
+replacement = "fair"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "equitable"
+
+[[entries]]
+phrase = "equivalent"
+replacement = "equal"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "equivalent"
+
+[[entries]]
+phrase = "establish"
+replacement = "set up"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "establish"
+
+[[entries]]
+phrase = "evaluate"
+replacement = "check"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "evaluate"
+
+[[entries]]
+phrase = "evidenced"
+replacement = "showed"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "evidenced"
+
+[[entries]]
+phrase = "evident"
+replacement = "clear"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "evident"
+
+[[entries]]
+phrase = "exclusively"
+replacement = "only"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "exclusively"
+
+[[entries]]
+phrase = "exhibit"
+replacement = "show"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "exhibit"
+
+[[entries]]
+phrase = "expedite"
+replacement = "hasten"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "expedite"
+
+[[entries]]
+phrase = "expeditious"
+replacement = "fast"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "expeditious"
+
+[[entries]]
+phrase = "expend"
+replacement = "spend"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "expend"
+
+[[entries]]
+phrase = "expertise"
+replacement = "ability"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "expertise"
+
+[[entries]]
+phrase = "expiration"
+replacement = "end"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "expiration"
+
+[[entries]]
+phrase = "facilitate"
+replacement = "ease"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "facilitate"
+
+[[entries]]
+phrase = "factual evidence"
+replacement = "evidence"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "factual evidence"
+
+[[entries]]
+phrase = "failed to"
+replacement = "didn't"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "failed to"
+
+[[entries]]
+phrase = "feasible"
+replacement = "can be done"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "feasible"
+
+[[entries]]
+phrase = "females"
+replacement = "women"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "females"
+
+[[entries]]
+phrase = "finalise"
+replacement = "complete"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "finalise"
+
+[[entries]]
+phrase = "finalize"
+replacement = "complete"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "finalize"
+
+[[entries]]
+phrase = "first and foremost"
+replacement = "first"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "first and foremost"
+
+[[entries]]
+phrase = "for a period of"
+replacement = "for"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "for a period of"
+
+[[entries]]
+phrase = "for example"
+replacement = "for example"
+severity = "medium"
+sources = ["plainlanguage.gov"]
+id = "for example"
+
+[[entries]]
+phrase = "for the purpose of"
+replacement = "to"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "for the purpose of"
+
+[[entries]]
+phrase = "forfeit"
+replacement = "give up"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "forfeit"
+
+[[entries]]
+phrase = "formulate"
+replacement = "plan"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "formulate"
+
+[[entries]]
+phrase = "forward"
+replacement = "send"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "forward"
+
+[[entries]]
+phrase = "frequently"
+replacement = "often"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "frequently"
+
+[[entries]]
+phrase = "function"
+replacement = "act"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "function"
+
+[[entries]]
+phrase = "furnish"
+replacement = "give"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "furnish"
+
+[[entries]]
+phrase = "has a requirement for"
+replacement = "needs"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "has a requirement for"
+
+[[entries]]
+phrase = "has no effect"
+replacement = "does nothing"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "has no effect"
+
+[[entries]]
+phrase = "herein"
+replacement = "here"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "herein"
+
+[[entries]]
+phrase = "heretofore"
+replacement = "until now"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "heretofore"
+
+[[entries]]
+phrase = "herewith"
+replacement = "here"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "herewith"
+
+[[entries]]
+phrase = "honest truth"
+replacement = "truth"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "honest truth"
+
+[[entries]]
+phrase = "however"
+replacement = "but"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "however"
+
+[[entries]]
+phrase = "i.e."
+replacement = "as in"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "i.e."
+
+[[entries]]
+phrase = "identical"
+replacement = "same"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "identical"
+
+[[entries]]
+phrase = "identify"
+replacement = "find"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "identify"
+
+[[entries]]
+phrase = "if and when"
+replacement = "if"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "if and when"
+
+[[entries]]
+phrase = "immediately"
+replacement = "at once"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "immediately"
+
+[[entries]]
+phrase = "impacted"
+replacement = "affected"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "impacted"
+
+[[entries]]
+phrase = "implement"
+replacement = "carry out"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "implement"
+
+[[entries]]
+phrase = "in a timely manner"
+replacement = "on time"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "in a timely manner"
+
+[[entries]]
+phrase = "in accordance with"
+replacement = "by"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "in accordance with"
+
+[[entries]]
+phrase = "in addition"
+replacement = "also"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "in addition"
+
+[[entries]]
+phrase = "in all likelihood"
+replacement = "probably"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "in all likelihood"
+
+[[entries]]
+phrase = "in an effort to"
+replacement = "to"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "in an effort to"
+
+[[entries]]
+phrase = "in between"
+replacement = "between"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "in between"
+
+[[entries]]
+phrase = "in excess of"
+replacement = "more than"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "in excess of"
+
+[[entries]]
+phrase = "in lieu of"
+replacement = "instead"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "in lieu of"
+
+# JUDGMENT: replacement >3 tokens shorter than phrase (phrase=6, replacement=1)
+[[entries]]
+phrase = "in light of the fact that"
+replacement = "because"
+severity = "low"
+sources = ["retext-simplify"]
+id = "in light of the fact that"
+
+[[entries]]
+phrase = "in many cases"
+replacement = "often"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "in many cases"
+
+[[entries]]
+phrase = "in order for"
+replacement = "for"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "in order for"
+
+[[entries]]
+phrase = "in order that"
+replacement = "for"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "in order that"
+
+[[entries]]
+phrase = "in order to"
+replacement = "to"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "in order to"
+
+[[entries]]
+phrase = "in regard to"
+replacement = "about"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "in regard to"
+
+[[entries]]
+phrase = "in relation to"
+replacement = "about"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "in relation to"
+
+[[entries]]
+phrase = "in some instances"
+replacement = "sometimes"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "in some instances"
+
+[[entries]]
+phrase = "in terms of"
+replacement = "as"
+severity = "medium"
+sources = ["retext-simplify"]
+note = "Upstream also supports deletion."
+id = "in terms of"
+
+[[entries]]
+phrase = "in the amount of"
+replacement = "for"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "in the amount of"
+
+[[entries]]
+phrase = "in the event of"
+replacement = "if"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "in the event of"
+
+[[entries]]
+phrase = "in the near future"
+replacement = "soon"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "in the near future"
+
+[[entries]]
+phrase = "in the process of"
+replacement = "(omit)"
+severity = "medium"
+sources = ["plainlanguage.gov"]
+id = "in the process of"
+
+[[entries]]
+phrase = "in view of"
+replacement = "since"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "in view of"
+
+# JUDGMENT: replacement >3 tokens shorter than phrase (phrase=5, replacement=1)
+[[entries]]
+phrase = "in view of the above"
+replacement = "so"
+severity = "low"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "in view of the above"
+
+[[entries]]
+phrase = "inasmuch as"
+replacement = "since"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "inasmuch as"
+
+[[entries]]
+phrase = "inception"
+replacement = "start"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "inception"
+
+[[entries]]
+phrase = "incumbent upon"
+replacement = "must"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "incumbent upon"
+
+[[entries]]
+phrase = "indicate"
+replacement = "show"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "indicate"
+
+[[entries]]
+phrase = "indication"
+replacement = "sign"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "indication"
+
+[[entries]]
+phrase = "initial"
+replacement = "first"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "initial"
+
+[[entries]]
+phrase = "initiate"
+replacement = "start"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "initiate"
+
+[[entries]]
+phrase = "inter alia"
+replacement = "(omit)"
+severity = "medium"
+sources = ["plainlanguage.gov"]
+id = "inter alia"
+
+[[entries]]
+phrase = "interface"
+replacement = "meet"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "interface"
+
+[[entries]]
+phrase = "interpose no objection"
+replacement = "don't object"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "interpose no objection"
+
+[[entries]]
+phrase = "is applicable to"
+replacement = "applies to"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "is applicable to"
+
+[[entries]]
+phrase = "is authorised to"
+replacement = "may"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "is authorised to"
+
+[[entries]]
+phrase = "is authorized to"
+replacement = "may"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "is authorized to"
+
+[[entries]]
+phrase = "is in consonance with"
+replacement = "agrees with"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "is in consonance with"
+
+[[entries]]
+phrase = "is responsible for"
+replacement = "handles"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+note = "Upstream also supports deletion."
+id = "is responsible for"
+
+[[entries]]
+phrase = "it appears"
+replacement = "seems"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "it appears"
+
+[[entries]]
+phrase = "it is"
+replacement = "(omit)"
+severity = "high"
+sources = ["plainlanguage.gov"]
+id = "it is"
+
+[[entries]]
+phrase = "it is essential"
+replacement = "must"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "it is essential"
+
+[[entries]]
+phrase = "it is requested"
+replacement = "please"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "it is requested"
+
+[[entries]]
+phrase = "liaison"
+replacement = "discussion"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "liaison"
+
+[[entries]]
+phrase = "limited number"
+replacement = "limits"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "limited number"
+
+[[entries]]
+phrase = "magnitude"
+replacement = "size"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "magnitude"
+
+[[entries]]
+phrase = "maintain"
+replacement = "support"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "maintain"
+
+[[entries]]
+phrase = "maximum"
+replacement = "greatest"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "maximum"
+
+[[entries]]
+phrase = "methodology"
+replacement = "method"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "methodology"
+
+[[entries]]
+phrase = "minimise"
+replacement = "cut"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "minimise"
+
+[[entries]]
+phrase = "minimize"
+replacement = "cut"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "minimize"
+
+[[entries]]
+phrase = "minimum"
+replacement = "least"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "minimum"
+
+[[entries]]
+phrase = "modify"
+replacement = "change"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "modify"
+
+[[entries]]
+phrase = "monitor"
+replacement = "check"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "monitor"
+
+[[entries]]
+phrase = "multiple"
+replacement = "many"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "multiple"
+
+[[entries]]
+phrase = "necessitate"
+replacement = "cause"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "necessitate"
+
+[[entries]]
+phrase = "nevertheless"
+replacement = "besides"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "nevertheless"
+
+[[entries]]
+phrase = "not certain"
+replacement = "uncertain"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "not certain"
+
+[[entries]]
+phrase = "not later than"
+replacement = "by"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "not later than"
+
+[[entries]]
+phrase = "not later than 10 May"
+replacement = "by 10 May"
+severity = "medium"
+sources = ["plainlanguage.gov"]
+id = "not later than 10 may"
+
+[[entries]]
+phrase = "not later than 1600"
+replacement = "by 1600"
+severity = "medium"
+sources = ["plainlanguage.gov"]
+id = "not later than 1600"
+
+[[entries]]
+phrase = "not many"
+replacement = "few"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "not many"
+
+[[entries]]
+phrase = "not often"
+replacement = "rarely"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "not often"
+
+[[entries]]
+phrase = "not unless"
+replacement = "only if"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "not unless"
+
+[[entries]]
+phrase = "not unlike"
+replacement = "alike"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "not unlike"
+
+[[entries]]
+phrase = "notify"
+replacement = "let know"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "notify"
+
+[[entries]]
+phrase = "notwithstanding"
+replacement = "despite"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "notwithstanding"
+
+[[entries]]
+phrase = "null and void"
+replacement = "null"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "null and void"
+
+[[entries]]
+phrase = "numerous"
+replacement = "many"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "numerous"
+
+[[entries]]
+phrase = "objective"
+replacement = "aim"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "objective"
+
+[[entries]]
+phrase = "obligate"
+replacement = "bind"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "obligate"
+
+[[entries]]
+phrase = "observe"
+replacement = "see"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "observe"
+
+[[entries]]
+phrase = "obtain"
+replacement = "get"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "obtain"
+
+[[entries]]
+phrase = "on a regular basis"
+replacement = "(omit)"
+severity = "medium"
+sources = ["plainlanguage.gov"]
+id = "on a regular basis"
+
+[[entries]]
+phrase = "on the contrary"
+replacement = "but"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "on the contrary"
+
+[[entries]]
+phrase = "on the other hand"
+replacement = "but"
+severity = "medium"
+sources = ["retext-simplify"]
+note = "Upstream also supports deletion."
+id = "on the other hand"
+
+[[entries]]
+phrase = "one particular"
+replacement = "one"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "one particular"
+
+[[entries]]
+phrase = "operate"
+replacement = "run"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "operate"
+
+[[entries]]
+phrase = "optimum"
+replacement = "best"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "optimum"
+
+[[entries]]
+phrase = "option"
+replacement = "choice"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "option"
+
+# JUDGMENT: replacement >3 tokens shorter than phrase (phrase=5, replacement=1)
+[[entries]]
+phrase = "owing to the fact that"
+replacement = "because"
+severity = "low"
+sources = ["retext-simplify"]
+id = "owing to the fact that"
+
+[[entries]]
+phrase = "parameters"
+replacement = "limits"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "parameters"
+
+[[entries]]
+phrase = "participate"
+replacement = "take part"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "participate"
+
+[[entries]]
+phrase = "particulars"
+replacement = "details"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "particulars"
+
+[[entries]]
+phrase = "pass away"
+replacement = "die"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "pass away"
+
+[[entries]]
+phrase = "perform"
+replacement = "do"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "perform"
+
+[[entries]]
+phrase = "permit"
+replacement = "let"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "permit"
+
+[[entries]]
+phrase = "pertaining to"
+replacement = "about"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "pertaining to"
+
+[[entries]]
+phrase = "point in time"
+replacement = "moment"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "point in time"
+
+[[entries]]
+phrase = "portion"
+replacement = "part"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "portion"
+
+[[entries]]
+phrase = "possess"
+replacement = "have"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "possess"
+
+[[entries]]
+phrase = "practicable"
+replacement = "practical"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "practicable"
+
+[[entries]]
+phrase = "preclude"
+replacement = "prevent"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "preclude"
+
+[[entries]]
+phrase = "previous"
+replacement = "earlier"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "previous"
+
+[[entries]]
+phrase = "previously"
+replacement = "before"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "previously"
+
+[[entries]]
+phrase = "prior to"
+replacement = "before"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "prior to"
+
+[[entries]]
+phrase = "prioritise"
+replacement = "focus on"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "prioritise"
+
+[[entries]]
+phrase = "prioritize"
+replacement = "focus on"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "prioritize"
+
+[[entries]]
+phrase = "proceed"
+replacement = "do"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "proceed"
+
+[[entries]]
+phrase = "procure"
+replacement = "buy"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+note = "Upstream also supports deletion."
+id = "procure"
+
+[[entries]]
+phrase = "proficiency"
+replacement = "skill"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "proficiency"
+
+[[entries]]
+phrase = "promulgate"
+replacement = "issue"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "promulgate"
+
+[[entries]]
+phrase = "provide"
+replacement = "give"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "provide"
+
+[[entries]]
+phrase = "provided that"
+replacement = "if"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "provided that"
+
+[[entries]]
+phrase = "provides guidance for"
+replacement = "guides"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "provides guidance for"
+
+[[entries]]
+phrase = "purchase"
+replacement = "buy"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "purchase"
+
+[[entries]]
+phrase = "pursuant to"
+replacement = "by"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "pursuant to"
+
+[[entries]]
+phrase = "readily apparent"
+replacement = "clear"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "readily apparent"
+
+[[entries]]
+phrase = "refer back"
+replacement = "refer"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "refer back"
+
+[[entries]]
+phrase = "reflect"
+replacement = "say"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "reflect"
+
+[[entries]]
+phrase = "regarding"
+replacement = "about"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "regarding"
+
+[[entries]]
+phrase = "relative to"
+replacement = "about"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "relative to"
+
+[[entries]]
+phrase = "relocate"
+replacement = "move"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "relocate"
+
+[[entries]]
+phrase = "remain"
+replacement = "stay"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "remain"
+
+[[entries]]
+phrase = "remainder"
+replacement = "rest"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "remainder"
+
+[[entries]]
+phrase = "remuneration"
+replacement = "pay"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "remuneration"
+
+[[entries]]
+phrase = "render"
+replacement = "give"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "render"
+
+[[entries]]
+phrase = "represents"
+replacement = "is"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "represents"
+
+[[entries]]
+phrase = "request"
+replacement = "ask"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "request"
+
+[[entries]]
+phrase = "require"
+replacement = "must"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "require"
+
+[[entries]]
+phrase = "requirement"
+replacement = "need"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "requirement"
+
+[[entries]]
+phrase = "reside"
+replacement = "live"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "reside"
+
+[[entries]]
+phrase = "residence"
+replacement = "house"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "residence"
+
+[[entries]]
+phrase = "retain"
+replacement = "keep"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "retain"
+
+[[entries]]
+phrase = "said"
+replacement = "the"
+severity = "medium"
+sources = ["plainlanguage.gov"]
+id = "said"
+
+[[entries]]
+phrase = "satisfy"
+replacement = "meet"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "satisfy"
+
+[[entries]]
+phrase = "selection"
+replacement = "choice"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "selection"
+
+[[entries]]
+phrase = "set forth in"
+replacement = "in"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "set forth in"
+
+[[entries]]
+phrase = "shall"
+replacement = "must"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "shall"
+
+[[entries]]
+phrase = "should you wish"
+replacement = "if you want"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "should you wish"
+
+[[entries]]
+phrase = "similar to"
+replacement = "like"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "similar to"
+
+[[entries]]
+phrase = "solicit"
+replacement = "ask for"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "solicit"
+
+[[entries]]
+phrase = "some"
+replacement = "the"
+severity = "medium"
+sources = ["plainlanguage.gov"]
+id = "some"
+
+[[entries]]
+phrase = "span across"
+replacement = "cross"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "span across"
+
+[[entries]]
+phrase = "state-of-the-art"
+replacement = "latest"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "state-of-the-art"
+
+[[entries]]
+phrase = "strategise"
+replacement = "plan"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "strategise"
+
+[[entries]]
+phrase = "strategize"
+replacement = "plan"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "strategize"
+
+[[entries]]
+phrase = "subject"
+replacement = "the"
+severity = "medium"
+sources = ["plainlanguage.gov"]
+id = "subject"
+
+[[entries]]
+phrase = "submit"
+replacement = "give"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "submit"
+
+[[entries]]
+phrase = "subsequent"
+replacement = "after"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "subsequent"
+
+[[entries]]
+phrase = "subsequently"
+replacement = "after"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "subsequently"
+
+[[entries]]
+phrase = "substantial"
+replacement = "large"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "substantial"
+
+[[entries]]
+phrase = "successfully complete"
+replacement = "complete"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "successfully complete"
+
+[[entries]]
+phrase = "such"
+replacement = "the"
+severity = "medium"
+sources = ["plainlanguage.gov"]
+id = "such"
+
+[[entries]]
+phrase = "sufficient"
+replacement = "enough"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "sufficient"
+
+[[entries]]
+phrase = "take action to"
+replacement = "(omit)"
+severity = "medium"
+sources = ["plainlanguage.gov"]
+id = "take action to"
+
+[[entries]]
+phrase = "terminate"
+replacement = "end"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "terminate"
+
+[[entries]]
+phrase = "the month of"
+replacement = "(omit)"
+severity = "medium"
+sources = ["plainlanguage.gov"]
+id = "the month of"
+
+[[entries]]
+phrase = "the undersigned"
+replacement = "I"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "the undersigned"
+
+[[entries]]
+phrase = "the use of"
+replacement = "(omit)"
+severity = "medium"
+sources = ["plainlanguage.gov"]
+id = "the use of"
+
+[[entries]]
+phrase = "there are"
+replacement = "(omit)"
+severity = "medium"
+sources = ["plainlanguage.gov"]
+id = "there are"
+
+[[entries]]
+phrase = "there is"
+replacement = "(omit)"
+severity = "medium"
+sources = ["plainlanguage.gov"]
+id = "there is"
+
+[[entries]]
+phrase = "therefore"
+replacement = "so"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "therefore"
+
+[[entries]]
+phrase = "therein"
+replacement = "there"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "therein"
+
+[[entries]]
+phrase = "thereof"
+replacement = "its"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "thereof"
+
+[[entries]]
+phrase = "this activity"
+replacement = "us"
+severity = "high"
+sources = ["plainlanguage.gov"]
+id = "this activity"
+
+[[entries]]
+phrase = "this day and age"
+replacement = "today"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "this day and age"
+
+[[entries]]
+phrase = "time period"
+replacement = "period"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "time period"
+
+[[entries]]
+phrase = "timely"
+replacement = "prompt"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "timely"
+
+[[entries]]
+phrase = "took advantage of"
+replacement = "preyed on"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "took advantage of"
+
+[[entries]]
+phrase = "transmit"
+replacement = "send"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "transmit"
+
+[[entries]]
+phrase = "transpire"
+replacement = "happen"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "transpire"
+
+[[entries]]
+phrase = "type"
+replacement = "(omit)"
+severity = "medium"
+sources = ["plainlanguage.gov"]
+id = "type"
+
+[[entries]]
+phrase = "under the provisions of"
+replacement = "under"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "under the provisions of"
+
+[[entries]]
+phrase = "until such time as"
+replacement = "until"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "until such time as"
+
+[[entries]]
+phrase = "utilisation"
+replacement = "use"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "utilisation"
+
+[[entries]]
+phrase = "utilise"
+replacement = "use"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "utilise"
+
+[[entries]]
+phrase = "utilization"
+replacement = "use"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "utilization"
+
+[[entries]]
+phrase = "utilize"
+replacement = "use"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "utilize"
+
+[[entries]]
+phrase = "validate"
+replacement = "confirm"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "validate"
+
+[[entries]]
+phrase = "various different"
+replacement = "different"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "various different"
+
+[[entries]]
+phrase = "viable"
+replacement = "practical"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "viable"
+
+[[entries]]
+phrase = "vice"
+replacement = "instead of"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "vice"
+
+[[entries]]
+phrase = "warrant"
+replacement = "call for"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "warrant"
+
+[[entries]]
+phrase = "whereas"
+replacement = "because"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "whereas"
+
+[[entries]]
+phrase = "whether or not"
+replacement = "whether"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "whether or not"
+
+[[entries]]
+phrase = "with reference to"
+replacement = "about"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "with reference to"
+
+[[entries]]
+phrase = "with respect to"
+replacement = "about"
+severity = "medium"
+sources = ["retext-simplify"]
+id = "with respect to"
+
+[[entries]]
+phrase = "with the exception of"
+replacement = "except for"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "with the exception of"
+
+[[entries]]
+phrase = "witnessed"
+replacement = "saw"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "witnessed"
+
+[[entries]]
+phrase = "your office"
+replacement = "you"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "your office"

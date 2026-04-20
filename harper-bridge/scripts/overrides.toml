@@ -1,0 +1,7 @@
+# Hand-curated overrides for wordy_phrases.toml generator.
+# Keyed by id = nfc(lowercase(phrase)).
+# Applied AFTER dedup + severity tagging, BEFORE TOML emit (per D-09).
+# Ops: drop | severity | replacement | dialects | note.
+
+[overrides]
+# Populated in Task 3 after judgment-call curation pass.
