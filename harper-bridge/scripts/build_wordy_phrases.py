@@ -92,3 +92,74 @@ def verify_sha256(manifest_path: Path, sources_dir: Path) -> None:
             raise SystemExit(
                 f"Source file {filename} SHA256 mismatch: expected {expected}, got {actual}"
             )
+
+
+# ---- TOML emitter primitives (hand-rolled per D-16 / CLAR-14 — stdlib-only) -
+
+_BASIC_ESCAPES = {
+    ord('"'):  '\\"',
+    ord('\\'): '\\\\',
+    ord('\b'): '\\b',
+    ord('\t'): '\\t',
+    ord('\n'): '\\n',
+    ord('\f'): '\\f',
+    ord('\r'): '\\r',
+}
+
+
+def _escape_basic(s: str) -> str:
+    """Escape a string for a TOML basic (double-quoted) string per TOML v1.0.0.
+
+    Printable Unicode above U+007F is emitted raw (basic strings accept it).
+    Control chars (U+0000..U+001F, U+007F) not in _BASIC_ESCAPES emit as \\uXXXX.
+    """
+    out: list[str] = []
+    for ch in s:
+        cp = ord(ch)
+        if cp in _BASIC_ESCAPES:
+            out.append(_BASIC_ESCAPES[cp])
+        elif cp < 0x20 or cp == 0x7F:
+            out.append(f"\\u{cp:04X}")
+        else:
+            out.append(ch)
+    return '"' + "".join(out) + '"'
+
+
+def _emit_array(values: list[str]) -> str:
+    return "[" + ", ".join(_escape_basic(v) for v in values) + "]"
+
+
+def _emit_entry(e: dict) -> str:
+    """Emit one [[entries]] block with D-12 field order: phrase, replacement,
+    severity, sources, dialects?, note?, id. Optional fields omitted when empty.
+    """
+    # Assert NFC at emit boundary (CLAR-N4 invariant enforcement per D-17c).
+    for field in ("phrase", "replacement", "id"):
+        v = e[field]
+        assert unicodedata.is_normalized("NFC", v), f"non-NFC {field}: {v!r}"
+    lines = ["[[entries]]"]
+    lines.append(f"phrase = {_escape_basic(e['phrase'])}")
+    lines.append(f"replacement = {_escape_basic(e['replacement'])}")
+    lines.append(f'severity = "{e["severity"]}"')
+    lines.append(f"sources = {_emit_array(e['sources'])}")
+    if e.get("dialects"):
+        lines.append(f"dialects = {_emit_array(e['dialects'])}")
+    if e.get("note"):
+        lines.append(f"note = {_escape_basic(e['note'])}")
+    lines.append(f"id = {_escape_basic(e['id'])}")
+    return "\n".join(lines)
+
+
+def emit_toml(entries: list[dict], header: str) -> bytes:
+    """Emit full TOML document. `header` must already contain trailing newline.
+
+    Byte-determinism invariants (D-17):
+      - Entries sorted by `id` (codepoint sort) before call; we do not re-sort here.
+      - Stable field order per _emit_entry.
+      - Exactly one blank line between entries.
+      - Trailing newline at EOF.
+      - Explicit \\n (never CRLF). Output encoded utf-8.
+    """
+    body = "\n\n".join(_emit_entry(e) for e in entries)
+    doc = header + ("\n" + body + "\n" if entries else "")
+    return doc.encode("utf-8")
