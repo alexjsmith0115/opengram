@@ -8,11 +8,11 @@ struct LLMPromptsTests {
         #expect(!prompt.isEmpty)
     }
 
-    @Test func promptCoversAllThreeDimensions() {
+    @Test func promptCoversTwoStyleDimensionsPlusGrammar() {
         let prompt = LLMPrompts.systemPrompt()
-        #expect(prompt.contains("clarity"))
         #expect(prompt.contains("tone"))
         #expect(prompt.contains("rephrase"))
+        #expect(prompt.contains("grammar"))
     }
 
     @Test func promptRequestsJSONObject() {
@@ -37,12 +37,11 @@ struct LLMPromptsTests {
         #expect(msg == "Analyze this text:\n\nHello world")
     }
 
-    // REPH-11: system prompt must address spelling, grammar, and clarity so the rephrase
-    // is a true Harper superset (all issues Harper would flag are corrected in the rephrase).
+    // REPH-11: system prompt must address spelling and grammar so the rephrase is a
+    // true Harper superset (all issues Harper would flag are corrected in the rephrase).
     @Test func prompt_coversRephraseSuperset_REPH11() {
         let prompt = LLMPrompts.systemPrompt()
         let lower = prompt.lowercased()
-        #expect(lower.contains("clarity") || lower.contains("clear"))
         #expect(lower.contains("grammar") || lower.contains("grammatical"))
         #expect(lower.contains("spell") || lower.contains("spelling"))
     }
