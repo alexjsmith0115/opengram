@@ -36,12 +36,6 @@ struct DisplayHeuristicTests {
         #expect(h.qualifies(paragraph: p, issues: [makeIssue(.tone), makeIssue(.tone)]) == true)
     }
 
-    @Test func oneIssue_clarity_qualifies() {
-        let h = DisplayHeuristic(config: makeConfig())
-        let p = makeParagraph("short")
-        #expect(h.qualifies(paragraph: p, issues: [makeIssue(.clarity)]) == true)
-    }
-
     @Test func oneIssue_rephrase_qualifies() {
         let h = DisplayHeuristic(config: makeConfig())
         let p = makeParagraph("short")

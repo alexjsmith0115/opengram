@@ -65,7 +65,7 @@ struct LMStudioLiveIntegrationTests {
         return await service.healthCheck(config: config, apiKey: Self.liveAPIKey)
     }
 
-    private func makeLiveConfig(enabledChecks: Set<LLMCheckType> = [.tone, .clarity, .rephrase]) -> LLMConfig {
+    private func makeLiveConfig(enabledChecks: Set<LLMCheckType> = [.tone, .rephrase]) -> LLMConfig {
         LLMConfig(
             baseURL: Self.liveBaseURL,
             model: Self.liveModel,
@@ -121,7 +121,7 @@ struct LMStudioLiveIntegrationTests {
     }
 
     private func makeLiveRig(
-        enabledChecks: Set<LLMCheckType> = [.tone, .clarity, .rephrase],
+        enabledChecks: Set<LLMCheckType> = [.tone, .rephrase],
         initialText: String
     ) async -> Rig {
         let box = FakeAXTextBox()
@@ -253,7 +253,7 @@ struct LMStudioLiveIntegrationTests {
         #expect(!result.isEmpty, "live analyze(target:) returned zero suggestions — model may have declined to answer or baseURL is wrong")
         for sug in result {
             #expect(!sug.revisedText.isEmpty)
-            #expect([.tone, .clarity, .rephrase].contains(sug.category))
+            #expect([.tone, .rephrase].contains(sug.category))
         }
     }
 }

@@ -47,16 +47,12 @@ struct RephraseCardViewModelTests {
         #expect(RephraseCardViewModel.headerText(for: []) == "")
     }
 
-    @Test func categoryMap_clarity() {
-        #expect(RephraseCardViewModel.checkCategory(from: .clarity) == .clarity)
-    }
-
     @Test func categoryMap_rephrase() {
         #expect(RephraseCardViewModel.checkCategory(from: .rephrase) == .rephrase)
     }
 
     @Test func categoryMap_tone_collapsesToClarity() {
-        // D-22: .tone → .clarity (tone adjustments are a clarity concern for the header)
+        // .tone → .clarity (tone adjustments are a clarity concern for the header)
         #expect(RephraseCardViewModel.checkCategory(from: .tone) == .clarity)
     }
 }

@@ -127,7 +127,7 @@ struct LMStudioPipelineIntegrationTests {
     }
 
     private func makeRig(
-        enabledChecks: Set<LLMCheckType> = [.tone, .clarity, .rephrase],
+        enabledChecks: Set<LLMCheckType> = [.tone, .rephrase],
         baseURL: String = testBaseURL,
         initialText: String
     ) async -> Rig {
@@ -185,8 +185,8 @@ struct LMStudioPipelineIntegrationTests {
         return false
     }
 
-    private static let canned3SuggestionsJSON = """
-    {"suggestions":[{"category":"tone","revised_text":"Be direct about the deliverable.","explanation":"More confident.","confidence":9},{"category":"clarity","revised_text":"Ship the feature.","explanation":"Simpler phrasing.","confidence":8},{"category":"rephrase","revised_text":"Ship it.","explanation":"Concise rewrite.","confidence":7}]}
+    private static let canned2SuggestionsJSON = """
+    {"suggestions":[{"category":"tone","revised_text":"Be direct about the deliverable.","explanation":"More confident.","confidence":9},{"category":"rephrase","revised_text":"Ship it.","explanation":"Concise rewrite.","confidence":7}]}
     """
 
     // MARK: - Tests
@@ -195,7 +195,7 @@ struct LMStudioPipelineIntegrationTests {
     func happyPath_enabledConfig_producesSuggestion() async {
         let paragraph = "We should probably try to be direct about the deliverable here."
         let rig = await makeRig(initialText: paragraph)
-        LMStudioMockURLProtocol.setCannedSuggestions(Self.canned3SuggestionsJSON)
+        LMStudioMockURLProtocol.setCannedSuggestions(Self.canned2SuggestionsJSON)
 
         await rig.store.reconcile(set: split(rig, text: paragraph))
 
@@ -217,7 +217,7 @@ struct LMStudioPipelineIntegrationTests {
     func disabledChecks_emptySet_blocksAllHTTP() async {
         let paragraph = "This paragraph is long enough to pass the minimum length gate."
         let rig = await makeRig(enabledChecks: [], initialText: paragraph)
-        LMStudioMockURLProtocol.setCannedSuggestions(Self.canned3SuggestionsJSON)
+        LMStudioMockURLProtocol.setCannedSuggestions(Self.canned2SuggestionsJSON)
 
         await rig.store.reconcile(set: split(rig, text: paragraph))
 
@@ -234,7 +234,7 @@ struct LMStudioPipelineIntegrationTests {
     func emptyBaseURL_blocksAllHTTP() async {
         let paragraph = "This paragraph is long enough to pass the minimum length gate."
         let rig = await makeRig(baseURL: "", initialText: paragraph)
-        LMStudioMockURLProtocol.setCannedSuggestions(Self.canned3SuggestionsJSON)
+        LMStudioMockURLProtocol.setCannedSuggestions(Self.canned2SuggestionsJSON)
 
         await rig.store.reconcile(set: split(rig, text: paragraph))
         try? await Task.sleep(nanoseconds: 200_000_000)
@@ -246,7 +246,7 @@ struct LMStudioPipelineIntegrationTests {
     func requestBody_matchesLMStudioExpectedShape() async throws {
         let paragraph = "This paragraph must appear verbatim in the request body."
         let rig = await makeRig(initialText: paragraph)
-        LMStudioMockURLProtocol.setCannedSuggestions(Self.canned3SuggestionsJSON)
+        LMStudioMockURLProtocol.setCannedSuggestions(Self.canned2SuggestionsJSON)
 
         await rig.store.reconcile(set: split(rig, text: paragraph))
         _ = await waitFor { LMStudioMockURLProtocol.requestCount >= 1 }
@@ -284,7 +284,7 @@ struct LMStudioPipelineIntegrationTests {
     func textMutatedMidFlight_dropsStaleEntry() async {
         let original = "The original paragraph long enough to exceed thirty characters easily."
         let rig = await makeRig(initialText: original)
-        LMStudioMockURLProtocol.setCannedSuggestions(Self.canned3SuggestionsJSON)
+        LMStudioMockURLProtocol.setCannedSuggestions(Self.canned2SuggestionsJSON)
         // Hold the HTTP response long enough to mutate the text box before the store's
         // handleQueueResponse callback re-reads via textProvider.
         LMStudioMockURLProtocol.responseDelayMs = 200
@@ -309,7 +309,7 @@ struct LMStudioPipelineIntegrationTests {
     func shortParagraph_belowLengthGate_skipsRequest() async {
         let shortText = "Too short."   // below default 30-char threshold
         let rig = await makeRig(initialText: shortText)
-        LMStudioMockURLProtocol.setCannedSuggestions(Self.canned3SuggestionsJSON)
+        LMStudioMockURLProtocol.setCannedSuggestions(Self.canned2SuggestionsJSON)
 
         await rig.store.reconcile(set: split(rig, text: shortText))
         try? await Task.sleep(nanoseconds: 150_000_000)
@@ -322,7 +322,7 @@ struct LMStudioPipelineIntegrationTests {
     func storeEmitsEventsAcrossReconcileAndResponse() async {
         let paragraph = "This paragraph is long enough to trigger an LLM call and event."
         let rig = await makeRig(initialText: paragraph)
-        LMStudioMockURLProtocol.setCannedSuggestions(Self.canned3SuggestionsJSON)
+        LMStudioMockURLProtocol.setCannedSuggestions(Self.canned2SuggestionsJSON)
 
         // Subscribe BEFORE reconcile so we catch every emission.
         let events = rig.store.events

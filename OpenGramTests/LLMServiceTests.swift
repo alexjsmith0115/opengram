@@ -7,13 +7,12 @@ struct LLMServiceTests {
 
     // MARK: - JSON Parsing (unified response format)
 
-    @Test("parses valid 3-suggestion response")
-    func parseValidThreeSuggestionResponse() async {
+    @Test("parses valid 2-suggestion response")
+    func parseValidTwoSuggestionResponse() async {
         let service = LLMService()
         let json = """
         {
           "suggestions": [
-            {"category": "clarity", "revised_text": "Be direct.", "explanation": "Simpler phrasing.", "confidence": 8},
             {"category": "tone", "revised_text": "We will deliver.", "explanation": "More confident.", "confidence": 9},
             {"category": "rephrase", "revised_text": "Ship it.", "explanation": "Concise rewrite.", "confidence": 7}
           ]
@@ -21,10 +20,9 @@ struct LLMServiceTests {
         """
         let paragraph = "We should probably try to be direct about this."
         let suggestions = await service.parseJSONContent(json, paragraph: paragraph)
-        #expect(suggestions.count == 3)
-        #expect(suggestions[0].category == .clarity)
-        #expect(suggestions[1].category == .tone)
-        #expect(suggestions[2].category == .rephrase)
+        #expect(suggestions.count == 2)
+        #expect(suggestions[0].category == .tone)
+        #expect(suggestions[1].category == .rephrase)
     }
 
     @Test("returns empty array when suggestions array is empty")
@@ -62,7 +60,7 @@ struct LLMServiceTests {
         let service = LLMService()
         let json = """
         Here are my suggestions:
-        {"suggestions": [{"category": "clarity", "revised_text": "Short text.", "explanation": "Simplified.", "confidence": 9}]}
+        {"suggestions": [{"category": "tone", "revised_text": "Short text.", "explanation": "Simplified.", "confidence": 9}]}
         """
         let suggestions = await service.parseJSONContent(json, paragraph: "Some unnecessarily verbose text here.")
         #expect(suggestions.count == 1)
@@ -74,7 +72,7 @@ struct LLMServiceTests {
         let json = """
         {
           "suggestions": [
-            {"category": "clarity", "revised_text": "Clear.", "explanation": "Better.", "confidence": 6},
+            {"category": "rephrase", "revised_text": "Clear.", "explanation": "Better.", "confidence": 6},
             {"category": "tone", "revised_text": "Direct.", "explanation": "Confident.", "confidence": 8}
           ]
         }
@@ -154,9 +152,8 @@ struct LLMServiceTests {
         #expect(config.baseURL == "http://localhost:1234/v1")
         #expect(config.temperature == 0.3)
         #expect(config.maxTokens == 1024)
-        #expect(config.enabledChecks.count == 3)
+        #expect(config.enabledChecks.count == 2)
         #expect(config.enabledChecks.contains(.tone))
-        #expect(config.enabledChecks.contains(.clarity))
         #expect(config.enabledChecks.contains(.rephrase))
     }
 
@@ -271,7 +268,7 @@ private func makeEnabledConfig() -> LLMConfig {
     LLMConfig(
         baseURL: "http://localhost:1234/v1",
         model: "test",
-        enabledChecks: [.tone, .clarity, .rephrase],
+        enabledChecks: [.tone, .rephrase],
         temperature: 0.3,
         maxTokens: 512,
         requestTimeout: 30,
