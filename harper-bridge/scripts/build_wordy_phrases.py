@@ -202,33 +202,66 @@ def _discover_source_shas(sources_dir: Path) -> tuple[str, str]:
 
 
 def build(sources_dir: Path, overrides_path: Path, data_dir: Path | None = None) -> bytes:
-    """Pipeline entry point. Returns TOML bytes; writes atomically if data_dir set.
-
-    Stub: verifies SHA manifest, reads overrides (if any), emits empty-entries TOML.
-    Plans 03/04 add parser + merge calls between verify and emit.
-    """
-    # Fixture mode: sources_dir may be the fixtures dir containing tiny-sources.sha256.
+    """Full pipeline: verify → parse → merge → tag → flag → apply → sort → emit → write."""
+    # 1. Verify SHA256 manifest (fixture fallback for tests).
     manifest = sources_dir / "tiny-sources.sha256"
     if not manifest.exists():
         manifest = sources_dir / "SOURCES.sha256"
     if manifest.exists():
         verify_sha256(manifest, sources_dir)
 
-    # Fixture date is static; real run uses today's ISO date per D-17e.
-    # For byte-determinism of tests, use the date already embedded in expected fixture.
+    # 2. Parse sources.
+    retext_file = None
+    plainlang_file = None
+    for f in sources_dir.iterdir():
+        if f.suffix == ".js" and (f.name.startswith("retext-simplify-") or f.name.startswith("tiny-retext")):
+            retext_file = f
+        elif f.suffix == ".md" and (f.name.startswith("plainlanguage-") or f.name.startswith("tiny-plainlang")):
+            plainlang_file = f
+
+    retext_entries = parse_retext_js(retext_file.read_text(encoding="utf-8")) if retext_file else []
+    plainlang_entries = parse_plainlang_md(plainlang_file.read_text(encoding="utf-8")) if plainlang_file else []
+
+    # 3. Merge + dedup (retext first so first-seen identity is retext when present).
+    merged = merge_and_dedup(retext_entries + plainlang_entries)
+
+    # 4. Tag severity.
+    tagged = tag_severity(merged)
+
+    # 5. Flag judgment calls (rules 2 + 3 only per D-21).
+    flagged = flag_judgment_calls(tagged)
+
+    # 6. Load + apply overrides (W5: clears _judgment_reason on any override op).
+    overrides = load_overrides(overrides_path)
+    after_override = apply_overrides(flagged, overrides)
+
+    # 7. Sort by id (codepoint stable per D-17).
+    after_override.sort(key=lambda e: e["id"])
+
+    # 8. Strip internal keys; keep _judgment_reason for emitter; drop dirty_dozen + _omit + _all_replacements.
+    cleaned: list[dict] = []
+    for e in after_override:
+        c = {}
+        for k, v in e.items():
+            if k in ("_omit", "_all_replacements", "dirty_dozen"):
+                continue
+            if v is None:
+                continue
+            if k in ("dialects", "note") and (v == [] or v == ""):
+                continue
+            c[k] = v
+        cleaned.append(c)
+
+    # 9. Emit with judgment comments + header.
     date = "2026-04-20"
     retext_sha, plainlang_sha = _discover_source_shas(sources_dir)
-    header = HEADER_TEMPLATE.format(
-        retext_sha=retext_sha,
-        plainlang_sha=plainlang_sha,
-        date=date,
-    )
+    header = HEADER_TEMPLATE.format(retext_sha=retext_sha, plainlang_sha=plainlang_sha, date=date)
+    out = emit_toml_with_judgment(cleaned, header)
 
-    entries: list[dict] = []  # Plans 03/04 populate via parse → merge → override.
-
-    out = emit_toml(entries, header)
+    # 10. Atomic write if data_dir provided.
     if data_dir is not None:
         write_atomic(data_dir / "wordy_phrases.toml", out)
+
     return out
 
 
@@ -381,6 +414,188 @@ def parse_plainlang_md(text: str) -> list[dict]:
             })
 
     return entries
+
+
+# ---- Merge + dedup ---------------------------------------------------------
+
+def merge_and_dedup(entries: list[dict]) -> list[dict]:
+    """Dedup by `id`; union `sources`; retext wins replacement conflicts (D-06).
+
+    Order-independent retext-wins rule: identify which side is retext from the
+    pre-mutation single-source `sources` arrays on `existing` and `e`. The
+    conflict branch runs FIRST, using those untouched arrays; only then is
+    `existing["sources"]` overwritten to the union.
+
+    Stderr emits `[CONFLICT] <phrase>: retext=<x>, plainlanguage=<y> — using retext`
+    per D-08. Dirty-dozen flag preserved (any True → True).
+    """
+    by_id: dict[str, dict] = {}
+    for e in entries:
+        eid = e["id"]
+        if eid not in by_id:
+            by_id[eid] = dict(e)  # shallow copy — first-seen wins identity
+            continue
+
+        existing = by_id[eid]
+
+        # W3 fix: membership determined from PRE-union sources arrays.
+        # Parsers emit single-source entries, so exactly one of these is True
+        # per side (or False if source label is unexpected).
+        existing_is_retext = "retext-simplify" in existing["sources"]
+        incoming_is_retext = "retext-simplify" in e["sources"]
+
+        # Conflict resolution — retext's replacement wins (D-06).
+        if existing["replacement"] != e["replacement"]:
+            if existing_is_retext and not incoming_is_retext:
+                retext_repl = existing["replacement"]
+                plainlang_repl = e["replacement"]
+            elif incoming_is_retext and not existing_is_retext:
+                retext_repl = e["replacement"]
+                plainlang_repl = existing["replacement"]
+            else:
+                # Same-source duplicates are rejected by parsers. Guard only.
+                retext_repl = existing["replacement"]
+                plainlang_repl = e["replacement"]
+            print(
+                f"[CONFLICT] {existing['phrase']}: retext={retext_repl}, plainlanguage={plainlang_repl} — using retext",
+                file=sys.stderr,
+            )
+            existing["replacement"] = retext_repl
+
+        # AFTER conflict resolution, union the sources arrays in canonical order.
+        merged_sources: list[str] = []
+        for src in ("retext-simplify", "plainlanguage.gov"):
+            if src in existing["sources"] or src in e["sources"]:
+                merged_sources.append(src)
+        existing["sources"] = merged_sources
+
+        # Preserve dirty_dozen=True if either side flags.
+        existing["dirty_dozen"] = existing.get("dirty_dozen", False) or e.get("dirty_dozen", False)
+
+        # Preserve note from whichever side had one (retext omit note or override-planted).
+        if not existing.get("note") and e.get("note"):
+            existing["note"] = e["note"]
+
+    return list(by_id.values())
+
+
+# ---- Severity tagging ------------------------------------------------------
+
+def tag_severity(entries: list[dict]) -> list[dict]:
+    """Apply D-07 + D-23 severity rules.
+
+    both-sources → high; single-source + dirty_dozen → high; single-source → medium.
+    Judgment-flagged entries get severity="low" in flag_judgment_calls (runs after this).
+    """
+    for e in entries:
+        if len(e["sources"]) >= 2:
+            e["severity"] = "high"
+        elif e.get("dirty_dozen"):
+            e["severity"] = "high"
+        else:
+            e["severity"] = "medium"
+    return entries
+
+
+# ---- Judgment-call flagging (D-11 rules 2 + 3; rule 1 deleted per D-21) ----
+
+_ADVERB_INTENSIFIERS = {"very", "really", "just", "quite", "rather", "simply", "basically"}
+
+
+def flag_judgment_calls(entries: list[dict]) -> list[dict]:
+    """Flag entries per D-11 rules 2 + 3 (D-21: rule 1 deleted — retext has no note/condition).
+
+    Rule 2: replacement shorter than phrase by >3 tokens → flag.
+    Rule 3: phrase is only adverb/intensifier tokens → flag.
+    Flagged entries: severity downgraded to "low"; `_judgment_reason` attached for emitter.
+    """
+    for e in entries:
+        phrase_tokens = e["phrase"].split()
+        replacement_tokens = e["replacement"].split()
+
+        # Rule 2: replacement >3 tokens shorter than phrase.
+        if len(phrase_tokens) - len(replacement_tokens) > 3:
+            e["_judgment_reason"] = f"replacement >3 tokens shorter than phrase (phrase={len(phrase_tokens)}, replacement={len(replacement_tokens)})"
+            e["severity"] = "low"
+            continue
+
+        # Rule 3: phrase is adverb/intensifier-only.
+        if all(tok in _ADVERB_INTENSIFIERS for tok in phrase_tokens) and phrase_tokens:
+            e["_judgment_reason"] = "phrase is adverb/intensifier only"
+            e["severity"] = "low"
+            continue
+
+    return entries
+
+
+# ---- Overrides -------------------------------------------------------------
+
+_VALID_OVERRIDE_KEYS = {"drop", "severity", "replacement", "dialects", "note"}
+
+
+def load_overrides(path: Path) -> dict:
+    """Parse overrides.toml via tomllib (read-only, stdlib 3.11+). Missing/empty → {}.
+
+    Shape: `[overrides."<id>"]` tables containing any of D-10 ops.
+    Rejects unknown keys per V5 input validation.
+    """
+    if not path.exists() or not path.read_bytes().strip():
+        return {}
+    with path.open("rb") as f:
+        data = tomllib.load(f)
+    overrides = data.get("overrides", {})
+    for eid, ops in overrides.items():
+        unknown = set(ops.keys()) - _VALID_OVERRIDE_KEYS
+        if unknown:
+            raise SystemExit(f"Unknown override keys for id={eid!r}: {sorted(unknown)}")
+    return overrides
+
+
+def apply_overrides(entries: list[dict], overrides: dict) -> list[dict]:
+    """D-09: apply AFTER severity tagging, BEFORE emit. D-10 ops only.
+
+    drop → remove entry; severity/replacement/dialects/note → field-level override wins.
+    W5: ANY override op clears `_judgment_reason` so curator decisions don't leave
+    stale `# JUDGMENT:` comments above entries the curator has explicitly shaped.
+    Post-apply id-uniqueness re-check (P-6 collision guard).
+    """
+    out: list[dict] = []
+    for e in entries:
+        ov = overrides.get(e["id"])
+        if ov:
+            if ov.get("drop") is True:
+                continue
+            for k in ("severity", "replacement", "dialects", "note"):
+                if k in ov:
+                    e[k] = normalize_text(ov[k]) if isinstance(ov[k], str) else ov[k]
+            # W5: curator override supersedes automated judgment flag.
+            if "_judgment_reason" in e:
+                del e["_judgment_reason"]
+        out.append(e)
+
+    # P-6: re-check id uniqueness (overrides don't rename phrase today, but guard against future ops).
+    seen: set[str] = set()
+    for e in out:
+        if e["id"] in seen:
+            raise SystemExit(f"Duplicate id after override apply: {e['id']!r}")
+        seen.add(e["id"])
+    return out
+
+
+# ---- Emit with judgment comments ------------------------------------------
+
+def _emit_entry_with_judgment(e: dict) -> str:
+    """Emit [[entries]] block, prefixed with `# JUDGMENT: <reason>` when flagged."""
+    prefix = ""
+    if e.get("_judgment_reason"):
+        prefix = f"# JUDGMENT: {e['_judgment_reason']}\n"
+    return prefix + _emit_entry(e)
+
+
+def emit_toml_with_judgment(entries: list[dict], header: str) -> bytes:
+    body = "\n\n".join(_emit_entry_with_judgment(e) for e in entries)
+    doc = header + ("\n" + body + "\n" if entries else "")
+    return doc.encode("utf-8")
 
 
 # ---- CLI --------------------------------------------------------------------
