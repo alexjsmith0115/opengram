@@ -13,7 +13,6 @@ enum ConfigManager {
             enabledChecks: {
                 var checks = Set<LLMCheckType>()
                 if defaults.object(forKey: "llmEnableTone") == nil || defaults.bool(forKey: "llmEnableTone") { checks.insert(.tone) }
-                if defaults.object(forKey: "llmEnableClarity") == nil || defaults.bool(forKey: "llmEnableClarity") { checks.insert(.clarity) }
                 if defaults.object(forKey: "llmEnableRephrase") == nil || defaults.bool(forKey: "llmEnableRephrase") { checks.insert(.rephrase) }
                 return checks
             }(),
