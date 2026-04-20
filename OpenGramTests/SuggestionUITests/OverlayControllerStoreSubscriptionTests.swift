@@ -142,7 +142,7 @@ struct OverlayControllerStoreSubscriptionTests {
         let para = String(repeating: "word ", count: 10) + "here"
         let fx = await makeFixture(text: para)
         fx.llm.setCanned([para: [LLMStyleSuggestion(
-            category: .clarity,
+            category: .tone,
             originalText: para,
             revisedText: "rewritten version",
             explanation: "x",
@@ -186,7 +186,7 @@ struct OverlayControllerStoreSubscriptionTests {
         let para = String(repeating: "word ", count: 10) + "target"
         let fx = await makeFixture(text: para)
         fx.llm.setCanned([para: [LLMStyleSuggestion(
-            category: .clarity,
+            category: .tone,
             originalText: para,
             revisedText: "rewritten",
             explanation: "x",

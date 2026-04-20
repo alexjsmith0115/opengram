@@ -6,11 +6,10 @@ import Foundation
 
     // MARK: - Valid JSON
 
-    @Test func parsesValidThreeSuggestionResponse() throws {
+    @Test func parsesValidTwoSuggestionResponse() throws {
         let json = """
         {
             "suggestions": [
-                {"category": "clarity", "revised_text": "Use fewer words", "explanation": "Wordy", "confidence": 8},
                 {"category": "tone", "revised_text": "Consider this", "explanation": "Hedge", "confidence": 9},
                 {"category": "rephrase", "revised_text": "Rewrite it", "explanation": "Flow", "confidence": 7}
             ]
@@ -18,11 +17,10 @@ import Foundation
         """
         let data = Data(json.utf8)
         let suggestions = try LLMResponseDTO.toModels(from: data, originalText: "original")
-        #expect(suggestions.count == 3)
-        #expect(suggestions[0].category == .clarity)
-        #expect(suggestions[0].revisedText == "Use fewer words")
-        #expect(suggestions[1].category == .tone)
-        #expect(suggestions[2].category == .rephrase)
+        #expect(suggestions.count == 2)
+        #expect(suggestions[0].category == .tone)
+        #expect(suggestions[0].revisedText == "Consider this")
+        #expect(suggestions[1].category == .rephrase)
     }
 
     @Test func parsesEmptySuggestionsArrayToEmptyResult() throws {
@@ -38,7 +36,7 @@ import Foundation
         let json = """
         {
             "suggestions": [
-                {"category": "clarity", "revised_text": "Better", "explanation": "Good", "confidence": 6},
+                {"category": "rephrase", "revised_text": "Better", "explanation": "Good", "confidence": 6},
                 {"category": "tone", "revised_text": "Nicer", "explanation": "OK", "confidence": 7},
                 {"category": "rephrase", "revised_text": "Alt", "explanation": "Fine", "confidence": 5}
             ]
@@ -53,7 +51,7 @@ import Foundation
 
     @Test func confidenceExactlySevenIsKept() throws {
         let json = """
-        {"suggestions": [{"category": "clarity", "revised_text": "R", "explanation": "E", "confidence": 7}]}
+        {"suggestions": [{"category": "tone", "revised_text": "R", "explanation": "E", "confidence": 7}]}
         """
         let data = Data(json.utf8)
         let suggestions = try LLMResponseDTO.toModels(from: data, originalText: "text")
@@ -85,14 +83,25 @@ import Foundation
         {
             "suggestions": [
                 {"category": "unknown_future_category", "revised_text": "X", "explanation": "E", "confidence": 9},
-                {"category": "clarity", "revised_text": "Y", "explanation": "E2", "confidence": 8}
+                {"category": "tone", "revised_text": "Y", "explanation": "E2", "confidence": 8}
             ]
         }
         """
         let data = Data(json.utf8)
         let suggestions = try LLMResponseDTO.toModels(from: data, originalText: "text")
         #expect(suggestions.count == 1)
-        #expect(suggestions[0].category == .clarity)
+        #expect(suggestions[0].category == .tone)
+    }
+
+    @Test func clarityCategoryDroppedPostDeletion_CLAR09() throws {
+        // CLAR-09: LLM no longer prompted for clarity dimension. DTO silently drops
+        // any stray "clarity" category via the unknown-rawValue guard in SuggestionDTO.toModel.
+        let json = """
+        {"suggestions": [{"category": "clarity", "revised_text": "X", "explanation": "E", "confidence": 9}]}
+        """
+        let data = Data(json.utf8)
+        let suggestions = try LLMResponseDTO.toModels(from: data, originalText: "text")
+        #expect(suggestions.isEmpty)
     }
 
     @Test func extraUnknownFieldsAreIgnored() throws {

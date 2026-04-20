@@ -43,7 +43,7 @@ import os
         func now() -> Date { current }
     }
 
-    private func makeStyleSuggestion(original: String, revised: String, category: LLMStyleSuggestion.Category = .clarity) -> LLMStyleSuggestion {
+    private func makeStyleSuggestion(original: String, revised: String, category: LLMStyleSuggestion.Category = .tone) -> LLMStyleSuggestion {
         LLMStyleSuggestion(
             category: category,
             originalText: original,

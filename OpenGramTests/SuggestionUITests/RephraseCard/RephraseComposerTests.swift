@@ -5,7 +5,7 @@ import Testing
 struct RephraseComposerTests {
 
     private func issue(_ orig: String, _ revised: String) -> LLMStyleSuggestion {
-        LLMStyleSuggestion(category: .clarity, originalText: orig, revisedText: revised, explanation: "", confidence: 8)
+        LLMStyleSuggestion(category: .tone, originalText: orig, revisedText: revised, explanation: "", confidence: 8)
     }
 
     @Test func noIssues_returnsOriginal() {
