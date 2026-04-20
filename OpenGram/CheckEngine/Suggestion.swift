@@ -39,7 +39,7 @@ enum CheckCategory: Sendable, Equatable, Hashable {
     case grammarPunctuation
     /// LLM: hedging, passive voice, weak phrasing -- rendered purple
     case tone
-    /// LLM: wordiness, redundancy, complex structure -- rendered orange
+    /// Rules-based clarity lint (Harper WordyPhrases). Orange underline.
     case clarity
     /// LLM: structural rewrites for better flow -- rendered teal
     case rephrase

@@ -28,13 +28,12 @@ struct RephraseCardViewModel {
         }
     }
 
-    /// D-22 category-mapping helper: LLMStyleSuggestion.Category → CheckCategory.
-    /// `.clarity`, `.rephrase`, `.tone` all map to `.clarity` — tone adjustments are
-    /// a clarity concern for header purposes. Header never surfaces "tone" as its own
-    /// label, so the mapper collapses it up-front (D-22 literal mapping).
+    /// Category-mapping helper: LLMStyleSuggestion.Category → CheckCategory.
+    /// `.tone` collapses to `.clarity` (tone adjustments are a clarity concern for
+    /// header purposes — header never surfaces "tone" as its own label).
+    /// `.rephrase` maps through unchanged.
     static func checkCategory(from llmCategory: LLMStyleSuggestion.Category) -> CheckCategory {
         switch llmCategory {
-        case .clarity: return .clarity
         case .tone: return .clarity
         case .rephrase: return .rephrase
         }

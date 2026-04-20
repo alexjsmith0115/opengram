@@ -7,7 +7,7 @@ struct DisplayHeuristic: Sendable {
 
     func qualifies(paragraph: Paragraph, issues: [LLMStyleSuggestion]) -> Bool {
         if issues.count >= config.minIssueCount { return true }
-        if issues.contains(where: { $0.category == .clarity || $0.category == .rephrase }) { return true }
+        if issues.contains(where: { $0.category == .rephrase }) { return true }
         let wordCount = paragraph.text.split(whereSeparator: { $0.isWhitespace }).count
         if wordCount >= config.minWordCount, !issues.isEmpty { return true }
         return false
