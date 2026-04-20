@@ -891,7 +891,6 @@ final class OverlayController {
                 guard let revised = s.primaryReplacement else { return nil }
                 let cat: LLMStyleSuggestion.Category
                 switch s.category {
-                case .clarity: cat = .clarity
                 case .tone: cat = .tone
                 case .rephrase: cat = .rephrase
                 default: return nil

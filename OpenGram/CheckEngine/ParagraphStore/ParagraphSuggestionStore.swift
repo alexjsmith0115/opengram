@@ -9,6 +9,7 @@ import Foundation
 ///
 /// Consumers: TextMonitor drives via `reconcile` + `invalidateDisplayed`;
 /// OverlayController subscribes to `events` and reads `renderableSuggestions`.
+// in-memory only — CLAR-10 audit 2026-04-19
 actor ParagraphSuggestionStore: LLMRequestQueueStore {
 
     // MARK: - State
@@ -202,7 +203,6 @@ actor ParagraphSuggestionStore: LLMRequestQueueStore {
         let category: CheckCategory
         switch pick.category {
         case .tone:     category = .tone
-        case .clarity:  category = .clarity
         case .rephrase: category = .rephrase
         }
 
