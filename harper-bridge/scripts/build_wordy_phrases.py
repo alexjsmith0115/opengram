@@ -232,6 +232,157 @@ def build(sources_dir: Path, overrides_path: Path, data_dir: Path | None = None)
     return out
 
 
+# ---- Source parsers --------------------------------------------------------
+
+# retext-simplify: `export const patterns = { 'key': {replace: [...], omit?: true} }`
+# Key forms: single-quoted string or bare identifier. Body contains no nested braces.
+_RETEXT_ENTRY_RE = re.compile(
+    r"""
+    (?:'([^']+)'|([a-zA-Z_][\w-]*))   # group 1 = quoted key, group 2 = bare key
+    \s*:\s*\{
+    ([^{}]*?)                          # body — no nested braces
+    \}
+    """,
+    re.VERBOSE | re.DOTALL,
+)
+_RETEXT_REPLACE_LIT_RE = re.compile(r"'((?:[^'\\]|\\.)*)'")
+_RETEXT_OMIT_RE = re.compile(r"\bomit\s*:\s*true\b")
+_RETEXT_REPLACE_ARR_RE = re.compile(r"replace\s*:\s*\[([^\]]*)\]", re.DOTALL)
+
+
+def parse_retext_js(text: str) -> list[dict]:
+    """Parse retext-simplify patterns.js into list of entry dicts.
+
+    Handles D-22 (first replacement only) + D-24 (omit:true → first-non-empty + note).
+    Bounded regex only — no ReDoS surface (no nested quantifiers).
+    """
+    entries: list[dict] = []
+    seen_ids: set[str] = set()
+
+    for m in _RETEXT_ENTRY_RE.finditer(text):
+        key_quoted = m.group(1)
+        key_bare = m.group(2)
+        key = key_quoted if key_quoted is not None else key_bare
+        if key is None:
+            continue
+
+        body = m.group(3)
+        replace_match = _RETEXT_REPLACE_ARR_RE.search(body)
+        if not replace_match:
+            continue
+        raw_arr = replace_match.group(1)
+        replacements = [lit.group(1) for lit in _RETEXT_REPLACE_LIT_RE.finditer(raw_arr)]
+        if not replacements:
+            continue
+
+        is_omit = bool(_RETEXT_OMIT_RE.search(body))
+        replacement = next((r for r in replacements if r), "")
+        if not replacement:
+            continue
+
+        phrase = normalize_text(key)
+        replacement = normalize_text(replacement)
+        entry_id = derive_id(phrase)
+        if entry_id in seen_ids:
+            raise SystemExit(f"Duplicate id in retext source: {entry_id!r}")
+        seen_ids.add(entry_id)
+
+        entries.append({
+            "phrase": phrase,
+            "replacement": replacement,
+            "sources": ["retext-simplify"],
+            "dirty_dozen": False,
+            "note": "Upstream also supports deletion." if is_omit else None,
+            "id": entry_id,
+            "_omit": is_omit,
+            "_all_replacements": replacements,
+        })
+
+    return entries
+
+
+# plainlanguage.gov: markdown pipe-table after YAML front-matter.
+# Header: `**Don't say** | **Say**` (curly apostrophe in raw source).
+# Separator: `---- | ----`.
+# Rows: `phrase | replacement` optionally with `**bold**` markers (dirty dozen).
+
+_YAML_FM_RE = re.compile(r"^---\n.*?\n---\n", re.DOTALL)
+_PIPE_ROW_RE = re.compile(r"^\s*([^|#\n]+?)\s*\|\s*([^\n]+?)\s*$", re.MULTILINE)
+_BOLD_WRAP_RE = re.compile(r"^\*\*(.+?)\*\*$")
+
+
+def _strip_bold(cell: str) -> tuple[str, bool]:
+    """Return (inner_text, was_bold). `**x**` → ("x", True); `x` → ("x", False)."""
+    m = _BOLD_WRAP_RE.match(cell.strip())
+    if m:
+        return m.group(1).strip(), True
+    return cell.strip(), False
+
+
+def parse_plainlang_md(text: str) -> list[dict]:
+    """Parse plainlanguage.gov use-simple-words-phrases.md into entry dicts.
+
+    D-22: multi-replacement rows take first replacement only.
+    D-23: bold-bold rows (dirty dozen) flagged for severity bump.
+    P-1: curly apostrophes flattened via normalize_text.
+    P-8: compound left cell (`assist, assistance`) splits into N entries.
+    """
+    # Strip YAML front-matter.
+    body = _YAML_FM_RE.sub("", text, count=1)
+
+    entries: list[dict] = []
+    seen_ids: set[str] = set()
+
+    for m in _PIPE_ROW_RE.finditer(body):
+        left_raw = m.group(1).strip()
+        right_raw = m.group(2).strip()
+
+        # Skip header + separator rows.
+        if not left_raw or not right_raw:
+            continue
+        if left_raw.startswith("---") or right_raw.startswith("---"):
+            continue
+        if "Don" in left_raw and "say" in right_raw.lower():
+            # Header row — may be `**Don't say**` with curly apostrophe.
+            continue
+
+        left_inner, left_bold = _strip_bold(left_raw)
+        right_inner, right_bold = _strip_bold(right_raw)
+        dirty_dozen = left_bold and right_bold
+
+        # D-22: first replacement only for comma-separated right side.
+        replacement_raw = right_inner.split(",")[0].strip()
+        if not replacement_raw:
+            continue
+        replacement = normalize_text(replacement_raw)
+
+        # P-8: compound left cell → split on comma into N phrases sharing the replacement.
+        if "," in left_inner:
+            phrases = [p.strip() for p in left_inner.split(",") if p.strip()]
+        else:
+            phrases = [left_inner]
+
+        for phrase_raw in phrases:
+            phrase = normalize_text(phrase_raw)
+            entry_id = derive_id(phrase)
+            if entry_id in seen_ids:
+                # Duplicate within plainlang source — skip per D-05 dedup-later discipline.
+                continue
+            seen_ids.add(entry_id)
+            entries.append({
+                "phrase": phrase,
+                "replacement": replacement,
+                "sources": ["plainlanguage.gov"],
+                "dirty_dozen": dirty_dozen,
+                "note": None,
+                "id": entry_id,
+                "_omit": False,
+                "_all_replacements": [s.strip() for s in right_inner.split(",") if s.strip()],
+            })
+
+    return entries
+
+
 # ---- CLI --------------------------------------------------------------------
 
 def _main() -> None:
