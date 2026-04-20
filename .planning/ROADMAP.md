@@ -77,12 +77,12 @@ Full details: [milestones/v1.3-ROADMAP.md](milestones/v1.3-ROADMAP.md) · [miles
   4. `ParagraphSuggestionStore` audit confirms in-memory-only actor (no disk I/O); CLAR-10's conditional purge clause not triggered; audit artifact is one-line code comment at actor declaration.
   5. Hotkey flow in Notes.app with `.tone` + `.rephrase` enabled shows no clarity suggestion (visual validation per CLAUDE.md computer-use workflow)
 **Plans**: 6 plans
-- [ ] 07-01-PLAN.md — Doc amendments (REQUIREMENTS.md CLAR-09 strike + ROADMAP.md Phase 7 criteria 2/3/4 per D-04/D-10)
-- [ ] 07-02-PLAN.md — Enum + prompt core deletions (LLMCheckType.clarity, LLMStyleSuggestion.Category.clarity, LLMPrompts.systemPrompt rewrite per D-01/D-02/D-12)
-- [ ] 07-03-PLAN.md — Call-site switch fixes (OverlayController + ParagraphSuggestionStore + RephraseCardViewModel + DisplayHeuristic + Suggestion.swift docstring; default-arm preserved; D-22 scrub)
-- [ ] 07-04-PLAN.md — Settings UI + ConfigManager (LLMSettingsView Clarity Toggle removal + ConfigManager llmEnableClarity read deletion per D-11/D-18/D-19)
-- [ ] 07-05-PLAN.md — Test surgery + D-05 regression test (7 test files; D-05 silent-drop test; REPH-11 clarity-token strip; xcodebuild green gate)
-- [ ] 07-06-PLAN.md — UAT Notes.app manual validation per D-22 + ROADMAP criterion 5
+- [x] 07-01-PLAN.md — Doc amendments (REQUIREMENTS.md CLAR-09 strike + ROADMAP.md Phase 7 criteria 2/3/4 per D-04/D-10)
+- [x] 07-02-PLAN.md — Enum + prompt core deletions (LLMCheckType.clarity, LLMStyleSuggestion.Category.clarity, LLMPrompts.systemPrompt rewrite per D-01/D-02/D-12)
+- [x] 07-03-PLAN.md — Call-site switch fixes (OverlayController + ParagraphSuggestionStore + RephraseCardViewModel + DisplayHeuristic + Suggestion.swift docstring; default-arm preserved; D-22 scrub)
+- [x] 07-04-PLAN.md — Settings UI + ConfigManager (LLMSettingsView Clarity Toggle removal + ConfigManager llmEnableClarity read deletion per D-11/D-18/D-19)
+- [x] 07-05-PLAN.md — Test surgery + D-05 regression test (7 test files; D-05 silent-drop test; REPH-11 clarity-token strip; xcodebuild green gate)
+- [x] 07-06-PLAN.md — UAT Notes.app manual validation per D-22 + ROADMAP criterion 5
 **UI hint**: yes
 
 ### Phase 8: Dataset Pipeline

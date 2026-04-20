@@ -1,0 +1,108 @@
+---
+gsd_state_version: 1.0
+milestone: v1.4
+milestone_name: Clarity Engine
+status: executing
+stopped_at: Phase 7 context gathered
+last_updated: "2026-04-20T11:11:34.916Z"
+last_activity: 2026-04-20
+progress:
+  total_phases: 7
+  completed_phases: 1
+  total_plans: 6
+  completed_plans: 6
+  percent: 100
+---
+
+## Current Position
+
+Milestone: v1.4 Clarity Engine
+Phase: 8
+Plan: Not started
+Status: Executing Phase 07
+Last activity: 2026-04-20
+
+**v1.3 status:** ✅ Shipped 2026-04-19. See `.planning/milestones/v1.3-ROADMAP.md` + `.planning/milestones/v1.3-MILESTONE-AUDIT.md`. Tag `v1.3` on `12dd9db`.
+
+Progress: 0% (0/7 phases complete, 0/0 plans — plans defined per phase at `/gsd-plan-phase`)
+
+## Project Reference
+
+See: .planning/PROJECT.md (updated 2026-04-19 — v1.4 Clarity Engine started)
+
+**Core value:** Press a hotkey in any app and get instant, accurate grammar corrections with optional AI-powered style suggestions — entirely local by default.
+**Current focus:** Phase 07 — llm-clarity-clean-deletion
+
+## v1.4 Phase Map
+
+| Phase | Name | Requirements |
+|-------|------|--------------|
+| 7 | LLM `.clarity` Clean-Deletion | CLAR-09, CLAR-10 |
+| 8 | Dataset Pipeline | CLAR-14, CLAR-15, CLAR-16 |
+| 9 | Rust Foundation + MapPhraseLinter Spike | CLAR-11, CLAR-12, CLAR-13 |
+| 10 | Matcher Implementation | CLAR-01, CLAR-03, CLAR-04, CLAR-05, CLAR-06 |
+| 11 | Dataset Integration + Fixture Harness | CLAR-20 |
+| 12 | Settings UI + Severity Filter + Acknowledgements | CLAR-02, CLAR-07, CLAR-08, CLAR-17, CLAR-18, CLAR-19 |
+| 13 | NonFlags Corpus Seed + UAT | CLAR-21 |
+
+Parallelization note: Phases 8 and 9 can run in parallel (no file contention). Phase 7 must complete before Phase 9 (clean `Suggestion.swift` edits).
+
+## Performance Metrics
+
+**Velocity:**
+
+- Total plans completed: 10 (v1.2)
+- Average duration: — (v1.1 baseline: see milestones/v1.1-ROADMAP.md)
+- Total execution time: —
+
+**By Phase:**
+
+| Phase | Plans | Total | Avg/Plan |
+|-------|-------|-------|----------|
+| 18.3 | 4 | - | - |
+| Phase 01-ax-call-queue P03 | 5min | 1 tasks | 1 files |
+| Phase 02-cancellable-bounds-queries P01 | 15min | 2 tasks | 1 files |
+| Phase 02-cancellable-bounds-queries P03 | 3min | 3 tasks | 2 files |
+| Phase 03-viewport-cull-rect-cache P1 | 420 | 2 tasks | 1 files |
+| Phase 03 P2 | 480 | 4 tasks | 3 files |
+| Phase 05-session-local-mirror-improvements P01 | 5min | 3 tasks | 3 files |
+| Phase 05-session-local-mirror-improvements P02 | 10min | 2 tasks | 3 files |
+| Phase 05-session-local-mirror-improvements P03 | 15min | 3 tasks | 2 files |
+| Phase 06-gap-closure-zero-ax-ordering-scope-cleanup P01 | 4min | 2 tasks | 2 files |
+| Phase 06-gap-closure-zero-ax-ordering-scope-cleanup P02 | 3min | 2 tasks | 4 files |
+| 07 | 6 | - | - |
+
+## Accumulated Context
+
+### Decisions
+
+- [v1.4 Roadmap]: 7-phase structure derived from research SUMMARY.md §Roadmap Implications; Phase 7 rips LLM clarity before Harper clarity lands (zero dual-source window per CLAUDE.md standalone-app clean-replace)
+- [v1.4 Roadmap]: Phases 8 (dataset) and 9 (Rust foundation) parallelizable — no file contention; Phase 10 matcher depends on both
+- [v1.4 Roadmap]: Performance targets CLAR-N1..N4 treated as measurement checkpoints at Phase 11 only; NOT shipping-blocker requirements per REQUIREMENTS.md constraints
+- [v1.4 Roadmap]: `write-good` dropped as dataset source — STACK research confirmed it ships regex heuristics, not phrase arrays; retext-simplify (MIT) + plainlanguage.gov (US PD) only
+- [v1.4 Roadmap]: Acknowledgements UI bundled into Phase 12 with other settings surface (CLAR-19) — avoids slipping MIT license compliance past milestone close
+- [v1.4 Roadmap]: Priority constants window 200/220/240 (High/Medium/Low) chosen >64 so grammar (127) and spelling (63) win overlap — inverts spec CD-05 per STACK direct harper-core source read
+
+### Pending Todos
+
+None yet.
+
+### Blockers/Concerns
+
+None yet.
+
+## Deferred Items
+
+| Category | Item | Status | Deferred At |
+|----------|------|--------|-------------|
+| Human verification | Phase 16-04 Task 5: flag-on/flag-off live behavior in Notes/TextEdit; `defaults write llmIncrementalCheckingEnabled` flip without relaunch; hotkey re-fire on unchanged text shows `LLM fan-out: 0 requests`; edit middle paragraph fires 1 request | Deferred to Phase 19 UAT | 2026-04-16 |
+| Human verification | Phase 18-08 Task 4: 12-step rephrase card validation in Notes.app with computer-use MCP screenshots (flag enable, card render, toggle, hide/dismiss/accept paths, edit-closes, flag-off parity) | Deferred to Phase 19 UAT | 2026-04-16 |
+| Test flake | `LLMCheckSchedulerCancellationTests.idleDebounceSeconds_liveReadHonoredWithoutReinit` — timing-flaky under parallel load, passes in isolation | Deferred to Plan 10b (scheduler deletion) | 2026-04-17 |
+| Test flake | `AXCallWatchdogTests.shouldSkipReturnsTrueForBundle...` + `...blocklistExpires...` — parallel-load timing, pass solo | Deferred (pre-existing, Phase 04-01 documented) | 2026-04-19 |
+| Test flake | `TextMonitorStoreIntegrationTests.keystrokeSchedulesDebouncedReconcile` — parallel-load debounce timing, passes solo | Deferred (pre-existing, out of scope) | 2026-04-19 |
+
+## Session Continuity
+
+Last session: 2026-04-20T03:35:38.546Z
+Stopped at: Phase 7 context gathered
+Resume file: .planning/phases/07-llm-clarity-clean-deletion/07-CONTEXT.md
