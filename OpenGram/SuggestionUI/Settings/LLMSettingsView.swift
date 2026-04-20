@@ -75,7 +75,6 @@ struct LLMSettingsView: View {
     @AppStorage("llmBaseURL") private var baseURL: String = "http://localhost:1234/v1"
     @AppStorage("llmModel") private var model: String = "default"
     @AppStorage("llmEnableTone") private var enableTone: Bool = true
-    @AppStorage("llmEnableClarity") private var enableClarity: Bool = true
     @AppStorage("llmEnableRephrase") private var enableRephrase: Bool = true
     @AppStorage("llmTemperature") private var temperature: Double = 0.3
     @AppStorage("llmRequestTimeout") private var requestTimeout: Double = 60
@@ -128,8 +127,6 @@ struct LLMSettingsView: View {
             Spacer().frame(height: 8)
             HStack(spacing: 16) {
                 Toggle("Tone", isOn: $enableTone)
-                    .font(.system(size: 13))
-                Toggle("Clarity", isOn: $enableClarity)
                     .font(.system(size: 13))
                 Toggle("Rephrase", isOn: $enableRephrase)
                     .font(.system(size: 13))
