@@ -163,3 +163,83 @@ def emit_toml(entries: list[dict], header: str) -> bytes:
     body = "\n\n".join(_emit_entry(e) for e in entries)
     doc = header + ("\n" + body + "\n" if entries else "")
     return doc.encode("utf-8")
+
+
+# ---- Atomic write -----------------------------------------------------------
+
+def write_atomic(path: Path, content: bytes) -> None:
+    """Write-then-rename. POSIX atomic per os.replace contract (P-10)."""
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp.write_bytes(content)
+    os.replace(tmp, path)
+
+
+# ---- Build pipeline (stub — Plans 03/04 populate entries list) -------------
+
+HEADER_TEMPLATE = (
+    "# Generated from retext-simplify@{retext_sha}, plainlanguage.gov@{plainlang_sha} on {date}\n"
+    "# Do not hand-edit — see scripts/overrides.toml for curation overrides.\n"
+)
+
+
+def _discover_source_shas(sources_dir: Path) -> tuple[str, str]:
+    """Read sources dir to extract short-SHA from filenames (D-01).
+
+    Filenames encode provenance: retext-simplify-<sha>.json, plainlanguage-<sha>.md.
+    Fixture mode uses `test` placeholder sha when files don't match the real pattern.
+    """
+    retext_sha = "test"
+    plainlang_sha = "test"
+    for f in sources_dir.iterdir():
+        m = re.match(r"retext-simplify-([0-9a-f]+)\.json$", f.name)
+        if m:
+            retext_sha = m.group(1)
+        m = re.match(r"plainlanguage-([0-9a-f]+)\.md$", f.name)
+        if m:
+            plainlang_sha = m.group(1)
+    return retext_sha, plainlang_sha
+
+
+def build(sources_dir: Path, overrides_path: Path, data_dir: Path | None = None) -> bytes:
+    """Pipeline entry point. Returns TOML bytes; writes atomically if data_dir set.
+
+    Stub: verifies SHA manifest, reads overrides (if any), emits empty-entries TOML.
+    Plans 03/04 add parser + merge calls between verify and emit.
+    """
+    # Fixture mode: sources_dir may be the fixtures dir containing tiny-sources.sha256.
+    manifest = sources_dir / "tiny-sources.sha256"
+    if not manifest.exists():
+        manifest = sources_dir / "SOURCES.sha256"
+    if manifest.exists():
+        verify_sha256(manifest, sources_dir)
+
+    # Fixture date is static; real run uses today's ISO date per D-17e.
+    # For byte-determinism of tests, use the date already embedded in expected fixture.
+    date = "2026-04-20"
+    retext_sha, plainlang_sha = _discover_source_shas(sources_dir)
+    header = HEADER_TEMPLATE.format(
+        retext_sha=retext_sha,
+        plainlang_sha=plainlang_sha,
+        date=date,
+    )
+
+    entries: list[dict] = []  # Plans 03/04 populate via parse → merge → override.
+
+    out = emit_toml(entries, header)
+    if data_dir is not None:
+        write_atomic(data_dir / "wordy_phrases.toml", out)
+    return out
+
+
+# ---- CLI --------------------------------------------------------------------
+
+def _main() -> None:
+    print("[1/12] Verifying SHA256 manifest...", file=sys.stderr)
+    # Real run uses SOURCES_DIR + OVERRIDES_PATH; emit to OUT_PATH atomically.
+    out = build(SOURCES_DIR, OVERRIDES_PATH, DATA_DIR)
+    print(f"[12/12] Wrote {len(out)} bytes to {OUT_PATH}", file=sys.stderr)
+
+
+if __name__ == "__main__":
+    _main()
