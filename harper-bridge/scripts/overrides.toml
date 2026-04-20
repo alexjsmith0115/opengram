@@ -30,3 +30,25 @@ note = "Both sources flag this phrase; 'so' is the intended concise replacement.
 [overrides."owing to the fact that"]
 severity = "medium"
 note = "Common verbose filler; replacement is concise and unambiguous."
+
+# --- CLAR-04 inflection contract (gap closure, pipeline path 1) ---
+# retext-simplify@c7686ac ships "utilize" + "utilization" only; inflected forms "utilizes"/"utilized"
+# absent from upstream. Added here as own PhraseEntry rows per D-05 (each inflected form as own entry).
+# sources=["manual"] per D-14 truthfulness — do not claim retext/plainlang provenance.
+# severity="medium" per D-07 single-source default (manual entries are single-source by definition).
+
+[overrides."utilizes"]
+add = true
+phrase = "utilizes"
+replacement = "use"
+severity = "medium"
+sources = ["manual"]
+note = "Inflected form of 'utilize'; added to satisfy CLAR-04 dataset-driven inflection contract."
+
+[overrides."utilized"]
+add = true
+phrase = "utilized"
+replacement = "used"
+severity = "medium"
+sources = ["manual"]
+note = "Inflected form of 'utilize'; added to satisfy CLAR-04 dataset-driven inflection contract."

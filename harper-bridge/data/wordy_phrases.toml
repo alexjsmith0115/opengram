@@ -2282,6 +2282,22 @@ sources = ["retext-simplify", "plainlanguage.gov"]
 id = "utilize"
 
 [[entries]]
+phrase = "utilized"
+replacement = "used"
+severity = "medium"
+sources = ["manual"]
+note = "Inflected form of 'utilize'; added to satisfy CLAR-04 dataset-driven inflection contract."
+id = "utilized"
+
+[[entries]]
+phrase = "utilizes"
+replacement = "use"
+severity = "medium"
+sources = ["manual"]
+note = "Inflected form of 'utilize'; added to satisfy CLAR-04 dataset-driven inflection contract."
+id = "utilizes"
+
+[[entries]]
 phrase = "validate"
 replacement = "confirm"
 severity = "high"
