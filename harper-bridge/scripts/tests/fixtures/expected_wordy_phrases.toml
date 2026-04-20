@@ -1,0 +1,60 @@
+# Generated from retext-simplify@test, plainlanguage.gov@test on 2026-04-20
+# Do not hand-edit — see scripts/overrides.toml for curation overrides.
+
+[[entries]]
+phrase = "a number of"
+replacement = "many"
+severity = "high"
+sources = ["retext-simplify"]
+note = "Test override: severity upgrade."
+id = "a number of"
+
+[[entries]]
+phrase = "abundance"
+replacement = "enough"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "abundance"
+
+[[entries]]
+phrase = "accompany"
+replacement = "with"
+severity = "high"
+sources = ["retext-simplify", "plainlanguage.gov"]
+id = "accompany"
+
+[[entries]]
+phrase = "addressees"
+replacement = "you"
+severity = "high"
+sources = ["plainlanguage.gov"]
+id = "addressees"
+
+[[entries]]
+phrase = "assist"
+replacement = "aid"
+severity = "medium"
+sources = ["plainlanguage.gov"]
+id = "assist"
+
+[[entries]]
+phrase = "assistance"
+replacement = "aid"
+severity = "medium"
+sources = ["plainlanguage.gov"]
+id = "assistance"
+
+[[entries]]
+phrase = "don't"
+replacement = "do not"
+severity = "medium"
+sources = ["plainlanguage.gov"]
+id = "don't"
+
+[[entries]]
+phrase = "utilize"
+replacement = "use"
+severity = "medium"
+sources = ["retext-simplify"]
+dialects = ["en-US"]
+id = "utilize"

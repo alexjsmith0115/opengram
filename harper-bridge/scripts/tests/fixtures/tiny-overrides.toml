@@ -1,0 +1,14 @@
+# Test overrides exercising every D-10 op.
+
+[overrides."a number of"]
+severity = "high"
+note = "Test override: severity upgrade."
+
+[overrides.utilize]
+dialects = ["en-US"]
+
+[overrides.accompany]
+replacement = "with"
+
+[overrides."be advised"]
+drop = true
