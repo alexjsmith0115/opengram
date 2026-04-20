@@ -192,7 +192,7 @@ def _discover_source_shas(sources_dir: Path) -> tuple[str, str]:
     retext_sha = "test"
     plainlang_sha = "test"
     for f in sources_dir.iterdir():
-        m = re.match(r"retext-simplify-([0-9a-f]+)\.json$", f.name)
+        m = re.match(r"retext-simplify-([0-9a-f]+)\.(js|json)$", f.name)
         if m:
             retext_sha = m.group(1)
         m = re.match(r"plainlanguage-([0-9a-f]+)\.md$", f.name)
