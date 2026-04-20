@@ -530,7 +530,7 @@ def flag_judgment_calls(entries: list[dict]) -> list[dict]:
 
 # ---- Overrides -------------------------------------------------------------
 
-_VALID_OVERRIDE_KEYS = {"drop", "severity", "replacement", "dialects", "note"}
+_VALID_OVERRIDE_KEYS = {"drop", "severity", "replacement", "dialects", "note", "add", "phrase", "sources"}
 
 
 def load_overrides(path: Path) -> dict:
@@ -548,21 +548,48 @@ def load_overrides(path: Path) -> dict:
         unknown = set(ops.keys()) - _VALID_OVERRIDE_KEYS
         if unknown:
             raise SystemExit(f"Unknown override keys for id={eid!r}: {sorted(unknown)}")
+        if ops.get("add") is True:
+            # Add-op requires phrase + replacement + sources (non-empty).
+            for req in ("phrase", "replacement", "sources"):
+                if req not in ops:
+                    raise SystemExit(f"Add-op override id={eid!r} missing required key: {req!r}")
+            if not isinstance(ops["sources"], list) or not ops["sources"]:
+                raise SystemExit(f"Add-op override id={eid!r}: sources must be non-empty list")
+            # phrase must derive to the keyed id (prevents key/phrase drift).
+            derived = derive_id(normalize_text(ops["phrase"]))
+            if derived != eid:
+                raise SystemExit(
+                    f"Add-op override id={eid!r}: derived id from phrase ({derived!r}) does not match key"
+                )
+        else:
+            # Mutate-op rows must NOT carry `phrase`/`sources`.
+            for forbidden in ("phrase", "sources"):
+                if forbidden in ops:
+                    raise SystemExit(
+                        f"Override id={eid!r}: {forbidden!r} only allowed on add-op rows (add = true)"
+                    )
     return overrides
 
 
 def apply_overrides(entries: list[dict], overrides: dict) -> list[dict]:
-    """D-09: apply AFTER severity tagging, BEFORE emit. D-10 ops only.
+    """D-09: apply AFTER severity tagging, BEFORE emit. D-10 ops + `add` op.
 
-    drop → remove entry; severity/replacement/dialects/note → field-level override wins.
-    W5: ANY override op clears `_judgment_reason` so curator decisions don't leave
-    stale `# JUDGMENT:` comments above entries the curator has explicitly shaped.
-    Post-apply id-uniqueness re-check (P-6 collision guard).
+    Mutate/drop: existing ops (drop, severity, replacement, dialects, note).
+    Add: synthesizes new PhraseEntry from override row; severity defaults to "medium"
+    per D-07 single-source default (manual entries are single-source by definition);
+    dialects/note optional; id derived per D-13.
+    W5: ANY mutate op clears `_judgment_reason`.
+    Post-apply id-uniqueness re-check (P-6 collision guard — catches add colliding with existing).
     """
     out: list[dict] = []
+    add_rows: list[tuple[str, dict]] = []
+    for eid, ops in overrides.items():
+        if ops.get("add") is True:
+            add_rows.append((eid, ops))
+
     for e in entries:
         ov = overrides.get(e["id"])
-        if ov:
+        if ov and ov.get("add") is not True:
             if ov.get("drop") is True:
                 continue
             for k in ("severity", "replacement", "dialects", "note"):
@@ -573,7 +600,24 @@ def apply_overrides(entries: list[dict], overrides: dict) -> list[dict]:
                 del e["_judgment_reason"]
         out.append(e)
 
-    # P-6: re-check id uniqueness (overrides don't rename phrase today, but guard against future ops).
+    # Synthesize add-op entries (D-05 inflected-form-as-own-entry path).
+    for eid, ops in add_rows:
+        phrase = normalize_text(ops["phrase"])
+        replacement = normalize_text(ops["replacement"])
+        new_entry: dict = {
+            "phrase": phrase,
+            "replacement": replacement,
+            "severity": ops.get("severity", "medium"),  # D-07 default: single-source = medium
+            "sources": list(ops["sources"]),
+            "id": derive_id(phrase),
+        }
+        if "dialects" in ops:
+            new_entry["dialects"] = list(ops["dialects"])
+        if "note" in ops:
+            new_entry["note"] = normalize_text(ops["note"])
+        out.append(new_entry)
+
+    # P-6: id uniqueness (catches add colliding with sourced entry).
     seen: set[str] = set()
     for e in out:
         if e["id"] in seen:
