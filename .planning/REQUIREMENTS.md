@@ -52,9 +52,9 @@
 
 ### Dataset
 
-- [ ] **CLAR-14**: `harper-bridge/scripts/build_wordy_phrases.py` (Python stdlib only — `urllib.request`, `re`, `json`) fetches retext-simplify `data.json` (MIT) and `plainlanguage.gov/simple-words-and-phrases.md` (US public domain), normalizes into a common schema, deduplicates, tags severity by cross-source confirmation, NFC-normalizes all strings, and emits `harper-bridge/data/wordy_phrases.toml`. Output is committed; script is retained for reproducibility, not run at build time. `write-good` is **not** a source.
+- [x] **CLAR-14**: `harper-bridge/scripts/build_wordy_phrases.py` (Python stdlib only — `urllib.request`, `re`, `json`) fetches retext-simplify `data.json` (MIT) and `plainlanguage.gov/simple-words-and-phrases.md` (US public domain), normalizes into a common schema, deduplicates, tags severity by cross-source confirmation, NFC-normalizes all strings, and emits `harper-bridge/data/wordy_phrases.toml`. Output is committed; script is retained for reproducibility, not run at build time. `write-good` is **not** a source.
 
-- [ ] **CLAR-15**: `PhraseEntry` schema includes `dialects: Option<Vec<Dialect>>` (default None = universal). Phase 2 curation tags US-specific entries (e.g., "whilst" excluded from US-only set). Phase 4 matcher filters by the user's dialect config at runtime.
+- [x] **CLAR-15**: `PhraseEntry` schema includes `dialects: Option<Vec<Dialect>>` (default None = universal). Phase 2 curation tags US-specific entries (e.g., "whilst" excluded from US-only set). Phase 4 matcher filters by the user's dialect config at runtime.
 
 - [ ] **CLAR-16**: `THIRD_PARTY.md` at repo root cites retext-simplify (MIT, Titus Wormer) and plainlanguage.gov (US public domain — attribution noted for provenance, not required). MIT license text embedded verbatim.
 
@@ -139,8 +139,8 @@ Measurement checkpoint: Phase 11 logs all four values to test output; shipping n
 | CLAR-11 | Phase 9 | Pending |
 | CLAR-12 | Phase 9 | Pending |
 | CLAR-13 | Phase 9 | Pending |
-| CLAR-14 | Phase 8 | Pending |
-| CLAR-15 | Phase 8 | Pending |
+| CLAR-14 | Phase 8 | Complete |
+| CLAR-15 | Phase 8 | Complete |
 | CLAR-16 | Phase 8 | Pending |
 | CLAR-17 | Phase 12 | Pending |
 | CLAR-18 | Phase 12 | Pending |

@@ -57,7 +57,7 @@ Full details: [milestones/v1.3-ROADMAP.md](milestones/v1.3-ROADMAP.md) · [miles
 ### 🚧 v1.4 Clarity Engine (Phases 7-13) — IN PROGRESS
 
 - [ ] **Phase 7: LLM `.clarity` Clean-Deletion** — Rip LLM clarity before Harper clarity lands; zero dual-source window · CLAR-09, CLAR-10
-- [ ] **Phase 8: Dataset Pipeline** — `build_wordy_phrases.py` + `wordy_phrases.toml` (~500 entries) from retext-simplify + plainlanguage.gov · CLAR-14, CLAR-15, CLAR-16
+- [x] **Phase 8: Dataset Pipeline** — `build_wordy_phrases.py` + `wordy_phrases.toml` (~500 entries) from retext-simplify + plainlanguage.gov · CLAR-14, CLAR-15, CLAR-16 (completed 2026-04-20)
 - [ ] **Phase 9: Rust Foundation + MapPhraseLinter Spike** — `SuggestionCategory::Clarity`, `Severity` FFI enum, stub linter, `build_lint_group` helper, 20-phrase spike · CLAR-11, CLAR-12, CLAR-13
 - [ ] **Phase 10: Matcher Implementation** — Production matcher per spike decision; 5-regime case preservation; word-boundary; dialect filter · CLAR-01, CLAR-03, CLAR-04, CLAR-05, CLAR-06
 - [ ] **Phase 11: Dataset Integration + Fixture Harness** — `include_str!` wire-up, auto-generated +/- fixtures per entry, snapshot-diff CI, perf logging · CLAR-20
@@ -76,7 +76,7 @@ Full details: [milestones/v1.3-ROADMAP.md](milestones/v1.3-ROADMAP.md) · [miles
   3. Audit documents that no archived `LLMConfig`/`Set<LLMCheckType>` path exists in production; `ConfigManager` reads individual bool keys, never a serialised `Set<LLMCheckType>`; no decoder fallback needed.
   4. `ParagraphSuggestionStore` audit confirms in-memory-only actor (no disk I/O); CLAR-10's conditional purge clause not triggered; audit artifact is one-line code comment at actor declaration.
   5. Hotkey flow in Notes.app with `.tone` + `.rephrase` enabled shows no clarity suggestion (visual validation per CLAUDE.md computer-use workflow)
-**Plans**: 6 plans
+**Plans**: 7 plans
 - [x] 07-01-PLAN.md — Doc amendments (REQUIREMENTS.md CLAR-09 strike + ROADMAP.md Phase 7 criteria 2/3/4 per D-04/D-10)
 - [x] 07-02-PLAN.md — Enum + prompt core deletions (LLMCheckType.clarity, LLMStyleSuggestion.Category.clarity, LLMPrompts.systemPrompt rewrite per D-01/D-02/D-12)
 - [x] 07-03-PLAN.md — Call-site switch fixes (OverlayController + ParagraphSuggestionStore + RephraseCardViewModel + DisplayHeuristic + Suggestion.swift docstring; default-arm preserved; D-22 scrub)
@@ -95,7 +95,16 @@ Full details: [milestones/v1.3-ROADMAP.md](milestones/v1.3-ROADMAP.md) · [miles
   3. Each inflected form (`utilize`/`utilizes`/`utilized`) appears as its own `PhraseEntry` — no runtime stemming required; 20-40 judgment-call entries hand-reviewed and noted in script comments
   4. `THIRD_PARTY.md` at repo root embeds retext-simplify MIT license text verbatim + plainlanguage.gov US public-domain provenance note; `write-good` absent as source
   5. Severity tagging derived from cross-source confirmation (phrases in both retext-simplify AND plainlanguage.gov default High; single-source default Medium; subjective entries Low)
-**Plans**: TBD
+**Plans**: 6 plans
+
+Plans:
+- [x] 08-01-PLAN.md — Wave 0 tests + fixtures (unittest tree, synthetic retext + plainlang + overrides + SHA manifest + golden TOML)
+- [x] 08-02-PLAN.md — Core script infrastructure (NFC + typography + SHA verify + hand-rolled TOML emitter + atomic write)
+- [x] 08-03-PLAN.md — Source parsers (retext-simplify JS regex + plainlanguage.gov MD regex; D-22/D-23/D-24/P-8 semantics)
+- [x] 08-04-PLAN.md — Merge + severity + judgment flags (rules 2+3 per D-21) + overrides layering (D-09/D-10)
+- [x] 08-05-PLAN.md — Vendor real sources + SOURCES.sha256 + curate overrides + commit generated wordy_phrases.toml (checkpoint)
+- [x] 08-06-PLAN.md — THIRD_PARTY.md at repo root (MIT verbatim + plainlanguage.gov PD note + commit SHAs)
+- [x] 08-07-PLAN.md — Gap closure: add utilizes/utilized via pipeline add-op (CLAR-04 inflection contract)
 
 ### Phase 9: Rust Foundation + MapPhraseLinter Spike
 **Goal**: FFI surface + linter registration path ready for matcher; spike resolves `MapPhraseLinter` vs custom-hashmap decision before Phase 10 locks scope
@@ -171,7 +180,7 @@ Full details: [milestones/v1.3-ROADMAP.md](milestones/v1.3-ROADMAP.md) · [miles
 | 5. Session-Local Mirror Improvements | v1.3 | 3/3 | Complete | 2026-04-19 |
 | 6. v1.3 Gap Closure — Zero-AX Ordering + Scope Cleanup | v1.3 | 2/2 | Complete | 2026-04-19 |
 | 7. LLM `.clarity` Clean-Deletion | v1.4 | 0/0 | Not started | — |
-| 8. Dataset Pipeline | v1.4 | 0/0 | Not started | — |
+| 8. Dataset Pipeline | v1.4 | 7/7 | Complete   | 2026-04-20 |
 | 9. Rust Foundation + MapPhraseLinter Spike | v1.4 | 0/0 | Not started | — |
 | 10. Matcher Implementation | v1.4 | 0/0 | Not started | — |
 | 11. Dataset Integration + Fixture Harness | v1.4 | 0/0 | Not started | — |
@@ -212,7 +221,7 @@ Full details: [milestones/v1.3-ROADMAP.md](milestones/v1.3-ROADMAP.md) · [miles
 
 **Goal:** [Captured for future planning] After the rephrase card has been shown and dismissed for paragraph P, a second Ctrl+Shift+G against the same unchanged paragraph does not re-show the card. Likely root cause: `ParagraphSuggestionCache` hit returns cached suggestions, but `OverlayController.tryDispatchRephraseCard` WR-02 dedup guard (`currentCardParagraphHash`) still matches even after dismiss, OR scheduler's `.dismissed` cache entries short-circuit the re-dispatch. Also check that `hideCardAndRestore()` / `onDismissAll` properly clears `currentCardParagraphHash` and `hiddenParagraphScalarRange`.
 **Requirements:** TBD
-**Plans:** 0 plans
+**Plans:** 7/7 plans complete
 
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
