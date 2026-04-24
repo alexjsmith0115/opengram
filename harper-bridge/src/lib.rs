@@ -6,6 +6,7 @@ use harper_core::spell::{FstDictionary, MergedDictionary, MutableDictionary};
 use harper_core::{DictWordMetadata, Dialect, DialectFlags, Document};
 
 uniffi::setup_scaffolding!();
+mod clarity;
 
 /// Two-bucket category mapping per D-03: spelling (red) and grammar+punctuation (blue).
 #[derive(uniffi::Enum)]
