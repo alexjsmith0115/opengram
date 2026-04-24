@@ -120,7 +120,7 @@ Plans:
 
 Plans:
 - [x] 09-01-PLAN.md — Wave 0 failing test scaffolding (Severity round-trip, stub_fires_flag_me, dict-add-cycle, spike harness, Swift ClarityFFITests)
-- [ ] 09-02-PLAN.md — Severity FFI surface (clarity.rs Severity enum + priority constants + helpers; SuggestionCategory::Clarity variant; GrammarSuggestion.severity field; FFI translation block severity mapping)
+- [x] 09-02-PLAN.md — Severity FFI surface (clarity.rs Severity enum + priority constants + helpers; SuggestionCategory::Clarity variant; GrammarSuggestion.severity field; FFI translation block severity mapping)
 - [ ] 09-03-PLAN.md — build_lint_group helper extraction + WordyPhrasesStubLinter skeleton (replaces twin LintGroup::new_curated call sites; CLAR-12 single source of truth)
 - [ ] 09-04-PLAN.md — Stub WordyPhrasesLinter match logic (FLAG_ME→FLAGGED token scan; flips Rust stub_fires_flag_me + dict-add-cycle tests GREEN)
 - [ ] 09-05-PLAN.md — UniFFI regen + XCFramework rebuild + Swift Suggestion.severity field + init mapping (flips ClarityFFITests.stubRoundTrip GREEN)
