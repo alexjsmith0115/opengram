@@ -147,18 +147,213 @@ mod tests {
 
 #[cfg(test)]
 mod spike {
-    //! MapPhraseLinter wrapper spike test harness (plan 06 fills impl + assertions).
-    //! 5-regime case preservation + priority-rewrite stability (D-03 hard gates).
+    //! CLAR-13 spike (D-01 through D-06). Hard gates:
+    //!   1. 5-regime case preservation via Suggestion::replace_with_match_case
+    //!   2. Priority rewrite stability — zero leakage of MapPhraseLinter's hardcoded 31
+    //!
+    //! Wrapper delegates to MapPhraseLinter::new_fixed_phrase per entry and
+    //! rewrites lint.priority on every emission.
+
+    use super::{PRIORITY_HIGH, PRIORITY_MEDIUM, PRIORITY_LOW};
+    use harper_core::linting::{Lint, LintKind, Linter, MapPhraseLinter, Suggestion};
+    use harper_core::parsers::PlainEnglish;
+    use harper_core::spell::{FstDictionary, MergedDictionary};
+    use harper_core::Document;
+    use std::sync::Arc;
+
+    struct PriorityRewritingMapPhraseLinter {
+        inner: Vec<(MapPhraseLinter, u8)>,
+    }
+
+    impl PriorityRewritingMapPhraseLinter {
+        fn new(entries: &[(&'static str, &'static str, u8)]) -> Self {
+            let inner = entries
+                .iter()
+                .map(|(phrase, replacement, prio)| {
+                    let mpl = MapPhraseLinter::new_fixed_phrase(
+                        *phrase,
+                        [*replacement],
+                        format!("Consider '{}' for '{}'", replacement, phrase),
+                        format!("Wordy-phrase spike: {}", phrase),
+                        Some(LintKind::Style),
+                    );
+                    (mpl, *prio)
+                })
+                .collect();
+            Self { inner }
+        }
+    }
+
+    impl Linter for PriorityRewritingMapPhraseLinter {
+        fn lint(&mut self, document: &Document) -> Vec<Lint> {
+            let mut out = Vec::new();
+            for (linter, target_prio) in self.inner.iter_mut() {
+                for mut lint in linter.lint(document) {
+                    lint.priority = *target_prio;
+                    out.push(lint);
+                }
+            }
+            out
+        }
+
+        fn description(&self) -> &str {
+            "Spike: MapPhraseLinter wrapper with priority rewrite."
+        }
+    }
+
+    // D-06 corpus: 20 phrases from harper-bridge/data/wordy_phrases.toml.
+    // Balance: utilize/utilizes/utilized multi-inflection triple; high/medium mix;
+    // single-token + multi-token phrases for regime coverage.
+    // Each entry: (toml phrase, toml replacement, severity-mapped priority constant).
+    const CORPUS: &[(&str, &str, u8)] = &[
+        // Multi-inflection triple (D-06: ≥2 multi-inflection pairs) — toml lines 2278–2298
+        ("utilize", "use", PRIORITY_HIGH),
+        ("utilizes", "use", PRIORITY_MEDIUM),
+        ("utilized", "used", PRIORITY_MEDIUM),
+        // High severity — toml lines 26, 61, 68, 75, 82, 96, 117, 167
+        ("a number of", "many", PRIORITY_HIGH),
+        ("accompany", "go with", PRIORITY_HIGH),
+        ("accomplish", "carry out", PRIORITY_HIGH),
+        ("accorded", "given", PRIORITY_HIGH),
+        ("accordingly", "so", PRIORITY_HIGH),
+        ("accurate", "correct", PRIORITY_HIGH),
+        ("additional", "added", PRIORITY_HIGH),
+        ("advantageous", "helpful", PRIORITY_HIGH),
+        // Medium severity — toml lines 33, 40, 47, 54, 110, 209, 230, 265
+        ("abundance", "enough", PRIORITY_MEDIUM),
+        ("accede to", "agree to", PRIORITY_MEDIUM),
+        ("accelerate", "speed up", PRIORITY_MEDIUM),
+        ("accentuate", "stress", PRIORITY_MEDIUM),
+        ("acquire", "get", PRIORITY_MEDIUM),
+        ("aggregate", "add", PRIORITY_MEDIUM),
+        ("alleviate", "ease", PRIORITY_MEDIUM),
+        ("ameliorate", "help", PRIORITY_MEDIUM),
+        ("acquiesce", "agree", PRIORITY_MEDIUM),
+    ];
+
+    fn make_merged_dict() -> Arc<MergedDictionary> {
+        let mut merged = MergedDictionary::new();
+        merged.add_dictionary(FstDictionary::curated());
+        Arc::new(merged)
+    }
+
+    fn title_case(s: &str) -> String {
+        s.split_whitespace()
+            .map(|w| {
+                let mut chars = w.chars();
+                match chars.next() {
+                    Some(c) => c.to_uppercase().collect::<String>() + chars.as_str(),
+                    None => String::new(),
+                }
+            })
+            .collect::<Vec<_>>()
+            .join(" ")
+    }
+
+    fn sentence_start(s: &str) -> String {
+        let mut chars = s.chars();
+        match chars.next() {
+            Some(c) => c.to_uppercase().collect::<String>() + chars.as_str(),
+            None => String::new(),
+        }
+    }
+
+    fn primary_replacement(lint: &Lint) -> Option<String> {
+        lint.suggestions.first().and_then(|s| match s {
+            Suggestion::ReplaceWith(chars) => Some(chars.iter().collect()),
+            _ => None,
+        })
+    }
 
     #[test]
     fn case_preservation_five_regimes() {
-        // Filled by plan 06. Currently asserts false to stay RED.
-        assert!(false, "spike impl pending — plan 06");
+        let merged = make_merged_dict();
+        let mut linter = PriorityRewritingMapPhraseLinter::new(CORPUS);
+
+        for (phrase, replacement, _prio) in CORPUS {
+            let test_cases: Vec<(String, String, &str)> = vec![
+                // 1. lowercase — phrase as-is
+                (
+                    format!("Please {} now.", phrase),
+                    replacement.to_string(),
+                    "lowercase",
+                ),
+                // 2. Sentence-start — first char capitalised
+                (
+                    format!("{} is important.", sentence_start(phrase)),
+                    sentence_start(replacement),
+                    "sentence-start",
+                ),
+                // 3. Title Case — every word capitalised (tests multi-word phrases too)
+                (
+                    format!("We Should {} It.", title_case(phrase)),
+                    title_case(replacement),
+                    "title-case",
+                ),
+                // 4. UPPER CASE
+                (
+                    format!("WE MUST {} IT.", phrase.to_uppercase()),
+                    replacement.to_uppercase(),
+                    "upper-case",
+                ),
+                // 5. post-colon — phrase immediately after colon+space (lowercase)
+                (
+                    format!("Note: {} is needed.", phrase),
+                    replacement.to_string(),
+                    "post-colon",
+                ),
+            ];
+
+            for (input, expected, regime) in &test_cases {
+                let doc = Document::new(input, &PlainEnglish, merged.as_ref());
+                let lints = linter.lint(&doc);
+                let matching: Vec<String> = lints
+                    .iter()
+                    .filter_map(primary_replacement)
+                    .filter(|r| r.eq_ignore_ascii_case(expected))
+                    .collect();
+                assert!(
+                    !matching.is_empty(),
+                    "regime '{}' phrase '{}': expected replacement '{}' (case-insensitive), got: {:?}",
+                    regime,
+                    phrase,
+                    expected,
+                    lints.iter().map(primary_replacement).collect::<Vec<_>>(),
+                );
+            }
+        }
     }
 
     #[test]
     fn priority_rewrite_no_default_leak() {
-        // Filled by plan 06. Currently asserts false to stay RED.
-        assert!(false, "spike impl pending — plan 06");
+        let merged = make_merged_dict();
+        let mut linter = PriorityRewritingMapPhraseLinter::new(CORPUS);
+
+        // Build text containing every corpus phrase as a standalone sentence.
+        let text = CORPUS
+            .iter()
+            .map(|(p, _, _)| format!("Please {}.", p))
+            .collect::<Vec<_>>()
+            .join(" ");
+
+        let doc = Document::new(&text, &PlainEnglish, merged.as_ref());
+        let lints = linter.lint(&doc);
+
+        assert!(!lints.is_empty(), "corpus text must produce at least one lint");
+
+        for lint in &lints {
+            let valid = lint.priority == PRIORITY_HIGH
+                || lint.priority == PRIORITY_MEDIUM
+                || lint.priority == PRIORITY_LOW;
+            assert!(
+                valid,
+                "priority leak: lint.priority = {} (expected {}/{}/{}); suggestion = {:?}",
+                lint.priority,
+                PRIORITY_HIGH,
+                PRIORITY_MEDIUM,
+                PRIORITY_LOW,
+                primary_replacement(lint),
+            );
+        }
     }
 }
