@@ -51,6 +51,7 @@
 		B10000010000000000000011 /* DictionaryStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000011 /* DictionaryStoreTests.swift */; };
 		B10000010000000000000012 /* HarperServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000012 /* HarperServiceTests.swift */; };
 		B10000010000000000000013 /* SuggestionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000013 /* SuggestionTests.swift */; };
+		B10000010000000000000015 /* ClarityFFITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000015 /* ClarityFFITests.swift */; };
 		B10000010000000000000020 /* AXCallWatchdogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000020 /* AXCallWatchdogTests.swift */; };
 		B10000010000000000000021 /* BoundsForRangeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000021 /* BoundsForRangeTests.swift */; };
 		B10000010000000000000022 /* BoundsValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000022 /* BoundsValidatorTests.swift */; };
@@ -213,6 +214,7 @@
 		B20000010000000000000011 /* DictionaryStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryStoreTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000012 /* HarperServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarperServiceTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000013 /* SuggestionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000015 /* ClarityFFITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClarityFFITests.swift; sourceTree = "<group>"; };
 		B20000010000000000000020 /* AXCallWatchdogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXCallWatchdogTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000021 /* BoundsForRangeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoundsForRangeTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000022 /* BoundsValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoundsValidatorTests.swift; sourceTree = "<group>"; };
@@ -460,6 +462,7 @@
 				B20000010000000000000037 /* LLMSettingsPanelTests.swift */,
 				B20000010000000000000011 /* DictionaryStoreTests.swift */,
 				B20000010000000000000012 /* HarperServiceTests.swift */,
+				B20000010000000000000015 /* ClarityFFITests.swift */,
 				B20000010000000000000003 /* HotkeyManagerTests.swift */,
 				B20000010000000000000001 /* IconStateMachineTests.swift */,
 				B20000010000000000000035 /* LLMPromptsTests.swift */,
@@ -936,6 +939,7 @@
 				B10000010000000000000011 /* DictionaryStoreTests.swift in Sources */,
 				B10000010000000000000012 /* HarperServiceTests.swift in Sources */,
 				B10000010000000000000013 /* SuggestionTests.swift in Sources */,
+				B10000010000000000000015 /* ClarityFFITests.swift in Sources */,
 				B10000010000000000000020 /* AXCallWatchdogTests.swift in Sources */,
 				B10000010000000000000040 /* AXCallQueueTests.swift in Sources */,
 				B10000010000000000000021 /* BoundsForRangeTests.swift in Sources */,
