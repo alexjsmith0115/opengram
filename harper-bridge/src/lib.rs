@@ -157,3 +157,29 @@ fn parse_dialect(abbr: &str) -> Dialect {
         _ => Dialect::American,
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::clarity::Severity;
+
+    #[test]
+    fn stub_fires_flag_me() {
+        let checker = HarperChecker::new("US".into(), vec![]);
+        let out = checker.check("FLAG_ME".into());
+        assert_eq!(out.len(), 1, "stub must emit exactly one suggestion");
+        let s = &out[0];
+        assert!(matches!(s.category, SuggestionCategory::Clarity), "category must be Clarity");
+        assert!(matches!(s.severity, Some(Severity::Medium)), "severity must be Some(Medium)");
+        assert_eq!(s.priority, 220, "priority must be PRIORITY_MEDIUM (220)");
+        assert_eq!(s.primary_replacement.as_deref(), Some("FLAGGED"), "replacement must be FLAGGED");
+    }
+
+    #[test]
+    fn clarity_linter_survives_dict_add_cycle() {
+        let checker = HarperChecker::new("US".into(), vec![]);
+        assert_eq!(checker.check("FLAG_ME".into()).len(), 1, "stub fires pre-dict-add");
+        let _ = checker.add_to_dictionary("somenewword".into());
+        assert_eq!(checker.check("FLAG_ME".into()).len(), 1, "stub STILL fires post-dict-add");
+    }
+}
