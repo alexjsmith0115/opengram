@@ -68,6 +68,37 @@ struct Suggestion: Identifiable, Sendable {
     /// `ParagraphHash` for Dismiss-path and card-dedup (WR-02).
     /// Nil for Harper suggestions and flag-off LLM suggestions.
     let paragraphHash: ParagraphHash?
+    /// Clarity severity tag (CLAR-08). Non-nil only for category == .clarity;
+    /// nil for Harper spelling/grammar + all LLM suggestions (D-15).
+    let severity: Severity?
+
+    /// Designated init. `severity` defaults to nil so existing call sites
+    /// that predate clarity stay compile-clean (D-34).
+    init(
+        id: UUID,
+        range: Range<String.Index>,
+        original: String,
+        primaryReplacement: String?,
+        allReplacements: [String],
+        message: String,
+        category: CheckCategory,
+        source: SuggestionSource,
+        priority: UInt8,
+        paragraphHash: ParagraphHash?,
+        severity: Severity? = nil
+    ) {
+        self.id = id
+        self.range = range
+        self.original = original
+        self.primaryReplacement = primaryReplacement
+        self.allReplacements = allReplacements
+        self.message = message
+        self.category = category
+        self.source = source
+        self.priority = priority
+        self.paragraphHash = paragraphHash
+        self.severity = severity
+    }
 }
 
 extension Suggestion {
@@ -85,6 +116,16 @@ extension Suggestion {
             category = .spelling
         case .grammarPunctuation:
             category = .grammarPunctuation
+        case .clarity:
+            category = .clarity
+        }
+
+        let severity: Severity?
+        switch raw.severity {
+        case .some(.high):   severity = .high
+        case .some(.medium): severity = .medium
+        case .some(.low):    severity = .low
+        case .none:          severity = nil
         }
 
         self.init(
@@ -97,7 +138,8 @@ extension Suggestion {
             category: category,
             source: .harper,
             priority: raw.priority,
-            paragraphHash: nil
+            paragraphHash: nil,
+            severity: severity
         )
     }
 }

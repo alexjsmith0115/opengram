@@ -101,7 +101,8 @@ struct SuggestionModelTests {
             primaryReplacement: "a",
             allReplacements: ["a"],
             category: .grammarPunctuation,
-            priority: 10
+            priority: 10,
+            severity: nil
         )
 
         let suggestion = Suggestion(from: raw, in: text)
@@ -125,7 +126,8 @@ struct SuggestionModelTests {
             primaryReplacement: nil,
             allReplacements: [],
             category: .spelling,
-            priority: 5
+            priority: 5,
+            severity: nil
         )
 
         let suggestion = Suggestion(from: raw, in: text)
@@ -142,7 +144,8 @@ struct SuggestionModelTests {
             primaryReplacement: "the",
             allReplacements: ["the"],
             category: .spelling,
-            priority: 20
+            priority: 20,
+            severity: nil
         )
 
         let suggestion = Suggestion(from: raw, in: text)
@@ -161,7 +164,8 @@ struct SuggestionModelTests {
             primaryReplacement: nil,
             allReplacements: [],
             category: .spelling,
-            priority: 1
+            priority: 1,
+            severity: nil
         )
 
         let s1 = Suggestion(from: raw, in: text)
