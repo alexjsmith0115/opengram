@@ -37,6 +37,29 @@ pub fn severity_from_priority(prio: u8) -> Option<Severity> {
     }
 }
 
+use harper_core::Document;
+use harper_core::linting::{Lint, Linter};
+
+pub struct WordyPhrasesStubLinter;
+
+impl WordyPhrasesStubLinter {
+    pub fn new() -> Self { Self }
+}
+
+impl Default for WordyPhrasesStubLinter {
+    fn default() -> Self { Self::new() }
+}
+
+impl Linter for WordyPhrasesStubLinter {
+    fn lint(&mut self, _document: &Document) -> Vec<Lint> {
+        Vec::new()
+    }
+
+    fn description(&self) -> &str {
+        "Stub wordy-phrases linter — placeholder for dataset-driven matcher."
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
