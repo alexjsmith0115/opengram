@@ -116,7 +116,17 @@ Plans:
   3. Priority constants `High=200` / `Medium=220` / `Low=240` defined in clarity module; overlap test proves grammar (127) and spelling (63) win against clarity on span conflict via `remove_overlaps`
   4. Stub `WordyPhrasesLinter` with hard-coded single `FLAG_ME → FLAGGED` entry returns a `Clarity` suggestion for "FLAG_ME" input end-to-end; overlay renders solid orange underline; popover header reads "Clarity"
   5. `MapPhraseLinter` spike report written to phase directory documenting: severity override feasibility, case-preservation semantics, and decision — `MapPhraseLinter` wrapper adopted as production matcher OR custom first-token-hashmap fallback selected
-**Plans**: TBD
+**Plans**: 8 plans
+
+Plans:
+- [ ] 09-01-PLAN.md — Wave 0 failing test scaffolding (Severity round-trip, stub_fires_flag_me, dict-add-cycle, spike harness, Swift ClarityFFITests)
+- [ ] 09-02-PLAN.md — Severity FFI surface (clarity.rs Severity enum + priority constants + helpers; SuggestionCategory::Clarity variant; GrammarSuggestion.severity field; FFI translation block severity mapping)
+- [ ] 09-03-PLAN.md — build_lint_group helper extraction + WordyPhrasesStubLinter skeleton (replaces twin LintGroup::new_curated call sites; CLAR-12 single source of truth)
+- [ ] 09-04-PLAN.md — Stub WordyPhrasesLinter match logic (FLAG_ME→FLAGGED token scan; flips Rust stub_fires_flag_me + dict-add-cycle tests GREEN)
+- [ ] 09-05-PLAN.md — UniFFI regen + XCFramework rebuild + Swift Suggestion.severity field + init mapping (flips ClarityFFITests.stubRoundTrip GREEN)
+- [ ] 09-06-PLAN.md — MapPhraseLinter wrapper spike (PriorityRewritingMapPhraseLinter + 20-phrase corpus + 5-regime case + priority-leak hard gates)
+- [ ] 09-07-PLAN.md — 09-SPIKE-REPORT.md per D-07 + REQUIREMENTS.md CLAR-13 amendment per D-09
+- [ ] 09-08-PLAN.md — Final xcodebuild gate (cargo + xcodebuild app + xcodebuild test full green per D-35)
 
 ### Phase 10: Matcher Implementation
 **Goal**: Production-quality clarity matcher detects phrases in real text with correct case, word-boundary, dialect, and overlap behavior
