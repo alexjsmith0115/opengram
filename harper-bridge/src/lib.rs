@@ -4,7 +4,7 @@ use harper_core::linting::{LintGroup, LintKind, Linter, Suggestion};
 use harper_core::parsers::PlainEnglish;
 use harper_core::spell::{FstDictionary, MergedDictionary, MutableDictionary};
 use harper_core::{DictWordMetadata, Dialect, DialectFlags, Document};
-use clarity::{Severity, severity_from_priority};
+use clarity::{Severity, WordyPhrasesStubLinter, severity_from_priority};
 
 uniffi::setup_scaffolding!();
 mod clarity;
@@ -72,7 +72,7 @@ impl HarperChecker {
 
         Self {
             inner: Mutex::new(HarperCheckerInner {
-                linter: LintGroup::new_curated(merged.clone(), dialect),
+                linter: build_lint_group(merged.clone(), dialect),
                 merged_dict: merged,
                 user_dict,
                 user_words: user_words.clone(),
@@ -134,7 +134,7 @@ impl HarperChecker {
         inner.user_words.push(word);
 
         let merged = build_merged_dict(&inner.user_dict);
-        inner.linter = LintGroup::new_curated(merged.clone(), inner.dialect);
+        inner.linter = build_lint_group(merged.clone(), inner.dialect);
         inner.merged_dict = merged;
 
         inner.user_words.clone()
@@ -145,6 +145,12 @@ impl HarperChecker {
         let mut inner = self.inner.lock().expect("HarperChecker lock poisoned");
         inner.linter.config.set_rule_enabled(&rule_key, enabled);
     }
+}
+
+fn build_lint_group(merged: Arc<MergedDictionary>, dialect: Dialect) -> LintGroup {
+    let mut group = LintGroup::new_curated(merged, dialect);
+    group.add("WordyPhrases", WordyPhrasesStubLinter::new());
+    group
 }
 
 fn build_merged_dict(user_dict: &MutableDictionary) -> Arc<MergedDictionary> {
