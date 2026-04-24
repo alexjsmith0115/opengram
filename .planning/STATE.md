@@ -3,24 +3,24 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Clarity Engine
 status: executing
-stopped_at: Phase 9 Plan 03 complete
-last_updated: "2026-04-24T23:19:00.000Z"
-last_activity: 2026-04-24 -- Phase 9 Plan 03 executed (build_lint_group helper + WordyPhrasesStubLinter skeleton)
+stopped_at: Phase 9 Plan 04 complete
+last_updated: "2026-04-24T23:28:00.000Z"
+last_activity: 2026-04-24 -- Phase 9 Plan 04 executed (WordyPhrasesStubLinter lint body + FlatConfig rule-enable fix; CLAR-11 + CLAR-12 GREEN)
 progress:
   total_phases: 7
   completed_phases: 2
   total_plans: 21
-  completed_plans: 16
-  percent: 76
+  completed_plans: 17
+  percent: 81
 ---
 
 ## Current Position
 
 Milestone: v1.4 Clarity Engine
-Phase: 09 (rust-foundation-mapphraselinter-spike) — IN PROGRESS (3/8 plans done)
-Next: Phase 09 Plan 04 (WordyPhrasesStubLinter match logic — stub_fires_flag_me + clarity_linter_survives_dict_add_cycle GREEN)
+Phase: 09 (rust-foundation-mapphraselinter-spike) — IN PROGRESS (4/8 plans done)
+Next: Phase 09 Plan 05 (Swift ClarityFFITests.stubRoundTrip RED→GREEN — severity field wiring)
 Status: Executing
-Last activity: 2026-04-24 -- Phase 9 Plan 03 executed (build_lint_group helper + WordyPhrasesStubLinter skeleton)
+Last activity: 2026-04-24 -- Phase 9 Plan 04 executed (WordyPhrasesStubLinter lint body + FlatConfig rule-enable fix; CLAR-11 + CLAR-12 GREEN)
 
 **v1.3 status:** ✅ Shipped 2026-04-19. See `.planning/milestones/v1.3-ROADMAP.md` + `.planning/milestones/v1.3-MILESTONE-AUDIT.md`. Tag `v1.3` on `12dd9db`.
 
@@ -75,6 +75,7 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 | Phase 09-rust-foundation P01 | 10min | 3 tasks | 4 files |
 | Phase 09-rust-foundation P02 | 4min | 3 tasks | 2 files |
 | Phase 09-rust-foundation P03 | 8min | 2 tasks | 2 files |
+| Phase 09-rust-foundation P04 | 12min | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -87,6 +88,7 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 - [v1.4 Roadmap]: Acknowledgements UI bundled into Phase 12 with other settings surface (CLAR-19) — avoids slipping MIT license compliance past milestone close
 - [v1.4 Roadmap]: Priority constants window 200/220/240 (High/Medium/Low) chosen >64 so grammar (127) and spelling (63) win overlap — inverts spec CD-05 per STACK direct harper-core source read
 - [09-03]: build_lint_group single construction path; LintGroup::new_curated count in lib.rs reduced 2→1; clarity linter registration survives dict-add by construction (CLAR-12)
+- [09-04]: FLAG_ME tokenizes as 3 tokens (Word+Underscore+Word) — matched via windows(3); FlatConfig.is_rule_enabled returns false for unknown keys — must call set_rule_enabled after LintGroup.add()
 
 ### Pending Todos
 
@@ -108,6 +110,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-24T23:14:06.995Z
-Stopped at: Phase 9 Plan 02 complete
+Last session: 2026-04-24T23:28:00.000Z
+Stopped at: Phase 9 Plan 04 complete
 Resume file: None

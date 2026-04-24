@@ -44,7 +44,7 @@
 
 ### Rust Foundation
 
-- [ ] **CLAR-11**: `harper-bridge/src/lib.rs` exposes a `SuggestionCategory::Clarity` variant and a `Severity` UniFFI enum (`High`/`Medium`/`Low`). `GrammarSuggestion` gains `severity: Option<Severity>` (None for non-clarity lints). Swift-side `Suggestion.init(from:)` populates `severity` from the new FFI field.
+- [x] **CLAR-11**: `harper-bridge/src/lib.rs` exposes a `SuggestionCategory::Clarity` variant and a `Severity` UniFFI enum (`High`/`Medium`/`Low`). `GrammarSuggestion` gains `severity: Option<Severity>` (None for non-clarity lints). Swift-side `Suggestion.init(from:)` populates `severity` from the new FFI field.
 
 - [x] **CLAR-12**: `WordyPhrasesLinter` is registered on `HarperChecker::new()` via `LintGroup::add("WordyPhrases", ...)`. Because `add_to_dictionary` rebuilds the `LintGroup`, a shared `build_lint_group(merged, dialect)` helper is extracted so both code paths register the clarity linter identically. (Fills new gap surfaced during architecture research.)
 
@@ -136,7 +136,7 @@ Measurement checkpoint: Phase 11 logs all four values to test output; shipping n
 | CLAR-08 | Phase 12 | Pending |
 | CLAR-09 | Phase 7 | Pending |
 | CLAR-10 | Phase 7 | Pending |
-| CLAR-11 | Phase 9 | Pending |
+| CLAR-11 | Phase 9 | Complete |
 | CLAR-12 | Phase 9 | Complete |
 | CLAR-13 | Phase 9 | Pending |
 | CLAR-14 | Phase 8 | Complete |
