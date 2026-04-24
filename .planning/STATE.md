@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Clarity Engine
 status: executing
-stopped_at: Phase 9 Plan 06 complete
-last_updated: "2026-04-24T23:40:00.000Z"
-last_activity: 2026-04-24 -- Phase 9 Plan 06 executed (PriorityRewritingMapPhraseLinter spike wrapper + 20-phrase corpus; both CLAR-13 hard-gate tests GREEN)
+stopped_at: Phase 9 Plan 07 complete
+last_updated: "2026-04-24T23:52:00.000Z"
+last_activity: 2026-04-24 -- Phase 9 Plan 07 executed (CLAR-13 spike report written; REQUIREMENTS.md CLAR-13 amended per D-09; decision: Adopt MapPhraseLinter wrapper)
 progress:
   total_phases: 7
   completed_phases: 2
@@ -17,8 +17,8 @@ progress:
 ## Current Position
 
 Milestone: v1.4 Clarity Engine
-Phase: 09 (rust-foundation-mapphraselinter-spike) — IN PROGRESS (6/8 plans done)
-Next: Phase 09 Plan 07 (spike report writing — CLAR-13 decision record)
+Phase: 09 (rust-foundation-mapphraselinter-spike) — IN PROGRESS (7/8 plans done)
+Next: Phase 09 Plan 08 (xcodebuild final gate)
 Status: Executing
 Last activity: 2026-04-24 -- Phase 9 Plan 06 executed (PriorityRewritingMapPhraseLinter spike wrapper + 20-phrase corpus; both CLAR-13 hard-gate tests GREEN)
 
@@ -89,6 +89,7 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 - [v1.4 Roadmap]: Priority constants window 200/220/240 (High/Medium/Low) chosen >64 so grammar (127) and spelling (63) win overlap — inverts spec CD-05 per STACK direct harper-core source read
 - [09-03]: build_lint_group single construction path; LintGroup::new_curated count in lib.rs reduced 2→1; clarity linter registration survives dict-add by construction (CLAR-12)
 - [09-04]: FLAG_ME tokenizes as 3 tokens (Word+Underscore+Word) — matched via windows(3); FlatConfig.is_rule_enabled returns false for unknown keys — must call set_rule_enabled after LintGroup.add()
+- [09-07]: CLAR-13 spike decision: Adopt MapPhraseLinter wrapper — both hard gates PASS (5-regime case preservation + zero priority=31 leakage). REQUIREMENTS.md CLAR-13 amended per D-09 (wrapper-vs-custom framing).
 
 ### Pending Todos
 
@@ -110,6 +111,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-24T23:28:00.000Z
-Stopped at: Phase 9 Plan 04 complete
+Last session: 2026-04-24T23:52:00.000Z
+Stopped at: Phase 9 Plan 07 complete
 Resume file: None
