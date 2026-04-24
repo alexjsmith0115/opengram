@@ -150,6 +150,9 @@ impl HarperChecker {
 fn build_lint_group(merged: Arc<MergedDictionary>, dialect: Dialect) -> LintGroup {
     let mut group = LintGroup::new_curated(merged, dialect);
     group.add("WordyPhrases", WordyPhrasesStubLinter::new());
+    // Rules added via `add()` default to disabled in FlatConfig (unwrap_or(false)).
+    // Explicitly enable so organized_lints() includes WordyPhrases output.
+    group.config.set_rule_enabled("WordyPhrases", true);
     group
 }
 

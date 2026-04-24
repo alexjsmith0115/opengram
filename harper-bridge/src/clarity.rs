@@ -38,7 +38,9 @@ pub fn severity_from_priority(prio: u8) -> Option<Severity> {
 }
 
 use harper_core::Document;
-use harper_core::linting::{Lint, Linter};
+use harper_core::TokenKind;
+use harper_core::linting::{Lint, LintKind, Linter, Suggestion};
+use harper_core::Punctuation;
 
 pub struct WordyPhrasesStubLinter;
 
@@ -51,8 +53,34 @@ impl Default for WordyPhrasesStubLinter {
 }
 
 impl Linter for WordyPhrasesStubLinter {
-    fn lint(&mut self, _document: &Document) -> Vec<Lint> {
-        Vec::new()
+    fn lint(&mut self, document: &Document) -> Vec<Lint> {
+        let source = document.get_source();
+        let flag: [char; 4] = ['F', 'L', 'A', 'G'];
+        let me: [char; 2] = ['M', 'E'];
+        let mut out = Vec::new();
+
+        let tokens: Vec<_> = document.tokens().collect();
+        for window in tokens.windows(3) {
+            let is_flag = matches!(window[0].kind, TokenKind::Word(_))
+                && window[0].span.get_content(source) == flag;
+            let is_underscore =
+                matches!(window[1].kind, TokenKind::Punctuation(Punctuation::Underscore));
+            let is_me = matches!(window[2].kind, TokenKind::Word(_))
+                && window[2].span.get_content(source) == me;
+
+            if is_flag && is_underscore && is_me {
+                use harper_core::Span;
+                let span = Span::new(window[0].span.start, window[2].span.end);
+                out.push(Lint {
+                    span,
+                    lint_kind: LintKind::Style,
+                    suggestions: vec![Suggestion::ReplaceWith("FLAGGED".chars().collect())],
+                    message: "Consider alternative phrasing".to_string(),
+                    priority: PRIORITY_MEDIUM,
+                });
+            }
+        }
+        out
     }
 
     fn description(&self) -> &str {
