@@ -689,6 +689,7 @@ public func FfiConverterTypeHarperChecker_lower(_ value: HarperChecker) -> UInt6
 /**
  * Carries all Harper replacements so callers can decide presentation (D-01).
  * Char offsets index into the Swift String.unicodeScalars view.
+ * `severity` populated only for Clarity category; None for spelling + grammar/punctuation per D-10.
  */
 public struct GrammarSuggestion: Equatable, Hashable {
     public var startChar: UInt32
@@ -698,10 +699,11 @@ public struct GrammarSuggestion: Equatable, Hashable {
     public var allReplacements: [String]
     public var category: SuggestionCategory
     public var priority: UInt8
+    public var severity: Severity?
 
     // Default memberwise initializers are never public by default, so we
     // declare one manually.
-    public init(startChar: UInt32, endChar: UInt32, message: String, primaryReplacement: String?, allReplacements: [String], category: SuggestionCategory, priority: UInt8) {
+    public init(startChar: UInt32, endChar: UInt32, message: String, primaryReplacement: String?, allReplacements: [String], category: SuggestionCategory, priority: UInt8, severity: Severity?) {
         self.startChar = startChar
         self.endChar = endChar
         self.message = message
@@ -709,6 +711,7 @@ public struct GrammarSuggestion: Equatable, Hashable {
         self.allReplacements = allReplacements
         self.category = category
         self.priority = priority
+        self.severity = severity
     }
 
     
@@ -733,7 +736,8 @@ public struct FfiConverterTypeGrammarSuggestion: FfiConverterRustBuffer {
                 primaryReplacement: FfiConverterOptionString.read(from: &buf), 
                 allReplacements: FfiConverterSequenceString.read(from: &buf), 
                 category: FfiConverterTypeSuggestionCategory.read(from: &buf), 
-                priority: FfiConverterUInt8.read(from: &buf)
+                priority: FfiConverterUInt8.read(from: &buf), 
+                severity: FfiConverterOptionTypeSeverity.read(from: &buf)
         )
     }
 
@@ -745,6 +749,7 @@ public struct FfiConverterTypeGrammarSuggestion: FfiConverterRustBuffer {
         FfiConverterSequenceString.write(value.allReplacements, into: &buf)
         FfiConverterTypeSuggestionCategory.write(value.category, into: &buf)
         FfiConverterUInt8.write(value.priority, into: &buf)
+        FfiConverterOptionTypeSeverity.write(value.severity, into: &buf)
     }
 }
 
@@ -765,14 +770,89 @@ public func FfiConverterTypeGrammarSuggestion_lower(_ value: GrammarSuggestion) 
 
 // Note that we don't yet support `indirect` for enums.
 // See https://github.com/mozilla/uniffi-rs/issues/396 for further discussion.
+
+public enum Severity: Equatable, Hashable {
+    
+    case high
+    case medium
+    case low
+
+
+
+
+
+}
+
+#if compiler(>=6)
+extension Severity: Sendable {}
+#endif
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public struct FfiConverterTypeSeverity: FfiConverterRustBuffer {
+    typealias SwiftType = Severity
+
+    public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> Severity {
+        let variant: Int32 = try readInt(&buf)
+        switch variant {
+        
+        case 1: return .high
+        
+        case 2: return .medium
+        
+        case 3: return .low
+        
+        default: throw UniffiInternalError.unexpectedEnumCase
+        }
+    }
+
+    public static func write(_ value: Severity, into buf: inout [UInt8]) {
+        switch value {
+        
+        
+        case .high:
+            writeInt(&buf, Int32(1))
+        
+        
+        case .medium:
+            writeInt(&buf, Int32(2))
+        
+        
+        case .low:
+            writeInt(&buf, Int32(3))
+        
+        }
+    }
+}
+
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public func FfiConverterTypeSeverity_lift(_ buf: RustBuffer) throws -> Severity {
+    return try FfiConverterTypeSeverity.lift(buf)
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public func FfiConverterTypeSeverity_lower(_ value: Severity) -> RustBuffer {
+    return FfiConverterTypeSeverity.lower(value)
+}
+
+
+// Note that we don't yet support `indirect` for enums.
+// See https://github.com/mozilla/uniffi-rs/issues/396 for further discussion.
 /**
- * Two-bucket category mapping per D-03: spelling (red) and grammar+punctuation (blue).
+ * D-03 spelling/grammar + D-32 clarity routing: Clarity emitted when LintKind::Style + priority ∈ {200,220,240}.
  */
 
 public enum SuggestionCategory: Equatable, Hashable {
     
     case spelling
     case grammarPunctuation
+    case clarity
 
 
 
@@ -798,6 +878,8 @@ public struct FfiConverterTypeSuggestionCategory: FfiConverterRustBuffer {
         
         case 2: return .grammarPunctuation
         
+        case 3: return .clarity
+        
         default: throw UniffiInternalError.unexpectedEnumCase
         }
     }
@@ -812,6 +894,10 @@ public struct FfiConverterTypeSuggestionCategory: FfiConverterRustBuffer {
         
         case .grammarPunctuation:
             writeInt(&buf, Int32(2))
+        
+        
+        case .clarity:
+            writeInt(&buf, Int32(3))
         
         }
     }
@@ -852,6 +938,30 @@ fileprivate struct FfiConverterOptionString: FfiConverterRustBuffer {
         switch try readInt(&buf) as Int8 {
         case 0: return nil
         case 1: return try FfiConverterString.read(from: &buf)
+        default: throw UniffiInternalError.unexpectedOptionalTag
+        }
+    }
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+fileprivate struct FfiConverterOptionTypeSeverity: FfiConverterRustBuffer {
+    typealias SwiftType = Severity?
+
+    public static func write(_ value: SwiftType, into buf: inout [UInt8]) {
+        guard let value = value else {
+            writeInt(&buf, Int8(0))
+            return
+        }
+        writeInt(&buf, Int8(1))
+        FfiConverterTypeSeverity.write(value, into: &buf)
+    }
+
+    public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> SwiftType {
+        switch try readInt(&buf) as Int8 {
+        case 0: return nil
+        case 1: return try FfiConverterTypeSeverity.read(from: &buf)
         default: throw UniffiInternalError.unexpectedOptionalTag
         }
     }
