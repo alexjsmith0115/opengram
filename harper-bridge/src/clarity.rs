@@ -42,6 +42,38 @@ mod tests {
     use super::*;
 
     #[test]
+    fn clarity_loses_to_grammar_on_overlap() {
+        use harper_core::linting::{Lint, LintKind, Suggestion};
+        use harper_core::Span;
+        use harper_core::remove_overlaps;
+
+        // Two lints sharing the same span. Grammar (priority 127) must beat clarity (priority 220)
+        // per CLAR-06: lower-priority-number wins in remove_overlaps.
+        let grammar_lint = Lint {
+            span: Span::new(0, 7),
+            lint_kind: LintKind::Miscellaneous,
+            suggestions: vec![Suggestion::ReplaceWith("fix-grammar".chars().collect())],
+            message: "grammar fix".to_string(),
+            priority: 127,
+        };
+
+        let clarity_lint = Lint {
+            span: Span::new(0, 7),
+            lint_kind: LintKind::Style,
+            suggestions: vec![Suggestion::ReplaceWith("FLAGGED".chars().collect())],
+            message: "clarity fix".to_string(),
+            priority: PRIORITY_MEDIUM,
+        };
+
+        let mut lints = vec![grammar_lint, clarity_lint];
+        remove_overlaps(&mut lints);
+
+        assert_eq!(lints.len(), 1, "overlap resolution must keep exactly one lint");
+        assert_eq!(lints[0].priority, 127, "grammar (127) must beat clarity (220) — CLAR-06 lower-number-wins");
+        assert!(matches!(lints[0].lint_kind, LintKind::Miscellaneous), "surviving lint must be the grammar lint");
+    }
+
+    #[test]
     fn severity_enum() {
         assert_eq!(severity_to_priority(Severity::High), PRIORITY_HIGH);
         assert_eq!(severity_to_priority(Severity::Medium), PRIORITY_MEDIUM);
