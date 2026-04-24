@@ -4,19 +4,22 @@ use harper_core::linting::{LintGroup, LintKind, Linter, Suggestion};
 use harper_core::parsers::PlainEnglish;
 use harper_core::spell::{FstDictionary, MergedDictionary, MutableDictionary};
 use harper_core::{DictWordMetadata, Dialect, DialectFlags, Document};
+use clarity::{Severity, severity_from_priority};
 
 uniffi::setup_scaffolding!();
 mod clarity;
 
-/// Two-bucket category mapping per D-03: spelling (red) and grammar+punctuation (blue).
+/// D-03 spelling/grammar + D-32 clarity routing: Clarity emitted when LintKind::Style + priority ∈ {200,220,240}.
 #[derive(uniffi::Enum)]
 pub enum SuggestionCategory {
     Spelling,
     GrammarPunctuation,
+    Clarity,
 }
 
 /// Carries all Harper replacements so callers can decide presentation (D-01).
 /// Char offsets index into the Swift String.unicodeScalars view.
+/// `severity` populated only for Clarity category; None for spelling + grammar/punctuation per D-10.
 #[derive(uniffi::Record)]
 pub struct GrammarSuggestion {
     pub start_char: u32,
@@ -26,6 +29,7 @@ pub struct GrammarSuggestion {
     pub all_replacements: Vec<String>,
     pub category: SuggestionCategory,
     pub priority: u8,
+    pub severity: Option<Severity>,
 }
 
 /// UniFFI wraps objects in Arc, so interior mutability via Mutex is required
@@ -97,9 +101,10 @@ impl HarperChecker {
                     .collect();
                 let primary_replacement = all_replacements.first().cloned();
 
-                let category = match lint.lint_kind {
-                    LintKind::Spelling => SuggestionCategory::Spelling,
-                    _ => SuggestionCategory::GrammarPunctuation,
+                let (category, severity) = match (lint.lint_kind, severity_from_priority(lint.priority)) {
+                    (LintKind::Spelling, _) => (SuggestionCategory::Spelling, None),
+                    (LintKind::Style, Some(sev)) => (SuggestionCategory::Clarity, Some(sev)),
+                    _ => (SuggestionCategory::GrammarPunctuation, None),
                 };
 
                 GrammarSuggestion {
@@ -110,6 +115,7 @@ impl HarperChecker {
                     all_replacements,
                     category,
                     priority: lint.priority,
+                    severity,
                 }
             })
             .collect()

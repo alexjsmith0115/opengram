@@ -9,7 +9,33 @@
 //! Implementation lands in Wave 1 (plans 02–04). This file currently holds
 //! test scaffolding only.
 
-// Impl intentionally absent — added by plan 02.
+#[derive(uniffi::Enum, Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Severity {
+    High,
+    Medium,
+    Low,
+}
+
+pub const PRIORITY_HIGH: u8 = 200;
+pub const PRIORITY_MEDIUM: u8 = 220;
+pub const PRIORITY_LOW: u8 = 240;
+
+pub fn severity_to_priority(sev: Severity) -> u8 {
+    match sev {
+        Severity::High => PRIORITY_HIGH,
+        Severity::Medium => PRIORITY_MEDIUM,
+        Severity::Low => PRIORITY_LOW,
+    }
+}
+
+pub fn severity_from_priority(prio: u8) -> Option<Severity> {
+    match prio {
+        PRIORITY_HIGH => Some(Severity::High),
+        PRIORITY_MEDIUM => Some(Severity::Medium),
+        PRIORITY_LOW => Some(Severity::Low),
+        _ => None,
+    }
+}
 
 #[cfg(test)]
 mod tests {
