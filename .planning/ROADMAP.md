@@ -121,7 +121,7 @@ Plans:
 Plans:
 - [x] 09-01-PLAN.md — Wave 0 failing test scaffolding (Severity round-trip, stub_fires_flag_me, dict-add-cycle, spike harness, Swift ClarityFFITests)
 - [x] 09-02-PLAN.md — Severity FFI surface (clarity.rs Severity enum + priority constants + helpers; SuggestionCategory::Clarity variant; GrammarSuggestion.severity field; FFI translation block severity mapping)
-- [ ] 09-03-PLAN.md — build_lint_group helper extraction + WordyPhrasesStubLinter skeleton (replaces twin LintGroup::new_curated call sites; CLAR-12 single source of truth)
+- [x] 09-03-PLAN.md — build_lint_group helper extraction + WordyPhrasesStubLinter skeleton (replaces twin LintGroup::new_curated call sites; CLAR-12 single source of truth)
 - [ ] 09-04-PLAN.md — Stub WordyPhrasesLinter match logic (FLAG_ME→FLAGGED token scan; flips Rust stub_fires_flag_me + dict-add-cycle tests GREEN)
 - [ ] 09-05-PLAN.md — UniFFI regen + XCFramework rebuild + Swift Suggestion.severity field + init mapping (flips ClarityFFITests.stubRoundTrip GREEN)
 - [ ] 09-06-PLAN.md — MapPhraseLinter wrapper spike (PriorityRewritingMapPhraseLinter + 20-phrase corpus + 5-regime case + priority-leak hard gates)
@@ -191,7 +191,7 @@ Plans:
 | 6. v1.3 Gap Closure — Zero-AX Ordering + Scope Cleanup | v1.3 | 2/2 | Complete | 2026-04-19 |
 | 7. LLM `.clarity` Clean-Deletion | v1.4 | 0/0 | Not started | — |
 | 8. Dataset Pipeline | v1.4 | 7/7 | Complete   | 2026-04-20 |
-| 9. Rust Foundation + MapPhraseLinter Spike | v1.4 | 1/8 | In Progress | — |
+| 9. Rust Foundation + MapPhraseLinter Spike | v1.4 | 3/8 | In Progress|  |
 | 10. Matcher Implementation | v1.4 | 0/0 | Not started | — |
 | 11. Dataset Integration + Fixture Harness | v1.4 | 0/0 | Not started | — |
 | 12. Settings UI + Severity Filter + Acknowledgements | v1.4 | 0/0 | Not started | — |
@@ -231,7 +231,7 @@ Plans:
 
 **Goal:** [Captured for future planning] After the rephrase card has been shown and dismissed for paragraph P, a second Ctrl+Shift+G against the same unchanged paragraph does not re-show the card. Likely root cause: `ParagraphSuggestionCache` hit returns cached suggestions, but `OverlayController.tryDispatchRephraseCard` WR-02 dedup guard (`currentCardParagraphHash`) still matches even after dismiss, OR scheduler's `.dismissed` cache entries short-circuit the re-dispatch. Also check that `hideCardAndRestore()` / `onDismissAll` properly clears `currentCardParagraphHash` and `hiddenParagraphScalarRange`.
 **Requirements:** TBD
-**Plans:** 7/7 plans complete
+**Plans:** 3/8 plans executed
 
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)

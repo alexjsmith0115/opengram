@@ -46,7 +46,7 @@
 
 - [ ] **CLAR-11**: `harper-bridge/src/lib.rs` exposes a `SuggestionCategory::Clarity` variant and a `Severity` UniFFI enum (`High`/`Medium`/`Low`). `GrammarSuggestion` gains `severity: Option<Severity>` (None for non-clarity lints). Swift-side `Suggestion.init(from:)` populates `severity` from the new FFI field.
 
-- [ ] **CLAR-12**: `WordyPhrasesLinter` is registered on `HarperChecker::new()` via `LintGroup::add("WordyPhrases", ...)`. Because `add_to_dictionary` rebuilds the `LintGroup`, a shared `build_lint_group(merged, dialect)` helper is extracted so both code paths register the clarity linter identically. (Fills new gap surfaced during architecture research.)
+- [x] **CLAR-12**: `WordyPhrasesLinter` is registered on `HarperChecker::new()` via `LintGroup::add("WordyPhrases", ...)`. Because `add_to_dictionary` rebuilds the `LintGroup`, a shared `build_lint_group(merged, dialect)` helper is extracted so both code paths register the clarity linter identically. (Fills new gap surfaced during architecture research.)
 
 - [ ] **CLAR-13**: `MapPhraseLinter` spike — before Phase 4 commits matcher design, run a 20-phrase spike using Harper's ship-provided `MapPhraseLinter::new_fixed_phrases` against the target behavior (case preservation, replacement mapping, severity propagation). Adopt `MapPhraseLinter` as the production matcher if spike passes; fall back to a custom first-token-hashmap matcher if severity override or 5-regime case handling are not achievable natively. (Supersedes spec CD-02.)
 
@@ -137,7 +137,7 @@ Measurement checkpoint: Phase 11 logs all four values to test output; shipping n
 | CLAR-09 | Phase 7 | Pending |
 | CLAR-10 | Phase 7 | Pending |
 | CLAR-11 | Phase 9 | Pending |
-| CLAR-12 | Phase 9 | Pending |
+| CLAR-12 | Phase 9 | Complete |
 | CLAR-13 | Phase 9 | Pending |
 | CLAR-14 | Phase 8 | Complete |
 | CLAR-15 | Phase 8 | Complete |
