@@ -3,24 +3,24 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Clarity Engine
 status: executing
-stopped_at: Phase 9 Plan 04 complete
-last_updated: "2026-04-24T23:28:00.000Z"
-last_activity: 2026-04-24 -- Phase 9 Plan 04 executed (WordyPhrasesStubLinter lint body + FlatConfig rule-enable fix; CLAR-11 + CLAR-12 GREEN)
+stopped_at: Phase 9 Plan 06 complete
+last_updated: "2026-04-24T23:40:00.000Z"
+last_activity: 2026-04-24 -- Phase 9 Plan 06 executed (PriorityRewritingMapPhraseLinter spike wrapper + 20-phrase corpus; both CLAR-13 hard-gate tests GREEN)
 progress:
   total_phases: 7
   completed_phases: 2
   total_plans: 21
-  completed_plans: 17
-  percent: 81
+  completed_plans: 19
+  percent: 90
 ---
 
 ## Current Position
 
 Milestone: v1.4 Clarity Engine
-Phase: 09 (rust-foundation-mapphraselinter-spike) — IN PROGRESS (4/8 plans done)
-Next: Phase 09 Plan 05 (Swift ClarityFFITests.stubRoundTrip RED→GREEN — severity field wiring)
+Phase: 09 (rust-foundation-mapphraselinter-spike) — IN PROGRESS (6/8 plans done)
+Next: Phase 09 Plan 07 (spike report writing — CLAR-13 decision record)
 Status: Executing
-Last activity: 2026-04-24 -- Phase 9 Plan 04 executed (WordyPhrasesStubLinter lint body + FlatConfig rule-enable fix; CLAR-11 + CLAR-12 GREEN)
+Last activity: 2026-04-24 -- Phase 9 Plan 06 executed (PriorityRewritingMapPhraseLinter spike wrapper + 20-phrase corpus; both CLAR-13 hard-gate tests GREEN)
 
 **v1.3 status:** ✅ Shipped 2026-04-19. See `.planning/milestones/v1.3-ROADMAP.md` + `.planning/milestones/v1.3-MILESTONE-AUDIT.md`. Tag `v1.3` on `12dd9db`.
 

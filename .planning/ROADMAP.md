@@ -124,7 +124,7 @@ Plans:
 - [x] 09-03-PLAN.md — build_lint_group helper extraction + WordyPhrasesStubLinter skeleton (replaces twin LintGroup::new_curated call sites; CLAR-12 single source of truth)
 - [x] 09-04-PLAN.md — Stub WordyPhrasesLinter match logic (FLAG_ME→FLAGGED token scan; flips Rust stub_fires_flag_me + dict-add-cycle tests GREEN)
 - [ ] 09-05-PLAN.md — UniFFI regen + XCFramework rebuild + Swift Suggestion.severity field + init mapping (flips ClarityFFITests.stubRoundTrip GREEN)
-- [ ] 09-06-PLAN.md — MapPhraseLinter wrapper spike (PriorityRewritingMapPhraseLinter + 20-phrase corpus + 5-regime case + priority-leak hard gates)
+- [x] 09-06-PLAN.md — MapPhraseLinter wrapper spike (PriorityRewritingMapPhraseLinter + 20-phrase corpus + 5-regime case + priority-leak hard gates)
 - [ ] 09-07-PLAN.md — 09-SPIKE-REPORT.md per D-07 + REQUIREMENTS.md CLAR-13 amendment per D-09
 - [ ] 09-08-PLAN.md — Final xcodebuild gate (cargo + xcodebuild app + xcodebuild test full green per D-35)
 
