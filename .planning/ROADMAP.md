@@ -62,7 +62,7 @@ Full details: [milestones/v1.3-ROADMAP.md](milestones/v1.3-ROADMAP.md) · [miles
 - [x] **Phase 10: Matcher Implementation** — Production matcher per spike decision; 5-regime case preservation; word-boundary; dialect filter · CLAR-01, CLAR-03, CLAR-04, CLAR-05, CLAR-06 (completed 2026-04-25)
 - [x] **Phase 11: Dataset Integration + Fixture Harness** — `include_str!` wire-up, auto-generated +/- fixtures per entry, snapshot-diff CI, perf logging · CLAR-20 (completed 2026-04-25)
 - [x] **Phase 12: Settings UI + Severity Filter + Acknowledgements** — Clarity toggles, severity filter in `HarperService`, About → Acknowledgements pane · CLAR-02, CLAR-07, CLAR-08, CLAR-17, CLAR-18, CLAR-19 (completed 2026-04-25)
-- [ ] **Phase 13: NonFlags Corpus Seed + UAT** — ≥100 non-flag regression fixtures + manual validation in Notes/TextEdit · CLAR-21
+- [~] **Phase 13: NonFlags Corpus Seed + UAT** — ≥100 non-flag regression fixtures + manual validation in Notes/TextEdit · CLAR-21 (build/automated gates GREEN 2026-04-25; UAT human_needed pending user)
 
 ## Phase Details
 
@@ -205,7 +205,7 @@ Plans:
 - [x] 13-04-PLAN.md — nonflags_meta_corpus_size guard test (≥100 line fail-fast) (CLAR-21)
 - [x] 13-05-PLAN.md — Swift LLM regression test: parseClarityCategoryDropped_CLAR21 in LLMServiceTests.swift (CLAR-21)
 - [x] 13-06-PLAN.md — CONTRIBUTING.md + .github/PULL_REQUEST_TEMPLATE.md scaffolding with NonFlags rule + checkbox (CLAR-21)
-- [ ] 13-07-PLAN.md — Final phase gate (cargo + xcodebuild) + 3-scenario manual UAT via computer-use MCP (or user-driven fallback) → 13-VERIFICATION.md (CLAR-21)
+- [~] 13-07-PLAN.md — Final phase gate (cargo + xcodebuild) + 3-scenario manual UAT via computer-use MCP (or user-driven fallback) → 13-VERIFICATION.md (CLAR-21) — build+automated gates GREEN; UAT pending user execution
 **UI hint**: yes
 
 ## Progress
@@ -224,7 +224,7 @@ Plans:
 | 10. Matcher Implementation | v1.4 | 5/5 | Complete    | 2026-04-25 |
 | 11. Dataset Integration + Fixture Harness | v1.4 | 5/5 | Complete   | 2026-04-25 |
 | 12. Settings UI + Severity Filter + Acknowledgements | v1.4 | 4/4 | Complete   | 2026-04-25 |
-| 13. NonFlags Corpus Seed + UAT | v1.4 | 5/7 | In Progress|  |
+| 13. NonFlags Corpus Seed + UAT | v1.4 | 7/7 | UAT Pending | code+automated 2026-04-25 |
 
 ## v1.4 Requirements Traceability
 

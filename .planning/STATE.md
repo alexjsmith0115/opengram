@@ -3,24 +3,24 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Clarity Engine
 status: executing
-stopped_at: Phase 13 Plan 04 complete — CLAR-21 nonflags_meta_corpus_size guard test landed (≥100 line fail-fast)
-last_updated: "2026-04-25T15:46:00.000Z"
+stopped_at: Phase 13 Plan 07 complete (build+automated gates GREEN; 13-VERIFICATION.md scaffolded; UAT pending user execution per Phase 12 fallback pattern)
+last_updated: "2026-04-25T16:00:00.000Z"
 last_activity: 2026-04-25
 progress:
   total_phases: 7
   completed_phases: 6
   total_plans: 42
-  completed_plans: 41
-  percent: 97
+  completed_plans: 42
+  percent: 100
 ---
 
 ## Current Position
 
 Milestone: v1.4 Clarity Engine
-Phase: 13 (NonFlags Corpus Seed + UAT) — EXECUTING
-Plan: 6 of 7 complete (13-01/02/03/04/05/06 done; 13-07 remaining)
-Next: /gsd-execute-phase 13 → continue with 13-07 (final phase gate + UAT)
-Status: Ready to execute
+Phase: 13 (NonFlags Corpus Seed + UAT) — UAT PENDING
+Plan: 7 of 7 complete at code+automated-test level (13-07 build/automated gates GREEN; UAT pending user execution)
+Next: User runs 3 UAT scenarios per `13-VERIFICATION.md § Manual UAT Script`; reply with PASS/FAIL per scenario
+Status: human_needed (UAT)
 Last activity: 2026-04-25
 
 **v1.3 status:** ✅ Shipped 2026-04-19. See `.planning/milestones/v1.3-ROADMAP.md` + `.planning/milestones/v1.3-MILESTONE-AUDIT.md`. Tag `v1.3` on `12dd9db`.
@@ -93,6 +93,7 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 | Phase 13-nonflags-corpus-seed-uat PP02 | 6min | 2 tasks | 2 files |
 | Phase 13-nonflags-corpus-seed-uat P03 | 7min | 2 tasks | 2 files |
 | Phase 13-nonflags-corpus-seed-uat P04 | 1min | 1 tasks | 1 files |
+| Phase 13-nonflags-corpus-seed-uat P07 | 6min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -138,6 +139,10 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 - [Phase ?]: [13-03]: shall (medium severity) flagged uppercase SHALL — case-insensitive matching across all severity tiers
 - [Phase ?]: [13-03]: NonFlags corpus closed at 105 lines (>=100 launch threshold) — CLAR-21 complete for v1.4
 - [13-04]: nonflags_meta_corpus_size guard test added; sums parse_fixture_file(...).len() across 4 fixture files via include_str!; failure message lists per-category counts for fast triage; current 105 ≥100
+- [13-07]: Phase 13 final gate — xcodebuild app green, cargo test 7+5+3+1+7 fns green, xcodebuild test 514/518 with 4 pre-existing parallel-load flakes (each PASS solo); 13-VERIFICATION.md scaffolded with status:human_needed pending UAT
+- [13-07]: cargo invocations require `~/.rustup/toolchains/stable-aarch64-apple-darwin/bin` prepended to PATH (rustc resolved via PATH lookup, not relative to cargo binary); CONTRIBUTING.md (13-06) documents this
+- [13-07]: Corpus has zero severity=low entries (verified `grep -c 'severity = "low"' wordy_phrases.toml` = 0); Scenario 2 sub-toggle ON path has no observable effect this phase — documented deviation
+- [13-07]: ParagraphHasherTests.performance500ParagraphsUnder10ms added to deferred parallel-load flake list (16ms vs 10ms threshold under load; 0.007s solo)
 
 ### Pending Todos
 
@@ -156,9 +161,11 @@ None yet.
 | Test flake | `LLMCheckSchedulerCancellationTests.idleDebounceSeconds_liveReadHonoredWithoutReinit` — timing-flaky under parallel load, passes in isolation | Deferred to Plan 10b (scheduler deletion) | 2026-04-17 |
 | Test flake | `AXCallWatchdogTests.shouldSkipReturnsTrueForBundle...` + `...blocklistExpires...` — parallel-load timing, pass solo | Deferred (pre-existing, Phase 04-01 documented) | 2026-04-19 |
 | Test flake | `TextMonitorStoreIntegrationTests.keystrokeSchedulesDebouncedReconcile` — parallel-load debounce timing, passes solo | Deferred (pre-existing, out of scope) | 2026-04-19 |
+| Test flake | `ParagraphHasherTests.performance500ParagraphsUnder10ms` — 16ms vs 10ms threshold under parallel load (0.007s solo) | Deferred (parallel-load timing class, same root cause as AXCallWatchdog/TextMonitor flakes) | 2026-04-25 |
+| Human verification | Phase 13-07 UAT: 3 scenarios (Notes wordy-phrase flow / TextEdit master toggle / LLM .clarity suppression) per `13-VERIFICATION.md § Manual UAT Script` | Pending user execution; Phase 12 /Applications-only blocker recurs for computer-use MCP path | 2026-04-25 |
 
 ## Session Continuity
 
-Last session: 2026-04-25T15:46:00.000Z
-Stopped at: Phase 13 Plan 04 complete — CLAR-21 nonflags_meta_corpus_size guard landed (≥100 fail-fast)
-Resume file: None
+Last session: 2026-04-25T16:00:00.000Z
+Stopped at: Phase 13 Plan 07 complete (build+automated gates GREEN); UAT pending user execution per Phase 12 fallback pattern
+Resume file: .planning/phases/13-nonflags-corpus-seed-uat/13-VERIFICATION.md
