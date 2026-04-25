@@ -128,3 +128,22 @@ fn nonflags_retext_issues() {
         failures.join("\n")
     );
 }
+
+#[test]
+fn nonflags_meta_corpus_size() {
+    // Guard: total non-comment non-blank lines across all 4 fixture files ≥100.
+    // Fail-fast on accidental fixture deletion. CLAR-21.
+    let proper_nouns = parse_fixture_file(include_str!("nonflags/proper_nouns.txt")).len();
+    let quoted_code = parse_fixture_file(include_str!("nonflags/quoted_code.txt")).len();
+    let domain_terms = parse_fixture_file(include_str!("nonflags/domain_terms.txt")).len();
+    let retext_issues = parse_fixture_file(include_str!("nonflags/retext_issues.txt")).len();
+    let total = proper_nouns + quoted_code + domain_terms + retext_issues;
+
+    assert!(
+        total >= 100,
+        "NonFlags corpus shrunk below threshold: total={} non-comment lines (expected ≥100). \
+         Per-category counts: proper_nouns={}, quoted_code={}, domain_terms={}, retext_issues={}. \
+         Did someone delete fixtures? Add lines back to harper-bridge/tests/nonflags/*.txt.",
+        total, proper_nouns, quoted_code, domain_terms, retext_issues
+    );
+}
