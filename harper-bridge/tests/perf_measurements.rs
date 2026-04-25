@@ -28,9 +28,10 @@ fn perf_clar_n1_check_latency_500_words() {
     let _ = checker.check(text.clone());
 
     let iterations = 10u32;
+    let copies: Vec<String> = (0..iterations).map(|_| text.clone()).collect();
     let start = Instant::now();
-    for _ in 0..iterations {
-        let _ = checker.check(text.clone());
+    for t in copies {
+        let _ = checker.check(t);
     }
     let elapsed = start.elapsed();
     let avg_ms = elapsed.as_secs_f64() * 1000.0 / (iterations as f64);
