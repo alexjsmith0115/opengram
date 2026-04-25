@@ -56,12 +56,12 @@ Full details: [milestones/v1.3-ROADMAP.md](milestones/v1.3-ROADMAP.md) · [miles
 
 ### 🚧 v1.4 Clarity Engine (Phases 7-13) — IN PROGRESS
 
-- [ ] **Phase 7: LLM `.clarity` Clean-Deletion** — Rip LLM clarity before Harper clarity lands; zero dual-source window · CLAR-09, CLAR-10
+- [x] **Phase 7: LLM `.clarity` Clean-Deletion** — Rip LLM clarity before Harper clarity lands; zero dual-source window · CLAR-09, CLAR-10 (completed 2026-04-20)
 - [x] **Phase 8: Dataset Pipeline** — `build_wordy_phrases.py` + `wordy_phrases.toml` (~500 entries) from retext-simplify + plainlanguage.gov · CLAR-14, CLAR-15, CLAR-16 (completed 2026-04-20)
 - [x] **Phase 9: Rust Foundation + MapPhraseLinter Spike** — `SuggestionCategory::Clarity`, `Severity` FFI enum, stub linter, `build_lint_group` helper, 20-phrase spike · CLAR-11, CLAR-12, CLAR-13 (completed 2026-04-25)
 - [x] **Phase 10: Matcher Implementation** — Production matcher per spike decision; 5-regime case preservation; word-boundary; dialect filter · CLAR-01, CLAR-03, CLAR-04, CLAR-05, CLAR-06 (completed 2026-04-25)
 - [x] **Phase 11: Dataset Integration + Fixture Harness** — `include_str!` wire-up, auto-generated +/- fixtures per entry, snapshot-diff CI, perf logging · CLAR-20 (completed 2026-04-25)
-- [ ] **Phase 12: Settings UI + Severity Filter + Acknowledgements** — Clarity toggles, severity filter in `HarperService`, About → Acknowledgements pane · CLAR-02, CLAR-07, CLAR-08, CLAR-17, CLAR-18, CLAR-19
+- [x] **Phase 12: Settings UI + Severity Filter + Acknowledgements** — Clarity toggles, severity filter in `HarperService`, About → Acknowledgements pane · CLAR-02, CLAR-07, CLAR-08, CLAR-17, CLAR-18, CLAR-19 (completed 2026-04-25)
 - [ ] **Phase 13: NonFlags Corpus Seed + UAT** — ≥100 non-flag regression fixtures + manual validation in Notes/TextEdit · CLAR-21
 
 ## Phase Details
@@ -209,12 +209,12 @@ Plans:
 | 4. Scroll Handling — trackFrame + hideAndSettle | v1.3 | 5/5 | Complete | 2026-04-19 |
 | 5. Session-Local Mirror Improvements | v1.3 | 3/3 | Complete | 2026-04-19 |
 | 6. v1.3 Gap Closure — Zero-AX Ordering + Scope Cleanup | v1.3 | 2/2 | Complete | 2026-04-19 |
-| 7. LLM `.clarity` Clean-Deletion | v1.4 | 0/0 | Not started | — |
+| 7. LLM `.clarity` Clean-Deletion | v1.4 | 6/6 | Complete   | 2026-04-20 |
 | 8. Dataset Pipeline | v1.4 | 7/7 | Complete   | 2026-04-20 |
 | 9. Rust Foundation + MapPhraseLinter Spike | v1.4 | 8/8 | Complete   | 2026-04-25 |
 | 10. Matcher Implementation | v1.4 | 5/5 | Complete    | 2026-04-25 |
 | 11. Dataset Integration + Fixture Harness | v1.4 | 5/5 | Complete   | 2026-04-25 |
-| 12. Settings UI + Severity Filter + Acknowledgements | v1.4 | 0/4 | Not started | — |
+| 12. Settings UI + Severity Filter + Acknowledgements | v1.4 | 4/4 | Complete   | 2026-04-25 |
 | 13. NonFlags Corpus Seed + UAT | v1.4 | 0/0 | Not started | — |
 
 ## v1.4 Requirements Traceability

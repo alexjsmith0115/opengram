@@ -2,26 +2,26 @@
 gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Clarity Engine
-status: verifying
-stopped_at: Phase 11 Plan 05 complete — Phase 11 all 5 plans done
-last_updated: "2026-04-25T05:07:36.818Z"
-last_activity: 2026-04-25
+status: ready
+stopped_at: Phase 12 complete — code review fixes M-1/M-2/M-3 landed
+last_updated: "2026-04-25T13:00:00.000Z"
+last_activity: 2026-04-25 -- Phase 12 closed; ready for Phase 13 plan+execute
 progress:
   total_phases: 7
-  completed_phases: 5
-  total_plans: 31
-  completed_plans: 31
-  percent: 100
+  completed_phases: 6
+  total_plans: 35
+  completed_plans: 35
+  percent: 86
 ---
 
 ## Current Position
 
 Milestone: v1.4 Clarity Engine
-Phase: 11 (Dataset Integration + Fixture Harness) — EXECUTING
-Plan: 5 of 5
-Next: `/gsd-verify-work` Phase 10 → then Phase 11 (Dataset Integration + Fixture Harness)
-Status: Phase complete — ready for verification
-Last activity: 2026-04-25
+Phase: 13 (NonFlags Corpus Seed + UAT) — READY TO PLAN
+Plan: 0 of 0 (RESEARCH.md present; CONTEXT.md present)
+Next: /gsd-plan-phase 13 → /gsd-execute-phase 13 → milestone audit/complete/cleanup
+Status: Ready to plan Phase 13
+Last activity: 2026-04-25 -- Phase 12 closed; ready for Phase 13 plan+execute
 
 **v1.3 status:** ✅ Shipped 2026-04-19. See `.planning/milestones/v1.3-ROADMAP.md` + `.planning/milestones/v1.3-MILESTONE-AUDIT.md`. Tag `v1.3` on `12dd9db`.
 
@@ -32,7 +32,7 @@ Progress: 0% (0/7 phases complete, 0/0 plans — plans defined per phase at `/gs
 See: .planning/PROJECT.md (updated 2026-04-19 — v1.4 Clarity Engine started)
 
 **Core value:** Press a hotkey in any app and get instant, accurate grammar corrections with optional AI-powered style suggestions — entirely local by default.
-**Current focus:** Phase 11 — Dataset Integration + Fixture Harness
+**Current focus:** Phase 13 — NonFlags Corpus Seed + UAT
 
 ## v1.4 Phase Map
 
