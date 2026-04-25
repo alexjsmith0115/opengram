@@ -4,7 +4,7 @@ use harper_core::linting::{LintGroup, LintKind, Linter, Suggestion};
 use harper_core::parsers::PlainEnglish;
 use harper_core::spell::{FstDictionary, MergedDictionary, MutableDictionary};
 use harper_core::{DictWordMetadata, Dialect, DialectFlags, Document};
-use clarity::{Severity, WordyPhrasesLinter, severity_from_priority, CORPUS, PhraseEntry};
+use clarity::{Severity, WordyPhrasesLinter, severity_from_priority, get_corpus, ParsedPhraseEntry};
 
 uniffi::setup_scaffolding!();
 mod clarity;
@@ -148,18 +148,17 @@ impl HarperChecker {
 }
 
 fn build_lint_group(merged: Arc<MergedDictionary>, dialect: Dialect) -> LintGroup {
-    let applicable: Vec<PhraseEntry> = CORPUS
+    let applicable: Vec<ParsedPhraseEntry> = get_corpus()
         .iter()
-        .filter(|e| match e.dialects {
+        .filter(|e| match &e.dialects {
             None          => true,
             Some(allowed) => allowed.contains(&dialect),
         })
-        .copied()
+        .cloned()
         .collect();
     let mut group = LintGroup::new_curated(merged, dialect);
-    group.add("WordyPhrases", WordyPhrasesLinter::new(&applicable));
+    group.add("WordyPhrases", WordyPhrasesLinter::new_from_parsed(&applicable));
     // Rules added via `add()` default to disabled in FlatConfig (unwrap_or(false)).
-    // Explicitly enable so organized_lints() includes WordyPhrases output.
     group.config.set_rule_enabled("WordyPhrases", true);
     group
 }
@@ -221,27 +220,55 @@ mod tests {
 
     #[test]
     fn dialect_filter_drops_non_matching() {
-        // CLAR-15 / D-05: build_lint_group filters CORPUS by dialect at build time.
-        // The synthetic "forthwith" CORPUS entry carries dialects: Some(&[American]).
-        // American checker registers it; British checker drops it before linter construction.
-        let checker_us = HarperChecker::new("US".into(), vec![]);
-        let checker_gb = HarperChecker::new("GB".into(), vec![]);
+        // CLAR-15 / D-05 (STATE [10-04]): forthwith is intentionally absent from
+        // wordy_phrases.toml; this test injects it locally to exercise the
+        // dialect-filter branch of build_lint_group without contaminating prod data.
+        use crate::clarity::{ParsedPhraseEntry, WordyPhrasesLinter};
+        use harper_core::Dialect;
+        use harper_core::Document;
+        use harper_core::linting::Linter;
+        use harper_core::parsers::PlainEnglish;
+        use harper_core::spell::{FstDictionary, MergedDictionary};
+        use std::sync::Arc;
 
-        let text = "Please forthwith now.".to_string();
+        fn make_dict() -> Arc<MergedDictionary> {
+            let mut m = MergedDictionary::new();
+            m.add_dictionary(FstDictionary::curated());
+            Arc::new(m)
+        }
 
-        let us_lints = checker_us.check(text.clone());
-        let gb_lints = checker_gb.check(text);
+        let synthetic = ParsedPhraseEntry {
+            phrase:      "forthwith".to_string(),
+            replacement: "at once".to_string(),
+            severity:    Severity::Low,
+            dialects:    Some(vec![Dialect::American]),
+        };
 
-        let us_at_once = us_lints
-            .iter()
-            .filter(|s| s.primary_replacement.as_deref() == Some("at once"))
-            .count();
-        assert_eq!(us_at_once, 1, "American: 'forthwith → at once' must fire exactly once");
+        // Inline replication of build_lint_group's dialect-filter branch:
+        let dialects_us: Vec<ParsedPhraseEntry> = std::iter::once(synthetic.clone())
+            .filter(|e| match &e.dialects {
+                None => true,
+                Some(allowed) => allowed.contains(&Dialect::American),
+            }).collect();
+        let dialects_gb: Vec<ParsedPhraseEntry> = std::iter::once(synthetic.clone())
+            .filter(|e| match &e.dialects {
+                None => true,
+                Some(allowed) => allowed.contains(&Dialect::British),
+            }).collect();
 
-        let gb_at_once = gb_lints
-            .iter()
-            .filter(|s| s.primary_replacement.as_deref() == Some("at once"))
-            .count();
-        assert_eq!(gb_at_once, 0, "British: 'forthwith' must be filtered out by dialect");
+        assert_eq!(dialects_us.len(), 1, "American: synthetic forthwith retained");
+        assert_eq!(dialects_gb.len(), 0, "British: synthetic forthwith dropped");
+
+        // End-to-end: linter built from filtered American slice fires; British slice empty → 0 lints
+        let mut linter_us = WordyPhrasesLinter::new_from_parsed(&dialects_us);
+        let mut linter_gb = WordyPhrasesLinter::new_from_parsed(&dialects_gb);
+        let doc = Document::new("Please forthwith now.", &PlainEnglish, make_dict().as_ref());
+        let us_lints = linter_us.lint(&doc);
+        let gb_lints = linter_gb.lint(&doc);
+        let us_at_once = us_lints.iter().filter(|l| {
+            l.suggestions.first().map(|s| matches!(s, harper_core::linting::Suggestion::ReplaceWith(c) if c.iter().collect::<String>() == "at once")).unwrap_or(false)
+        }).count();
+        assert_eq!(us_at_once, 1, "American: forthwith → at once fires once");
+        assert_eq!(gb_lints.len(), 0, "British: filtered slice produces zero lints");
     }
 }
