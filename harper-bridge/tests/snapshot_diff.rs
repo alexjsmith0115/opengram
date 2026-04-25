@@ -3,7 +3,7 @@
 
 use harper_bridge::{HarperChecker, SuggestionCategory};
 
-const GOLDEN_PATH: &str = "tests/golden_clarity_snapshot.txt";
+const GOLDEN_PATH: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/golden_clarity_snapshot.txt");
 
 const LOCKED_SENTENCES: &[&str] = &[
     "Please utilize this document.",
