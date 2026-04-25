@@ -202,7 +202,7 @@ Plans:
 - [x] 13-01-PLAN.md — Empty Rust harness scaffold: nonflags_corpus.rs + 4 placeholder .txt files; cargo test green with zero fixtures (CLAR-21)
 - [x] 13-02-PLAN.md — Hand-curated fixture seed batch 1: proper_nouns ≥20 + quoted_code ≥25 (≥45 line milestone) (CLAR-21)
 - [x] 13-03-PLAN.md — Hand-curated fixture seed batch 2: domain_terms ≥25 + retext_issues ≥30 (push corpus total ≥100) (CLAR-21)
-- [ ] 13-04-PLAN.md — nonflags_meta_corpus_size guard test (≥100 line fail-fast) (CLAR-21)
+- [x] 13-04-PLAN.md — nonflags_meta_corpus_size guard test (≥100 line fail-fast) (CLAR-21)
 - [x] 13-05-PLAN.md — Swift LLM regression test: parseClarityCategoryDropped_CLAR21 in LLMServiceTests.swift (CLAR-21)
 - [x] 13-06-PLAN.md — CONTRIBUTING.md + .github/PULL_REQUEST_TEMPLATE.md scaffolding with NonFlags rule + checkbox (CLAR-21)
 - [ ] 13-07-PLAN.md — Final phase gate (cargo + xcodebuild) + 3-scenario manual UAT via computer-use MCP (or user-driven fallback) → 13-VERIFICATION.md (CLAR-21)
@@ -224,7 +224,7 @@ Plans:
 | 10. Matcher Implementation | v1.4 | 5/5 | Complete    | 2026-04-25 |
 | 11. Dataset Integration + Fixture Harness | v1.4 | 5/5 | Complete   | 2026-04-25 |
 | 12. Settings UI + Severity Filter + Acknowledgements | v1.4 | 4/4 | Complete   | 2026-04-25 |
-| 13. NonFlags Corpus Seed + UAT | v1.4 | 4/7 | In Progress|  |
+| 13. NonFlags Corpus Seed + UAT | v1.4 | 5/7 | In Progress|  |
 
 ## v1.4 Requirements Traceability
 
