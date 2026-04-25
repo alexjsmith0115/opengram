@@ -1,0 +1,4 @@
+# NonFlags fixture — overflow + scraped from upstream retext-simplify / retext / write-good / alex-js issues.
+# Each non-comment non-blank line MUST produce zero WordyPhrasesLinter lints.
+# Provenance: every fixture line preceded by `# Source: <issue-ref>` or `# Source: hand-curated`.
+# CLAR-21

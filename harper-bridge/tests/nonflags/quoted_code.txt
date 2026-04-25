@@ -1,0 +1,3 @@
+# NonFlags fixture — wordy phrases inside backticks/quotes representing code, paths, shell idioms.
+# Each non-comment non-blank line MUST produce zero WordyPhrasesLinter lints.
+# CLAR-21

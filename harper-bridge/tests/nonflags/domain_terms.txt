@@ -1,0 +1,3 @@
+# NonFlags fixture — domain-specific / RFC normative usage of flagged substrings.
+# Each non-comment non-blank line MUST produce zero WordyPhrasesLinter lints.
+# CLAR-21
