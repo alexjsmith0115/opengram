@@ -81,7 +81,7 @@ fn dialect_from_str(s: &str) -> Option<harper_core::Dialect> {
     }
 }
 
-pub fn parse_wordy_phrases(toml_str: &str) -> Vec<ParsedPhraseEntry> {
+pub(crate) fn parse_wordy_phrases(toml_str: &str) -> Vec<ParsedPhraseEntry> {
     let file: TomlFile = toml::from_str(toml_str)
         .expect("wordy_phrases.toml must parse — bundled at compile time via include_str!");
     file.entries.into_iter().map(|t| ParsedPhraseEntry {
