@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Clarity Engine
-status: ready-for-milestone-audit
-stopped_at: Phase 13 complete — UAT 1+2 PASS; UAT 3 deferred to v1.5 (rephrase card header label leak; user-approved 2026-04-25)
-last_updated: "2026-04-25T17:00:00.000Z"
-last_activity: 2026-04-25 -- Phase 13 closed; ready for milestone audit
+status: completed
+stopped_at: Phase 13 Plan 07 complete (build+automated gates GREEN); UAT pending user execution per Phase 12 fallback pattern
+last_updated: "2026-04-25T22:23:58.788Z"
+last_activity: 2026-04-25
 progress:
   total_phases: 7
   completed_phases: 7
@@ -16,12 +16,13 @@ progress:
 
 ## Current Position
 
-Milestone: v1.4 Clarity Engine — ALL PHASES COMPLETE
+Milestone: v1.4 Clarity Engine — ALL PHASES COMPLETE; AUDIT PASSED
 Phase: 13 (NonFlags Corpus Seed + UAT) — DONE (passed-with-deferred-gap)
 Plan: 7 of 7 complete; UAT Scenarios 1+2 PASS, Scenario 3 deferred-to-v1.5
-Next: /gsd-audit-milestone → /gsd-complete-milestone v1.4 → /gsd-cleanup
-Status: Ready for milestone lifecycle (audit → complete → cleanup)
-Last activity: 2026-04-25 -- Phase 13 closed
+Audit: ✅ Passed 2026-04-25 (CLAR-06 production-pipeline gap closed; 21/21 reqs satisfied)
+Next: /gsd-complete-milestone v1.4 → /gsd-cleanup
+Status: Ready for /gsd-complete-milestone
+Last activity: 2026-04-25
 
 **v1.3 status:** ✅ Shipped 2026-04-19. See `.planning/milestones/v1.3-ROADMAP.md` + `.planning/milestones/v1.3-MILESTONE-AUDIT.md`. Tag `v1.3` on `12dd9db`.
 
@@ -164,6 +165,9 @@ None yet.
 | Test flake | `ParagraphHasherTests.performance500ParagraphsUnder10ms` — 16ms vs 10ms threshold under parallel load (0.007s solo) | Deferred (parallel-load timing class, same root cause as AXCallWatchdog/TextMonitor flakes) | 2026-04-25 |
 | Human verification | Phase 13-07 UAT Scenarios 1+2 (Notes wordy-phrase flow + TextEdit master toggle) | PASSED (user UAT 2026-04-25) | 2026-04-25 |
 | UI label leak | Phase 13-07 UAT Scenario 3 finding: rephrase card header reads "Improve clarity" for tone-only LLM suggestions. Root cause: `RephraseCardViewModel.swift:21,25,37` maps `LLMStyleSuggestion.Category.tone` → `CheckCategory.clarity` for header display; Phase 7 deleted .clarity from LLM input enums but kept rephrase-card output label. NOT a category-leak (LLMServiceTests.parseClarityCategoryDropped_CLAR21 PASSES). UI string only. | Deferred to v1.5 (user-approved 2026-04-25). Scope: rename "Improve clarity" → "Improve tone"/"Improve writing"; rename `hasClarity` var; audit other clarity label leaks; re-run Scenario 3 | 2026-04-25 |
+| Debug session | `rapid-multi-accept-cascade` — root cause found 2026-04-19 (3 latent defects in dismissed-suggestion lifecycle); requires persistent dismissed-set architecture | Deferred to post-v1.4 (acknowledged at v1.4 close 2026-04-25) | 2026-04-25 |
+| Data vacancy | CLAR-08: dataset has zero `severity = "low"` entries → sub-toggle "Show subjective clarity suggestions" wired but no observable effect | Deferred to v1.5 dataset curation pass | 2026-04-25 |
+| Data vacancy | CLAR-15: dataset has zero `dialects`-tagged entries → dialect filter wired but functional no-op | Deferred to v1.5 dataset curation pass | 2026-04-25 |
 
 ## Session Continuity
 
