@@ -10,8 +10,8 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 [dependencies]
 harper-core = "=2.0.0"
 uniffi = "=0.31.0"
-serde = { version = "1", features = ["derive"] }
-toml = "0.9"
+serde = { version = "=1.0.228", features = ["derive"] }
+toml = "=0.9.12"
 
 [features]
 cli = ["uniffi/cli"]
