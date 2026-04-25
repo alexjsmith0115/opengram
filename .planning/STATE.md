@@ -2,25 +2,25 @@
 gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Clarity Engine
-status: verifying
-stopped_at: Phase 10 Plan 05 complete (Phase 10 done)
-last_updated: "2026-04-25T03:31:37.345Z"
+status: executing
+stopped_at: Phase 11 Plan 01 complete
+last_updated: "2026-04-25T04:13:04.498Z"
 last_activity: 2026-04-25
 progress:
   total_phases: 7
   completed_phases: 4
-  total_plans: 26
-  completed_plans: 26
-  percent: 100
+  total_plans: 31
+  completed_plans: 27
+  percent: 87
 ---
 
 ## Current Position
 
 Milestone: v1.4 Clarity Engine
-Phase: 11
-Plan: Not started
+Phase: 11 (Dataset Integration + Fixture Harness) — EXECUTING
+Plan: 2 of 5
 Next: `/gsd-verify-work` Phase 10 → then Phase 11 (Dataset Integration + Fixture Harness)
-Status: Phase 10 complete; ready for verify-work
+Status: Ready to execute
 Last activity: 2026-04-25
 
 **v1.3 status:** ✅ Shipped 2026-04-19. See `.planning/milestones/v1.3-ROADMAP.md` + `.planning/milestones/v1.3-MILESTONE-AUDIT.md`. Tag `v1.3` on `12dd9db`.
@@ -32,7 +32,7 @@ Progress: 0% (0/7 phases complete, 0/0 plans — plans defined per phase at `/gs
 See: .planning/PROJECT.md (updated 2026-04-19 — v1.4 Clarity Engine started)
 
 **Core value:** Press a hotkey in any app and get instant, accurate grammar corrections with optional AI-powered style suggestions — entirely local by default.
-**Current focus:** Phase 10 — Matcher Implementation
+**Current focus:** Phase 11 — Dataset Integration + Fixture Harness
 
 ## v1.4 Phase Map
 
@@ -84,6 +84,7 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 | Phase 10-matcher-implementation P04 | 3min | 3 tasks | 2 files |
 | Phase 10-matcher-implementation P05 | 10min | 2 tasks | 1 files |
 | 10 | 5 | - | - |
+| Phase 11 P11-01 | 8min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -111,6 +112,7 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 - [10-04]: Synthetic 'forthwith' CORPUS entry intentionally absent from wordy_phrases.toml so Phase 11 TOML wire-up cannot override its dialect tag — preserves dialect-filter test integrity across phase boundaries.
 - [10-05]: Phase 10 build gate passed — build-harper.sh exit 0 (idempotent; zero diff on XCFramework + Swift bindings), cargo --lib 11/11, xcodebuild app BUILD SUCCEEDED, xcodebuild test 493/496 (3 deferred AXCallWatchdog parallel-flake failures only — STATE-documented).
 - [10-05]: Rule 1 auto-fix on stale FLAG_ME stub test — Plan 10-03 deleted WordyPhrasesStubLinter but Swift ClarityFFITests.stubRoundTrip still asserted FLAG_ME → FLAGGED. Replaced with utilizeRoundTrip exercising live WordyPhrasesLinter surface (utilize → use, Severity::High); same FFI coverage retargeted. Mandated by Plan 10-05 acceptance criterion (no FLAG_ME refs in Swift).
+- [Phase ?]: [11-01]: ParsedPhraseEntry owned String fields; OnceLock single-init verified by pointer equality across 102 calls; serde+toml promoted from transitives — zero new compile units
 
 ### Pending Todos
 
@@ -132,6 +134,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-25T03:25:00Z
-Stopped at: Phase 10 Plan 05 complete (Phase 10 done)
+Last session: 2026-04-25T04:13:01.713Z
+Stopped at: Phase 11 Plan 01 complete
 Resume file: None

@@ -155,10 +155,17 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. `include_str!("../data/wordy_phrases.toml")` wired at `HarperChecker::new()`; `OnceLock`-cached parse verified by logging parse count = 1 across 100 sequential `check()` calls
   2. Auto-generated fixture harness produces 1 positive (matches + correct replacement + correct case regime) + 1 negative (non-matching context) test per `PhraseEntry` across 3 contexts (lowercase / Sentence-start / mid-word); meta-test validates the generator itself
-  3. Snapshot-diff test locks 5 well-known entries (`utilize → use`, `in order to → to`, `at this point in time → now`, etc.) on every PR run; snapshot mismatch fails CI
+  3. Snapshot-diff test locks 5 well-known entries (`utilize → use`, `in order to → to`, `at the present time → at present`, etc.) on every PR run; snapshot mismatch fails CI
   4. Full fixture suite runs green across all ~500 entries (or documented regressions triaged + resolved)
   5. Perf logged (not blocking): CLAR-N1 (`check()` overhead on 500-word doc), CLAR-N2 (bundle-size delta), CLAR-N4 (Unicode-scalar matching) values printed to test output; shipping not gated on them
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+- [ ] 11-01-PLAN.md — PhraseEntry migration: serde + toml deps; ParsedPhraseEntry struct; parse_wordy_phrases(); PARSED_CORPUS OnceLock + get_corpus()
+- [ ] 11-02-PLAN.md — Wire production dataset into build_lint_group: get_corpus() replaces CORPUS.iter(); WordyPhrasesLinter::new_from_parsed; relocate forthwith synthetic injection
+- [ ] 11-03-PLAN.md — Fixture harness tests/fixture_harness.rs: positive (lowercase + Sentence-start) + negative (mid-word) + meta-tests
+- [ ] 11-04-PLAN.md — Snapshot-diff tests/snapshot_diff.rs + golden_clarity_snapshot.txt: 5 locked entries (utilize, in order to, at the present time, a number of, additional)
+- [ ] 11-05-PLAN.md — Perf measurements (CLAR-N1/N2/N4) + phase gate: build-harper.sh + xcodebuild app target green
 
 ### Phase 12: Settings UI + Severity Filter + Acknowledgements
 **Goal**: User can toggle clarity, tune severity threshold, and view MIT license attribution — all without relaunch
