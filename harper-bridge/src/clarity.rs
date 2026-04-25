@@ -149,11 +149,28 @@ pub(crate) const CORPUS: &[PhraseEntry] = &[
     PhraseEntry { phrase: "forthwith",    replacement: "at once",   severity: Severity::Low,    dialects: Some(&[Dialect::American]) },
 ];
 
-pub(crate) struct WordyPhrasesLinter {
+pub struct WordyPhrasesLinter {
     inner: Vec<(MapPhraseLinter, u8)>,
 }
 
 impl WordyPhrasesLinter {
+    pub fn new_from_parsed(entries: &[ParsedPhraseEntry]) -> Self {
+        let inner = entries
+            .iter()
+            .map(|entry| {
+                let mpl = MapPhraseLinter::new_fixed_phrase(
+                    entry.phrase.as_str(),
+                    [entry.replacement.as_str()],
+                    format!("Consider '{}' for '{}'", entry.replacement, entry.phrase),
+                    "Wordy-phrase clarity linter — flags wordy phrases with simpler replacements per the curated corpus.".to_string(),
+                    Some(LintKind::Style),
+                );
+                (mpl, severity_to_priority(entry.severity))
+            })
+            .collect();
+        Self { inner }
+    }
+
     pub(crate) fn new(entries: &[PhraseEntry]) -> Self {
         let inner = entries
             .iter()
@@ -445,6 +462,23 @@ mod tests {
         let after = get_corpus();
         assert_eq!(after.as_ptr(), ptr1, "same allocation = single parse across 102 calls");
         assert_eq!(after.len(), 338, "real dataset count");
+    }
+
+    #[test]
+    fn new_from_parsed_emits_priority_from_severity() {
+        let merged = make_merged_dict();
+        let entries = vec![ParsedPhraseEntry {
+            phrase:      "utilize".to_string(),
+            replacement: "use".to_string(),
+            severity:    Severity::High,
+            dialects:    None,
+        }];
+        let mut linter = WordyPhrasesLinter::new_from_parsed(&entries);
+        let doc = Document::new("Please utilize now.", &PlainEnglish, merged.as_ref());
+        let lints = linter.lint(&doc);
+        let matches: Vec<_> = lints.iter().filter(|l| l.priority == PRIORITY_HIGH).collect();
+        assert_eq!(matches.len(), 1, "exactly one PRIORITY_HIGH lint for utilize");
+        assert_eq!(primary_replacement(&matches[0]).as_deref(), Some("use"));
     }
 
     #[test]
