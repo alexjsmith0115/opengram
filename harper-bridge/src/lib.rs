@@ -220,9 +220,9 @@ mod tests {
 
     #[test]
     fn dialect_filter_drops_non_matching() {
-        // CLAR-15 / D-05 (STATE [10-04]): forthwith is intentionally absent from
-        // wordy_phrases.toml; this test injects it locally to exercise the
-        // dialect-filter branch of build_lint_group without contaminating prod data.
+        // CLAR-15 / D-05: forthwith is intentionally absent from wordy_phrases.toml;
+        // injected locally here to exercise the dialect-filter branch of build_lint_group
+        // without contaminating prod data.
         use crate::clarity::{ParsedPhraseEntry, WordyPhrasesLinter};
         use harper_core::Dialect;
         use harper_core::Document;
