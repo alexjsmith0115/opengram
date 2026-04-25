@@ -58,7 +58,7 @@ Full details: [milestones/v1.3-ROADMAP.md](milestones/v1.3-ROADMAP.md) · [miles
 
 - [ ] **Phase 7: LLM `.clarity` Clean-Deletion** — Rip LLM clarity before Harper clarity lands; zero dual-source window · CLAR-09, CLAR-10
 - [x] **Phase 8: Dataset Pipeline** — `build_wordy_phrases.py` + `wordy_phrases.toml` (~500 entries) from retext-simplify + plainlanguage.gov · CLAR-14, CLAR-15, CLAR-16 (completed 2026-04-20)
-- [ ] **Phase 9: Rust Foundation + MapPhraseLinter Spike** — `SuggestionCategory::Clarity`, `Severity` FFI enum, stub linter, `build_lint_group` helper, 20-phrase spike · CLAR-11, CLAR-12, CLAR-13
+- [x] **Phase 9: Rust Foundation + MapPhraseLinter Spike** — `SuggestionCategory::Clarity`, `Severity` FFI enum, stub linter, `build_lint_group` helper, 20-phrase spike · CLAR-11, CLAR-12, CLAR-13 (completed 2026-04-25)
 - [ ] **Phase 10: Matcher Implementation** — Production matcher per spike decision; 5-regime case preservation; word-boundary; dialect filter · CLAR-01, CLAR-03, CLAR-04, CLAR-05, CLAR-06
 - [ ] **Phase 11: Dataset Integration + Fixture Harness** — `include_str!` wire-up, auto-generated +/- fixtures per entry, snapshot-diff CI, perf logging · CLAR-20
 - [ ] **Phase 12: Settings UI + Severity Filter + Acknowledgements** — Clarity toggles, severity filter in `HarperService`, About → Acknowledgements pane · CLAR-02, CLAR-07, CLAR-08, CLAR-17, CLAR-18, CLAR-19
@@ -123,10 +123,10 @@ Plans:
 - [x] 09-02-PLAN.md — Severity FFI surface (clarity.rs Severity enum + priority constants + helpers; SuggestionCategory::Clarity variant; GrammarSuggestion.severity field; FFI translation block severity mapping)
 - [x] 09-03-PLAN.md — build_lint_group helper extraction + WordyPhrasesStubLinter skeleton (replaces twin LintGroup::new_curated call sites; CLAR-12 single source of truth)
 - [x] 09-04-PLAN.md — Stub WordyPhrasesLinter match logic (FLAG_ME→FLAGGED token scan; flips Rust stub_fires_flag_me + dict-add-cycle tests GREEN)
-- [ ] 09-05-PLAN.md — UniFFI regen + XCFramework rebuild + Swift Suggestion.severity field + init mapping (flips ClarityFFITests.stubRoundTrip GREEN)
+- [x] 09-05-PLAN.md — UniFFI regen + XCFramework rebuild + Swift Suggestion.severity field + init mapping (flips ClarityFFITests.stubRoundTrip GREEN)
 - [x] 09-06-PLAN.md — MapPhraseLinter wrapper spike (PriorityRewritingMapPhraseLinter + 20-phrase corpus + 5-regime case + priority-leak hard gates)
-- [ ] 09-07-PLAN.md — 09-SPIKE-REPORT.md per D-07 + REQUIREMENTS.md CLAR-13 amendment per D-09
-- [ ] 09-08-PLAN.md — Final xcodebuild gate (cargo + xcodebuild app + xcodebuild test full green per D-35)
+- [x] 09-07-PLAN.md — 09-SPIKE-REPORT.md per D-07 + REQUIREMENTS.md CLAR-13 amendment per D-09
+- [x] 09-08-PLAN.md — Final xcodebuild gate (cargo + xcodebuild app + xcodebuild test full green per D-35)
 
 ### Phase 10: Matcher Implementation
 **Goal**: Production-quality clarity matcher detects phrases in real text with correct case, word-boundary, dialect, and overlap behavior
@@ -191,7 +191,7 @@ Plans:
 | 6. v1.3 Gap Closure — Zero-AX Ordering + Scope Cleanup | v1.3 | 2/2 | Complete | 2026-04-19 |
 | 7. LLM `.clarity` Clean-Deletion | v1.4 | 0/0 | Not started | — |
 | 8. Dataset Pipeline | v1.4 | 7/7 | Complete   | 2026-04-20 |
-| 9. Rust Foundation + MapPhraseLinter Spike | v1.4 | 4/8 | In Progress|  |
+| 9. Rust Foundation + MapPhraseLinter Spike | v1.4 | 8/8 | Complete   | 2026-04-25 |
 | 10. Matcher Implementation | v1.4 | 0/0 | Not started | — |
 | 11. Dataset Integration + Fixture Harness | v1.4 | 0/0 | Not started | — |
 | 12. Settings UI + Severity Filter + Acknowledgements | v1.4 | 0/0 | Not started | — |
@@ -231,7 +231,7 @@ Plans:
 
 **Goal:** [Captured for future planning] After the rephrase card has been shown and dismissed for paragraph P, a second Ctrl+Shift+G against the same unchanged paragraph does not re-show the card. Likely root cause: `ParagraphSuggestionCache` hit returns cached suggestions, but `OverlayController.tryDispatchRephraseCard` WR-02 dedup guard (`currentCardParagraphHash`) still matches even after dismiss, OR scheduler's `.dismissed` cache entries short-circuit the re-dispatch. Also check that `hideCardAndRestore()` / `onDismissAll` properly clears `currentCardParagraphHash` and `hiddenParagraphScalarRange`.
 **Requirements:** TBD
-**Plans:** 4/8 plans executed
+**Plans:** 8/8 plans complete
 
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)

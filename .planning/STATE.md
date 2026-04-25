@@ -3,24 +3,24 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Clarity Engine
 status: executing
-stopped_at: Phase 9 Plan 07 complete
-last_updated: "2026-04-24T23:52:00.000Z"
-last_activity: 2026-04-24 -- Phase 9 Plan 07 executed (CLAR-13 spike report written; REQUIREMENTS.md CLAR-13 amended per D-09; decision: Adopt MapPhraseLinter wrapper)
+stopped_at: Phase 9 Plan 08 complete — Phase 9 DONE
+last_updated: "2026-04-25T00:06:00.000Z"
+last_activity: 2026-04-25 -- Phase 9 Plan 08 executed (D-35 final gate: cargo 7/7 green, xcodebuild BUILD SUCCEEDED + ClarityFFITests green, build-harper.sh idempotent; Phase 9 complete)
 progress:
   total_phases: 7
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 21
-  completed_plans: 19
-  percent: 90
+  completed_plans: 21
+  percent: 100
 ---
 
 ## Current Position
 
 Milestone: v1.4 Clarity Engine
-Phase: 09 (rust-foundation-mapphraselinter-spike) — IN PROGRESS (7/8 plans done)
-Next: Phase 09 Plan 08 (xcodebuild final gate)
+Phase: 09 (rust-foundation-mapphraselinter-spike) — COMPLETE (8/8 plans done)
+Next: Phase 10 (Matcher Implementation)
 Status: Executing
-Last activity: 2026-04-24 -- Phase 9 Plan 06 executed (PriorityRewritingMapPhraseLinter spike wrapper + 20-phrase corpus; both CLAR-13 hard-gate tests GREEN)
+Last activity: 2026-04-25 -- Phase 9 Plan 08 executed (D-35 final gate passed; Phase 9 complete; CLAR-11/12/13 all green)
 
 **v1.3 status:** ✅ Shipped 2026-04-19. See `.planning/milestones/v1.3-ROADMAP.md` + `.planning/milestones/v1.3-MILESTONE-AUDIT.md`. Tag `v1.3` on `12dd9db`.
 
@@ -76,6 +76,7 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 | Phase 09-rust-foundation P02 | 4min | 3 tasks | 2 files |
 | Phase 09-rust-foundation P03 | 8min | 2 tasks | 2 files |
 | Phase 09-rust-foundation P04 | 12min | 1 tasks | 2 files |
+| Phase 09 P08 | 8min | 1 tasks | 0 files |
 
 ## Accumulated Context
 
@@ -90,6 +91,7 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 - [09-03]: build_lint_group single construction path; LintGroup::new_curated count in lib.rs reduced 2→1; clarity linter registration survives dict-add by construction (CLAR-12)
 - [09-04]: FLAG_ME tokenizes as 3 tokens (Word+Underscore+Word) — matched via windows(3); FlatConfig.is_rule_enabled returns false for unknown keys — must call set_rule_enabled after LintGroup.add()
 - [09-07]: CLAR-13 spike decision: Adopt MapPhraseLinter wrapper — both hard gates PASS (5-regime case preservation + zero priority=31 leakage). REQUIREMENTS.md CLAR-13 amended per D-09 (wrapper-vs-custom framing).
+- [Phase ?]: Phase 9 final gate: D-35 satisfied — cargo 7/7 green, xcodebuild BUILD SUCCEEDED, ClarityFFITests all green, build-harper.sh idempotent
 
 ### Pending Todos
 
@@ -111,6 +113,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-24T23:52:00.000Z
+Last session: 2026-04-25T00:00:12.737Z
 Stopped at: Phase 9 Plan 07 complete
 Resume file: None

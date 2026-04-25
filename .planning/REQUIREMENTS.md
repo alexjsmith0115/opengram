@@ -48,7 +48,7 @@
 
 - [x] **CLAR-12**: `WordyPhrasesLinter` is registered on `HarperChecker::new()` via `LintGroup::add("WordyPhrases", ...)`. Because `add_to_dictionary` rebuilds the `LintGroup`, a shared `build_lint_group(merged, dialect)` helper is extracted so both code paths register the clarity linter identically. (Fills new gap surfaced during architecture research.)
 
-- [ ] **CLAR-13**: `MapPhraseLinter` wrapper spike — before Phase 10 commits matcher design, run a 20-phrase spike using a thin wrapper over Harper's `MapPhraseLinter::new_fixed_phrase` that rewrites `Lint.priority` on every emission to the severity-mapped constant (200/220/240). Native adoption is impossible because harper-core 2.0.0's `MapPhraseLinter::match_to_lint` hardcodes `priority: 31` at `map_phrase_linter.rs:137` (would invert CLAR-06); `new_fixed_phrases` shares one `correct_forms` pool across all patterns (unusable for per-entry replacement). Hard gates: (1) 5-regime case preservation via `Suggestion::replace_with_match_case`; (2) priority rewrite stability — zero leakage of default 31. Adopt the wrapper if both gates pass; fall back to a custom first-token-hashmap matcher if either fails. No harper-core fork. Decision record: `.planning/phases/09-rust-foundation-mapphraselinter-spike/09-SPIKE-REPORT.md`. (Supersedes spec CD-02 and original CLAR-13 wording per Phase 9 D-02/D-09.)
+- [x] **CLAR-13**: `MapPhraseLinter` wrapper spike — before Phase 10 commits matcher design, run a 20-phrase spike using a thin wrapper over Harper's `MapPhraseLinter::new_fixed_phrase` that rewrites `Lint.priority` on every emission to the severity-mapped constant (200/220/240). Native adoption is impossible because harper-core 2.0.0's `MapPhraseLinter::match_to_lint` hardcodes `priority: 31` at `map_phrase_linter.rs:137` (would invert CLAR-06); `new_fixed_phrases` shares one `correct_forms` pool across all patterns (unusable for per-entry replacement). Hard gates: (1) 5-regime case preservation via `Suggestion::replace_with_match_case`; (2) priority rewrite stability — zero leakage of default 31. Adopt the wrapper if both gates pass; fall back to a custom first-token-hashmap matcher if either fails. No harper-core fork. Decision record: `.planning/phases/09-rust-foundation-mapphraselinter-spike/09-SPIKE-REPORT.md`. (Supersedes spec CD-02 and original CLAR-13 wording per Phase 9 D-02/D-09.)
 
 ### Dataset
 
@@ -138,7 +138,7 @@ Measurement checkpoint: Phase 11 logs all four values to test output; shipping n
 | CLAR-10 | Phase 7 | Pending |
 | CLAR-11 | Phase 9 | Complete |
 | CLAR-12 | Phase 9 | Complete |
-| CLAR-13 | Phase 9 | Pending |
+| CLAR-13 | Phase 9 | Complete |
 | CLAR-14 | Phase 8 | Complete |
 | CLAR-15 | Phase 8 | Complete |
 | CLAR-16 | Phase 8 | Complete |
