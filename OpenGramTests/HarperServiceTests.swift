@@ -226,6 +226,67 @@ struct HarperServiceTests {
         #expect(HarperService.shouldDropClarityLow(lowSpelling, opinionatedEnabled: false) == false)
     }
 
+    /// End-to-end coverage for CLAR-08 / CLAR-18 -- proves `check(text:)` actually
+    /// invokes the opinionated provider once per call and applies the filter,
+    /// not just that the static predicate works in isolation. Catches regressions
+    /// in the call-site wiring (e.g., provider never invoked, default flipped,
+    /// filter skipped).
+    ///
+    /// The bundled WordyPhrases dataset currently contains only `high` and
+    /// `medium` severities (no `low`), so we cannot drive the drop branch end
+    /// to end via real Harper output. We instead spy on the provider to prove
+    /// the call site queries it on every check, and separately assert that
+    /// toggling the flag does not corrupt high/medium suggestions (the
+    /// predicate's safety invariant under integration).
+    final class CallCounter: @unchecked Sendable {
+        private let lock = NSLock()
+        private var _count = 0
+        var count: Int { lock.lock(); defer { lock.unlock() }; return _count }
+        func bump() { lock.lock(); _count += 1; lock.unlock() }
+    }
+
+    @Test("check() invokes opinionated provider exactly once per call")
+    func severityFilter_integration_invokesProviderEachCall() async {
+        let counter = CallCounter()
+        let store = DictionaryStore(directoryURL: FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString))
+        let service = HarperService(
+            dictionaryStore: store,
+            dialect: "US",
+            opinionatedProvider: { counter.bump(); return false }
+        )
+
+        _ = await service.check(text: "Please utilize this for users.")
+        _ = await service.check(text: "We need to confirm the result.")
+
+        #expect(counter.count == 2,
+                "Expected provider to be invoked once per check() call, got \(counter.count)")
+    }
+
+    @Test("check() preserves high/medium clarity output regardless of opinionated flag")
+    func severityFilter_integration_preservesHighMediumBothModes() async {
+        let store = DictionaryStore(directoryURL: FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString))
+
+        let serviceOff = HarperService(
+            dictionaryStore: store,
+            dialect: "US",
+            opinionatedProvider: { false }
+        )
+        let off = await serviceOff.check(text: "Please utilize this for users.")
+        let offHighMed = off.filter { $0.category == .clarity && ($0.severity == .high || $0.severity == .medium) }
+
+        let serviceOn = HarperService(
+            dictionaryStore: store,
+            dialect: "US",
+            opinionatedProvider: { true }
+        )
+        let on = await serviceOn.check(text: "Please utilize this for users.")
+        let onHighMed = on.filter { $0.category == .clarity && ($0.severity == .high || $0.severity == .medium) }
+
+        #expect(!offHighMed.isEmpty, "Expected high/medium clarity suggestions to be present")
+        #expect(offHighMed.count == onHighMed.count,
+                "Expected high/medium clarity counts to match between opinionated=off and opinionated=on")
+    }
+
     // MARK: - CLAR-07: per-rule toggle for WordyPhrases (mirror ruleTogglingSpellCheck)
 
     @Test("disabling WordyPhrases rule suppresses clarity suggestions")

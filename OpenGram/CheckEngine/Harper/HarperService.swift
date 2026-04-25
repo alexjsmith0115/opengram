@@ -4,23 +4,25 @@ actor HarperService: GrammarCheckerProtocol {
 
     private var checker: HarperChecker
     private let dictionaryStore: any DictionaryStoreProtocol
-    private let defaults: UserDefaults
+    private let opinionatedProvider: @Sendable () -> Bool
 
     init(dictionaryStore: any DictionaryStoreProtocol,
          dialect: String,
-         defaults: UserDefaults = .standard) {
+         opinionatedProvider: @escaping @Sendable () -> Bool = {
+             UserDefaults.standard.bool(forKey: ClarityKeys.clarityOpinionatedEnabledKey)
+         }) {
         let words = dictionaryStore.loadWords()
         self.checker = HarperChecker(dialectAbbr: dialect, userWords: words)
         self.dictionaryStore = dictionaryStore
-        self.defaults = defaults
+        self.opinionatedProvider = opinionatedProvider
     }
 
     func check(text: String) -> [Suggestion] {
         let raw = checker.check(text: text)
         let mapped = raw.compactMap { Suggestion(from: $0, in: text) }
-        // One UserDefaults read per check() call -- atomic snapshot for the whole
-        // filter pass. Avoids a per-suggestion read if the closure inlined it.
-        let opinionated = defaults.bool(forKey: ClarityKeys.clarityOpinionatedEnabledKey)
+        // One provider call per check() -- atomic snapshot for the whole filter
+        // pass. The default provider reads UserDefaults; tests can inject a spy.
+        let opinionated = opinionatedProvider()
         return mapped.filter { !Self.shouldDropClarityLow($0, opinionatedEnabled: opinionated) }
     }
 
