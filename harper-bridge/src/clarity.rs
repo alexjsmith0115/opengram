@@ -38,6 +38,74 @@ pub fn severity_from_priority(prio: u8) -> Option<Severity> {
     }
 }
 
+use serde::Deserialize;
+use std::sync::OnceLock;
+
+#[derive(Deserialize)]
+struct TomlFile {
+    entries: Vec<TomlPhraseEntry>,
+}
+
+#[derive(Deserialize, Clone)]
+struct TomlPhraseEntry {
+    phrase:      String,
+    replacement: String,
+    severity:    String,
+    #[serde(default)]
+    dialects:    Option<Vec<String>>,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct ParsedPhraseEntry {
+    pub phrase:      String,
+    pub replacement: String,
+    pub severity:    Severity,
+    pub dialects:    Option<Vec<harper_core::Dialect>>,
+}
+
+fn severity_from_str(s: &str) -> Severity {
+    match s {
+        "high" => Severity::High,
+        "low"  => Severity::Low,
+        _      => Severity::Medium,
+    }
+}
+
+fn dialect_from_str(s: &str) -> Option<harper_core::Dialect> {
+    match s {
+        "en-US" | "American"   => Some(harper_core::Dialect::American),
+        "en-GB" | "British"    => Some(harper_core::Dialect::British),
+        "en-CA" | "Canadian"   => Some(harper_core::Dialect::Canadian),
+        "en-AU" | "Australian" => Some(harper_core::Dialect::Australian),
+        "en-IN" | "Indian"     => Some(harper_core::Dialect::Indian),
+        _ => None,
+    }
+}
+
+pub fn parse_wordy_phrases(toml_str: &str) -> Vec<ParsedPhraseEntry> {
+    let file: TomlFile = toml::from_str(toml_str)
+        .expect("wordy_phrases.toml must parse — bundled at compile time via include_str!");
+    file.entries.into_iter().map(|t| ParsedPhraseEntry {
+        phrase:      t.phrase,
+        replacement: t.replacement,
+        severity:    severity_from_str(&t.severity),
+        dialects:    t.dialects.map(|ds| ds.iter().filter_map(|d| dialect_from_str(d)).collect()),
+    }).collect()
+}
+
+static PARSED_CORPUS: OnceLock<Vec<ParsedPhraseEntry>> = OnceLock::new();
+
+pub fn get_corpus() -> &'static [ParsedPhraseEntry] {
+    PARSED_CORPUS.get_or_init(|| {
+        parse_wordy_phrases(include_str!("../data/wordy_phrases.toml"))
+    })
+}
+
+#[cfg(test)]
+pub(crate) fn parsed_corpus_handle() -> &'static OnceLock<Vec<ParsedPhraseEntry>> {
+    &PARSED_CORPUS
+}
+
 // Production phrase-matcher surface — promotes the spike's 20-entry corpus
 // to module scope plus one synthetic dialect-tagged entry exercising the build-time
 // dialect filter in build_lint_group. Subsequent work swaps the const slice for an owned
@@ -337,6 +405,46 @@ mod tests {
         // same binary aren't affected by lingering tr_TR locale.
         match old_lang   { Some(v) => std::env::set_var("LANG",   v), None => std::env::remove_var("LANG") }
         match old_lc_all { Some(v) => std::env::set_var("LC_ALL", v), None => std::env::remove_var("LC_ALL") }
+    }
+
+    #[test]
+    fn parse_wordy_phrases_round_trip() {
+        let toml = r#"
+        [[entries]]
+        phrase = "utilize"
+        replacement = "use"
+        severity = "high"
+        sources = ["retext-simplify"]
+        id = "utilize"
+        "#;
+        let parsed = parse_wordy_phrases(toml);
+        assert_eq!(parsed.len(), 1);
+        assert_eq!(parsed[0].phrase, "utilize");
+        assert_eq!(parsed[0].replacement, "use");
+        assert_eq!(parsed[0].severity, Severity::High);
+        assert!(parsed[0].dialects.is_none());
+    }
+
+    #[test]
+    fn parse_wordy_phrases_real_dataset_338_entries() {
+        let parsed = parse_wordy_phrases(include_str!("../data/wordy_phrases.toml"));
+        assert_eq!(parsed.len(), 338, "wordy_phrases.toml dataset count");
+    }
+
+    #[test]
+    fn corpus_parsed_exactly_once() {
+        let first = get_corpus();
+        assert!(parsed_corpus_handle().get().is_some(),
+            "corpus must be initialized after first get_corpus()");
+        let ptr1 = first.as_ptr();
+
+        for _ in 0..100 {
+            let _ = get_corpus();
+        }
+
+        let after = get_corpus();
+        assert_eq!(after.as_ptr(), ptr1, "same allocation = single parse across 102 calls");
+        assert_eq!(after.len(), 338, "real dataset count");
     }
 
     #[test]
