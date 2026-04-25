@@ -1,17 +1,27 @@
+import Foundation
+
 actor HarperService: GrammarCheckerProtocol {
 
     private var checker: HarperChecker
     private let dictionaryStore: any DictionaryStoreProtocol
+    private let defaults: UserDefaults
 
-    init(dictionaryStore: any DictionaryStoreProtocol, dialect: String) {
+    init(dictionaryStore: any DictionaryStoreProtocol,
+         dialect: String,
+         defaults: UserDefaults = .standard) {
         let words = dictionaryStore.loadWords()
         self.checker = HarperChecker(dialectAbbr: dialect, userWords: words)
         self.dictionaryStore = dictionaryStore
+        self.defaults = defaults
     }
 
     func check(text: String) -> [Suggestion] {
         let raw = checker.check(text: text)
-        return raw.compactMap { Suggestion(from: $0, in: text) }
+        let mapped = raw.compactMap { Suggestion(from: $0, in: text) }
+        // Read into a local before the filter closure -- Swift 6 strict concurrency
+        // rejects implicit UserDefaults capture in @Sendable closures.
+        let opinionated = defaults.bool(forKey: "clarityOpinionatedEnabled")
+        return mapped.filter { !Self.shouldDropClarityLow($0, opinionatedEnabled: opinionated) }
     }
 
     func addToDictionary(word: String) {
@@ -21,5 +31,15 @@ actor HarperService: GrammarCheckerProtocol {
 
     func setRuleEnabled(key: String, enabled: Bool) {
         checker.setRuleEnabled(ruleKey: key, enabled: enabled)
+    }
+
+    /// Severity filter predicate (CLAR-08, CLAR-18). Nonisolated so unit tests
+    /// can call it directly without actor hop. Guards on source AND category AND
+    /// severity -- never drops non-clarity suggestions, never drops .high/.medium.
+    nonisolated static func shouldDropClarityLow(
+        _ s: Suggestion, opinionatedEnabled: Bool
+    ) -> Bool {
+        guard !opinionatedEnabled else { return false }
+        return s.source == .harper && s.category == .clarity && s.severity == .low
     }
 }
