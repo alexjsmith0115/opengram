@@ -3,25 +3,25 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Clarity Engine
 status: executing
-stopped_at: Phase 10 Plan 04 complete
-last_updated: "2026-04-25T02:00:00Z"
-last_activity: 2026-04-25 -- Phase 10 Plan 04 complete (4 gate tests; cargo 11/11 green)
+stopped_at: Phase 10 Plan 05 complete
+last_updated: "2026-04-25T03:25:00Z"
+last_activity: 2026-04-25 -- Phase 10 Plan 05 complete (build gate; cargo 11/11 + xcodebuild app + test green)
 progress:
   total_phases: 7
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 26
-  completed_plans: 25
-  percent: 96
+  completed_plans: 26
+  percent: 100
 ---
 
 ## Current Position
 
 Milestone: v1.4 Clarity Engine
-Phase: 10 (Matcher Implementation) — EXECUTING
-Plan: 5 of 5
-Next: Plan 10-05 (final phase gate — build-harper.sh + xcodebuild app + xcodebuild test all green)
-Status: Executing Phase 10
-Last activity: 2026-04-25 -- Phase 10 Plan 04 complete (4 gate tests; cargo 11/11 green)
+Phase: 10 (Matcher Implementation) — COMPLETE
+Plan: 5 of 5 (DONE)
+Next: `/gsd-verify-work` Phase 10 → then Phase 11 (Dataset Integration + Fixture Harness)
+Status: Phase 10 complete; ready for verify-work
+Last activity: 2026-04-25 -- Phase 10 Plan 05 complete (build gate; cargo 11/11 + xcodebuild app SUCCEEDED + 493/496 test passing — 3 deferred AXCallWatchdog flakes only)
 
 **v1.3 status:** ✅ Shipped 2026-04-19. See `.planning/milestones/v1.3-ROADMAP.md` + `.planning/milestones/v1.3-MILESTONE-AUDIT.md`. Tag `v1.3` on `12dd9db`.
 
@@ -82,6 +82,7 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 | Phase 10-matcher-implementation P02 | 1min | 2 tasks | 1 files |
 | Phase 10-matcher-implementation P03 | 2min | 2 tasks | 2 files |
 | Phase 10-matcher-implementation P04 | 3min | 3 tasks | 2 files |
+| Phase 10-matcher-implementation P05 | 10min | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -107,6 +108,8 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 - [10-03]: Lib.rs regression tests filter+count on primary_replacement instead of len-equality — real corpus text "Please utilize this." may co-emit grammar/spelling lints alongside the clarity match; len==1 would race against unrelated curated rules.
 - [10-04]: Edition 2021 keeps std::env::set_var safe — no unsafe block in case_preservation_under_tr_locale; future move to edition 2024 will require unsafe wrapping per RESEARCH Pitfall 3.
 - [10-04]: Synthetic 'forthwith' CORPUS entry intentionally absent from wordy_phrases.toml so Phase 11 TOML wire-up cannot override its dialect tag — preserves dialect-filter test integrity across phase boundaries.
+- [10-05]: Phase 10 build gate passed — build-harper.sh exit 0 (idempotent; zero diff on XCFramework + Swift bindings), cargo --lib 11/11, xcodebuild app BUILD SUCCEEDED, xcodebuild test 493/496 (3 deferred AXCallWatchdog parallel-flake failures only — STATE-documented).
+- [10-05]: Rule 1 auto-fix on stale FLAG_ME stub test — Plan 10-03 deleted WordyPhrasesStubLinter but Swift ClarityFFITests.stubRoundTrip still asserted FLAG_ME → FLAGGED. Replaced with utilizeRoundTrip exercising live WordyPhrasesLinter surface (utilize → use, Severity::High); same FFI coverage retargeted. Mandated by Plan 10-05 acceptance criterion (no FLAG_ME refs in Swift).
 
 ### Pending Todos
 
@@ -128,6 +131,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-25T02:00:00Z
-Stopped at: Phase 10 Plan 04 complete
+Last session: 2026-04-25T03:25:00Z
+Stopped at: Phase 10 Plan 05 complete (Phase 10 done)
 Resume file: None

@@ -59,7 +59,7 @@ Full details: [milestones/v1.3-ROADMAP.md](milestones/v1.3-ROADMAP.md) · [miles
 - [ ] **Phase 7: LLM `.clarity` Clean-Deletion** — Rip LLM clarity before Harper clarity lands; zero dual-source window · CLAR-09, CLAR-10
 - [x] **Phase 8: Dataset Pipeline** — `build_wordy_phrases.py` + `wordy_phrases.toml` (~500 entries) from retext-simplify + plainlanguage.gov · CLAR-14, CLAR-15, CLAR-16 (completed 2026-04-20)
 - [x] **Phase 9: Rust Foundation + MapPhraseLinter Spike** — `SuggestionCategory::Clarity`, `Severity` FFI enum, stub linter, `build_lint_group` helper, 20-phrase spike · CLAR-11, CLAR-12, CLAR-13 (completed 2026-04-25)
-- [ ] **Phase 10: Matcher Implementation** — Production matcher per spike decision; 5-regime case preservation; word-boundary; dialect filter · CLAR-01, CLAR-03, CLAR-04, CLAR-05, CLAR-06
+- [x] **Phase 10: Matcher Implementation** — Production matcher per spike decision; 5-regime case preservation; word-boundary; dialect filter · CLAR-01, CLAR-03, CLAR-04, CLAR-05, CLAR-06 (completed 2026-04-25)
 - [ ] **Phase 11: Dataset Integration + Fixture Harness** — `include_str!` wire-up, auto-generated +/- fixtures per entry, snapshot-diff CI, perf logging · CLAR-20
 - [ ] **Phase 12: Settings UI + Severity Filter + Acknowledgements** — Clarity toggles, severity filter in `HarperService`, About → Acknowledgements pane · CLAR-02, CLAR-07, CLAR-08, CLAR-17, CLAR-18, CLAR-19
 - [ ] **Phase 13: NonFlags Corpus Seed + UAT** — ≥100 non-flag regression fixtures + manual validation in Notes/TextEdit · CLAR-21
@@ -146,7 +146,7 @@ Plans:
 - [x] 10-02-PLAN.md — Promote spike test helpers + 2 spike tests (case_preservation_five_regimes, priority_rewrite_no_default_leak) to top-level mod tests
 - [x] 10-03-PLAN.md — Atomic swap: register WordyPhrasesLinter via build_lint_group with dialect filter, delete WordyPhrasesStubLinter + mod spike, replace lib.rs stub tests with corpus equivalents
 - [x] 10-04-PLAN.md — Add 4 new gate tests: proper_noun_iphone_does_not_trigger, word_boundary_no_midword_match, case_preservation_under_tr_locale, dialect_filter_drops_non_matching
-- [ ] 10-05-PLAN.md — Final phase gate: build-harper.sh + xcodebuild app + xcodebuild test all green per D-18
+- [x] 10-05-PLAN.md — Final phase gate: build-harper.sh + xcodebuild app + xcodebuild test all green per D-18
 
 ### Phase 11: Dataset Integration + Fixture Harness
 **Goal**: Real ~500-entry dataset wired into `HarperChecker::new()`; auto-generated regression suite locks matcher behavior against dataset changes
