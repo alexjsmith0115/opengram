@@ -4,21 +4,21 @@ milestone: v1.4
 milestone_name: Clarity Engine
 status: executing
 stopped_at: Phase 11 Plan 01 complete
-last_updated: "2026-04-25T04:13:04.498Z"
+last_updated: "2026-04-25T04:30:19.411Z"
 last_activity: 2026-04-25
 progress:
   total_phases: 7
   completed_phases: 4
   total_plans: 31
-  completed_plans: 27
-  percent: 87
+  completed_plans: 28
+  percent: 90
 ---
 
 ## Current Position
 
 Milestone: v1.4 Clarity Engine
 Phase: 11 (Dataset Integration + Fixture Harness) — EXECUTING
-Plan: 2 of 5
+Plan: 3 of 5
 Next: `/gsd-verify-work` Phase 10 → then Phase 11 (Dataset Integration + Fixture Harness)
 Status: Ready to execute
 Last activity: 2026-04-25
@@ -113,6 +113,7 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 - [10-05]: Phase 10 build gate passed — build-harper.sh exit 0 (idempotent; zero diff on XCFramework + Swift bindings), cargo --lib 11/11, xcodebuild app BUILD SUCCEEDED, xcodebuild test 493/496 (3 deferred AXCallWatchdog parallel-flake failures only — STATE-documented).
 - [10-05]: Rule 1 auto-fix on stale FLAG_ME stub test — Plan 10-03 deleted WordyPhrasesStubLinter but Swift ClarityFFITests.stubRoundTrip still asserted FLAG_ME → FLAGGED. Replaced with utilizeRoundTrip exercising live WordyPhrasesLinter surface (utilize → use, Severity::High); same FFI coverage retargeted. Mandated by Plan 10-05 acceptance criterion (no FLAG_ME refs in Swift).
 - [Phase ?]: [11-01]: ParsedPhraseEntry owned String fields; OnceLock single-init verified by pointer equality across 102 calls; serde+toml promoted from transitives — zero new compile units
+- [11-02]: WordyPhrasesLinter promoted pub(crate)→pub; build_lint_group reads get_corpus() (338 TOML entries) not CORPUS const; dialect_filter_drops_non_matching uses local synthetic forthwith injection — forthwith absent from TOML by design (D-05 / [10-04])
 
 ### Pending Todos
 
@@ -134,6 +135,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-25T04:13:01.713Z
+Last session: 2026-04-25T04:30:19.407Z
 Stopped at: Phase 11 Plan 01 complete
 Resume file: None

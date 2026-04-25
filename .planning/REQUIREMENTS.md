@@ -72,7 +72,7 @@
 
 ### Quality
 
-- [ ] **CLAR-20**: Auto-generated fixture test harness — every `PhraseEntry` produces one positive fixture (matches + correct replacement + correct case regime) and one negative fixture (non-matching context, e.g., mid-word substring). Meta-test validates the generator itself. Snapshot-diff 5 well-known entries on every PR to catch silent matcher regressions.
+- [x] **CLAR-20**: Auto-generated fixture test harness — every `PhraseEntry` produces one positive fixture (matches + correct replacement + correct case regime) and one negative fixture (non-matching context, e.g., mid-word substring). Meta-test validates the generator itself. Snapshot-diff 5 well-known entries on every PR to catch silent matcher regressions.
 
 - [ ] **CLAR-21**: NonFlags regression corpus — `NonFlagsFixtures/` seeded with ≥100 sentences that must never flag: mid-word substrings, legitimate uses of flagged phrases in domain-specific contexts, proper nouns containing flagged tokens, quoted/code snippets. Seed drawn from retext-simplify GitHub issue archives. CONTRIBUTING rule: every clarity-related bug report adds at least one NonFlags entry before the fix lands.
 
@@ -145,7 +145,7 @@ Measurement checkpoint: Phase 11 logs all four values to test output; shipping n
 | CLAR-17 | Phase 12 | Pending |
 | CLAR-18 | Phase 12 | Pending |
 | CLAR-19 | Phase 12 | Pending |
-| CLAR-20 | Phase 11 | Pending |
+| CLAR-20 | Phase 11 | Complete |
 | CLAR-21 | Phase 13 | Pending |
 
 **Coverage:**
