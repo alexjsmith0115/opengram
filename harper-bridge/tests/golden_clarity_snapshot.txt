@@ -1,0 +1,9 @@
+# Golden snapshot for 5 locked clarity entries.
+# Update this file only when wordy_phrases.toml changes intentionally.
+# To regenerate: cargo test --test snapshot_diff -- --ignored print_snapshot --nocapture
+# Then paste the printed lines below (replacing everything after this header).
+At the present time, we need it.|At present|200
+Please utilize this document.|use|200
+We need a number of solutions.|many|200
+We need additional resources.|added|200
+We should in order to finish early.|to|200
