@@ -4,24 +4,24 @@ milestone: v1.4
 milestone_name: Clarity Engine
 status: executing
 stopped_at: Phase 9 Plan 07 complete
-last_updated: "2026-04-25T00:55:22.848Z"
-last_activity: 2026-04-25 -- Phase 10 execution started
+last_updated: "2026-04-25T01:05:40Z"
+last_activity: 2026-04-25 -- Phase 10 Plan 02 complete (spike test promotion)
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 26
-  completed_plans: 22
-  percent: 85
+  completed_plans: 23
+  percent: 88
 ---
 
 ## Current Position
 
 Milestone: v1.4 Clarity Engine
 Phase: 10 (Matcher Implementation) — EXECUTING
-Plan: 2 of 5
-Next: Plan 10-02 (spike test promotion)
+Plan: 3 of 5
+Next: Plan 10-03 (atomic registration swap + spike + stub deletion)
 Status: Executing Phase 10
-Last activity: 2026-04-25 -- Phase 10 Plan 01 complete
+Last activity: 2026-04-25 -- Phase 10 Plan 02 complete
 
 **v1.3 status:** ✅ Shipped 2026-04-19. See `.planning/milestones/v1.3-ROADMAP.md` + `.planning/milestones/v1.3-MILESTONE-AUDIT.md`. Tag `v1.3` on `12dd9db`.
 
@@ -79,6 +79,7 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 | Phase 09-rust-foundation P04 | 12min | 1 tasks | 2 files |
 | Phase 09 P08 | 8min | 1 tasks | 0 files |
 | Phase 10-matcher-implementation P01 | 2min | 2 tasks | 1 files |
+| Phase 10-matcher-implementation P02 | 1min | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -97,6 +98,8 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 - [10-01]: PhraseEntry uses 'static str slices + Option<&'static [Dialect]> — const slice avoids heap allocation until Phase 11 TOML parse promotes to owned Vec
 - [10-01]: WordyPhrasesLinter::new takes &[PhraseEntry] (constructor injection) — enables Plan 04 gate tests to instantiate with custom corpus without depending on global CORPUS const
 - [10-01]: Production wrapper coexists with stub + spike (zero deletions in Plan 01) — Plan 03 atomically swaps registration in lib.rs and deletes both stub + spike in single commit
+- [10-02]: Promoted spike tests run against PRODUCTION WordyPhrasesLinter::new(CORPUS) — bypasses build_lint_group dialect filter so all 21 entries (incl. synthetic 'forthwith') exercised at linter level; dialect filter contract tested separately at HarperChecker level in Plan 04
+- [10-02]: Test promotion ordering enforced — helpers + tests promoted BEFORE mod spike deletion (Plan 03) per RESEARCH §Pitfall 2 to avoid compile breakage
 
 ### Pending Todos
 
@@ -118,6 +121,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-25T01:00:15Z
-Stopped at: Phase 10 Plan 01 complete
+Last session: 2026-04-25T01:05:40Z
+Stopped at: Phase 10 Plan 02 complete
 Resume file: None
