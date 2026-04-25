@@ -199,7 +199,7 @@ Plans:
 | 7. LLM `.clarity` Clean-Deletion | v1.4 | 0/0 | Not started | — |
 | 8. Dataset Pipeline | v1.4 | 7/7 | Complete   | 2026-04-20 |
 | 9. Rust Foundation + MapPhraseLinter Spike | v1.4 | 8/8 | Complete   | 2026-04-25 |
-| 10. Matcher Implementation | v1.4 | 3/5 | In progress | — |
+| 10. Matcher Implementation | v1.4 | 5/5 | Complete    | 2026-04-25 |
 | 11. Dataset Integration + Fixture Harness | v1.4 | 0/0 | Not started | — |
 | 12. Settings UI + Severity Filter + Acknowledgements | v1.4 | 0/0 | Not started | — |
 | 13. NonFlags Corpus Seed + UAT | v1.4 | 0/0 | Not started | — |
@@ -238,7 +238,7 @@ Plans:
 
 **Goal:** [Captured for future planning] After the rephrase card has been shown and dismissed for paragraph P, a second Ctrl+Shift+G against the same unchanged paragraph does not re-show the card. Likely root cause: `ParagraphSuggestionCache` hit returns cached suggestions, but `OverlayController.tryDispatchRephraseCard` WR-02 dedup guard (`currentCardParagraphHash`) still matches even after dismiss, OR scheduler's `.dismissed` cache entries short-circuit the re-dispatch. Also check that `hideCardAndRestore()` / `onDismissAll` properly clears `currentCardParagraphHash` and `hiddenParagraphScalarRange`.
 **Requirements:** TBD
-**Plans:** 8/8 plans complete
+**Plans:** 5/5 plans complete
 
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
