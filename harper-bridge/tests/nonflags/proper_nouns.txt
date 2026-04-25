@@ -1,3 +1,24 @@
 # NonFlags fixture — proper nouns containing wordy-phrase substrings.
 # Each non-comment non-blank line MUST produce zero WordyPhrasesLinter lints.
 # CLAR-21
+She works at Quartermile Capital Partners on quarterly reports.
+The Granite Software Group reported strong earnings.
+Whether iPhone or Android, both platforms support our app.
+The MacBook Pro keyboard backlight was bright last night.
+Mr. Pemberton approved the proposal at the board meeting.
+A team from Riverbend Industries arrived this morning.
+She joined Lighthouse Logistics as a senior engineer.
+Highland Analytics ranked first in the survey.
+A representative from Stanwick Holdings called yesterday.
+Bridgeport Network Foundation hosts a charity event annually.
+The Westbrook Group acquired three startups last year.
+A keynote speaker from Cascade Ventures will present.
+Greystone Capital filed paperwork with the regulator.
+Maple Industries opened a new office in Berlin.
+Larkspur Studios produces independent films.
+Foundry Robotics demonstrated their latest model.
+Birchwood Consulting reported record revenue this quarter.
+The Brookline Group merged with Adequate Holdings.
+Harvest Foods exports cereals to twelve countries.
+Notable Solutions Inc. ships software to government clients.
+Implementation Studios LLC released a new product last week.
