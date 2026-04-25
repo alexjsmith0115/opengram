@@ -177,6 +177,45 @@ impl Linter for WordyPhrasesStubLinter {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use harper_core::Document;
+    use harper_core::linting::{Lint, Suggestion};
+    use harper_core::parsers::PlainEnglish;
+    use harper_core::spell::{FstDictionary, MergedDictionary};
+    use std::sync::Arc;
+
+    fn make_merged_dict() -> Arc<MergedDictionary> {
+        let mut merged = MergedDictionary::new();
+        merged.add_dictionary(FstDictionary::curated());
+        Arc::new(merged)
+    }
+
+    fn title_case(s: &str) -> String {
+        s.split_whitespace()
+            .map(|w| {
+                let mut chars = w.chars();
+                match chars.next() {
+                    Some(c) => c.to_uppercase().collect::<String>() + chars.as_str(),
+                    None => String::new(),
+                }
+            })
+            .collect::<Vec<_>>()
+            .join(" ")
+    }
+
+    fn sentence_start(s: &str) -> String {
+        let mut chars = s.chars();
+        match chars.next() {
+            Some(c) => c.to_uppercase().collect::<String>() + chars.as_str(),
+            None => String::new(),
+        }
+    }
+
+    fn primary_replacement(lint: &Lint) -> Option<String> {
+        lint.suggestions.first().and_then(|s| match s {
+            Suggestion::ReplaceWith(chars) => Some(chars.iter().collect()),
+            _ => None,
+        })
+    }
 
     #[test]
     fn clarity_loses_to_grammar_on_overlap() {
