@@ -88,6 +88,46 @@ use harper_core::TokenKind;
 use harper_core::linting::{Lint, LintKind, Linter, Suggestion};
 use harper_core::Punctuation;
 
+pub(crate) struct WordyPhrasesLinter {
+    inner: Vec<(MapPhraseLinter, u8)>,
+}
+
+impl WordyPhrasesLinter {
+    pub(crate) fn new(entries: &[PhraseEntry]) -> Self {
+        let inner = entries
+            .iter()
+            .map(|entry| {
+                let mpl = MapPhraseLinter::new_fixed_phrase(
+                    entry.phrase,
+                    [entry.replacement],
+                    format!("Consider '{}' for '{}'", entry.replacement, entry.phrase),
+                    "Wordy-phrase clarity linter — flags wordy phrases with simpler replacements per the curated corpus.".to_string(),
+                    Some(LintKind::Style),
+                );
+                (mpl, severity_to_priority(entry.severity))
+            })
+            .collect();
+        Self { inner }
+    }
+}
+
+impl Linter for WordyPhrasesLinter {
+    fn lint(&mut self, document: &Document) -> Vec<Lint> {
+        let mut out = Vec::new();
+        for (linter, target_prio) in self.inner.iter_mut() {
+            for mut lint in linter.lint(document) {
+                lint.priority = *target_prio;
+                out.push(lint);
+            }
+        }
+        out
+    }
+
+    fn description(&self) -> &str {
+        "Wordy-phrase clarity linter — flags wordy phrases with simpler replacements per the curated corpus."
+    }
+}
+
 pub struct WordyPhrasesStubLinter;
 
 impl WordyPhrasesStubLinter {
