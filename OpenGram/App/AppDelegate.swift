@@ -98,7 +98,9 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
             object: nil,
             queue: .main
         ) { [weak harperService] _ in
-            let enabled = (UserDefaults.standard.object(forKey: "clarityEnabled") as? Bool) ?? true
+            let key = ClarityKeys.clarityEnabledKey
+            let enabled = (UserDefaults.standard.object(forKey: key) as? Bool)
+                ?? ClarityKeys.defaultClarityEnabled
             Task { [weak harperService] in
                 await harperService?.setRuleEnabled(key: "WordyPhrases", enabled: enabled)
             }

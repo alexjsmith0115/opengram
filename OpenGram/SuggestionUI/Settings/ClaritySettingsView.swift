@@ -8,10 +8,12 @@ struct ClaritySettingsView: View {
 
     // Drift-guard constants. The @AppStorage literals below MUST match these
     // (property wrapper arguments must be compile-time constants).
-    static let clarityEnabledKey = "clarityEnabled"
-    static let clarityOpinionatedEnabledKey = "clarityOpinionatedEnabled"
-    static let defaultClarityEnabled: Bool = true
-    static let defaultClarityOpinionatedEnabled: Bool = false
+    // Forwarded from `ClarityKeys` -- single source of truth shared with
+    // HarperService and AppDelegate.
+    static let clarityEnabledKey = ClarityKeys.clarityEnabledKey
+    static let clarityOpinionatedEnabledKey = ClarityKeys.clarityOpinionatedEnabledKey
+    static let defaultClarityEnabled: Bool = ClarityKeys.defaultClarityEnabled
+    static let defaultClarityOpinionatedEnabled: Bool = ClarityKeys.defaultClarityOpinionatedEnabled
 
     @AppStorage("clarityEnabled") private var clarityEnabled: Bool = true
     @AppStorage("clarityOpinionatedEnabled") private var clarityOpinionatedEnabled: Bool = false

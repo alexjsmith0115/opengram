@@ -42,6 +42,7 @@
 		A10000010000000000000051 /* AppQuirks.plist in Resources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000051 /* AppQuirks.plist */; };
 		A10000010000000000000600 /* ClaritySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000600 /* ClaritySettingsView.swift */; };
 		A10000010000000000000601 /* AboutSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000601 /* AboutSettingsView.swift */; };
+		A10000010000000000000603 /* ClarityKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000603 /* ClarityKeys.swift */; };
 		A10000010000000000000602 /* THIRD_PARTY.txt in Resources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000602 /* THIRD_PARTY.txt */; };
 		B10000010000000000000600 /* ClaritySettingsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000600 /* ClaritySettingsViewTests.swift */; };
 		B10000010000000000000601 /* AboutSettingsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000601 /* AboutSettingsViewTests.swift */; };
@@ -210,6 +211,7 @@
 		A20000010000000000000051 /* AppQuirks.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = AppQuirks.plist; sourceTree = "<group>"; };
 		A20000010000000000000600 /* ClaritySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaritySettingsView.swift; sourceTree = "<group>"; };
 		A20000010000000000000601 /* AboutSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutSettingsView.swift; sourceTree = "<group>"; };
+		A20000010000000000000603 /* ClarityKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClarityKeys.swift; sourceTree = "<group>"; };
 		A20000010000000000000602 /* THIRD_PARTY.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = THIRD_PARTY.txt; sourceTree = "<group>"; };
 		B20000010000000000000600 /* ClaritySettingsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaritySettingsViewTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000601 /* AboutSettingsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutSettingsViewTests.swift; sourceTree = "<group>"; };
@@ -639,6 +641,7 @@
 				A200000100000000000000E2 /* AdvancedSettingsView.swift */,
 				A20000010000000000000600 /* ClaritySettingsView.swift */,
 				A20000010000000000000601 /* AboutSettingsView.swift */,
+				A20000010000000000000603 /* ClarityKeys.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -932,6 +935,7 @@
 				A100000100000000000000E2 /* AdvancedSettingsView.swift in Sources */,
 				A10000010000000000000600 /* ClaritySettingsView.swift in Sources */,
 				A10000010000000000000601 /* AboutSettingsView.swift in Sources */,
+				A10000010000000000000603 /* ClarityKeys.swift in Sources */,
 				A18000010000000000000021 /* AXTextReplacer.swift in Sources */,
 				A18020010000000000000001 /* TextDiff.swift in Sources */,
 				A18020010000000000000002 /* DisplayHeuristic.swift in Sources */,

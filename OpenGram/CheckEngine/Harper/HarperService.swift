@@ -18,9 +18,9 @@ actor HarperService: GrammarCheckerProtocol {
     func check(text: String) -> [Suggestion] {
         let raw = checker.check(text: text)
         let mapped = raw.compactMap { Suggestion(from: $0, in: text) }
-        // Read into a local before the filter closure -- Swift 6 strict concurrency
-        // rejects implicit UserDefaults capture in @Sendable closures.
-        let opinionated = defaults.bool(forKey: "clarityOpinionatedEnabled")
+        // One UserDefaults read per check() call -- atomic snapshot for the whole
+        // filter pass. Avoids a per-suggestion read if the closure inlined it.
+        let opinionated = defaults.bool(forKey: ClarityKeys.clarityOpinionatedEnabledKey)
         return mapped.filter { !Self.shouldDropClarityLow($0, opinionatedEnabled: opinionated) }
     }
 
