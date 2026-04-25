@@ -6,7 +6,6 @@
 //!   PRIORITY_MEDIUM = 220
 //!   PRIORITY_LOW    = 240
 
-use harper_core::Dialect;
 use harper_core::Document;
 use harper_core::linting::{Lint, LintKind, Linter, MapPhraseLinter};
 
@@ -106,49 +105,6 @@ pub(crate) fn parsed_corpus_handle() -> &'static OnceLock<Vec<ParsedPhraseEntry>
     &PARSED_CORPUS
 }
 
-// Production phrase-matcher surface — promotes the spike's 20-entry corpus
-// to module scope plus one synthetic dialect-tagged entry exercising the build-time
-// dialect filter in build_lint_group. Subsequent work swaps the const slice for an owned
-// Vec<PhraseEntry> parsed from wordy_phrases.toml.
-
-#[derive(Clone, Copy)]
-pub(crate) struct PhraseEntry {
-    pub phrase:      &'static str,
-    pub replacement: &'static str,
-    pub severity:    Severity,
-    pub dialects:    Option<&'static [Dialect]>,
-}
-
-pub(crate) const CORPUS: &[PhraseEntry] = &[
-    // Multi-inflection triple — exercises CLAR-04 dataset-driven inflection
-    PhraseEntry { phrase: "utilize",      replacement: "use",       severity: Severity::High,   dialects: None },
-    PhraseEntry { phrase: "utilizes",     replacement: "use",       severity: Severity::Medium, dialects: None },
-    PhraseEntry { phrase: "utilized",     replacement: "used",      severity: Severity::Medium, dialects: None },
-    // High severity
-    PhraseEntry { phrase: "a number of",  replacement: "many",      severity: Severity::High,   dialects: None },
-    PhraseEntry { phrase: "accompany",    replacement: "go with",   severity: Severity::High,   dialects: None },
-    PhraseEntry { phrase: "accomplish",   replacement: "carry out", severity: Severity::High,   dialects: None },
-    PhraseEntry { phrase: "accorded",     replacement: "given",     severity: Severity::High,   dialects: None },
-    PhraseEntry { phrase: "accordingly",  replacement: "so",        severity: Severity::High,   dialects: None },
-    PhraseEntry { phrase: "accurate",     replacement: "correct",   severity: Severity::High,   dialects: None },
-    PhraseEntry { phrase: "additional",   replacement: "added",     severity: Severity::High,   dialects: None },
-    PhraseEntry { phrase: "advantageous", replacement: "helpful",   severity: Severity::High,   dialects: None },
-    // Medium severity
-    PhraseEntry { phrase: "abundance",    replacement: "enough",    severity: Severity::Medium, dialects: None },
-    PhraseEntry { phrase: "accede to",    replacement: "agree to",  severity: Severity::Medium, dialects: None },
-    PhraseEntry { phrase: "accelerate",   replacement: "speed up",  severity: Severity::Medium, dialects: None },
-    PhraseEntry { phrase: "accentuate",   replacement: "stress",    severity: Severity::Medium, dialects: None },
-    PhraseEntry { phrase: "acquire",      replacement: "get",       severity: Severity::Medium, dialects: None },
-    PhraseEntry { phrase: "aggregate",    replacement: "add",       severity: Severity::Medium, dialects: None },
-    PhraseEntry { phrase: "alleviate",    replacement: "ease",      severity: Severity::Medium, dialects: None },
-    PhraseEntry { phrase: "ameliorate",   replacement: "help",      severity: Severity::Medium, dialects: None },
-    PhraseEntry { phrase: "acquiesce",    replacement: "agree",     severity: Severity::Medium, dialects: None },
-    // Synthetic American-only entry — exercises non-empty branch of dialect filter.
-    // "forthwith" is intentionally NOT in wordy_phrases.toml so subsequent TOML wire-up
-    // won't override its dialect tag.
-    PhraseEntry { phrase: "forthwith",    replacement: "at once",   severity: Severity::Low,    dialects: Some(&[Dialect::American]) },
-];
-
 pub struct WordyPhrasesLinter {
     inner: Vec<(MapPhraseLinter, u8)>,
 }
@@ -171,22 +127,6 @@ impl WordyPhrasesLinter {
         Self { inner }
     }
 
-    pub(crate) fn new(entries: &[PhraseEntry]) -> Self {
-        let inner = entries
-            .iter()
-            .map(|entry| {
-                let mpl = MapPhraseLinter::new_fixed_phrase(
-                    entry.phrase,
-                    [entry.replacement],
-                    format!("Consider '{}' for '{}'", entry.replacement, entry.phrase),
-                    "Wordy-phrase clarity linter — flags wordy phrases with simpler replacements per the curated corpus.".to_string(),
-                    Some(LintKind::Style),
-                );
-                (mpl, severity_to_priority(entry.severity))
-            })
-            .collect();
-        Self { inner }
-    }
 }
 
 impl Linter for WordyPhrasesLinter {
@@ -303,10 +243,18 @@ mod tests {
 
     #[test]
     fn case_preservation_five_regimes() {
+        // Use a small deterministic inline set — simple single-word entries guaranteed to
+        // fire in every sentence pattern. Full corpus has punctuation phrases (e.g. "e.g.")
+        // that don't tokenize predictably in the "Please X now." harness.
+        let entries = vec![
+            ParsedPhraseEntry { phrase: "utilize".to_string(),  replacement: "use".to_string(),   severity: Severity::High,   dialects: None },
+            ParsedPhraseEntry { phrase: "acquire".to_string(),  replacement: "get".to_string(),   severity: Severity::Medium, dialects: None },
+            ParsedPhraseEntry { phrase: "alleviate".to_string(), replacement: "ease".to_string(), severity: Severity::Medium, dialects: None },
+        ];
         let merged = make_merged_dict();
-        let mut linter = WordyPhrasesLinter::new(CORPUS);
+        let mut linter = WordyPhrasesLinter::new_from_parsed(&entries);
 
-        for entry in CORPUS {
+        for entry in &entries {
             let test_cases: Vec<(String, String, &str)> = vec![
                 (
                     format!("Please {} now.", entry.phrase),
@@ -314,13 +262,13 @@ mod tests {
                     "lowercase",
                 ),
                 (
-                    format!("{} is important.", sentence_start(entry.phrase)),
-                    sentence_start(entry.replacement),
+                    format!("{} is important.", sentence_start(&entry.phrase)),
+                    sentence_start(&entry.replacement),
                     "sentence-start",
                 ),
                 (
-                    format!("We Should {} It.", title_case(entry.phrase)),
-                    title_case(entry.replacement),
+                    format!("We Should {} It.", title_case(&entry.phrase)),
+                    title_case(&entry.replacement),
                     "title-case",
                 ),
                 (
@@ -359,9 +307,9 @@ mod tests {
     fn proper_noun_iphone_does_not_trigger() {
         // CLAR-03 acceptance: mixed-case proper nouns must never trigger replacement.
         // Contract test on MapPhraseLinter token-shape behavior — iPhone is one Word
-        // token with content ['i','P','h','o','n','e'], cannot match any CORPUS phrase.
+        // token with content ['i','P','h','o','n','e'], cannot match any corpus phrase.
         let merged = make_merged_dict();
-        let mut linter = WordyPhrasesLinter::new(CORPUS);
+        let mut linter = WordyPhrasesLinter::new_from_parsed(get_corpus());
         let doc = Document::new("iPhone is great.", &PlainEnglish, merged.as_ref());
         let lints = linter.lint(&doc);
         assert!(
@@ -374,11 +322,11 @@ mod tests {
     #[test]
     fn word_boundary_no_midword_match() {
         // CLAR-05 SC-3: phrase matches only on Harper token boundaries; mid-word
-        // substrings never fire. CORPUS contains "accompany"; "unaccompanied" is
+        // substrings never fire. Corpus contains "accompany"; "unaccompanied" is
         // tokenized as one Word token whose char-content includes "accompany"
         // mid-string. MapPhraseLinter matches token-windows, never substrings.
         let merged = make_merged_dict();
-        let mut linter = WordyPhrasesLinter::new(CORPUS);
+        let mut linter = WordyPhrasesLinter::new_from_parsed(get_corpus());
         let doc = Document::new("The unaccompanied luggage arrived.", &PlainEnglish, merged.as_ref());
         let lints = linter.lint(&doc);
         assert!(
@@ -447,10 +395,11 @@ mod tests {
 
     #[test]
     fn priority_rewrite_no_default_leak() {
+        let corpus = get_corpus();
         let merged = make_merged_dict();
-        let mut linter = WordyPhrasesLinter::new(CORPUS);
+        let mut linter = WordyPhrasesLinter::new_from_parsed(corpus);
 
-        let text = CORPUS
+        let text = corpus
             .iter()
             .map(|e| format!("Please {}.", e.phrase))
             .collect::<Vec<_>>()
