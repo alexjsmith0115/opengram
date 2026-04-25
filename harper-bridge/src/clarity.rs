@@ -304,6 +304,42 @@ mod tests {
     }
 
     #[test]
+    fn case_preservation_under_tr_locale() {
+        // CLAR-N4: Turkish locale 'I'.to_lowercase() → 'ı', 'i'.to_uppercase() → 'İ'.
+        // Rust std char::to_uppercase / to_lowercase use Unicode tables, not OS
+        // locale, but some downstream tools or future code paths might. This test
+        // guards that replace_with_match_case output stays ASCII-correct regardless
+        // of process locale — locking the contract end-to-end.
+        let old_lang   = std::env::var("LANG").ok();
+        let old_lc_all = std::env::var("LC_ALL").ok();
+        std::env::set_var("LANG",   "tr_TR.UTF-8");
+        std::env::set_var("LC_ALL", "tr_TR.UTF-8");
+
+        let merged = make_merged_dict();
+        let mut linter = WordyPhrasesLinter::new(CORPUS);
+        for entry in CORPUS {
+            let input = format!("WE MUST {} IT.", entry.phrase.to_uppercase());
+            let doc   = Document::new(&input, &PlainEnglish, merged.as_ref());
+            for lint in linter.lint(&doc) {
+                if let Some(rep) = primary_replacement(&lint) {
+                    // Replacement chars must be ASCII (no İ / ı drift).
+                    let ok = rep.chars().all(|c| !c.is_alphabetic() || c.is_ascii());
+                    assert!(
+                        ok,
+                        "Turkish locale corrupted replacement for '{}': got '{}'",
+                        entry.phrase, rep,
+                    );
+                }
+            }
+        }
+
+        // Env vars are process-global; reset before returning so other tests in the
+        // same binary aren't affected by lingering tr_TR locale.
+        match old_lang   { Some(v) => std::env::set_var("LANG",   v), None => std::env::remove_var("LANG") }
+        match old_lc_all { Some(v) => std::env::set_var("LC_ALL", v), None => std::env::remove_var("LC_ALL") }
+    }
+
+    #[test]
     fn priority_rewrite_no_default_leak() {
         let merged = make_merged_dict();
         let mut linter = WordyPhrasesLinter::new(CORPUS);
