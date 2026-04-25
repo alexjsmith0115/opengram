@@ -163,7 +163,7 @@ Plans:
 Plans:
 - [x] 11-01-PLAN.md — PhraseEntry migration: serde + toml deps; ParsedPhraseEntry struct; parse_wordy_phrases(); PARSED_CORPUS OnceLock + get_corpus()
 - [x] 11-02-PLAN.md — Wire production dataset into build_lint_group: get_corpus() replaces CORPUS.iter(); WordyPhrasesLinter::new_from_parsed; relocate forthwith synthetic injection
-- [ ] 11-03-PLAN.md — Fixture harness tests/fixture_harness.rs: positive (lowercase + Sentence-start) + negative (mid-word) + meta-tests
+- [x] 11-03-PLAN.md — Fixture harness tests/fixture_harness.rs: positive (lowercase + Sentence-start) + negative (mid-word) + meta-tests
 - [ ] 11-04-PLAN.md — Snapshot-diff tests/snapshot_diff.rs + golden_clarity_snapshot.txt: 5 locked entries (utilize, in order to, at the present time, a number of, additional)
 - [ ] 11-05-PLAN.md — Perf measurements (CLAR-N1/N2/N4) + phase gate: build-harper.sh + xcodebuild app target green
 
@@ -207,7 +207,7 @@ Plans:
 | 8. Dataset Pipeline | v1.4 | 7/7 | Complete   | 2026-04-20 |
 | 9. Rust Foundation + MapPhraseLinter Spike | v1.4 | 8/8 | Complete   | 2026-04-25 |
 | 10. Matcher Implementation | v1.4 | 5/5 | Complete    | 2026-04-25 |
-| 11. Dataset Integration + Fixture Harness | v1.4 | 2/5 | In Progress|  |
+| 11. Dataset Integration + Fixture Harness | v1.4 | 3/5 | In Progress|  |
 | 12. Settings UI + Severity Filter + Acknowledgements | v1.4 | 0/0 | Not started | — |
 | 13. NonFlags Corpus Seed + UAT | v1.4 | 0/0 | Not started | — |
 
@@ -245,7 +245,7 @@ Plans:
 
 **Goal:** [Captured for future planning] After the rephrase card has been shown and dismissed for paragraph P, a second Ctrl+Shift+G against the same unchanged paragraph does not re-show the card. Likely root cause: `ParagraphSuggestionCache` hit returns cached suggestions, but `OverlayController.tryDispatchRephraseCard` WR-02 dedup guard (`currentCardParagraphHash`) still matches even after dismiss, OR scheduler's `.dismissed` cache entries short-circuit the re-dispatch. Also check that `hideCardAndRestore()` / `onDismissAll` properly clears `currentCardParagraphHash` and `hiddenParagraphScalarRange`.
 **Requirements:** TBD
-**Plans:** 2/5 plans executed
+**Plans:** 3/5 plans executed
 
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
