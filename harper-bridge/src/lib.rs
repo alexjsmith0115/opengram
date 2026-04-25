@@ -218,4 +218,30 @@ mod tests {
         let post_count = post.iter().filter(|s| s.primary_replacement.as_deref() == Some("use")).count();
         assert_eq!(post_count, 1, "STILL fires post-dict-add — CLAR-12 invariant");
     }
+
+    #[test]
+    fn dialect_filter_drops_non_matching() {
+        // CLAR-15 / D-05: build_lint_group filters CORPUS by dialect at build time.
+        // The synthetic "forthwith" CORPUS entry carries dialects: Some(&[American]).
+        // American checker registers it; British checker drops it before linter construction.
+        let checker_us = HarperChecker::new("US".into(), vec![]);
+        let checker_gb = HarperChecker::new("GB".into(), vec![]);
+
+        let text = "Please forthwith now.".to_string();
+
+        let us_lints = checker_us.check(text.clone());
+        let gb_lints = checker_gb.check(text);
+
+        let us_at_once = us_lints
+            .iter()
+            .filter(|s| s.primary_replacement.as_deref() == Some("at once"))
+            .count();
+        assert_eq!(us_at_once, 1, "American: 'forthwith → at once' must fire exactly once");
+
+        let gb_at_once = gb_lints
+            .iter()
+            .filter(|s| s.primary_replacement.as_deref() == Some("at once"))
+            .count();
+        assert_eq!(gb_at_once, 0, "British: 'forthwith' must be filtered out by dialect");
+    }
 }
