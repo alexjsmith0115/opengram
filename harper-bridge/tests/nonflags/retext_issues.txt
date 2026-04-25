@@ -2,3 +2,40 @@
 # Each non-comment non-blank line MUST produce zero WordyPhrasesLinter lints.
 # Provenance: every fixture line preceded by `# Source: <issue-ref>` or `# Source: hand-curated`.
 # CLAR-21
+# Source: retext-simplify#13 — "has no effect" reported as legitimate prose
+The release note key `hasNoEffect` documents the no-op patch outcome.
+The tag `hasNoEffectMarker` annotates skipped migration steps in the audit log.
+The Sentry breadcrumb `hasNoEffectThroughput` records the dry-run result.
+The k8s annotation `policy.hasNoEffect` marks the deprecated rollout hook.
+The PagerDuty integration field `hasNoEffectOnAlert` is the no-op flag.
+# Source: hand-curated overflow — quoted-clause refs for upstream-style FPs
+The academic style guide cites `inOrderToClause` as a permitted construction.
+The grant proposal uses `in_order_to_anchor` for the framing section header.
+The proof-of-concept paper exposes `inOrderToBaseline` in the abstract appendix.
+The committee minutes record `atThePresentTime` as the formal phrasing tag.
+The legal brief uses `asAResultOf` verbatim per courtroom convention.
+# Source: hand-curated overflow — currently-as-named-token
+The status indicator label `currentlyActive` never auto-dismisses on idle.
+The status field reads `currentlyOnline` in the API health response.
+The dashboard column `currentlyFailing` filters by branch and severity.
+The Slack bot tag `currentlyDeploying` posts to the release channel.
+The CI matrix entry `currentlyBlocking` halts downstream merges.
+# Source: hand-curated overflow — quoted-clause and identifier edge cases
+The agreement records `inAdvanceClause` inside the recital section.
+The proposal cites `onTheGroundsThat` as the controlling provision.
+The estimate column `aGreatDealOfWork` appears in the spreadsheet header.
+The transcript reads `atLengthMargin` in the verbatim annotation.
+The Gantt milestone label `movingForwardLaunch` is the v3 release tag.
+# Source: hand-curated overflow — controlled-vocabulary tags
+The retrospective notes the team `comeToTheConclusion` as a closed tag.
+The donor record lists `madeAContribution` as the controlled-vocabulary entry.
+The minutes log `gaveConsiderationTo` as the verbatim motion tag.
+The fraud report cites `tookAdvantageOf` inside the quoted testimony block.
+The mediation notes record `reachedAnAgreement` as a closed clause.
+# Source: hand-curated overflow — chart audit + clinical record tags
+The medical chart notes the patient `wasGivenAnInjection` per the protocol tag.
+The customer service log records `madeAnAttempt` verbatim in the script field.
+The audit log entry reads `broughtTheIssueToOurAttention` as a literal tag.
+The student rubric lists `aThoroughUnderstanding` as a graded outcome label.
+The contract page records `signedByBothParties` as the closing-clause anchor.
+The inquest transcript shows `arrivedAtTheConclusion` verbatim in row twelve.
