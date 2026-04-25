@@ -1,3 +1,29 @@
 # NonFlags fixture — wordy phrases inside backticks/quotes representing code, paths, shell idioms.
 # Each non-comment non-blank line MUST produce zero WordyPhrasesLinter lints.
 # CLAR-21
+The path `/var/log/in_order_to.log` rotates daily.
+The C macro `IN_THE_EVENT_OF` expands to a goto statement.
+The path `/usr/local/bin/at-this-point` is symlinked elsewhere.
+The header `X-In-Order-To: yes` controls retry behavior.
+The Bash idiom `due_to_the_fact_that` appears in legacy scripts.
+Set `enable.opportunity` to true in the YAML config.
+The XPath query `//utilize-tag/@version` selects the node.
+Pass `--prior-to-flag` to enable backwards-compat mode.
+The cookie `subsequentSession=true` persists across reloads.
+The CSS class `.commenceModal` styles the entry dialog.
+Reference `RFC 793 in_order_to` understand the connection lifecycle.
+The npm package `@scope/aforementionedPlugin` was unpublished.
+The C macro `DUE_TO_THE_FACT_THAT` expands to a comment.
+The HTTP header `X-Due-To-Reason: yes` controls retry behavior.
+The path `/srv/cache/in_the_event_of_failure` rotates hourly.
+The path `/opt/lib/at_the_present_time.so` is loaded dynamically.
+The header `X-At-This-Point-In-Time: now` is rare in production traces.
+The macro `WITH_REFERENCE_TO_KEY` expands to a constant.
+The path `/etc/profile.d/by_means_of.sh` exports environment variables.
+The CSS selector `.in-order-to-modal` styles a confirmation prompt.
+The Python module `make_a_decision.py` exposes one helper.
+The shell script `ceaseAndDesist.sh` kills runaway jobs.
+The flag `--in-the-event-of-error` retries the call twice.
+The Ansible task `with_a_view_to_deploy` is run at release time.
+The TOML key `for_the_purpose_of` is read by the legacy parser.
+The Docker label `org.example.in-order-to=cache` triggers a build hook.
