@@ -37,6 +37,52 @@ pub fn severity_from_priority(prio: u8) -> Option<Severity> {
     }
 }
 
+// Production phrase-matcher surface — promotes the spike's 20-entry corpus
+// to module scope plus one synthetic dialect-tagged entry exercising the build-time
+// dialect filter in build_lint_group. Subsequent work swaps the const slice for an owned
+// Vec<PhraseEntry> parsed from wordy_phrases.toml.
+
+use harper_core::Dialect;
+use harper_core::linting::MapPhraseLinter;
+
+#[derive(Clone, Copy)]
+pub(crate) struct PhraseEntry {
+    pub phrase:      &'static str,
+    pub replacement: &'static str,
+    pub severity:    Severity,
+    pub dialects:    Option<&'static [Dialect]>,
+}
+
+pub(crate) const CORPUS: &[PhraseEntry] = &[
+    // Multi-inflection triple — exercises CLAR-04 dataset-driven inflection
+    PhraseEntry { phrase: "utilize",      replacement: "use",       severity: Severity::High,   dialects: None },
+    PhraseEntry { phrase: "utilizes",     replacement: "use",       severity: Severity::Medium, dialects: None },
+    PhraseEntry { phrase: "utilized",     replacement: "used",      severity: Severity::Medium, dialects: None },
+    // High severity
+    PhraseEntry { phrase: "a number of",  replacement: "many",      severity: Severity::High,   dialects: None },
+    PhraseEntry { phrase: "accompany",    replacement: "go with",   severity: Severity::High,   dialects: None },
+    PhraseEntry { phrase: "accomplish",   replacement: "carry out", severity: Severity::High,   dialects: None },
+    PhraseEntry { phrase: "accorded",     replacement: "given",     severity: Severity::High,   dialects: None },
+    PhraseEntry { phrase: "accordingly",  replacement: "so",        severity: Severity::High,   dialects: None },
+    PhraseEntry { phrase: "accurate",     replacement: "correct",   severity: Severity::High,   dialects: None },
+    PhraseEntry { phrase: "additional",   replacement: "added",     severity: Severity::High,   dialects: None },
+    PhraseEntry { phrase: "advantageous", replacement: "helpful",   severity: Severity::High,   dialects: None },
+    // Medium severity
+    PhraseEntry { phrase: "abundance",    replacement: "enough",    severity: Severity::Medium, dialects: None },
+    PhraseEntry { phrase: "accede to",    replacement: "agree to",  severity: Severity::Medium, dialects: None },
+    PhraseEntry { phrase: "accelerate",   replacement: "speed up",  severity: Severity::Medium, dialects: None },
+    PhraseEntry { phrase: "accentuate",   replacement: "stress",    severity: Severity::Medium, dialects: None },
+    PhraseEntry { phrase: "acquire",      replacement: "get",       severity: Severity::Medium, dialects: None },
+    PhraseEntry { phrase: "aggregate",    replacement: "add",       severity: Severity::Medium, dialects: None },
+    PhraseEntry { phrase: "alleviate",    replacement: "ease",      severity: Severity::Medium, dialects: None },
+    PhraseEntry { phrase: "ameliorate",   replacement: "help",      severity: Severity::Medium, dialects: None },
+    PhraseEntry { phrase: "acquiesce",    replacement: "agree",     severity: Severity::Medium, dialects: None },
+    // Synthetic American-only entry — exercises non-empty branch of dialect filter.
+    // "forthwith" is intentionally NOT in wordy_phrases.toml so subsequent TOML wire-up
+    // won't override its dialect tag.
+    PhraseEntry { phrase: "forthwith",    replacement: "at once",   severity: Severity::Low,    dialects: Some(&[Dialect::American]) },
+];
+
 use harper_core::Document;
 use harper_core::TokenKind;
 use harper_core::linting::{Lint, LintKind, Linter, Suggestion};
