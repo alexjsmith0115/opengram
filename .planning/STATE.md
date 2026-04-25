@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Clarity Engine
-status: executing
-stopped_at: Phase 13 Plan 07 complete (build+automated gates GREEN; 13-VERIFICATION.md scaffolded; UAT pending user execution per Phase 12 fallback pattern)
-last_updated: "2026-04-25T16:00:00.000Z"
-last_activity: 2026-04-25
+status: ready-for-milestone-audit
+stopped_at: Phase 13 complete — UAT 1+2 PASS; UAT 3 deferred to v1.5 (rephrase card header label leak; user-approved 2026-04-25)
+last_updated: "2026-04-25T17:00:00.000Z"
+last_activity: 2026-04-25 -- Phase 13 closed; ready for milestone audit
 progress:
   total_phases: 7
-  completed_phases: 6
+  completed_phases: 7
   total_plans: 42
   completed_plans: 42
   percent: 100
@@ -16,12 +16,12 @@ progress:
 
 ## Current Position
 
-Milestone: v1.4 Clarity Engine
-Phase: 13 (NonFlags Corpus Seed + UAT) — UAT PENDING
-Plan: 7 of 7 complete at code+automated-test level (13-07 build/automated gates GREEN; UAT pending user execution)
-Next: User runs 3 UAT scenarios per `13-VERIFICATION.md § Manual UAT Script`; reply with PASS/FAIL per scenario
-Status: human_needed (UAT)
-Last activity: 2026-04-25
+Milestone: v1.4 Clarity Engine — ALL PHASES COMPLETE
+Phase: 13 (NonFlags Corpus Seed + UAT) — DONE (passed-with-deferred-gap)
+Plan: 7 of 7 complete; UAT Scenarios 1+2 PASS, Scenario 3 deferred-to-v1.5
+Next: /gsd-audit-milestone → /gsd-complete-milestone v1.4 → /gsd-cleanup
+Status: Ready for milestone lifecycle (audit → complete → cleanup)
+Last activity: 2026-04-25 -- Phase 13 closed
 
 **v1.3 status:** ✅ Shipped 2026-04-19. See `.planning/milestones/v1.3-ROADMAP.md` + `.planning/milestones/v1.3-MILESTONE-AUDIT.md`. Tag `v1.3` on `12dd9db`.
 
@@ -162,7 +162,8 @@ None yet.
 | Test flake | `AXCallWatchdogTests.shouldSkipReturnsTrueForBundle...` + `...blocklistExpires...` — parallel-load timing, pass solo | Deferred (pre-existing, Phase 04-01 documented) | 2026-04-19 |
 | Test flake | `TextMonitorStoreIntegrationTests.keystrokeSchedulesDebouncedReconcile` — parallel-load debounce timing, passes solo | Deferred (pre-existing, out of scope) | 2026-04-19 |
 | Test flake | `ParagraphHasherTests.performance500ParagraphsUnder10ms` — 16ms vs 10ms threshold under parallel load (0.007s solo) | Deferred (parallel-load timing class, same root cause as AXCallWatchdog/TextMonitor flakes) | 2026-04-25 |
-| Human verification | Phase 13-07 UAT: 3 scenarios (Notes wordy-phrase flow / TextEdit master toggle / LLM .clarity suppression) per `13-VERIFICATION.md § Manual UAT Script` | Pending user execution; Phase 12 /Applications-only blocker recurs for computer-use MCP path | 2026-04-25 |
+| Human verification | Phase 13-07 UAT Scenarios 1+2 (Notes wordy-phrase flow + TextEdit master toggle) | PASSED (user UAT 2026-04-25) | 2026-04-25 |
+| UI label leak | Phase 13-07 UAT Scenario 3 finding: rephrase card header reads "Improve clarity" for tone-only LLM suggestions. Root cause: `RephraseCardViewModel.swift:21,25,37` maps `LLMStyleSuggestion.Category.tone` → `CheckCategory.clarity` for header display; Phase 7 deleted .clarity from LLM input enums but kept rephrase-card output label. NOT a category-leak (LLMServiceTests.parseClarityCategoryDropped_CLAR21 PASSES). UI string only. | Deferred to v1.5 (user-approved 2026-04-25). Scope: rename "Improve clarity" → "Improve tone"/"Improve writing"; rename `hasClarity` var; audit other clarity label leaks; re-run Scenario 3 | 2026-04-25 |
 
 ## Session Continuity
 

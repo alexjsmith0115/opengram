@@ -62,7 +62,7 @@ Full details: [milestones/v1.3-ROADMAP.md](milestones/v1.3-ROADMAP.md) · [miles
 - [x] **Phase 10: Matcher Implementation** — Production matcher per spike decision; 5-regime case preservation; word-boundary; dialect filter · CLAR-01, CLAR-03, CLAR-04, CLAR-05, CLAR-06 (completed 2026-04-25)
 - [x] **Phase 11: Dataset Integration + Fixture Harness** — `include_str!` wire-up, auto-generated +/- fixtures per entry, snapshot-diff CI, perf logging · CLAR-20 (completed 2026-04-25)
 - [x] **Phase 12: Settings UI + Severity Filter + Acknowledgements** — Clarity toggles, severity filter in `HarperService`, About → Acknowledgements pane · CLAR-02, CLAR-07, CLAR-08, CLAR-17, CLAR-18, CLAR-19 (completed 2026-04-25)
-- [~] **Phase 13: NonFlags Corpus Seed + UAT** — ≥100 non-flag regression fixtures + manual validation in Notes/TextEdit · CLAR-21 (build/automated gates GREEN 2026-04-25; UAT human_needed pending user)
+- [x] **Phase 13: NonFlags Corpus Seed + UAT** — ≥100 non-flag regression fixtures + manual validation in Notes/TextEdit · CLAR-21 (completed 2026-04-25; UAT 1+2 PASS, UAT 3 deferred-to-v1.5: rephrase card header label leak)
 
 ## Phase Details
 
@@ -224,7 +224,7 @@ Plans:
 | 10. Matcher Implementation | v1.4 | 5/5 | Complete    | 2026-04-25 |
 | 11. Dataset Integration + Fixture Harness | v1.4 | 5/5 | Complete   | 2026-04-25 |
 | 12. Settings UI + Severity Filter + Acknowledgements | v1.4 | 4/4 | Complete   | 2026-04-25 |
-| 13. NonFlags Corpus Seed + UAT | v1.4 | 7/7 | UAT Pending | code+automated 2026-04-25 |
+| 13. NonFlags Corpus Seed + UAT | v1.4 | 7/7 | Complete (UAT 3 deferred-v1.5) | 2026-04-25 |
 
 ## v1.4 Requirements Traceability
 

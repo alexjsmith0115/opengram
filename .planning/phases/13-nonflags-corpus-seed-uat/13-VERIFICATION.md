@@ -1,7 +1,7 @@
 ---
 phase: 13
 slug: nonflags-corpus-seed-uat
-status: human_needed
+status: passed-with-deferred-gap
 date: 2026-04-25
 build_gate:
   xcodebuild_app: passed
@@ -11,15 +11,19 @@ human_verification:
   - test: "Notes.app — wordy phrase end-to-end (UAT Scenario 1)"
     expected: "Solid orange underlines on 'utilize' + 'in order to'; popover footer 'Clarity'; Accept replaces text; Dismiss removes underline"
     why_human: "Cross-app AX surface — automation cannot drive Notes.app + AX overlay reliably"
-    status: pending
+    status: passed
+    verified_by: "user UAT 2026-04-25"
   - test: "TextEdit — clarity master toggle behavior (UAT Scenario 2)"
     expected: "Master OFF suppresses all orange clarity underlines; master ON re-surfaces them. NOTE: corpus has zero severity=low entries; opinionated sub-toggle ON has no new visible effect this phase — document and skip sub-toggle assertion"
     why_human: "End-to-end Settings → notification observer → FFI → re-check flow; visual underline state requires user eye"
-    status: pending
+    status: passed
+    verified_by: "user UAT 2026-04-25"
   - test: "LLM .clarity suppression end-to-end (UAT Scenario 3)"
     expected: "Configured LLM with .tone + .rephrase ON; ZERO popover footers read 'Clarity' for LLM-source suggestions (Phase 7 invariant intact)"
     why_human: "Requires user-configured LLM endpoint + cross-app AX surface; Phase 7 contract end-to-end"
-    status: pending
+    status: deferred-to-v1.5
+    finding: "Rephrase card header reads 'Improve clarity' for tone-only suggestions. Root cause: OpenGram/SuggestionUI/RephraseCard/RephraseCardViewModel.swift:21,25,37 — `LLMStyleSuggestion.Category.tone` maps to `CheckCategory.clarity` for header display ('Improve clarity' string returned for `.tone`+`.rephrase` set). Phase 7 deleted .clarity from LLM input enums but kept the rephrase-card output label. User-facing string still says 'clarity' → contradicts Phase 7 invariant per Scenario 3 PASS criteria. NOT a category-leak through DTO drop (LLMServiceTests.parseClarityCategoryDropped_CLAR21 PASSES, locking the input contract). UI label leak only."
+    deferred_reason: "User-approved deferral per /gsd-autonomous decision 2026-04-25. To fix in v1.5: rename header strings ('Improve clarity' → 'Improve tone' / 'Improve writing'), rename `hasClarity` variable, audit other 'clarity' label leaks, re-run Scenario 3."
 ---
 
 # Phase 13 — Verification
@@ -27,7 +31,7 @@ human_verification:
 **Phase Goal:** Regression-containment NonFlags corpus seeded (≥100 fixtures); full v1.4 clarity pipeline validated end-to-end in real macOS apps.
 **Requirement:** CLAR-21
 **Verified (build gates):** 2026-04-25
-**Status:** human_needed (UAT scenarios pending user execution per Phase 12 fallback pattern)
+**Status:** passed-with-deferred-gap (Scenarios 1+2 PASS; Scenario 3 deferred to v1.5 — UI label leak in rephrase card header)
 
 ## Build Gate
 
@@ -187,13 +191,33 @@ xcodebuild test ... -only-testing:OpenGramTests/LLMServiceTests
 
 ## Sign-Off
 
-- [ ] **Scenario 1 — Notes.app wordy phrase end-to-end** — PASS / FAIL
-- [ ] **Scenario 2 — TextEdit master toggle behavior** — PASS / FAIL
-- [ ] **Scenario 3 — LLM `.clarity` suppression end-to-end** — PASS / FAIL / human_needed (LLM endpoint unavailable)
+- [x] **Scenario 1 — Notes.app wordy phrase end-to-end** — PASS (user UAT 2026-04-25)
+- [x] **Scenario 2 — TextEdit master toggle behavior** — PASS (user UAT 2026-04-25)
+- [~] **Scenario 3 — LLM `.clarity` suppression end-to-end** — DEFERRED-TO-V1.5
 
-**Phase 13 status:** human_needed (awaiting user UAT confirmation; build + automated test gates GREEN)
+### Scenario 3 finding (Phase 7 oversight discovered by Phase 13 UAT)
 
-To resume after UAT execution: reply with `Scenario N: PASS|FAIL [+ notes]` for each scenario. Verifier will update YAML `status:` fields + top-level `status:` to `passed` (all PASS) or `failed` (any FAIL with detail).
+Visual UAT exposed an **LLM rephrase-card header label leak**: when LLM returns a tone-only suggestion (no grammar fix), the rephrase card popover header reads **"Improve clarity"**.
+
+Root cause (code-level):
+- `OpenGram/SuggestionUI/RephraseCard/RephraseCardViewModel.swift:37` — `case .tone: return .clarity` maps `LLMStyleSuggestion.Category.tone` → `CheckCategory.clarity` for header purposes
+- `OpenGram/SuggestionUI/RephraseCard/RephraseCardViewModel.swift:21,25` — `let hasClarity = categories.contains(.clarity) || categories.contains(.rephrase)` and `case (true, false): return "Improve clarity"`
+- Phase 7 deleted `.clarity` from `LLMCheckType` and `LLMStyleSuggestion.Category` (LLM **input** enums) but preserved the rephrase-card **output** label "Improve clarity"
+
+What this is NOT:
+- Not a category-leak through DTO drop. `LLMServiceTests.parseClarityCategoryDropped_CLAR21` PASSES, confirming `category=clarity` JSON entries are silently dropped at parse time.
+- Not a `WordyPhrasesLinter` regression. Harper clarity engine wholly correct; NonFlags corpus 5/5 green.
+
+What this IS:
+- A UI string label leak — the user-visible header text still says "clarity" when the LLM contract says no `.clarity` suggestions exist.
+
+**User decision (autonomous-mode 2026-04-25):** Defer to v1.5. v1.4 ships with documented gap.
+
+**v1.5 fix scope:**
+1. Rename rephrase card header strings: `"Improve clarity"` → `"Improve tone"` (when tone-only) / `"Improve writing"` (when tone+rephrase mixed); `"Improve clarity and fix grammar"` → `"Improve writing and fix grammar"` (or per UX decision)
+2. Rename `hasClarity` variable in `RephraseCardViewModel.headerText(for:)` → `hasTone` or `hasStyle`
+3. Audit other "clarity" label leaks across SuggestionUI / Settings strings
+4. Re-run Scenario 3 to confirm zero "Clarity" header strings on LLM-source popovers
 
 ## Goal Achievement (ROADMAP Success Criteria)
 
@@ -201,9 +225,9 @@ To resume after UAT execution: reply with `Scenario N: PASS|FAIL [+ notes]` for 
 |---|-------|--------|----------|
 | 1 | `harper-bridge/tests/nonflags/` ≥100 sentences across 4 category files; each fixture asserts zero `WordyPhrasesLinter` lints | VERIFIED | 105 lines committed; `cargo test --test nonflags_corpus` 5/5 passing; `nonflags_meta_corpus_size` fail-fast at <100 |
 | 2 | NonFlags suite runs as Rust integration test; CONTRIBUTING.md rule + PR template checkbox added | VERIFIED | `harper-bridge/tests/nonflags_corpus.rs` exists; `CONTRIBUTING.md` + `.github/PULL_REQUEST_TEMPLATE.md` exist (13-06) |
-| 3 | Manual UAT in Notes.app: hotkey-fire produces solid-orange clarity underlines; Accept replaces; Dismiss suppresses | PENDING (human_needed) | Scenario 1 above — awaiting user reply |
-| 4 | Manual UAT in TextEdit: master OFF suppresses; master ON re-surfaces. Sub-toggle no-op (zero severity=low entries — documented deviation) | PENDING (human_needed) | Scenario 2 above; zero-Low caveat verified by `grep -c 'severity = "low"'` returning 0 |
-| 5 | LLM `.tone`+`.rephrase` enabled → zero `.clarity` source entries surface; `LLMServiceTests.parseClarityCategoryDropped_CLAR21` locks contract at integration layer | VERIFIED (code+test) / PENDING (visual UAT) | Swift test PASS; visual end-to-end via Scenario 3 above |
+| 3 | Manual UAT in Notes.app: hotkey-fire produces solid-orange clarity underlines; Accept replaces; Dismiss suppresses | VERIFIED | User UAT 2026-04-25 — Scenario 1 PASS |
+| 4 | Manual UAT in TextEdit: master OFF suppresses; master ON re-surfaces. Sub-toggle no-op (zero severity=low entries — documented deviation) | VERIFIED | User UAT 2026-04-25 — Scenario 2 PASS; zero-Low caveat verified by `grep -c 'severity = "low"'` returning 0 |
+| 5 | LLM `.tone`+`.rephrase` enabled → zero `.clarity` source entries surface; `LLMServiceTests.parseClarityCategoryDropped_CLAR21` locks contract at integration layer | VERIFIED at code+DTO/service test layers; UI label leak DEFERRED-V1.5 | Swift test PASS (input contract); visual UAT exposed rephrase-card header label leak — see Sign-Off section. Header text fix deferred to v1.5 per user decision |
 
 ## Requirements Coverage
 
