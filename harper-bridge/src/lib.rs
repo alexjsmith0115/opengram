@@ -4,7 +4,7 @@ use harper_core::linting::{LintGroup, LintKind, Linter, Suggestion};
 use harper_core::parsers::PlainEnglish;
 use harper_core::spell::{FstDictionary, MergedDictionary, MutableDictionary};
 use harper_core::{DictWordMetadata, Dialect, DialectFlags, Document};
-use clarity::{Severity, WordyPhrasesStubLinter, severity_from_priority};
+use clarity::{Severity, WordyPhrasesLinter, severity_from_priority, CORPUS, PhraseEntry};
 
 uniffi::setup_scaffolding!();
 mod clarity;
@@ -148,8 +148,16 @@ impl HarperChecker {
 }
 
 fn build_lint_group(merged: Arc<MergedDictionary>, dialect: Dialect) -> LintGroup {
+    let applicable: Vec<PhraseEntry> = CORPUS
+        .iter()
+        .filter(|e| match e.dialects {
+            None          => true,
+            Some(allowed) => allowed.contains(&dialect),
+        })
+        .copied()
+        .collect();
     let mut group = LintGroup::new_curated(merged, dialect);
-    group.add("WordyPhrases", WordyPhrasesStubLinter::new());
+    group.add("WordyPhrases", WordyPhrasesLinter::new(&applicable));
     // Rules added via `add()` default to disabled in FlatConfig (unwrap_or(false)).
     // Explicitly enable so organized_lints() includes WordyPhrases output.
     group.config.set_rule_enabled("WordyPhrases", true);
@@ -179,22 +187,35 @@ mod tests {
     use crate::clarity::Severity;
 
     #[test]
-    fn stub_fires_flag_me() {
+    fn wordy_phrases_fires_corpus_entry() {
         let checker = HarperChecker::new("US".into(), vec![]);
-        let out = checker.check("FLAG_ME".into());
-        assert_eq!(out.len(), 1, "stub must emit exactly one suggestion");
-        let s = &out[0];
+        let out = checker.check("Please utilize this.".into());
+        // CORPUS entry "utilize" → "use" with Severity::High → priority 200, category Clarity.
+        let utilize_lints: Vec<&GrammarSuggestion> = out
+            .iter()
+            .filter(|s| s.primary_replacement.as_deref() == Some("use"))
+            .collect();
+        assert_eq!(utilize_lints.len(), 1, "must emit exactly one suggestion for 'utilize'");
+        let s = utilize_lints[0];
         assert!(matches!(s.category, SuggestionCategory::Clarity), "category must be Clarity");
-        assert!(matches!(s.severity, Some(Severity::Medium)), "severity must be Some(Medium)");
-        assert_eq!(s.priority, 220, "priority must be PRIORITY_MEDIUM (220)");
-        assert_eq!(s.primary_replacement.as_deref(), Some("FLAGGED"), "replacement must be FLAGGED");
+        assert!(matches!(s.severity, Some(Severity::High)), "utilize → High severity");
+        assert_eq!(s.priority, 200, "High → PRIORITY_HIGH = 200");
+        assert_eq!(s.primary_replacement.as_deref(), Some("use"));
     }
 
     #[test]
     fn clarity_linter_survives_dict_add_cycle() {
         let checker = HarperChecker::new("US".into(), vec![]);
-        assert_eq!(checker.check("FLAG_ME".into()).len(), 1, "stub fires pre-dict-add");
+        // Pre-dict-add: utilize → use fires.
+        let pre = checker.check("Please utilize this.".into());
+        let pre_count = pre.iter().filter(|s| s.primary_replacement.as_deref() == Some("use")).count();
+        assert_eq!(pre_count, 1, "fires pre-dict-add");
+
         let _ = checker.add_to_dictionary("somenewword".into());
-        assert_eq!(checker.check("FLAG_ME".into()).len(), 1, "stub STILL fires post-dict-add");
+
+        // Post-dict-add: build_lint_group rebuilt; clarity linter still wired.
+        let post = checker.check("Please utilize this.".into());
+        let post_count = post.iter().filter(|s| s.primary_replacement.as_deref() == Some("use")).count();
+        assert_eq!(post_count, 1, "STILL fires post-dict-add — CLAR-12 invariant");
     }
 }
