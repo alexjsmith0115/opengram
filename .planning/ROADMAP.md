@@ -144,7 +144,7 @@ Plans:
 Plans:
 - [x] 10-01-PLAN.md — Add production types (PhraseEntry struct + CORPUS const + WordyPhrasesLinter struct/impl) alongside stub
 - [x] 10-02-PLAN.md — Promote spike test helpers + 2 spike tests (case_preservation_five_regimes, priority_rewrite_no_default_leak) to top-level mod tests
-- [ ] 10-03-PLAN.md — Atomic swap: register WordyPhrasesLinter via build_lint_group with dialect filter, delete WordyPhrasesStubLinter + mod spike, replace lib.rs stub tests with corpus equivalents
+- [x] 10-03-PLAN.md — Atomic swap: register WordyPhrasesLinter via build_lint_group with dialect filter, delete WordyPhrasesStubLinter + mod spike, replace lib.rs stub tests with corpus equivalents
 - [ ] 10-04-PLAN.md — Add 4 new gate tests: proper_noun_iphone_does_not_trigger, word_boundary_no_midword_match, case_preservation_under_tr_locale, dialect_filter_drops_non_matching
 - [ ] 10-05-PLAN.md — Final phase gate: build-harper.sh + xcodebuild app + xcodebuild test all green per D-18
 
@@ -199,7 +199,7 @@ Plans:
 | 7. LLM `.clarity` Clean-Deletion | v1.4 | 0/0 | Not started | — |
 | 8. Dataset Pipeline | v1.4 | 7/7 | Complete   | 2026-04-20 |
 | 9. Rust Foundation + MapPhraseLinter Spike | v1.4 | 8/8 | Complete   | 2026-04-25 |
-| 10. Matcher Implementation | v1.4 | 1/5 | In progress | — |
+| 10. Matcher Implementation | v1.4 | 3/5 | In progress | — |
 | 11. Dataset Integration + Fixture Harness | v1.4 | 0/0 | Not started | — |
 | 12. Settings UI + Severity Filter + Acknowledgements | v1.4 | 0/0 | Not started | — |
 | 13. NonFlags Corpus Seed + UAT | v1.4 | 0/0 | Not started | — |

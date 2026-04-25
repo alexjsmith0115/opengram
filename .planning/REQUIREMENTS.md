@@ -17,17 +17,17 @@
 
 ### Clarity — Detection
 
-- [ ] **CLAR-01**: Given input text containing a known wordy phrase, the clarity engine returns a suggestion with the flagged span, the replacement text, and an explanation. Every enabled phrase in the dataset produces exactly one clarity suggestion with the expected replacement for its fixture sentence.
+- [x] **CLAR-01**: Given input text containing a known wordy phrase, the clarity engine returns a suggestion with the flagged span, the replacement text, and an explanation. Every enabled phrase in the dataset produces exactly one clarity suggestion with the expected replacement for its fixture sentence.
 
 - [ ] **CLAR-02**: Clarity suggestions render as a distinct visual category — solid orange underline (`NSColor.systemOrange`), `source: .harper`, `category: .clarity`. Popover header shows "Clarity" badge. Change from prior behavior: source flips `.llm` (dashed orange) → `.harper` (solid orange); color unchanged.
 
 - [ ] **CLAR-03**: Case preservation — replacement matches the case regime of the flagged span across 5 regimes: lowercase, Sentence-start (capital first letter), Title Case, UPPER CASE, post-colon. Mixed-case proper nouns (e.g., "iPhone") must not trigger replacement.
 
-- [ ] **CLAR-04**: Inflection handling — dataset-driven. Each inflected form (`utilize`/`utilizes`/`utilized`) is a separate `PhraseEntry` with its corresponding replacement form. No runtime stemming; agreement filtered at dataset build time.
+- [x] **CLAR-04**: Inflection handling — dataset-driven. Each inflected form (`utilize`/`utilizes`/`utilized`) is a separate `PhraseEntry` with its corresponding replacement form. No runtime stemming; agreement filtered at dataset build time.
 
-- [ ] **CLAR-05**: Word-boundary safety — phrase matches only trigger on Harper token boundaries. Mid-word substrings never match (e.g., "order to" inside "border tools" must not flag). Validated against a dedicated `NonFlagsFixtures/` corpus.
+- [x] **CLAR-05**: Word-boundary safety — phrase matches only trigger on Harper token boundaries. Mid-word substrings never match (e.g., "order to" inside "border tools" must not flag). Validated against a dedicated `NonFlagsFixtures/` corpus.
 
-- [ ] **CLAR-06**: Grammar takes priority over clarity when spans overlap. Harper's `remove_overlaps` + priority field resolves this automatically. Clarity priority window is strictly greater than grammar (127) and spelling (63) so clarity loses overlaps. (Corrects spec CD-05 — Harper convention is lower-priority-number = more important.)
+- [x] **CLAR-06**: Grammar takes priority over clarity when spans overlap. Harper's `remove_overlaps` + priority field resolves this automatically. Clarity priority window is strictly greater than grammar (127) and spelling (63) so clarity loses overlaps. (Corrects spec CD-05 — Harper convention is lower-priority-number = more important.)
 
 - [ ] **CLAR-07**: Individual clarity rule categories are toggleable via the existing `setRuleEnabled` bridge. Toggling `WordyPhrases` off suppresses all clarity suggestions; toggling back on restores them. No app rebuild or restart required.
 
@@ -126,12 +126,12 @@ Measurement checkpoint: Phase 11 logs all four values to test output; shipping n
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CLAR-01 | Phase 10 | Pending |
+| CLAR-01 | Phase 10 | Complete |
 | CLAR-02 | Phase 12 | Pending |
 | CLAR-03 | Phase 10 | Pending |
-| CLAR-04 | Phase 10 | Pending |
-| CLAR-05 | Phase 10 | Pending |
-| CLAR-06 | Phase 10 | Pending |
+| CLAR-04 | Phase 10 | Complete |
+| CLAR-05 | Phase 10 | Complete |
+| CLAR-06 | Phase 10 | Complete |
 | CLAR-07 | Phase 12 | Pending |
 | CLAR-08 | Phase 12 | Pending |
 | CLAR-09 | Phase 7 | Pending |

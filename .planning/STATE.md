@@ -3,25 +3,25 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Clarity Engine
 status: executing
-stopped_at: Phase 9 Plan 07 complete
-last_updated: "2026-04-25T01:05:40Z"
-last_activity: 2026-04-25 -- Phase 10 Plan 02 complete (spike test promotion)
+stopped_at: Phase 10 Plan 03 complete
+last_updated: "2026-04-25T01:10:42Z"
+last_activity: 2026-04-25 -- Phase 10 Plan 03 complete (atomic stub→production swap)
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 26
-  completed_plans: 23
-  percent: 88
+  completed_plans: 24
+  percent: 92
 ---
 
 ## Current Position
 
 Milestone: v1.4 Clarity Engine
 Phase: 10 (Matcher Implementation) — EXECUTING
-Plan: 3 of 5
-Next: Plan 10-03 (atomic registration swap + spike + stub deletion)
+Plan: 4 of 5
+Next: Plan 10-04 (gate tests against wired WordyPhrasesLinter)
 Status: Executing Phase 10
-Last activity: 2026-04-25 -- Phase 10 Plan 02 complete
+Last activity: 2026-04-25 -- Phase 10 Plan 03 complete
 
 **v1.3 status:** ✅ Shipped 2026-04-19. See `.planning/milestones/v1.3-ROADMAP.md` + `.planning/milestones/v1.3-MILESTONE-AUDIT.md`. Tag `v1.3` on `12dd9db`.
 
@@ -80,6 +80,7 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 | Phase 09 P08 | 8min | 1 tasks | 0 files |
 | Phase 10-matcher-implementation P01 | 2min | 2 tasks | 1 files |
 | Phase 10-matcher-implementation P02 | 1min | 2 tasks | 1 files |
+| Phase 10-matcher-implementation P03 | 2min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -100,6 +101,9 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 - [10-01]: Production wrapper coexists with stub + spike (zero deletions in Plan 01) — Plan 03 atomically swaps registration in lib.rs and deletes both stub + spike in single commit
 - [10-02]: Promoted spike tests run against PRODUCTION WordyPhrasesLinter::new(CORPUS) — bypasses build_lint_group dialect filter so all 21 entries (incl. synthetic 'forthwith') exercised at linter level; dialect filter contract tested separately at HarperChecker level in Plan 04
 - [10-02]: Test promotion ordering enforced — helpers + tests promoted BEFORE mod spike deletion (Plan 03) per RESEARCH §Pitfall 2 to avoid compile breakage
+- [10-03]: Atomic two-task stub→production swap honored D-02 — Task 1 deletes stub + spike from clarity.rs (build intentionally broken on lib.rs:7); Task 2 swaps lib.rs import + build_lint_group + tests in single coherent change. No coexistence period.
+- [10-03]: build_lint_group dialect filter — None ⇒ universal; Some(allowed) ⇒ allowed.contains(&dialect). Dialect: PartialEq + Copy verified in harper-core 2.0.0 dict_word_metadata.rs. Signature unchanged per D-15.
+- [10-03]: Lib.rs regression tests filter+count on primary_replacement instead of len-equality — real corpus text "Please utilize this." may co-emit grammar/spelling lints alongside the clarity match; len==1 would race against unrelated curated rules.
 
 ### Pending Todos
 
@@ -121,6 +125,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-25T01:05:40Z
-Stopped at: Phase 10 Plan 02 complete
+Last session: 2026-04-25T01:10:42Z
+Stopped at: Phase 10 Plan 03 complete
 Resume file: None
