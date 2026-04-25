@@ -201,7 +201,7 @@ Plans:
 Plans:
 - [x] 13-01-PLAN.md — Empty Rust harness scaffold: nonflags_corpus.rs + 4 placeholder .txt files; cargo test green with zero fixtures (CLAR-21)
 - [x] 13-02-PLAN.md — Hand-curated fixture seed batch 1: proper_nouns ≥20 + quoted_code ≥25 (≥45 line milestone) (CLAR-21)
-- [ ] 13-03-PLAN.md — Hand-curated fixture seed batch 2: domain_terms ≥25 + retext_issues ≥30 (push corpus total ≥100) (CLAR-21)
+- [x] 13-03-PLAN.md — Hand-curated fixture seed batch 2: domain_terms ≥25 + retext_issues ≥30 (push corpus total ≥100) (CLAR-21)
 - [ ] 13-04-PLAN.md — nonflags_meta_corpus_size guard test (≥100 line fail-fast) (CLAR-21)
 - [x] 13-05-PLAN.md — Swift LLM regression test: parseClarityCategoryDropped_CLAR21 in LLMServiceTests.swift (CLAR-21)
 - [x] 13-06-PLAN.md — CONTRIBUTING.md + .github/PULL_REQUEST_TEMPLATE.md scaffolding with NonFlags rule + checkbox (CLAR-21)

@@ -3,22 +3,22 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Clarity Engine
 status: executing
-stopped_at: Phase 13 Plan 02 complete — NonFlags batch 1 milestone (47 lines)
-last_updated: "2026-04-25T15:31:52.090Z"
+stopped_at: Phase 13 Plan 05 complete — CLAR-21 service-layer regression test landed
+last_updated: "2026-04-25T15:42:52.355Z"
 last_activity: 2026-04-25
 progress:
   total_phases: 7
   completed_phases: 6
   total_plans: 42
-  completed_plans: 39
-  percent: 93
+  completed_plans: 40
+  percent: 95
 ---
 
 ## Current Position
 
 Milestone: v1.4 Clarity Engine
 Phase: 13 (NonFlags Corpus Seed + UAT) — EXECUTING
-Plan: 4 of 7 complete (13-01/05/06/02 done; 13-03/04/07 remaining)
+Plan: 5 of 7 complete (13-01/05/06/02 done; 13-03/04/07 remaining)
 Next: /gsd-execute-phase 13 → continue with 13-03 (domain_terms + retext_issues)
 Status: Ready to execute
 Last activity: 2026-04-25
@@ -91,6 +91,7 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 | Phase 13-nonflags-corpus-seed-uat P06 | 4min | 2 tasks | 2 files |
 | Phase 13-nonflags-corpus-seed-uat P05 | 2min | 1 tasks | 1 files |
 | Phase 13-nonflags-corpus-seed-uat PP02 | 6min | 2 tasks | 2 files |
+| Phase 13-nonflags-corpus-seed-uat P03 | 7min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -132,6 +133,9 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 - [13-05]: Swift Testing function-name suffix not addressable via xcodebuild `-only-testing:.../FuncName` — invocation reports "TEST SUCCEEDED, 0 tests"; suite-level filter required to actually execute. Documented for future `-only-testing` invocations against Swift Testing tests.
 - [Phase 13-02]: Single-word wordy-phrase entries split on every separator (_, -, /, .) — require camelCase containment to evade match; multi-word entries safely hidden by any separator
 - [Phase 13-02]: MapPhraseLinter token-exact match — inflected forms (acquired, demonstrated, released, produces) of single-word ban entries do NOT trigger; lemma-level matching is NOT in effect
+- [Phase ?]: [13-03]: Quote chars do NOT interrupt MapPhraseLinter matching — only code-identifier containment safe
+- [Phase ?]: [13-03]: shall (medium severity) flagged uppercase SHALL — case-insensitive matching across all severity tiers
+- [Phase ?]: [13-03]: NonFlags corpus closed at 105 lines (>=100 launch threshold) — CLAR-21 complete for v1.4
 
 ### Pending Todos
 
@@ -153,6 +157,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-25T15:30:42.368Z
+Last session: 2026-04-25T15:42:32.926Z
 Stopped at: Phase 13 Plan 05 complete — CLAR-21 service-layer regression test landed
 Resume file: None
