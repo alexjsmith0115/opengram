@@ -2,6 +2,7 @@ use std::sync::{Arc, Mutex};
 
 use harper_core::linting::{LintGroup, LintKind, Linter, Suggestion};
 use harper_core::parsers::PlainEnglish;
+use harper_core::remove_overlaps;
 use harper_core::spell::{FstDictionary, MergedDictionary, MutableDictionary};
 use harper_core::{DictWordMetadata, Dialect, DialectFlags, Document};
 use clarity::{Severity, WordyPhrasesLinter, severity_from_priority, get_corpus, ParsedPhraseEntry};
@@ -85,6 +86,7 @@ impl HarperChecker {
         let mut inner = self.inner.lock().expect("HarperChecker lock poisoned");
         let document = Document::new(&text, &PlainEnglish, inner.merged_dict.as_ref());
         let lints = inner.linter.lint(&document);
+        let lints = resolve_clarity_overlaps(lints);
 
         lints
             .into_iter()
@@ -145,6 +147,37 @@ impl HarperChecker {
         let mut inner = self.inner.lock().expect("HarperChecker lock poisoned");
         inner.linter.config.set_rule_enabled(&rule_key, enabled);
     }
+}
+
+/// CLAR-06: clarity (priority 200/220/240) loses to grammar/spelling on overlap.
+/// Two-pass:
+///   1. Apply `remove_overlaps` to clarity-only lints — dedupes overlapping clarity
+///      phrases (e.g. "adversely impact" vs "adversely impact on"), keeping the
+///      lower-priority-number entry.
+///   2. Drop any remaining clarity lint whose span overlaps a non-clarity lint —
+///      grammar/spelling wins.
+/// Non-clarity lints are passed through untouched: the curated harper-core
+/// linters that legitimately overlap each other (e.g. `SpellingHyphen` +
+/// `SpellCheck` on a single misspelled word) must all surface.
+fn resolve_clarity_overlaps(lints: Vec<harper_core::linting::Lint>) -> Vec<harper_core::linting::Lint> {
+    let is_clarity = |l: &harper_core::linting::Lint| {
+        matches!(l.lint_kind, LintKind::Style) && severity_from_priority(l.priority).is_some()
+    };
+
+    let (mut clarity_lints, non_clarity_lints): (Vec<_>, Vec<_>) =
+        lints.into_iter().partition(is_clarity);
+
+    remove_overlaps(&mut clarity_lints);
+
+    clarity_lints.retain(|c| {
+        !non_clarity_lints
+            .iter()
+            .any(|n| c.span.start < n.span.end && c.span.end > n.span.start)
+    });
+
+    let mut out = non_clarity_lints;
+    out.extend(clarity_lints);
+    out
 }
 
 fn build_lint_group(merged: Arc<MergedDictionary>, dialect: Dialect) -> LintGroup {
