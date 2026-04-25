@@ -268,6 +268,92 @@ mod tests {
         assert_eq!(severity_from_priority(127), None);
         assert_eq!(severity_from_priority(63), None);
     }
+
+    #[test]
+    fn case_preservation_five_regimes() {
+        let merged = make_merged_dict();
+        let mut linter = WordyPhrasesLinter::new(CORPUS);
+
+        for entry in CORPUS {
+            let test_cases: Vec<(String, String, &str)> = vec![
+                (
+                    format!("Please {} now.", entry.phrase),
+                    entry.replacement.to_string(),
+                    "lowercase",
+                ),
+                (
+                    format!("{} is important.", sentence_start(entry.phrase)),
+                    sentence_start(entry.replacement),
+                    "sentence-start",
+                ),
+                (
+                    format!("We Should {} It.", title_case(entry.phrase)),
+                    title_case(entry.replacement),
+                    "title-case",
+                ),
+                (
+                    format!("WE MUST {} IT.", entry.phrase.to_uppercase()),
+                    entry.replacement.to_uppercase(),
+                    "upper-case",
+                ),
+                (
+                    format!("Note: {} is needed.", entry.phrase),
+                    entry.replacement.to_string(),
+                    "post-colon",
+                ),
+            ];
+
+            for (input, expected, regime) in &test_cases {
+                let doc = Document::new(input, &PlainEnglish, merged.as_ref());
+                let lints = linter.lint(&doc);
+                let matching: Vec<String> = lints
+                    .iter()
+                    .filter_map(primary_replacement)
+                    .filter(|r| r.eq_ignore_ascii_case(expected))
+                    .collect();
+                assert!(
+                    !matching.is_empty(),
+                    "regime '{}' phrase '{}': expected replacement '{}' (case-insensitive), got: {:?}",
+                    regime,
+                    entry.phrase,
+                    expected,
+                    lints.iter().map(primary_replacement).collect::<Vec<_>>(),
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn priority_rewrite_no_default_leak() {
+        let merged = make_merged_dict();
+        let mut linter = WordyPhrasesLinter::new(CORPUS);
+
+        let text = CORPUS
+            .iter()
+            .map(|e| format!("Please {}.", e.phrase))
+            .collect::<Vec<_>>()
+            .join(" ");
+
+        let doc = Document::new(&text, &PlainEnglish, merged.as_ref());
+        let lints = linter.lint(&doc);
+
+        assert!(!lints.is_empty(), "corpus text must produce at least one lint");
+
+        for lint in &lints {
+            let valid = lint.priority == PRIORITY_HIGH
+                || lint.priority == PRIORITY_MEDIUM
+                || lint.priority == PRIORITY_LOW;
+            assert!(
+                valid,
+                "priority leak: lint.priority = {} (expected {}/{}/{}); suggestion = {:?}",
+                lint.priority,
+                PRIORITY_HIGH,
+                PRIORITY_MEDIUM,
+                PRIORITY_LOW,
+                primary_replacement(lint),
+            );
+        }
+    }
 }
 
 #[cfg(test)]
