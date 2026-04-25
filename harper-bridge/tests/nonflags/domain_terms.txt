@@ -1,3 +1,30 @@
 # NonFlags fixture — domain-specific / RFC normative usage of flagged substrings.
 # Each non-comment non-blank line MUST produce zero WordyPhrasesLinter lints.
 # CLAR-21
+The TCP stack opens a "window of opportunity" for retransmits.
+RFC 793 declares `in_order_to` as a normative imperative token.
+The OSI model defines a "window of opportunity" at layer four.
+The contract clause references `due_to_the_fact_that` as the literal token.
+The HTTP/2 spec lifecycle method `subsequentTo` advances the stream phase.
+ISO 27001 Annex A enumerates `aforementionedControls` as the audit anchor.
+The legal contract enumerates `pursuant_to_clause` as the binding section.
+The kernel scheduler must invoke `terminateConnection` per the spec.
+SLA section 3.2 mandates `commenceServices` on day zero of onboarding.
+The medical protocol calls for `cessationOfTreatment` at week six.
+The patent claim references the `aforementionedApparatus` clause.
+The compliance review tags `heretoforeClause` as a normative anchor.
+The lease key `whereasTenantAgrees` appears in the recital block.
+The deposition tag `notwithstandingPrior` survives the parser.
+The 802.11 standard exposes `ascertainSignalStrength` as a measurement helper.
+The DICOM spec references `implementationOfModalityWorklist` as a service.
+The XML schema declares `occurrenceOfElement` as a required attribute.
+The ASTM standard cites `determineMoistureContent` as method four.
+The clinical guideline mandates `terminationOfTherapy` at the endpoint.
+The patent specification describes a method to `ascertainTheLoad` on the rotor.
+The RFC 2119 keyword glossary lists `MUST` alongside `SHOULD` per the BCP.
+The Postgres extension `priorToSavepoint` rolls back the active transaction.
+The SAML token field `inAccordanceWithPolicy` carries the audit tag.
+The eDiscovery export tags `pursuantToOrder` on every produced document.
+The IETF draft references `inTheEventOfFailover` as the canonical handler.
+The ICH GCP guideline references `cessationOfDosing` as the stop criterion.
+The HIPAA notice cites `inAccordanceWithCovered` as the disclosure anchor.
