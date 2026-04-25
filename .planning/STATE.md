@@ -3,24 +3,25 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Clarity Engine
 status: executing
-stopped_at: Phase 9 Plan 08 complete — Phase 9 DONE
-last_updated: "2026-04-25T00:06:00.000Z"
-last_activity: 2026-04-25 -- Phase 9 Plan 08 executed (D-35 final gate: cargo 7/7 green, xcodebuild BUILD SUCCEEDED + ClarityFFITests green, build-harper.sh idempotent; Phase 9 complete)
+stopped_at: Phase 9 Plan 07 complete
+last_updated: "2026-04-25T00:55:22.848Z"
+last_activity: 2026-04-25 -- Phase 10 execution started
 progress:
   total_phases: 7
   completed_phases: 3
-  total_plans: 21
-  completed_plans: 21
-  percent: 100
+  total_plans: 26
+  completed_plans: 22
+  percent: 85
 ---
 
 ## Current Position
 
 Milestone: v1.4 Clarity Engine
-Phase: 09 (rust-foundation-mapphraselinter-spike) — COMPLETE (8/8 plans done)
-Next: Phase 10 (Matcher Implementation)
-Status: Executing
-Last activity: 2026-04-25 -- Phase 9 Plan 08 executed (D-35 final gate passed; Phase 9 complete; CLAR-11/12/13 all green)
+Phase: 10 (Matcher Implementation) — EXECUTING
+Plan: 2 of 5
+Next: Plan 10-02 (spike test promotion)
+Status: Executing Phase 10
+Last activity: 2026-04-25 -- Phase 10 Plan 01 complete
 
 **v1.3 status:** ✅ Shipped 2026-04-19. See `.planning/milestones/v1.3-ROADMAP.md` + `.planning/milestones/v1.3-MILESTONE-AUDIT.md`. Tag `v1.3` on `12dd9db`.
 
@@ -31,7 +32,7 @@ Progress: 0% (0/7 phases complete, 0/0 plans — plans defined per phase at `/gs
 See: .planning/PROJECT.md (updated 2026-04-19 — v1.4 Clarity Engine started)
 
 **Core value:** Press a hotkey in any app and get instant, accurate grammar corrections with optional AI-powered style suggestions — entirely local by default.
-**Current focus:** Phase 08 — dataset-pipeline
+**Current focus:** Phase 10 — Matcher Implementation
 
 ## v1.4 Phase Map
 
@@ -77,6 +78,7 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 | Phase 09-rust-foundation P03 | 8min | 2 tasks | 2 files |
 | Phase 09-rust-foundation P04 | 12min | 1 tasks | 2 files |
 | Phase 09 P08 | 8min | 1 tasks | 0 files |
+| Phase 10-matcher-implementation P01 | 2min | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -92,6 +94,9 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 - [09-04]: FLAG_ME tokenizes as 3 tokens (Word+Underscore+Word) — matched via windows(3); FlatConfig.is_rule_enabled returns false for unknown keys — must call set_rule_enabled after LintGroup.add()
 - [09-07]: CLAR-13 spike decision: Adopt MapPhraseLinter wrapper — both hard gates PASS (5-regime case preservation + zero priority=31 leakage). REQUIREMENTS.md CLAR-13 amended per D-09 (wrapper-vs-custom framing).
 - [Phase ?]: Phase 9 final gate: D-35 satisfied — cargo 7/7 green, xcodebuild BUILD SUCCEEDED, ClarityFFITests all green, build-harper.sh idempotent
+- [10-01]: PhraseEntry uses 'static str slices + Option<&'static [Dialect]> — const slice avoids heap allocation until Phase 11 TOML parse promotes to owned Vec
+- [10-01]: WordyPhrasesLinter::new takes &[PhraseEntry] (constructor injection) — enables Plan 04 gate tests to instantiate with custom corpus without depending on global CORPUS const
+- [10-01]: Production wrapper coexists with stub + spike (zero deletions in Plan 01) — Plan 03 atomically swaps registration in lib.rs and deletes both stub + spike in single commit
 
 ### Pending Todos
 
@@ -113,6 +118,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-25T00:00:12.737Z
-Stopped at: Phase 9 Plan 07 complete
+Last session: 2026-04-25T01:00:15Z
+Stopped at: Phase 10 Plan 01 complete
 Resume file: None
