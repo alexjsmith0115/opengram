@@ -21,7 +21,7 @@
 
 - [ ] **CLAR-02**: Clarity suggestions render as a distinct visual category — solid orange underline (`NSColor.systemOrange`), `source: .harper`, `category: .clarity`. Popover header shows "Clarity" badge. Change from prior behavior: source flips `.llm` (dashed orange) → `.harper` (solid orange); color unchanged.
 
-- [ ] **CLAR-03**: Case preservation — replacement matches the case regime of the flagged span across 5 regimes: lowercase, Sentence-start (capital first letter), Title Case, UPPER CASE, post-colon. Mixed-case proper nouns (e.g., "iPhone") must not trigger replacement.
+- [x] **CLAR-03**: Case preservation — replacement matches the case regime of the flagged span across 5 regimes: lowercase, Sentence-start (capital first letter), Title Case, UPPER CASE, post-colon. Mixed-case proper nouns (e.g., "iPhone") must not trigger replacement.
 
 - [x] **CLAR-04**: Inflection handling — dataset-driven. Each inflected form (`utilize`/`utilizes`/`utilized`) is a separate `PhraseEntry` with its corresponding replacement form. No runtime stemming; agreement filtered at dataset build time.
 
@@ -128,7 +128,7 @@ Measurement checkpoint: Phase 11 logs all four values to test output; shipping n
 |-------------|-------|--------|
 | CLAR-01 | Phase 10 | Complete |
 | CLAR-02 | Phase 12 | Pending |
-| CLAR-03 | Phase 10 | Pending |
+| CLAR-03 | Phase 10 | Complete |
 | CLAR-04 | Phase 10 | Complete |
 | CLAR-05 | Phase 10 | Complete |
 | CLAR-06 | Phase 10 | Complete |

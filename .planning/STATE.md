@@ -3,25 +3,25 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Clarity Engine
 status: executing
-stopped_at: Phase 10 Plan 03 complete
-last_updated: "2026-04-25T01:10:42Z"
-last_activity: 2026-04-25 -- Phase 10 Plan 03 complete (atomic stub→production swap)
+stopped_at: Phase 10 Plan 04 complete
+last_updated: "2026-04-25T02:00:00Z"
+last_activity: 2026-04-25 -- Phase 10 Plan 04 complete (4 gate tests; cargo 11/11 green)
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 26
-  completed_plans: 24
-  percent: 92
+  completed_plans: 25
+  percent: 96
 ---
 
 ## Current Position
 
 Milestone: v1.4 Clarity Engine
 Phase: 10 (Matcher Implementation) — EXECUTING
-Plan: 4 of 5
-Next: Plan 10-04 (gate tests against wired WordyPhrasesLinter)
+Plan: 5 of 5
+Next: Plan 10-05 (final phase gate — build-harper.sh + xcodebuild app + xcodebuild test all green)
 Status: Executing Phase 10
-Last activity: 2026-04-25 -- Phase 10 Plan 03 complete
+Last activity: 2026-04-25 -- Phase 10 Plan 04 complete (4 gate tests; cargo 11/11 green)
 
 **v1.3 status:** ✅ Shipped 2026-04-19. See `.planning/milestones/v1.3-ROADMAP.md` + `.planning/milestones/v1.3-MILESTONE-AUDIT.md`. Tag `v1.3` on `12dd9db`.
 
@@ -81,6 +81,7 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 | Phase 10-matcher-implementation P01 | 2min | 2 tasks | 1 files |
 | Phase 10-matcher-implementation P02 | 1min | 2 tasks | 1 files |
 | Phase 10-matcher-implementation P03 | 2min | 2 tasks | 2 files |
+| Phase 10-matcher-implementation P04 | 3min | 3 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -104,6 +105,8 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 - [10-03]: Atomic two-task stub→production swap honored D-02 — Task 1 deletes stub + spike from clarity.rs (build intentionally broken on lib.rs:7); Task 2 swaps lib.rs import + build_lint_group + tests in single coherent change. No coexistence period.
 - [10-03]: build_lint_group dialect filter — None ⇒ universal; Some(allowed) ⇒ allowed.contains(&dialect). Dialect: PartialEq + Copy verified in harper-core 2.0.0 dict_word_metadata.rs. Signature unchanged per D-15.
 - [10-03]: Lib.rs regression tests filter+count on primary_replacement instead of len-equality — real corpus text "Please utilize this." may co-emit grammar/spelling lints alongside the clarity match; len==1 would race against unrelated curated rules.
+- [10-04]: Edition 2021 keeps std::env::set_var safe — no unsafe block in case_preservation_under_tr_locale; future move to edition 2024 will require unsafe wrapping per RESEARCH Pitfall 3.
+- [10-04]: Synthetic 'forthwith' CORPUS entry intentionally absent from wordy_phrases.toml so Phase 11 TOML wire-up cannot override its dialect tag — preserves dialect-filter test integrity across phase boundaries.
 
 ### Pending Todos
 
@@ -125,6 +128,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-25T01:10:42Z
-Stopped at: Phase 10 Plan 03 complete
+Last session: 2026-04-25T02:00:00Z
+Stopped at: Phase 10 Plan 04 complete
 Resume file: None
