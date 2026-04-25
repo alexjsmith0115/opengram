@@ -139,7 +139,14 @@ Plans:
   4. Dialect filter: entries tagged `dialects = ["en-US"]` suppressed when user's dialect config is non-US; universal entries (no dialect tag) always active
   5. Grammar-over-clarity overlap resolved by Harper's `remove_overlaps` + priority constants from Phase 9; integration test constructs overlapping grammar + clarity span and asserts grammar wins
   6. CI matrix includes `tr_TR` locale run (Turkish dotted-I edge cases) and passes
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+- [ ] 10-01-PLAN.md — Add production types (PhraseEntry struct + CORPUS const + WordyPhrasesLinter struct/impl) alongside stub
+- [ ] 10-02-PLAN.md — Promote spike test helpers + 2 spike tests (case_preservation_five_regimes, priority_rewrite_no_default_leak) to top-level mod tests
+- [ ] 10-03-PLAN.md — Atomic swap: register WordyPhrasesLinter via build_lint_group with dialect filter, delete WordyPhrasesStubLinter + mod spike, replace lib.rs stub tests with corpus equivalents
+- [ ] 10-04-PLAN.md — Add 4 new gate tests: proper_noun_iphone_does_not_trigger, word_boundary_no_midword_match, case_preservation_under_tr_locale, dialect_filter_drops_non_matching
+- [ ] 10-05-PLAN.md — Final phase gate: build-harper.sh + xcodebuild app + xcodebuild test all green per D-18
 
 ### Phase 11: Dataset Integration + Fixture Harness
 **Goal**: Real ~500-entry dataset wired into `HarperChecker::new()`; auto-generated regression suite locks matcher behavior against dataset changes
@@ -192,7 +199,7 @@ Plans:
 | 7. LLM `.clarity` Clean-Deletion | v1.4 | 0/0 | Not started | — |
 | 8. Dataset Pipeline | v1.4 | 7/7 | Complete   | 2026-04-20 |
 | 9. Rust Foundation + MapPhraseLinter Spike | v1.4 | 8/8 | Complete   | 2026-04-25 |
-| 10. Matcher Implementation | v1.4 | 0/0 | Not started | — |
+| 10. Matcher Implementation | v1.4 | 0/5 | Not started | — |
 | 11. Dataset Integration + Fixture Harness | v1.4 | 0/0 | Not started | — |
 | 12. Settings UI + Severity Filter + Acknowledgements | v1.4 | 0/0 | Not started | — |
 | 13. NonFlags Corpus Seed + UAT | v1.4 | 0/0 | Not started | — |
