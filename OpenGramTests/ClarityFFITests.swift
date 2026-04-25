@@ -10,13 +10,13 @@ struct ClarityFFITests {
         return HarperService(dictionaryStore: store, dialect: dialect)
     }
 
-    @Test("FLAG_ME stub emits .clarity + .medium through full FFI stack")
-    func stubRoundTrip() async {
+    @Test("WordyPhrasesLinter emits .clarity + .high through full FFI stack")
+    func utilizeRoundTrip() async {
         let service = makeService()
-        let suggestions = await service.check(text: "FLAG_ME")
-        let clarity = suggestions.filter { $0.category == .clarity }
-        #expect(clarity.count == 1, "stub must emit exactly one clarity suggestion")
-        #expect(clarity.first?.severity == .medium, "severity must round-trip as .medium")
-        #expect(clarity.first?.primaryReplacement == "FLAGGED", "replacement must round-trip as FLAGGED")
+        let suggestions = await service.check(text: "Please utilize this.")
+        let clarity = suggestions.filter { $0.category == .clarity && $0.primaryReplacement == "use" }
+        #expect(clarity.count == 1, "WordyPhrasesLinter must emit exactly one clarity suggestion for 'utilize'")
+        #expect(clarity.first?.severity == .high, "severity must round-trip as .high (CORPUS: utilize → Severity::High)")
+        #expect(clarity.first?.primaryReplacement == "use", "replacement must round-trip as 'use'")
     }
 }
