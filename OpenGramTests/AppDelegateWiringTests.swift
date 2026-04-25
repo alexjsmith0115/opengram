@@ -9,10 +9,13 @@ import AppKit
 final class MockGrammarChecker: GrammarCheckerProtocol, @unchecked Sendable {
     var addedWords: [String] = []
     var checkResult: [Suggestion] = []
+    var ruleToggleCalls: [(key: String, enabled: Bool)] = []
 
     func check(text: String) async -> [Suggestion] { checkResult }
     func addToDictionary(word: String) async { addedWords.append(word) }
-    func setRuleEnabled(key: String, enabled: Bool) async {}
+    func setRuleEnabled(key: String, enabled: Bool) async {
+        ruleToggleCalls.append((key: key, enabled: enabled))
+    }
 }
 
 // MARK: - Helpers
@@ -162,5 +165,57 @@ struct AppDelegateWiringTests {
         controller.show(suggestions: [suggestion], context: context)
         // Suggestions are set before bounds queries
         #expect(controller.suggestions.count == 1)
+    }
+
+    // MARK: - Clarity master toggle observer (CLAR-07)
+
+    @Test("clarity notification dispatches setRuleEnabled with stored value")
+    func clarityNotification_dispatchesSetRuleEnabled_withStoredValue() async {
+        let suiteName = UUID().uuidString
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        defaults.set(false, forKey: "clarityEnabled")
+
+        let mockChecker = MockGrammarChecker()
+        let center = NotificationCenter()
+
+        let observer = center.addObserver(
+            forName: .clarityMasterDidChange, object: nil, queue: .main
+        ) { _ in
+            let enabled = (defaults.object(forKey: "clarityEnabled") as? Bool) ?? true
+            Task { await mockChecker.setRuleEnabled(key: "WordyPhrases", enabled: enabled) }
+        }
+        defer { center.removeObserver(observer) }
+
+        center.post(name: .clarityMasterDidChange, object: nil)
+        try? await Task.sleep(for: .milliseconds(200))
+
+        #expect(mockChecker.ruleToggleCalls.count == 1)
+        #expect(mockChecker.ruleToggleCalls.first?.key == "WordyPhrases")
+        #expect(mockChecker.ruleToggleCalls.first?.enabled == false)
+    }
+
+    @Test("clarity notification dispatches enabled=true when key unset (default fallback)")
+    func clarityNotification_unsetKey_defaultsToEnabledTrue() async {
+        let suiteName = UUID().uuidString
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        // intentionally do not write clarityEnabled
+
+        let mockChecker = MockGrammarChecker()
+        let center = NotificationCenter()
+
+        let observer = center.addObserver(
+            forName: .clarityMasterDidChange, object: nil, queue: .main
+        ) { _ in
+            let enabled = (defaults.object(forKey: "clarityEnabled") as? Bool) ?? true
+            Task { await mockChecker.setRuleEnabled(key: "WordyPhrases", enabled: enabled) }
+        }
+        defer { center.removeObserver(observer) }
+
+        center.post(name: .clarityMasterDidChange, object: nil)
+        try? await Task.sleep(for: .milliseconds(200))
+
+        #expect(mockChecker.ruleToggleCalls.first?.enabled == true)
     }
 }
