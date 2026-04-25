@@ -3,22 +3,22 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Clarity Engine
 status: executing
-stopped_at: Phase 11 Plan 01 complete
-last_updated: "2026-04-25T04:44:04.459Z"
+stopped_at: Phase 11 Plan 04 complete
+last_updated: "2026-04-25T04:54:25.561Z"
 last_activity: 2026-04-25
 progress:
   total_phases: 7
   completed_phases: 4
   total_plans: 31
-  completed_plans: 29
-  percent: 94
+  completed_plans: 30
+  percent: 97
 ---
 
 ## Current Position
 
 Milestone: v1.4 Clarity Engine
 Phase: 11 (Dataset Integration + Fixture Harness) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 Next: `/gsd-verify-work` Phase 10 → then Phase 11 (Dataset Integration + Fixture Harness)
 Status: Ready to execute
 Last activity: 2026-04-25
@@ -85,6 +85,7 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 | Phase 10-matcher-implementation P05 | 10min | 2 tasks | 1 files |
 | 10 | 5 | - | - |
 | Phase 11 P11-01 | 8min | 2 tasks | 3 files |
+| Phase 11 P04 | 5min | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -114,6 +115,8 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 - [10-05]: Rule 1 auto-fix on stale FLAG_ME stub test — Plan 10-03 deleted WordyPhrasesStubLinter but Swift ClarityFFITests.stubRoundTrip still asserted FLAG_ME → FLAGGED. Replaced with utilizeRoundTrip exercising live WordyPhrasesLinter surface (utilize → use, Severity::High); same FFI coverage retargeted. Mandated by Plan 10-05 acceptance criterion (no FLAG_ME refs in Swift).
 - [Phase ?]: [11-01]: ParsedPhraseEntry owned String fields; OnceLock single-init verified by pointer equality across 102 calls; serde+toml promoted from transitives — zero new compile units
 - [11-02]: WordyPhrasesLinter promoted pub(crate)→pub; build_lint_group reads get_corpus() (338 TOML entries) not CORPUS const; dialect_filter_drops_non_matching uses local synthetic forthwith injection — forthwith absent from TOML by design (D-05 / [10-04])
+- [Phase ?]: Golden file header stripped of '#' comment lines before assert — header for developers, data lines only compared
+- [Phase ?]: [11-04]: All 5 locked entries emit priority=200; plan table had 'at the present time' as medium but TOML is source of truth
 
 ### Pending Todos
 
@@ -135,6 +138,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-25T04:44:04.455Z
-Stopped at: Phase 11 Plan 01 complete
+Last session: 2026-04-25T04:54:25.557Z
+Stopped at: Phase 11 Plan 04 complete
 Resume file: None
