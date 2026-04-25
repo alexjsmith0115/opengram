@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Clarity Engine
 status: executing
-stopped_at: Phase 11 Plan 05 complete — Phase 11 all 5 plans done
-last_updated: "2026-04-25T15:13:41.403Z"
+stopped_at: Phase 13 Plan 06 complete — CONTRIBUTING.md + PR template scaffolded
+last_updated: "2026-04-25T15:15:46Z"
 last_activity: 2026-04-25
 progress:
   total_phases: 7
@@ -18,7 +18,7 @@ progress:
 
 Milestone: v1.4 Clarity Engine
 Phase: 13 (NonFlags Corpus Seed + UAT) — EXECUTING
-Plan: 2 of 7
+Plan: 7 of 7 (next: 13-07 final gate + UAT)
 Next: /gsd-execute-phase 13 → milestone audit/complete/cleanup
 Status: Ready to execute
 Last activity: 2026-04-25
@@ -88,6 +88,7 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 | Phase 11 P04 | 5min | 1 tasks | 2 files |
 | Phase 11 P11-05 | 15min | 2 tasks | 1 files |
 | Phase 13-nonflags-corpus-seed-uat P01 | 10min | 2 tasks | 5 files |
+| Phase 13-nonflags-corpus-seed-uat P06 | 4min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -123,6 +124,8 @@ Parallelization note: Phases 8 and 9 can run in parallel (no file contention). P
 - [Phase ?]: [11-05]: CLAR-N2 = 46.8KB (47,935 bytes) — within 200KB target; CLAR-N4: 338 entries all ASCII, zero multi-byte
 - [Phase ?]: [11-05]: FFI surface unchanged — HarperBridge.swift SHA identical pre/post build-harper.sh; idempotency confirmed
 - [Phase ?]: [13-01]: Empty harness wired BEFORE fixture content — locks 4 per-category test fn API + filter logic; cargo test --test nonflags_corpus → 4 passed in 2.59s with zero fixtures
+- [13-06]: NonFlags fixture rule enforced via documentation only (CONTRIBUTING.md + PR checkbox); automated CI gate explicitly deferred per Phase 13 CONTEXT — contributors must manually add fixture line on every clarity false-positive PR
+- [13-06]: PR template uses relative anchor `../CONTRIBUTING.md#adding-nonflags-fixtures` to link checkbox text to rule (GitHub auto-slugifies H2 headings); template lives in `.github/`, contributing in repo root
 
 ### Pending Todos
 
@@ -144,6 +147,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-25T15:13:28.275Z
-Stopped at: Phase 11 Plan 05 complete — Phase 11 all 5 plans done
+Last session: 2026-04-25T15:15:46Z
+Stopped at: Phase 13 Plan 06 complete — CONTRIBUTING.md + PR template scaffolded
 Resume file: None
