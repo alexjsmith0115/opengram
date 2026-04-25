@@ -7,7 +7,7 @@ use harper_core::{DictWordMetadata, Dialect, DialectFlags, Document};
 use clarity::{Severity, WordyPhrasesLinter, severity_from_priority, get_corpus, ParsedPhraseEntry};
 
 uniffi::setup_scaffolding!();
-mod clarity;
+pub mod clarity;
 
 /// D-03 spelling/grammar + D-32 clarity routing: Clarity emitted when LintKind::Style + priority ∈ {200,220,240}.
 #[derive(uniffi::Enum)]
