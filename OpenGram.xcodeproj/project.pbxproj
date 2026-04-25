@@ -85,6 +85,7 @@
 		B10000010000000000000034 /* LLMServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000034 /* LLMServiceTests.swift */; };
 		B10000010000000000000200 /* LMStudioPipelineIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000200 /* LMStudioPipelineIntegrationTests.swift */; };
 		B10000010000000000000201 /* LMStudioLiveIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000201 /* LMStudioLiveIntegrationTests.swift */; };
+		B10000010000000000000202 /* ClarityNotificationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000202 /* ClarityNotificationTests.swift */; };
 		B10000010000000000000035 /* LLMPromptsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000035 /* LLMPromptsTests.swift */; };
 		B10000010000000000000036 /* CheckOrchestratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000036 /* CheckOrchestratorTests.swift */; };
 		B10000010000000000000037 /* LLMSettingsPanelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000037 /* LLMSettingsPanelTests.swift */; };
@@ -248,6 +249,7 @@
 		B20000010000000000000034 /* LLMServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMServiceTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000200 /* LMStudioPipelineIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LMStudioPipelineIntegrationTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000201 /* LMStudioLiveIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LMStudioLiveIntegrationTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000202 /* ClarityNotificationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClarityNotificationTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000035 /* LLMPromptsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMPromptsTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000036 /* CheckOrchestratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckOrchestratorTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000037 /* LLMSettingsPanelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSettingsPanelTests.swift; sourceTree = "<group>"; };
@@ -693,6 +695,7 @@
 			children = (
 				B20000010000000000000020 /* AXCallWatchdogTests.swift */,
 				B20000010000000000000021 /* BoundsForRangeTests.swift */,
+				B20000010000000000000202 /* ClarityNotificationTests.swift */,
 				B20000010000000000000022 /* BoundsValidatorTests.swift */,
 				B20000010000000000000023 /* OverlayControllerTests.swift */,
 				B20000010000000000000051 /* OverlayControllerRepositionTests.swift */,
@@ -963,6 +966,7 @@
 				B10000010000000000000034 /* LLMServiceTests.swift in Sources */,
 				B10000010000000000000200 /* LMStudioPipelineIntegrationTests.swift in Sources */,
 				B10000010000000000000201 /* LMStudioLiveIntegrationTests.swift in Sources */,
+				B10000010000000000000202 /* ClarityNotificationTests.swift in Sources */,
 				B10000010000000000000035 /* LLMPromptsTests.swift in Sources */,
 				B10000010000000000000036 /* CheckOrchestratorTests.swift in Sources */,
 				B10000010000000000000037 /* LLMSettingsPanelTests.swift in Sources */,

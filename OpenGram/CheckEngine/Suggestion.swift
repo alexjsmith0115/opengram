@@ -101,6 +101,15 @@ struct Suggestion: Identifiable, Sendable {
     }
 }
 
+// MARK: - Clarity Toggle Notification (CLAR-07)
+
+extension Notification.Name {
+    /// Posted when the master `clarityEnabled` toggle changes. AppDelegate
+    /// observes this and dispatches `setRuleEnabled("WordyPhrases", <bool>)`
+    /// on the retained HarperService — propagates clarity on/off without restart.
+    static let clarityMasterDidChange = Notification.Name("ClarityMasterDidChange")
+}
+
 extension Suggestion {
     /// Creates a Suggestion from a UniFFI-generated GrammarSuggestion.
     /// Returns nil if the char offsets cannot be converted to a valid Swift string range.

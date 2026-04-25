@@ -177,7 +177,13 @@ Plans:
   3. Per-rule toggle verified: calling `setRuleEnabled("WordyPhrases", false)` via the existing bridge suppresses all clarity suggestions on next check; toggling back on restores them with no app restart (CLAR-07)
   4. Clarity suggestion popover shows "Clarity" badge (solid orange underline, source `.harper`, category `.clarity`) — visual validation via computer-use MCP in Notes.app
   5. Settings → About → Acknowledgements pane displays MIT license text for retext-simplify; `NSHumanReadableCopyright` plist updated; DMG distribution includes the notice (CLAR-19)
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 12-01-PLAN.md — clarityMasterDidChange notification + AppDelegate observer + harperService promotion (CLAR-07)
+- [ ] 12-02-PLAN.md — HarperService severity filter + WordyPhrases rule-toggle test (CLAR-08, CLAR-18, CLAR-07)
+- [ ] 12-03-PLAN.md — ClaritySettingsView + AboutSettingsView + THIRD_PARTY.txt + pbxproj wiring + computer-use validation (CLAR-17, CLAR-19)
+- [ ] 12-04-PLAN.md — PopoverView Clarity badge label + icon (CLAR-02)
 **UI hint**: yes
 
 ### Phase 13: NonFlags Corpus Seed + UAT
@@ -208,7 +214,7 @@ Plans:
 | 9. Rust Foundation + MapPhraseLinter Spike | v1.4 | 8/8 | Complete   | 2026-04-25 |
 | 10. Matcher Implementation | v1.4 | 5/5 | Complete    | 2026-04-25 |
 | 11. Dataset Integration + Fixture Harness | v1.4 | 5/5 | Complete   | 2026-04-25 |
-| 12. Settings UI + Severity Filter + Acknowledgements | v1.4 | 0/0 | Not started | — |
+| 12. Settings UI + Severity Filter + Acknowledgements | v1.4 | 0/4 | Not started | — |
 | 13. NonFlags Corpus Seed + UAT | v1.4 | 0/0 | Not started | — |
 
 ## v1.4 Requirements Traceability
