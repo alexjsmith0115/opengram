@@ -147,12 +147,15 @@ struct PopoverView: View {
             .fixedSize(horizontal: false, vertical: true)
     }
 
-    /// Source badge + Dismiss + Add to Dictionary (D-10)
+    /// Source badge + Dismiss + Add to Dictionary (D-10).
+    /// Badge label is category-aware: clarity suggestions show "Clarity" with
+    /// the magnifying-glass icon; everything else falls back to source-based label
+    /// ("Harper" for Harper rules, "AI" for LLM-sourced tone/rephrase).
     private var footerRow: some View {
         HStack {
             HStack(spacing: 4) {
-                Image(systemName: suggestion.source == .harper ? "checkmark.circle" : "sparkles")
-                Text(suggestion.source == .harper ? "Harper" : "AI")
+                Image(systemName: badgeIcon)
+                Text(badgeLabel)
             }
             .font(.system(size: 11))
             .foregroundColor(.secondary)
@@ -171,5 +174,15 @@ struct PopoverView: View {
                     .buttonStyle(.plain)
             }
         }
+    }
+
+    var badgeLabel: String {
+        if suggestion.category == .clarity { return "Clarity" }
+        return suggestion.source == .harper ? "Harper" : "AI"
+    }
+
+    var badgeIcon: String {
+        if suggestion.category == .clarity { return "text.magnifyingglass" }
+        return suggestion.source == .harper ? "checkmark.circle" : "sparkles"
     }
 }
