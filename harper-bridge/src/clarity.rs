@@ -271,6 +271,39 @@ mod tests {
     }
 
     #[test]
+    fn proper_noun_iphone_does_not_trigger() {
+        // CLAR-03 acceptance: mixed-case proper nouns must never trigger replacement.
+        // Contract test on MapPhraseLinter token-shape behavior — iPhone is one Word
+        // token with content ['i','P','h','o','n','e'], cannot match any CORPUS phrase.
+        let merged = make_merged_dict();
+        let mut linter = WordyPhrasesLinter::new(CORPUS);
+        let doc = Document::new("iPhone is great.", &PlainEnglish, merged.as_ref());
+        let lints = linter.lint(&doc);
+        assert!(
+            lints.is_empty(),
+            "iPhone must not trigger any clarity lint; got {:?}",
+            lints.iter().map(primary_replacement).collect::<Vec<_>>(),
+        );
+    }
+
+    #[test]
+    fn word_boundary_no_midword_match() {
+        // CLAR-05 SC-3: phrase matches only on Harper token boundaries; mid-word
+        // substrings never fire. CORPUS contains "accompany"; "unaccompanied" is
+        // tokenized as one Word token whose char-content includes "accompany"
+        // mid-string. MapPhraseLinter matches token-windows, never substrings.
+        let merged = make_merged_dict();
+        let mut linter = WordyPhrasesLinter::new(CORPUS);
+        let doc = Document::new("The unaccompanied luggage arrived.", &PlainEnglish, merged.as_ref());
+        let lints = linter.lint(&doc);
+        assert!(
+            lints.is_empty(),
+            "mid-word substring must not trigger clarity lint; got {:?}",
+            lints.iter().map(primary_replacement).collect::<Vec<_>>(),
+        );
+    }
+
+    #[test]
     fn priority_rewrite_no_default_leak() {
         let merged = make_merged_dict();
         let mut linter = WordyPhrasesLinter::new(CORPUS);
