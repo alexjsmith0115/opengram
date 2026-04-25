@@ -19,10 +19,10 @@ final class LLMSettingsPanel {
 
         let settingsView = SettingsView()
         let hostingView = NSHostingView(rootView: settingsView)
-        hostingView.frame = NSRect(x: 0, y: 0, width: 400, height: 500)
+        hostingView.frame = NSRect(x: 0, y: 0, width: 400, height: 600)
 
         let panel = NSPanel(
-            contentRect: NSRect(x: 0, y: 0, width: 400, height: 500),
+            contentRect: NSRect(x: 0, y: 0, width: 400, height: 600),
             styleMask: [.titled, .closable],
             backing: .buffered,
             defer: false
@@ -44,13 +44,18 @@ final class LLMSettingsPanel {
     }
 }
 
-/// Root settings view with tabs for LLM configuration and whitelisted apps.
+/// Root settings view: LLM Provider, Clarity, Whitelisted Apps, Advanced, About.
 struct SettingsView: View {
     var body: some View {
         TabView {
             LLMSettingsView()
                 .tabItem {
                     Label("LLM Provider", systemImage: "brain")
+                }
+
+            ClaritySettingsView()
+                .tabItem {
+                    Label("Clarity", systemImage: "text.magnifyingglass")
                 }
 
             WhitelistSettingsView()
@@ -62,8 +67,13 @@ struct SettingsView: View {
                 .tabItem {
                     Label("Advanced", systemImage: "slider.horizontal.3")
                 }
+
+            AboutSettingsView()
+                .tabItem {
+                    Label("About", systemImage: "info.circle")
+                }
         }
-        .frame(width: 400, height: 500)
+        .frame(width: 400, height: 600)
     }
 }
 

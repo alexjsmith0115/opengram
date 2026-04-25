@@ -40,6 +40,11 @@
 		A10000010000000000000047 /* AXCallWatchdog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000047 /* AXCallWatchdog.swift */; };
 		A10000010000000000000050 /* AppQuirksTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000050 /* AppQuirksTable.swift */; };
 		A10000010000000000000051 /* AppQuirks.plist in Resources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000051 /* AppQuirks.plist */; };
+		A10000010000000000000600 /* ClaritySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000600 /* ClaritySettingsView.swift */; };
+		A10000010000000000000601 /* AboutSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000601 /* AboutSettingsView.swift */; };
+		A10000010000000000000602 /* THIRD_PARTY.txt in Resources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000602 /* THIRD_PARTY.txt */; };
+		B10000010000000000000600 /* ClaritySettingsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000600 /* ClaritySettingsViewTests.swift */; };
+		B10000010000000000000601 /* AboutSettingsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000601 /* AboutSettingsViewTests.swift */; };
 		A10000010000000000000060 /* HarperBridge.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000010000000000000060 /* HarperBridge.xcframework */; };
 		B10000010000000000000001 /* IconStateMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000001 /* IconStateMachineTests.swift */; };
 		B10000010000000000000002 /* MenuBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000002 /* MenuBuilderTests.swift */; };
@@ -203,6 +208,11 @@
 		A20000010000000000000047 /* AXCallWatchdog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXCallWatchdog.swift; sourceTree = "<group>"; };
 		A20000010000000000000050 /* AppQuirksTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppQuirksTable.swift; sourceTree = "<group>"; };
 		A20000010000000000000051 /* AppQuirks.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = AppQuirks.plist; sourceTree = "<group>"; };
+		A20000010000000000000600 /* ClaritySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaritySettingsView.swift; sourceTree = "<group>"; };
+		A20000010000000000000601 /* AboutSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutSettingsView.swift; sourceTree = "<group>"; };
+		A20000010000000000000602 /* THIRD_PARTY.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = THIRD_PARTY.txt; sourceTree = "<group>"; };
+		B20000010000000000000600 /* ClaritySettingsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaritySettingsViewTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000601 /* AboutSettingsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutSettingsViewTests.swift; sourceTree = "<group>"; };
 		A20000010000000000000060 /* HarperBridge.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = HarperBridge.xcframework; sourceTree = "<group>"; };
 		B20000010000000000000001 /* IconStateMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconStateMachineTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000002 /* MenuBuilderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBuilderTests.swift; sourceTree = "<group>"; };
@@ -355,6 +365,7 @@
 				A40000010000000000000005 /* Hotkey */,
 				A4000001000000000000000F /* Logging */,
 				A40000010000000000000007 /* Permissions */,
+				A40000010000000000000600 /* Resources */,
 				A40000010000000000000004 /* Shell */,
 				A4000001000000000000000B /* SuggestionUI */,
 				A40000010000000000000006 /* TextEngine */,
@@ -626,8 +637,18 @@
 				A20000010000000000000095 /* LLMSettingsView.swift */,
 				A200000100000000000000A1 /* WhitelistSettingsView.swift */,
 				A200000100000000000000E2 /* AdvancedSettingsView.swift */,
+				A20000010000000000000600 /* ClaritySettingsView.swift */,
+				A20000010000000000000601 /* AboutSettingsView.swift */,
 			);
 			path = Settings;
+			sourceTree = "<group>";
+		};
+		A40000010000000000000600 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A20000010000000000000602 /* THIRD_PARTY.txt */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		A4000001000000000000000C /* AppQuirks */ = {
@@ -712,6 +733,8 @@
 				B20000010000000000000033 /* OverlayControllerDiffTests.swift */,
 				B200000100000000000000C0 /* PanelPositionerTests.swift */,
 				B200000100000000000000F1 /* AdvancedSettingsViewTests.swift */,
+				B20000010000000000000600 /* ClaritySettingsViewTests.swift */,
+				B20000010000000000000601 /* AboutSettingsViewTests.swift */,
 				B28060010000000000000001 /* SourceParagraphHighlightTests.swift */,
 				B28060010000000000000002 /* OverlayControllerHideUnderlinesTests.swift */,
 				B28070010000000000000001 /* MultiQualifierSelectionTests.swift */,
@@ -838,6 +861,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A10000010000000000000051 /* AppQuirks.plist in Resources */,
+				A10000010000000000000602 /* THIRD_PARTY.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -906,6 +930,8 @@
 				A100000100000000000000C2 /* DoubleNewlineSplitter.swift in Sources */,
 				A100000100000000000000C3 /* ParagraphHasher.swift in Sources */,
 				A100000100000000000000E2 /* AdvancedSettingsView.swift in Sources */,
+				A10000010000000000000600 /* ClaritySettingsView.swift in Sources */,
+				A10000010000000000000601 /* AboutSettingsView.swift in Sources */,
 				A18000010000000000000021 /* AXTextReplacer.swift in Sources */,
 				A18020010000000000000001 /* TextDiff.swift in Sources */,
 				A18020010000000000000002 /* DisplayHeuristic.swift in Sources */,
@@ -978,6 +1004,8 @@
 				B100000100000000000000D1 /* DoubleNewlineSplitterTests.swift in Sources */,
 				B100000100000000000000D2 /* ParagraphHasherTests.swift in Sources */,
 				B100000100000000000000F1 /* AdvancedSettingsViewTests.swift in Sources */,
+				B10000010000000000000600 /* ClaritySettingsViewTests.swift in Sources */,
+				B10000010000000000000601 /* AboutSettingsViewTests.swift in Sources */,
 				B18000010000000000000021 /* AXTextReplacerTests.swift in Sources */,
 				B18020010000000000000001 /* TextDiffTests.swift in Sources */,
 				B18020010000000000000002 /* DisplayHeuristicTests.swift in Sources */,
@@ -1080,6 +1108,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSAccessibilityUsageDescription = "OpenGram reads and writes text in other apps to check and correct your writing.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 OpenGram. Bundles retext-simplify dataset (MIT, © 2016 Titus Wormer).";
 				INFOPLIST_KEY_NSMainNibFile = "";
 				INFOPLIST_KEY_NSPrincipalClass = "";
 				MARKETING_VERSION = 0.0.1;
@@ -1104,6 +1133,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSAccessibilityUsageDescription = "OpenGram reads and writes text in other apps to check and correct your writing.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 OpenGram. Bundles retext-simplify dataset (MIT, © 2016 Titus Wormer).";
 				INFOPLIST_KEY_NSMainNibFile = "";
 				INFOPLIST_KEY_NSPrincipalClass = "";
 				MARKETING_VERSION = 0.0.1;
