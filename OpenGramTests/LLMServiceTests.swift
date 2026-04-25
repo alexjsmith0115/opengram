@@ -89,6 +89,22 @@ struct LLMServiceTests {
         #expect(suggestions.isEmpty)
     }
 
+    @Test("LLMService drops category=clarity entries end-to-end (markdown-fence + DTO drop integration). Complements DTO-layer coverage at LLMResponseDTOTests.clarityCategoryDroppedPostDeletion_CLAR09. CLAR-21.")
+    func parseClarityCategoryDropped_CLAR21() async {
+        let service = LLMService()
+        let json = """
+        ```json
+        {"suggestions": [
+          {"category": "clarity", "revised_text": "X", "explanation": "E1", "confidence": 9},
+          {"category": "tone", "revised_text": "Y", "explanation": "E2", "confidence": 8}
+        ]}
+        ```
+        """
+        let suggestions = await service.parseJSONContent(json, paragraph: "Original text.")
+        #expect(suggestions.count == 1, "clarity entry must be dropped; only tone remains")
+        #expect(suggestions.first?.category == .tone)
+    }
+
     // MARK: - Cancellation
 
     @Test("new analyze() call cancels in-flight request")
