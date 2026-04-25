@@ -74,6 +74,35 @@ private func makeGrammarSuggestion() -> Suggestion {
     )
 }
 
+private func makeBadgeSuggestion(category: CheckCategory, source: SuggestionSource) -> Suggestion {
+    let text = "x"
+    let range = text.startIndex..<text.endIndex
+    return Suggestion(
+        id: .init(),
+        range: range,
+        original: text,
+        primaryReplacement: "y",
+        allReplacements: ["y"],
+        message: "synthetic",
+        category: category,
+        source: source,
+        priority: 100,
+        paragraphHash: nil,
+        severity: nil
+    )
+}
+
+@MainActor
+private func makePopoverView(suggestion: Suggestion) -> PopoverView {
+    PopoverView(
+        suggestion: suggestion,
+        onAccept: {},
+        onAcceptAlternative: { _ in },
+        onDismiss: {},
+        onAddToDictionary: nil
+    )
+}
+
 // MARK: - Tests
 
 @Suite("PopoverView conditional content logic")
@@ -237,5 +266,31 @@ struct PopoverViewTests {
             onAddToDictionary: {}
         )
         #expect(view.onAddToDictionary != nil)
+    }
+
+    // MARK: - CLAR-02: Category-aware badge label + icon
+
+    @Test("badgeLabel is 'Clarity' and icon is 'text.magnifyingglass' for clarity category")
+    func badgeLabel_clarity() {
+        let s = makeBadgeSuggestion(category: .clarity, source: .harper)
+        let view = makePopoverView(suggestion: s)
+        #expect(view.badgeLabel == "Clarity")
+        #expect(view.badgeIcon == "text.magnifyingglass")
+    }
+
+    @Test("badgeLabel is 'Harper' and icon is 'checkmark.circle' for non-clarity Harper category")
+    func badgeLabel_harperNonClarity() {
+        let s = makeBadgeSuggestion(category: .spelling, source: .harper)
+        let view = makePopoverView(suggestion: s)
+        #expect(view.badgeLabel == "Harper")
+        #expect(view.badgeIcon == "checkmark.circle")
+    }
+
+    @Test("badgeLabel is 'AI' and icon is 'sparkles' for non-clarity LLM category")
+    func badgeLabel_llm() {
+        let s = makeBadgeSuggestion(category: .tone, source: .llm)
+        let view = makePopoverView(suggestion: s)
+        #expect(view.badgeLabel == "AI")
+        #expect(view.badgeIcon == "sparkles")
     }
 }
