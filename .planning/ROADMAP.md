@@ -191,12 +191,21 @@ Plans:
 **Depends on**: Phase 12 (full UX surface)
 **Requirements**: CLAR-21
 **Success Criteria** (what must be TRUE):
-  1. `NonFlagsFixtures/` directory contains ≥100 sentences seeded from retext-simplify GitHub issue archives + hand-curated proper-noun / quoted-code / domain-context cases; each fixture asserts zero clarity suggestions on that input
-  2. NonFlags suite wired as regression test; runs on every PR; any new clarity false-positive fixes MUST add a NonFlags entry before landing (CONTRIBUTING.md rule added)
+  1. `harper-bridge/tests/nonflags/` directory contains ≥100 sentences across 4 category files (proper_nouns, quoted_code, domain_terms, retext_issues); each fixture asserts zero `WordyPhrasesLinter` lints. Corpus mix revised per RESEARCH §critical reality check: ~10 scraped + ~90 hand-curated (retext-simplify upstream has only 4 issues, 1 false-positive)
+  2. NonFlags suite (`cargo test --test nonflags_corpus`) runs as Rust integration test; CONTRIBUTING.md rule + .github/PULL_REQUEST_TEMPLATE.md checkbox added (no automated CI runner this phase per CONTEXT)
   3. Manual UAT in Notes.app: hotkey-fire on text with known wordy phrases produces solid-orange clarity underlines; hover/click shows "Clarity" popover; Accept replaces text; Dismiss suppresses
-  4. Manual UAT in TextEdit: clarity toggle master OFF suppresses all clarity suggestions; opinionated sub-toggle ON surfaces Low-severity entries; verified via computer-use MCP screenshots
-  5. With `.tone` + `.rephrase` enabled in LLM settings, zero clarity suggestions surface from LLM path (confirms Phase 7 clean-deletion held across full milestone)
-**Plans**: TBD
+  4. Manual UAT in TextEdit: clarity toggle master OFF suppresses all clarity suggestions; master ON re-surfaces them. NOTE: corpus has zero `severity = "low"` entries — opinionated sub-toggle ON has no observable effect this phase (deviation from spec; documented in 13-VERIFICATION.md Scenario 2)
+  5. With `.tone` + `.rephrase` enabled in LLM settings, zero clarity suggestions surface from LLM path; Swift LLMServiceTests.parseClarityCategoryDropped_CLAR21 locks the contract at integration layer (complementing existing DTO-layer test) (confirms Phase 7 clean-deletion held across full milestone)
+**Plans**: 7 plans
+
+Plans:
+- [ ] 13-01-PLAN.md — Empty Rust harness scaffold: nonflags_corpus.rs + 4 placeholder .txt files; cargo test green with zero fixtures (CLAR-21)
+- [ ] 13-02-PLAN.md — Hand-curated fixture seed batch 1: proper_nouns ≥20 + quoted_code ≥25 (≥45 line milestone) (CLAR-21)
+- [ ] 13-03-PLAN.md — Hand-curated fixture seed batch 2: domain_terms ≥25 + retext_issues ≥30 (push corpus total ≥100) (CLAR-21)
+- [ ] 13-04-PLAN.md — nonflags_meta_corpus_size guard test (≥100 line fail-fast) (CLAR-21)
+- [ ] 13-05-PLAN.md — Swift LLM regression test: parseClarityCategoryDropped_CLAR21 in LLMServiceTests.swift (CLAR-21)
+- [ ] 13-06-PLAN.md — CONTRIBUTING.md + .github/PULL_REQUEST_TEMPLATE.md scaffolding with NonFlags rule + checkbox (CLAR-21)
+- [ ] 13-07-PLAN.md — Final phase gate (cargo + xcodebuild) + 3-scenario manual UAT via computer-use MCP (or user-driven fallback) → 13-VERIFICATION.md (CLAR-21)
 **UI hint**: yes
 
 ## Progress
@@ -215,7 +224,7 @@ Plans:
 | 10. Matcher Implementation | v1.4 | 5/5 | Complete    | 2026-04-25 |
 | 11. Dataset Integration + Fixture Harness | v1.4 | 5/5 | Complete   | 2026-04-25 |
 | 12. Settings UI + Severity Filter + Acknowledgements | v1.4 | 4/4 | Complete   | 2026-04-25 |
-| 13. NonFlags Corpus Seed + UAT | v1.4 | 0/0 | Not started | — |
+| 13. NonFlags Corpus Seed + UAT | v1.4 | 0/7 | Not started | — |
 
 ## v1.4 Requirements Traceability
 
