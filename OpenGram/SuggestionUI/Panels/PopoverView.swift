@@ -87,21 +87,23 @@ struct PopoverView: View {
 
     // MARK: - Subviews
 
-    /// Inline diff: original with red strikethrough → green replacement (D-07)
+    /// Inline diff: unchanged text stays neutral while only removed/added words are marked.
     private var inlineDiffRow: some View {
-        HStack(spacing: 6) {
-            Text(suggestion.original)
-                .strikethrough(true, color: .red)
+        inlineDiffText
+            .font(.system(size: 13))
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private var inlineDiffText: Text {
+        guard let primary = suggestion.primaryReplacement else {
+            return Text(suggestion.original)
                 .foregroundColor(.secondary)
-            Image(systemName: "arrow.right")
-                .font(.caption)
-                .foregroundColor(.secondary)
-            if let primary = suggestion.primaryReplacement {
-                Text(primary)
-                    .foregroundColor(.green)
-            }
         }
-        .font(.system(size: 13))
+
+        return TextDiff.segments(original: suggestion.original, revised: primary)
+            .reduce(Text("")) { text, segment in
+                text + segment.renderedForPopover
+            }
     }
 
     /// Click-to-accept primary replacement (D-08). Hover highlight + pointing hand cursor.
@@ -202,5 +204,23 @@ struct PopoverView: View {
     var badgeIcon: String {
         if suggestion.category == .clarity { return "text.magnifyingglass" }
         return suggestion.source == .harper ? "checkmark.circle" : "sparkles"
+    }
+}
+
+private extension DiffSegment {
+    var renderedForPopover: Text {
+        switch self {
+        case .unchanged(let text):
+            return Text(text + " ")
+                .foregroundColor(Color(nsColor: .labelColor))
+        case .removed(let text):
+            return Text(text + " ")
+                .strikethrough(true, color: .red)
+                .foregroundColor(.secondary)
+        case .added(let text):
+            return Text(text + " ")
+                .bold()
+                .foregroundColor(.green)
+        }
     }
 }

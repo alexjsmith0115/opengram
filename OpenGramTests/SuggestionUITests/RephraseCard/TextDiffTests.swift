@@ -54,6 +54,19 @@ struct TextDiffTests {
         #expect(segs.contains { if case .added(let s) = $0 { return s == "🌏" } else { return false } })
     }
 
+    @Test func hedgingRewrite_keepsSharedWordsUnmarked() {
+        let original = "I was wondering if maybe we could possibly consider changing the onboarding copy because it kind of feels a little confusing for new users. The current version says that the app"
+        let revised = "We should consider updating the onboarding copy because it currently confuses new users. The existing version states that the app"
+
+        let segs = TextDiff.segments(original: original, revised: revised)
+
+        #expect(joinedUnchangedAndAdded(segs) == revised)
+        #expect(segs.contains { if case .unchanged(let s) = $0 { return s.contains("consider") } else { return false } })
+        #expect(segs.contains { if case .unchanged(let s) = $0 { return s.contains("the onboarding copy because") } else { return false } })
+        #expect(segs.contains { if case .removed(let s) = $0 { return s.contains("I was wondering") } else { return false } })
+        #expect(segs.contains { if case .added(let s) = $0 { return s.contains("We should") } else { return false } })
+    }
+
     private func joinedUnchangedAndAdded(_ segs: [DiffSegment]) -> String {
         segs.compactMap { seg -> String? in
             switch seg {
