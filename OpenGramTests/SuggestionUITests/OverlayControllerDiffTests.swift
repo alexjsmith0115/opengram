@@ -12,7 +12,8 @@ private func makeDiffSuggestion(
     scalarLength: Int,
     original: String,
     primaryReplacement: String = "fixed",
-    category: CheckCategory = .spelling
+    category: CheckCategory = .spelling,
+    source: SuggestionSource = .harper
 ) -> Suggestion {
     let scalars = text.unicodeScalars
     let lower = scalars.index(scalars.startIndex, offsetBy: scalarStart)
@@ -26,7 +27,7 @@ private func makeDiffSuggestion(
         allReplacements: [primaryReplacement],
         message: "Spelling error.",
         category: category,
-        source: .harper,
+        source: source,
         priority: 5,
         paragraphHash: nil
     )
@@ -51,6 +52,15 @@ private func makeAccessorWithRect(
     let axValue = AXValueCreate(.cgRect, &r)!
     accessor.parameterizedAttributeValues[kAXBoundsForRangeParameterizedAttribute] = (.success, axValue)
     return accessor
+}
+
+@MainActor
+private func makeDiffMonitor() -> TextMonitor {
+    TextMonitor(
+        textEngine: TMockAXTextEngine(),
+        orchestrator: CheckOrchestrator(harper: TMockGrammarChecker()),
+        capabilityCache: TMockCapabilityCache()
+    )
 }
 
 // MARK: - OverlayController Diff Tests
@@ -145,6 +155,160 @@ struct OverlayControllerDiffTests {
 
         // After update falling through to show(), suggestions should be populated
         #expect(controller.suggestions.count == 1)
+    }
+
+    @Test("show includes room for the animated hover highlight")
+    func showIncludesHoverHighlightFrame() throws {
+        let text = "Ths is a tset."
+        let accessor = makeAccessorWithRect(CGRect(x: 100, y: 200, width: 80, height: 18))
+        let controller = OverlayController(accessor: accessor)
+        let context = makeContext(text: text)
+        let suggestion = makeDiffSuggestion(in: text, scalarStart: 0, scalarLength: 3, original: "Ths")
+
+        controller.show(suggestions: [suggestion], context: context)
+
+        #expect(controller.overlayWindow.frame.height <= 28)
+        #expect(controller.underlineView?.entries.first?.highlightRect.height == 18)
+    }
+
+    @Test("global mouse down detects clicks over underline hit band")
+    func globalMouseDownDetectsUnderlineHitBand() throws {
+        let text = "Ths is a tset."
+        let controller = OverlayController(accessor: MockAXAccessor())
+        let suggestion = makeDiffSuggestion(in: text, scalarStart: 0, scalarLength: 3, original: "Ths")
+        let view = UnderlineView()
+        view.entries = [
+            UnderlineEntry(
+                underlineRect: NSRect(x: 10, y: 10, width: 80, height: 2),
+                hitRect: UnderlineView.expandedHitRect(from: NSRect(x: 10, y: 10, width: 80, height: 2)),
+                suggestion: suggestion
+            )
+        ]
+        controller.underlineView = view
+        controller.overlayWindow.setFrame(NSRect(x: 100, y: 200, width: 120, height: 80), display: false)
+
+        let handled = controller.handleGlobalMouseDown(screenPoint: NSPoint(x: 120, y: 211))
+        #expect(handled == true)
+        #expect(controller.isPopoverVisible == true)
+        #expect(controller.overlayWindow.ignoresMouseEvents == true)
+    }
+
+    @Test("global mouse down detects clicks in highlighted text range")
+    func globalMouseDownDetectsHighlightRange() throws {
+        let text = "Ths is a tset."
+        let controller = OverlayController(accessor: MockAXAccessor())
+        let suggestion = makeDiffSuggestion(in: text, scalarStart: 0, scalarLength: 3, original: "Ths")
+        let view = UnderlineView()
+        view.entries = [
+            UnderlineEntry(
+                underlineRect: NSRect(x: 10, y: 10, width: 80, height: 2),
+                hitRect: UnderlineView.expandedHitRect(from: NSRect(x: 10, y: 10, width: 80, height: 2)),
+                suggestion: suggestion,
+                highlightRect: NSRect(x: 8, y: 10, width: 84, height: 18)
+            )
+        ]
+        controller.underlineView = view
+        controller.overlayWindow.setFrame(NSRect(x: 100, y: 200, width: 120, height: 80), display: false)
+
+        let handled = controller.handleGlobalMouseDown(screenPoint: NSPoint(x: 120, y: 225))
+        #expect(handled == true)
+        #expect(controller.isPopoverVisible == true)
+    }
+
+    @Test("global mouse move highlights text range over underline")
+    func globalMouseMoveHighlightsUnderline() throws {
+        let text = "Ths is a tset."
+        let controller = OverlayController(accessor: MockAXAccessor())
+        let suggestion = makeDiffSuggestion(in: text, scalarStart: 0, scalarLength: 3, original: "Ths")
+        let view = UnderlineView()
+        view.entries = [
+            UnderlineEntry(
+                underlineRect: NSRect(x: 10, y: 10, width: 80, height: 2),
+                hitRect: UnderlineView.expandedHitRect(from: NSRect(x: 10, y: 10, width: 80, height: 2)),
+                suggestion: suggestion,
+                highlightRect: NSRect(x: 8, y: 10, width: 84, height: 18)
+            )
+        ]
+        controller.underlineView = view
+        controller.overlayWindow.setFrame(NSRect(x: 100, y: 200, width: 120, height: 80), display: false)
+
+        let hoveredID = controller.handleGlobalMouseMoved(screenPoint: NSPoint(x: 120, y: 225))
+        #expect(hoveredID == suggestion.id)
+        #expect(view.hoveredSuggestionID == suggestion.id)
+
+        _ = controller.handleGlobalMouseMoved(screenPoint: NSPoint(x: 20, y: 20))
+        #expect(view.hoveredSuggestionID == nil)
+    }
+
+    @Test("global mouse down detects LLM dashed underline hit band")
+    func globalMouseDownDetectsLLMUnderlineHitBand() throws {
+        let text = "Ths is a tset."
+        let controller = OverlayController(accessor: MockAXAccessor())
+        let suggestion = makeDiffSuggestion(
+            in: text,
+            scalarStart: 0,
+            scalarLength: 3,
+            original: "Ths",
+            category: .rephrase,
+            source: .llm
+        )
+        let view = UnderlineView()
+        view.entries = [
+            UnderlineEntry(
+                underlineRect: NSRect(x: 10, y: 10, width: 80, height: 2),
+                hitRect: UnderlineView.expandedHitRect(from: NSRect(x: 10, y: 10, width: 80, height: 2)),
+                suggestion: suggestion
+            )
+        ]
+        controller.underlineView = view
+        controller.overlayWindow.setFrame(NSRect(x: 100, y: 200, width: 120, height: 80), display: false)
+
+        let handled = controller.handleGlobalMouseDown(screenPoint: NSPoint(x: 120, y: 211))
+        #expect(handled == true)
+        #expect(controller.overlayWindow.ignoresMouseEvents == true)
+    }
+
+    @Test("LLM click dispatches card even when stored paragraph hash does not match overlay splitter")
+    func llmClickDispatchesWithParagraphHashMismatch() throws {
+        let text = "First line\nSecond line with a style suggestion"
+        let range = text.startIndex..<text.endIndex
+        let mismatchedHash = ParagraphHash(bundleID: "com.test", paragraphText: "Second line with a style suggestion")
+        let suggestion = Suggestion(
+            id: UUID(),
+            range: range,
+            original: text,
+            primaryReplacement: "First line. Second line has a clearer style suggestion.",
+            allReplacements: ["First line. Second line has a clearer style suggestion."],
+            message: "Improve flow.",
+            category: .rephrase,
+            source: .llm,
+            priority: 8,
+            paragraphHash: mismatchedHash
+        )
+        let controller = OverlayController(
+            accessor: MockAXAccessor(),
+            textMonitor: makeDiffMonitor()
+        )
+        controller.textContext = makeContext(text: text)
+        controller.suggestions = [suggestion]
+
+        let view = UnderlineView()
+        view.entries = [
+            UnderlineEntry(
+                underlineRect: NSRect(x: 10, y: 10, width: 120, height: 2),
+                hitRect: UnderlineView.expandedHitRect(from: NSRect(x: 10, y: 10, width: 120, height: 2)),
+                suggestion: suggestion
+            )
+        ]
+        controller.underlineView = view
+        controller.overlayWindow.contentView = view
+        controller.overlayWindow.setFrame(NSRect(x: 100, y: 200, width: 160, height: 80), display: false)
+
+        let handled = controller.handleGlobalMouseDown(screenPoint: NSPoint(x: 120, y: 211))
+
+        #expect(handled == true)
+        #expect(controller.hiddenParagraphScalarRange != nil)
+        controller.dismiss()
     }
 
     // Test 5: empty new suggestions calls dismiss()

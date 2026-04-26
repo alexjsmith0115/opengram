@@ -20,7 +20,7 @@ final class OverlayWindow: NSPanel {
         isOpaque = false
         level = .floating
         collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
-        ignoresMouseEvents = false
+        ignoresMouseEvents = true
         hasShadow = false
         hidesOnDeactivate = false
         becomesKeyOnlyIfNeeded = true
@@ -32,4 +32,5 @@ final class OverlayWindow: NSPanel {
     override func mouseDown(with event: NSEvent) {
         mouseDownHandler?(event)
     }
+
 }

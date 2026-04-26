@@ -43,9 +43,9 @@ struct OverlayWindowTests {
         #expect(window.hasShadow == false)
     }
 
-    @Test("ignoresMouseEvents is false (underlines need click events)")
-    func ignoresMouseEventsIsFalse() {
+    @Test("ignoresMouseEvents defaults to true (text clicks pass through)")
+    func ignoresMouseEventsDefaultsToTrue() {
         let window = OverlayWindow()
-        #expect(window.ignoresMouseEvents == false)
+        #expect(window.ignoresMouseEvents == true)
     }
 }

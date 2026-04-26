@@ -61,15 +61,15 @@ struct UnderlineViewStaticTests {
         #expect(UnderlineView.isDashedForSource(.llm) == true)
     }
 
-    @Test("expandedHitRect adds 6pt above and 6pt below (height += 12, y -= 6)")
+    @Test("expandedHitRect stays close to the painted underline")
     func expandedHitRectDimensions() {
         let underlineRect = NSRect(x: 10, y: 20, width: 80, height: 2)
         let hitRect = UnderlineView.expandedHitRect(from: underlineRect)
 
         #expect(hitRect.origin.x == 10)
-        #expect(hitRect.origin.y == 14)         // 20 - 6
+        #expect(hitRect.origin.y == 14)
         #expect(hitRect.width == 80)
-        #expect(hitRect.height == 14)           // 2 + 12
+        #expect(hitRect.height == 14)
     }
 
     @Test("expandedHitRect width is unchanged")
@@ -96,7 +96,7 @@ struct UnderlineViewEntryTests {
         let entry = makeEntry(underlineRect: NSRect(x: 10, y: 5, width: 50, height: 2))
         view.entries = [entry]
 
-        // Point inside the hit rect (hitRect.origin.y = 5-6 = -1, height = 14 → y range: -1..13)
+        // Point inside the hit rect (hitRect.origin.y = 5-6 = -1, height = 14 -> y range: -1..13)
         let insidePoint = NSPoint(x: 35, y: 5)
         let found = view.suggestionAt(point: insidePoint)
         #expect(found != nil)
@@ -117,9 +117,15 @@ struct UnderlineViewEntryTests {
     @Test("stores array of UnderlineEntry with underlineRect, hitRect, suggestion")
     func entryStorageFields() {
         let underlineRect = NSRect(x: 20, y: 30, width: 60, height: 2)
+        let highlightRect = NSRect(x: 18, y: 30, width: 64, height: 18)
         let suggestion = makeSuggestion(category: .grammarPunctuation)
         let hitRect = UnderlineView.expandedHitRect(from: underlineRect)
-        let entry = UnderlineEntry(underlineRect: underlineRect, hitRect: hitRect, suggestion: suggestion)
+        let entry = UnderlineEntry(
+            underlineRect: underlineRect,
+            hitRect: hitRect,
+            suggestion: suggestion,
+            highlightRect: highlightRect
+        )
 
         let view = UnderlineView()
         view.entries = [entry]
@@ -127,7 +133,36 @@ struct UnderlineViewEntryTests {
         #expect(view.entries.count == 1)
         #expect(view.entries[0].underlineRect == underlineRect)
         #expect(view.entries[0].hitRect == hitRect)
+        #expect(view.entries[0].highlightRect == highlightRect)
         #expect(view.entries[0].suggestion.category == .grammarPunctuation)
+    }
+
+    @Test("suggestionAt includes the text highlight rect")
+    func suggestionAtInsideHighlightRect() {
+        let view = UnderlineView()
+        let entry = UnderlineEntry(
+            underlineRect: NSRect(x: 10, y: 5, width: 50, height: 2),
+            hitRect: UnderlineView.expandedHitRect(from: NSRect(x: 10, y: 5, width: 50, height: 2)),
+            suggestion: makeSuggestion(),
+            highlightRect: NSRect(x: 8, y: 5, width: 54, height: 18)
+        )
+        view.entries = [entry]
+
+        let found = view.hoveredSuggestionAt(point: NSPoint(x: 35, y: 20))
+        #expect(found?.id == entry.suggestion.id)
+        #expect(view.suggestionAt(point: NSPoint(x: 35, y: 20))?.id == entry.suggestion.id)
+    }
+
+    @Test("setHoveredSuggestionID records hovered suggestion")
+    func setHoveredSuggestionIDStoresState() {
+        let view = UnderlineView()
+        let suggestion = makeSuggestion()
+
+        view.setHoveredSuggestionID(suggestion.id, animated: false)
+        #expect(view.hoveredSuggestionID == suggestion.id)
+
+        view.setHoveredSuggestionID(nil, animated: false)
+        #expect(view.hoveredSuggestionID == nil)
     }
 }
 
@@ -232,12 +267,24 @@ struct UnderlineViewHitTestTests {
         let entry = makeEntry(underlineRect: NSRect(x: 10, y: 40, width: 80, height: 2))
         view.entries = [entry]
 
-        // The hitRect is expandedHitRect: y = 40-6=34, height = 14 → y range: 34..48
+        // The hitRect is expandedHitRect: y = 40-6=34, height = 14 -> y range: 34..48
         // hitTest receives coordinates in superview space; since there's no superview,
         // superview?.convert returns nil, so we fall back to the raw point.
         // We pass a point already in view-local coordinates (no superview in tests).
         let insidePoint = NSPoint(x: 50, y: 40)
         let result = view.hitTest(insidePoint)
+        #expect(result === view)
+    }
+
+    @Test("hitTest returns self inside the highlight rect")
+    func hitTestInsideHighlightRectReturnsSelf() {
+        let view = UnderlineView()
+        view.frame = NSRect(x: 0, y: 0, width: 200, height: 100)
+        let entry = makeEntry(underlineRect: NSRect(x: 10, y: 40, width: 80, height: 2))
+        view.entries = [entry]
+
+        let textBodyPoint = NSPoint(x: 50, y: 50)
+        let result = view.hitTest(textBodyPoint)
         #expect(result === view)
     }
 

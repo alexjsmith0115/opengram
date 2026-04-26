@@ -190,4 +190,20 @@ struct OverlayControllerRepositionTests {
         // is therefore bounded by 1.
         #expect(controller.applyBoundsCallCount <= 1)
     }
+
+    @Test("zero-AX textChanged reposition keeps overlay frame near hover highlight")
+    func zeroAXTextChangedUsesHoverHighlightFrame() async throws {
+        let controller = OverlayController(accessor: MockAXAccessor())
+        let suggestion = makeSuggestion()
+        controller.suggestions = [suggestion]
+        controller.suggestionScalarOffsets = [(scalarStart: 0, scalarLength: 7)]
+        controller.textContext = makeTextContext()
+        controller.lastKnownRects[suggestion.id] = [NSRect(x: 100, y: 200, width: 80, height: 18)]
+        controller.underlineView = UnderlineView()
+
+        controller.scheduleReposition(reason: .textChanged)
+        await controller.currentRepositionTask?.value
+
+        #expect(controller.overlayWindow.frame.height <= 28)
+    }
 }

@@ -28,6 +28,7 @@ final class OverlayController {
     // PERF-06: vertical padding applied to visible element bounds before culling.
     // Hardcoded per D-05 — tune only if real-world friction surfaces.
     private static let scrollCullPaddingY: CGFloat = 40
+    private static let overlayFramePadding: CGFloat = 2
 
     // PERF-10 frame-budget demotion thresholds.
     private static let frameBudget: TimeInterval = 0.012    // 12ms
@@ -94,6 +95,8 @@ final class OverlayController {
 
     private var scrollMonitor: Any?
     private var keyMonitor: Any?
+    private var mouseDownMonitor: Any?
+    private var mouseMoveMonitor: Any?
     /// `internal` per D-27 so OverlayControllerScrollModeTests can assert
     /// `underlineView?.alphaValue` after fadeUnderlines calls.
     var underlineView: UnderlineView?
@@ -208,46 +211,27 @@ final class OverlayController {
             ) else { continue }
             lastKnownRects[suggestion.id] = rects
             for rect in rects {
-                let underlineRect = NSRect(x: rect.origin.x, y: rect.origin.y, width: rect.width, height: 2)
-                let hitRect = UnderlineView.expandedHitRect(from: underlineRect)
-                entries.append(UnderlineEntry(underlineRect: underlineRect, hitRect: hitRect, suggestion: suggestion))
+                entries.append(Self.underlineEntry(for: rect, suggestion: suggestion))
             }
         }
 
-        guard !entries.isEmpty else { return }
-
-        let unionRect = entries.reduce(CGRect.null) { $0.union($1.hitRect) }
-        let padding: CGFloat = 4
-        let windowRect = unionRect.insetBy(dx: -padding, dy: -padding)
+        guard !entries.isEmpty,
+              let windowRect = Self.overlayFrame(for: entries) else { return }
 
         let view = UnderlineView()
         let localEntries = Self.toLocalEntries(entries, in: windowRect)
         view.entries = localEntries
         view.frame = NSRect(origin: .zero, size: windowRect.size)
 
-        // Wire click-to-show-popover.
-        // PLL-02 / D-02: purple underline (source == .llm) routes to the rephrase card
-        // rather than the word-level SuggestionPopoverPanel. The card is the sole popover
-        // surface for paragraph rewrites.
         view.onClick = { [weak self] suggestion in
-            guard let self else { return }
-            if suggestion.source == .llm, let ctx = self.textContext {
-                let paragraphLLM = self.suggestions.filter {
-                    $0.source == .llm && $0.paragraphHash == suggestion.paragraphHash
-                }
-                _ = self.tryDispatchRephraseCard(
-                    suggestions: paragraphLLM.isEmpty ? [suggestion] : paragraphLLM,
-                    context: ctx
-                )
-            } else {
-                self.showPopover(for: suggestion)
-            }
+            self?.handleUnderlineClick(suggestion)
         }
 
         underlineView = view
         overlayWindow.contentView = view
         overlayWindow.setFrame(windowRect, display: false)
         overlayWindow.orderFront(nil)
+        overlayWindow.ignoresMouseEvents = true
 
         // Install AX observer to dismiss on target app state changes
         let pid = NSRunningApplication.runningApplications(
@@ -295,6 +279,14 @@ final class OverlayController {
             if event.keyCode == 53 {
                 self.handleEscape()
             }
+        }
+
+        mouseDownMonitor = NSEvent.addGlobalMonitorForEvents(matching: .leftMouseDown) { [weak self] _ in
+            self?.handleGlobalMouseDown(screenPoint: NSEvent.mouseLocation)
+        }
+
+        mouseMoveMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.mouseMoved, .leftMouseDragged]) { [weak self] _ in
+            self?.handleGlobalMouseMoved(screenPoint: NSEvent.mouseLocation)
         }
     }
 
@@ -379,18 +371,7 @@ final class OverlayController {
                 screenRects = rects
             }
             for screenRect in screenRects {
-                let underlineRect = NSRect(
-                    x: screenRect.origin.x,
-                    y: screenRect.origin.y,
-                    width: screenRect.width,
-                    height: 2
-                )
-                let hitRect = UnderlineView.expandedHitRect(from: underlineRect)
-                survivingEntries.append(UnderlineEntry(
-                    underlineRect: underlineRect,
-                    hitRect: hitRect,
-                    suggestion: newSuggestion
-                ))
+                survivingEntries.append(Self.underlineEntry(for: screenRect, suggestion: newSuggestion))
             }
         }
 
@@ -412,9 +393,7 @@ final class OverlayController {
             survivingSuggestions.append(suggestion)
             survivingOffsets.append(off)
             for rect in rects {
-                let underlineRect = NSRect(x: rect.origin.x, y: rect.origin.y, width: rect.width, height: 2)
-                let hitRect = UnderlineView.expandedHitRect(from: underlineRect)
-                survivingEntries.append(UnderlineEntry(underlineRect: underlineRect, hitRect: hitRect, suggestion: suggestion))
+                survivingEntries.append(Self.underlineEntry(for: rect, suggestion: suggestion))
             }
         }
 
@@ -439,9 +418,10 @@ final class OverlayController {
         }
 
         // Translate entries to window-local coordinates and update the view
-        let unionRect = survivingEntries.reduce(CGRect.null) { $0.union($1.hitRect) }
-        let padding: CGFloat = 4
-        let windowRect = unionRect.insetBy(dx: -padding, dy: -padding)
+        guard let windowRect = Self.overlayFrame(for: survivingEntries) else {
+            dismiss()
+            return
+        }
 
         let localEntries = Self.toLocalEntries(survivingEntries, in: windowRect)
 
@@ -739,42 +719,28 @@ final class OverlayController {
             }
             guard let rects = lastKnownRects[suggestion.id] else { continue }
             for screenRect in rects {
-                let underlineRect = NSRect(
-                    x: screenRect.origin.x,
-                    y: screenRect.origin.y,
-                    width: screenRect.width,
-                    height: 2
-                )
-                let hitRect = UnderlineView.expandedHitRect(from: underlineRect)
-                entries.append(UnderlineEntry(
-                    underlineRect: underlineRect,
-                    hitRect: hitRect,
-                    suggestion: suggestion
-                ))
+                entries.append(Self.underlineEntry(for: screenRect, suggestion: suggestion))
             }
         }
         // Convert screen-space entries to window-local, matching show()/update().
         view.entries = Self.toLocalEntries(entries, in: overlayWindow.frame)
     }
 
-    /// PERF-12 D-08: recompute the overlay window frame from the union of preserved
-    /// `lastKnownRects` rects, without an AX round-trip. Called from the empty-filter
-    /// `.textChanged` branch after an accept that invalidated no remaining survivors.
-    /// Padding (4pt) mirrors `repositionAfterAccept`'s former window-frame pattern and
-    /// `show()`'s window-sizing pattern.
+    /// PERF-12 D-08: recompute the overlay window frame from cached range rects,
+    /// without an AX round-trip. Called from the empty-filter `.textChanged`
+    /// branch after an accept that invalidated no remaining survivors.
     private func recomputeOverlayFrame() {
         guard let view = underlineView else { return }
-        let padding: CGFloat = 4
-        let union = suggestions
-            .compactMap { lastKnownRects[$0.id] }
-            .flatMap { $0 }
-            .reduce(CGRect.null) { $0.union($1) }
-        guard !union.isNull else {
+        let entries = suggestions.flatMap { suggestion -> [UnderlineEntry] in
+            (lastKnownRects[suggestion.id] ?? []).map {
+                Self.underlineEntry(for: $0, suggestion: suggestion)
+            }
+        }
+        guard let newFrame = Self.overlayFrame(for: entries) else {
             // Defensive — should not occur in empty-filter path (all survivors cached).
             dismiss()
             return
         }
-        let newFrame = union.insetBy(dx: -padding, dy: -padding)
         view.frame = NSRect(origin: .zero, size: newFrame.size)
         overlayWindow.setFrame(newFrame, display: false)
     }
@@ -823,6 +789,16 @@ final class OverlayController {
             NSEvent.removeMonitor(monitor)
             keyMonitor = nil
         }
+        if let monitor = mouseDownMonitor {
+            NSEvent.removeMonitor(monitor)
+            mouseDownMonitor = nil
+        }
+        if let monitor = mouseMoveMonitor {
+            NSEvent.removeMonitor(monitor)
+            mouseMoveMonitor = nil
+        }
+        underlineView?.setHoveredSuggestionID(nil, animated: false)
+        overlayWindow.ignoresMouseEvents = true
         targetAppPID = nil
         lastKnownRects.removeAll()
         if notifyDismissAll {
@@ -884,7 +860,7 @@ final class OverlayController {
         let harperCount = suggestions.filter { $0.source == .harper }.count
         Self.logger.info("tryDispatchRephraseCard entry — suggestions=\(suggestions.count) llm=\(llmCount) harper=\(harperCount) bundleID=\(context.bundleID)")
 
-        guard let textMonitor else {
+        guard textMonitor != nil else {
             Self.logger.error("dispatch blocked: textMonitor missing")
             return false
         }
@@ -944,6 +920,20 @@ final class OverlayController {
             caretScalarIndex: caretIndex,
             in: context.text
         )
+
+        return presentRephraseCard(selected: selected, context: context)
+    }
+
+    @discardableResult
+    private func presentRephraseCard(
+        selected: CardQualifier,
+        context: TextContext,
+        anchorRectOverride: NSRect? = nil
+    ) -> Bool {
+        guard let textMonitor else {
+            Self.logger.error("dispatch blocked: textMonitor missing")
+            return false
+        }
 
         // WR-02: skip re-dispatch when the card is already showing for this paragraph.
         guard currentCardParagraphHash != selected.hash else {
@@ -1019,7 +1009,7 @@ final class OverlayController {
             onDismiss: dismissClosure
         )
 
-        guard let anchorRect = anchorRect(for: selected.paragraph, in: context) else {
+        guard let anchorRect = anchorRectOverride ?? anchorRect(for: selected.paragraph, in: context) else {
             Self.logger.error("dispatch blocked: anchorRect computation failed for paragraph — AX bounds query may have returned nil")
             return false
         }
@@ -1181,9 +1171,7 @@ final class OverlayController {
                 bundleID: ctx.bundleID, accessor: accessor
             ) else { continue }
             for rect in rects {
-                let underlineRect = NSRect(x: rect.origin.x, y: rect.origin.y, width: rect.width, height: 2)
-                let hitRect = UnderlineView.expandedHitRect(from: underlineRect)
-                entries.append(UnderlineEntry(underlineRect: underlineRect, hitRect: hitRect, suggestion: suggestion))
+                entries.append(Self.underlineEntry(for: rect, suggestion: suggestion))
             }
         }
         let windowRect = overlayWindow.frame
@@ -1472,13 +1460,133 @@ final class OverlayController {
         underlineView?.entries.first { $0.suggestion.id == suggestion.id }?.underlineRect
     }
 
+    @discardableResult
+    func handleGlobalMouseDown(screenPoint: NSPoint) -> Bool {
+        guard let suggestion = suggestionAtScreenPoint(screenPoint) else { return false }
+        handleUnderlineClick(suggestion)
+        return true
+    }
+
+    @discardableResult
+    func handleGlobalMouseMoved(screenPoint: NSPoint) -> UUID? {
+        guard let view = underlineView else { return nil }
+        let suggestion = hoverSuggestionAtScreenPoint(screenPoint)
+        view.setHoveredSuggestionID(suggestion?.id)
+        return suggestion?.id
+    }
+
+    private func suggestionAtScreenPoint(_ screenPoint: NSPoint) -> Suggestion? {
+        guard let view = underlineView else { return nil }
+        let windowPoint = NSPoint(
+            x: screenPoint.x - overlayWindow.frame.minX,
+            y: screenPoint.y - overlayWindow.frame.minY
+        )
+        let localPoint = view.convert(windowPoint, from: nil)
+        return view.suggestionAt(point: localPoint)
+    }
+
+    private func hoverSuggestionAtScreenPoint(_ screenPoint: NSPoint) -> Suggestion? {
+        guard let view = underlineView else { return nil }
+        let windowPoint = NSPoint(
+            x: screenPoint.x - overlayWindow.frame.minX,
+            y: screenPoint.y - overlayWindow.frame.minY
+        )
+        let localPoint = view.convert(windowPoint, from: nil)
+        return view.hoveredSuggestionAt(point: localPoint)
+    }
+
+    private func handleUnderlineClick(_ suggestion: Suggestion) {
+        if suggestion.source == .llm, let ctx = textContext {
+            let paragraphLLM = suggestions.filter {
+                $0.source == .llm && $0.paragraphHash == suggestion.paragraphHash
+            }
+            let didDispatch = tryDispatchRephraseCard(
+                suggestions: paragraphLLM.isEmpty ? [suggestion] : paragraphLLM,
+                context: ctx
+            )
+            if !didDispatch {
+                _ = dispatchClickedLLMCard(suggestion, context: ctx)
+            }
+        } else {
+            showPopover(for: suggestion)
+        }
+    }
+
+    private func dispatchClickedLLMCard(_ suggestion: Suggestion, context: TextContext) -> Bool {
+        guard let issue = llmIssue(from: suggestion) else { return false }
+        let hash = suggestion.paragraphHash ?? ParagraphHash(bundleID: context.bundleID, paragraphText: suggestion.original)
+        let paragraph = Paragraph(text: suggestion.original, range: suggestion.range, index: 0)
+        let harperInside = suggestions.filter { s in
+            s.source == .harper
+                && s.range.lowerBound >= suggestion.range.lowerBound
+                && s.range.upperBound <= suggestion.range.upperBound
+        }
+        let selected = CardQualifier(
+            paragraph: paragraph,
+            llmIssues: [issue],
+            harperInside: harperInside,
+            hash: hash
+        )
+        return presentRephraseCard(
+            selected: selected,
+            context: context,
+            anchorRectOverride: screenUnderlineRect(for: suggestion)
+        )
+    }
+
+    private func llmIssue(from suggestion: Suggestion) -> LLMStyleSuggestion? {
+        guard let revised = suggestion.primaryReplacement else { return nil }
+        let category: LLMStyleSuggestion.Category
+        switch suggestion.category {
+        case .tone:
+            category = .tone
+        case .rephrase:
+            category = .rephrase
+        default:
+            return nil
+        }
+        return LLMStyleSuggestion(
+            category: category,
+            originalText: suggestion.original,
+            revisedText: revised,
+            explanation: suggestion.message,
+            confidence: Int(suggestion.priority)
+        )
+    }
+
+    private func screenUnderlineRect(for suggestion: Suggestion) -> NSRect? {
+        guard let localRect = underlineRectForSuggestion(suggestion) else { return nil }
+        return localRect.offsetBy(dx: overlayWindow.frame.origin.x, dy: overlayWindow.frame.origin.y)
+    }
+
+    private static func underlineEntry(for screenRect: NSRect, suggestion: Suggestion) -> UnderlineEntry {
+        let underlineRect = NSRect(x: screenRect.origin.x, y: screenRect.origin.y, width: screenRect.width, height: 2)
+        let hitRect = UnderlineView.expandedHitRect(from: underlineRect)
+        let highlightRect = UnderlineView.highlightRect(from: screenRect, underlineRect: underlineRect)
+        return UnderlineEntry(
+            underlineRect: underlineRect,
+            hitRect: hitRect,
+            suggestion: suggestion,
+            highlightRect: highlightRect
+        )
+    }
+
+    private static func overlayFrame(for entries: [UnderlineEntry]) -> NSRect? {
+        let unionRect = entries.reduce(CGRect.null) { partial, entry in
+            partial.union(entry.hitRect).union(entry.highlightRect)
+        }
+        guard !unionRect.isNull else { return nil }
+        return unionRect.insetBy(dx: -overlayFramePadding, dy: -overlayFramePadding)
+    }
+
     /// Translates screen-coordinate entries to window-local coordinates.
     private static func toLocalEntries(_ entries: [UnderlineEntry], in windowRect: NSRect) -> [UnderlineEntry] {
         entries.map { entry in
             UnderlineEntry(
                 underlineRect: entry.underlineRect.offsetBy(dx: -windowRect.origin.x, dy: -windowRect.origin.y),
                 hitRect: entry.hitRect.offsetBy(dx: -windowRect.origin.x, dy: -windowRect.origin.y),
-                suggestion: entry.suggestion
+                suggestion: entry.suggestion,
+                highlightRect: entry.highlightRect.offsetBy(dx: -windowRect.origin.x, dy: -windowRect.origin.y)
             )
         }
     }
