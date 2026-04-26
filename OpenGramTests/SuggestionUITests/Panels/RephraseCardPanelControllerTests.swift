@@ -126,7 +126,7 @@ struct RephraseCardPanelControllerTests {
         #expect(panel?.contentView is NSHostingView<RephraseCardView>)
 
         let visibleFrame = screen.visibleFrame
-        #expect((panel?.frame.height ?? 0) >= 200)
+        #expect((panel?.frame.height ?? 0) >= 140)
         #expect((panel?.frame.height ?? 0) <= visibleFrame.height - 40)
 
         ctrl.hide()

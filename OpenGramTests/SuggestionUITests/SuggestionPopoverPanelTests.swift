@@ -54,4 +54,10 @@ struct SuggestionPopoverPanelTests {
         let panel = SuggestionPopoverPanel()
         #expect(panel.hasShadow == true)
     }
+
+    @Test("is movable by window background")
+    func isMovableByWindowBackgroundIsTrue() {
+        let panel = SuggestionPopoverPanel()
+        #expect(panel.isMovableByWindowBackground == true)
+    }
 }

@@ -15,7 +15,7 @@ final class SuggestionPopoverPanel: NSPanel {
         isFloatingPanel = true
         level = .popUpMenu
         collectionBehavior = [.canJoinAllSpaces]
-        isMovableByWindowBackground = false
+        isMovableByWindowBackground = true
         becomesKeyOnlyIfNeeded = true
         // SwiftUI renders the background via RoundedRectangle; panel is transparent beneath it.
         backgroundColor = .clear

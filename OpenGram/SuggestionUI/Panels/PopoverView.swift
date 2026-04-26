@@ -1,6 +1,29 @@
 import SwiftUI
 import AppKit
 
+enum SuggestionPopoverCardChrome {
+    static let cornerRadius: CGFloat = 12
+    static let shadowColor = Color.black.opacity(0.2)
+    static let shadowRadius: CGFloat = 8
+    static let shadowX: CGFloat = 0
+    static let shadowY: CGFloat = 4
+}
+
+extension View {
+    func suggestionPopoverCardChrome() -> some View {
+        background(
+            RoundedRectangle(cornerRadius: SuggestionPopoverCardChrome.cornerRadius)
+                .fill(Color(nsColor: .windowBackgroundColor))
+                .shadow(
+                    color: SuggestionPopoverCardChrome.shadowColor,
+                    radius: SuggestionPopoverCardChrome.shadowRadius,
+                    x: SuggestionPopoverCardChrome.shadowX,
+                    y: SuggestionPopoverCardChrome.shadowY
+                )
+        )
+    }
+}
+
 /// Drives scale+fade animation lifecycle. Owned by OverlayController so it can
 /// trigger the dismiss animation before calling orderOut(nil).
 @MainActor
@@ -41,22 +64,17 @@ struct PopoverView: View {
     }
 
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color(nsColor: .windowBackgroundColor))
-                .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
-
-            VStack(alignment: .leading, spacing: 12) {
-                inlineDiffRow
-                primaryReplacementButton
-                if suggestion.allReplacements.count > 1 {
-                    alternativesDisclosure
-                }
-                explanationText
-                footerRow
+        VStack(alignment: .leading, spacing: 12) {
+            inlineDiffRow
+            primaryReplacementButton
+            if suggestion.allReplacements.count > 1 {
+                alternativesDisclosure
             }
-            .padding(16)
+            explanationText
+            footerRow
         }
+        .padding(16)
+        .suggestionPopoverCardChrome()
         .frame(minWidth: 280, maxWidth: 360)
         .scaleEffect(animationState.isVisible ? 1.0 : 0.95)
         .opacity(animationState.isVisible ? 1.0 : 0.0)

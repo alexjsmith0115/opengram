@@ -68,7 +68,7 @@ final class RephraseCardPanelController {
         let hosting = NSHostingView(rootView: RephraseCardView(viewModel: viewModel))
 
         let newPanel = NSPanel(
-            contentRect: NSRect(x: 0, y: 0, width: 380, height: 260),
+            contentRect: NSRect(x: 0, y: 0, width: 320, height: 160),
             styleMask: [.nonactivatingPanel],
             backing: .buffered,
             defer: false
@@ -80,7 +80,9 @@ final class RephraseCardPanelController {
         newPanel.becomesKeyOnlyIfNeeded = true
         newPanel.backgroundColor = .clear
         newPanel.isOpaque = false
-        newPanel.hasShadow = false   // SwiftUI card provides its own shadow via RoundedRectangle
+        // Match SuggestionPopoverPanel: SwiftUI renders the rounded card and AppKit
+        // contributes the system panel shadow.
+        newPanel.hasShadow = true
 
         // Attach hosting to panel before layout so SwiftUI has a window context for fittingSize.
         newPanel.contentView = hosting
@@ -89,10 +91,11 @@ final class RephraseCardPanelController {
         // returns idealHeight so real text-length-driven overflow cannot be observed without a display.
         let fitting = testHookFittingSize ?? hosting.fittingSize
 
-        // D-10: 200pt defensive floor guards against fittingSize glitches returning 0.
+        // Defensive floor guards against fittingSize glitches returning 0 while
+        // keeping the AI card compact like the Harper suggestion popover.
         let flooredSize = NSSize(
-            width: max(fitting.width, 380),
-            height: max(fitting.height, 200)
+            width: max(fitting.width, 320),
+            height: max(fitting.height, 140)
         )
 
         // D-09: cap height at visibleFrame.height - verticalSafeMargin before positioning.
