@@ -12,6 +12,9 @@ struct LLMSettingsPanelTests {
         let nsPanel = panel.visiblePanel
         #expect(nsPanel != nil, "Panel must exist after show()")
         #expect(nsPanel?.level == .floating, "Panel must use .floating level for menu bar agent visibility")
+        #expect(nsPanel?.collectionBehavior.contains(.canJoinAllSpaces) == true)
+        #expect(nsPanel?.collectionBehavior.contains(.fullScreenAuxiliary) == true)
+        #expect(nsPanel?.contentView?.frame.size.width == 560)
         #expect(nsPanel?.isReleasedWhenClosed == false)
     }
 

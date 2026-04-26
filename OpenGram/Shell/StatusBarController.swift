@@ -16,7 +16,9 @@ final class StatusBarController {
         statusItem.menu = menuBuilder.buildMenu()
 
         menuBuilder.onSettingsTapped = { [weak self] in
-            self?.settingsPanel.show()
+            Task { @MainActor in
+                self?.settingsPanel.show()
+            }
         }
 
         stateMachine.onStateChange = { [weak self] _, symbolName, opacity in

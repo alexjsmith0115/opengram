@@ -63,7 +63,7 @@ struct AboutSettingsView: View {
             Spacer()
         }
         .padding(16)
-        .frame(width: 400)
+        .frame(maxWidth: .infinity)
     }
 
     static func loadLicense() -> String {

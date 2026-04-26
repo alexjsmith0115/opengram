@@ -52,7 +52,7 @@ struct ClaritySettingsView: View {
             Spacer()
         }
         .padding(16)
-        .frame(width: 400)
+        .frame(maxWidth: .infinity)
     }
 
     /// Test seam — posts the master-changed notification on an injectable center.

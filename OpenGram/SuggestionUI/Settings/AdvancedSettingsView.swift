@@ -49,7 +49,7 @@ struct AdvancedSettingsView: View {
             }
         }
         .padding()
-        .frame(width: 400)
+        .frame(maxWidth: .infinity)
     }
 
     /// Test seam + single source of truth for the reset action. Writes the three

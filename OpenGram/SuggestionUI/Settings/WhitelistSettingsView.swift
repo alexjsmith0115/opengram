@@ -111,6 +111,6 @@ struct WhitelistSettingsView: View {
             }
         }
         .padding(16)
-        .frame(width: 400)
+        .frame(maxWidth: .infinity)
     }
 }

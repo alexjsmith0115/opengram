@@ -2,6 +2,10 @@ import SwiftUI
 import AppKit
 import KeychainAccess
 
+private enum SettingsPanelLayout {
+    static let size = NSSize(width: 560, height: 600)
+}
+
 /// Manages the Settings panel lifecycle. Call `show()` to open.
 @MainActor
 final class LLMSettingsPanel {
@@ -12,17 +16,16 @@ final class LLMSettingsPanel {
 
     func show() {
         if let existing = panel, existing.isVisible {
-            NSApp.activate(ignoringOtherApps: true)
-            existing.makeKeyAndOrderFront(nil)
+            bringToFront(existing)
             return
         }
 
         let settingsView = SettingsView()
         let hostingView = NSHostingView(rootView: settingsView)
-        hostingView.frame = NSRect(x: 0, y: 0, width: 400, height: 600)
+        hostingView.frame = NSRect(origin: .zero, size: SettingsPanelLayout.size)
 
         let panel = NSPanel(
-            contentRect: NSRect(x: 0, y: 0, width: 400, height: 600),
+            contentRect: NSRect(origin: .zero, size: SettingsPanelLayout.size),
             styleMask: [.titled, .closable],
             backing: .buffered,
             defer: false
@@ -33,47 +36,104 @@ final class LLMSettingsPanel {
         panel.contentView = hostingView
         panel.center()
         panel.isMovable = true
+        panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         // .floating keeps the panel visible in .accessory activation policy apps
         panel.level = .floating
 
         self.panel = panel
-        // Activate the app first — .accessory apps have no foreground presence,
-        // so makeKeyAndOrderFront is silently ignored without this.
+        bringToFront(panel)
+    }
+
+    private func bringToFront(_ panel: NSPanel) {
+        // Activate the app first: .accessory apps have no foreground presence,
+        // so makeKeyAndOrderFront can be ignored without this.
         NSApp.activate(ignoringOtherApps: true)
         panel.makeKeyAndOrderFront(nil)
+        panel.orderFrontRegardless()
+    }
+}
+
+private enum SettingsTab: String, CaseIterable, Identifiable {
+    case llmProvider
+    case clarity
+    case whitelist
+    case advanced
+    case about
+
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .llmProvider: return "LLM Provider"
+        case .clarity: return "Clarity"
+        case .whitelist: return "Whitelisted Apps"
+        case .advanced: return "Advanced"
+        case .about: return "About"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .llmProvider: return "brain"
+        case .clarity: return "text.magnifyingglass"
+        case .whitelist: return "app.badge.checkmark"
+        case .advanced: return "slider.horizontal.3"
+        case .about: return "info.circle"
+        }
     }
 }
 
 /// Root settings view: LLM Provider, Clarity, Whitelisted Apps, Advanced, About.
 struct SettingsView: View {
+    @State private var selectedTab: SettingsTab = .llmProvider
+
     var body: some View {
-        TabView {
-            LLMSettingsView()
-                .tabItem {
-                    Label("LLM Provider", systemImage: "brain")
+        VStack(spacing: 0) {
+            HStack(spacing: 4) {
+                ForEach(SettingsTab.allCases) { tab in
+                    Button {
+                        selectedTab = tab
+                    } label: {
+                        Label(tab.title, systemImage: tab.systemImage)
+                            .labelStyle(.titleAndIcon)
+                            .font(.system(size: 12, weight: .medium))
+                            .lineLimit(1)
+                            .frame(maxWidth: .infinity, minHeight: 28)
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(selectedTab == tab ? Color.white : Color.primary)
+                    .background(
+                        RoundedRectangle(cornerRadius: 6)
+                            .fill(selectedTab == tab ? Color.accentColor : Color.clear)
+                    )
+                    .contentShape(RoundedRectangle(cornerRadius: 6))
                 }
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
 
-            ClaritySettingsView()
-                .tabItem {
-                    Label("Clarity", systemImage: "text.magnifyingglass")
-                }
+            Divider()
 
-            WhitelistSettingsView()
-                .tabItem {
-                    Label("Whitelisted Apps", systemImage: "app.badge.checkmark")
-                }
-
-            AdvancedSettingsView()
-                .tabItem {
-                    Label("Advanced", systemImage: "slider.horizontal.3")
-                }
-
-            AboutSettingsView()
-                .tabItem {
-                    Label("About", systemImage: "info.circle")
-                }
+            selectedContent
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
-        .frame(width: 400, height: 600)
+        .frame(width: SettingsPanelLayout.size.width, height: SettingsPanelLayout.size.height)
+    }
+
+    @ViewBuilder
+    private var selectedContent: some View {
+        switch selectedTab {
+        case .llmProvider:
+            LLMSettingsView()
+        case .clarity:
+            ClaritySettingsView()
+        case .whitelist:
+            WhitelistSettingsView()
+        case .advanced:
+            AdvancedSettingsView()
+        case .about:
+            AboutSettingsView()
+        }
     }
 }
 
@@ -220,7 +280,7 @@ struct LLMSettingsView: View {
             .frame(maxWidth: .infinity)
         }
         .padding(16)
-        .frame(width: 400)
+        .frame(maxWidth: .infinity)
         .onAppear {
             loadAPIKey()
         }
