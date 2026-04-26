@@ -174,7 +174,7 @@ Some apps hang indefinitely on AX calls. AXCallWatchdog detects calls exceeding 
 All modules use `Log.logger(for:)` which returns an `os.Logger` scoped by category. Replaces scattered `print()` and `NSLog()` calls. Subsystem is always the app bundle identifier.
 
 ### Configurable Confidence Threshold
-LLM confidence threshold (default: 7) is defined once in `LLMConfig.defaultConfidenceThreshold` and threaded through LLMPrompts (prompt text), LLMResponseDTO (filtering), and LLMService (parsing). Single source of truth.
+LLM confidence threshold (default: 9) is defined once in `LLMConfig.defaultConfidenceThreshold` and threaded through LLMPrompts (prompt text), LLMResponseDTO/LLMService parsing, and LLMRequestQueue provider-result filtering. Single source of truth.
 
 ## Technology Stack
 

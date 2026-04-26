@@ -46,7 +46,7 @@ Two-tier grammar and style checking pipeline. Harper for deterministic grammar, 
 | `LLMService.swift` | 251 | `LLMService` actor | OpenAI-compatible client. 4-step resilient JSON parser. Request cancellation |
 | `LLMConfig.swift` | 44 | `LLMCheckType` enum, `LLMConfig` struct | Non-secret LLM config (URL, model, checks, temperature, timeouts) |
 | `LLMPrompts.swift` | 58 | `LLMPrompts` enum (namespace) | System/user prompt generation. Harper-span deduplication |
-| `LLMResponseDTO.swift` | 46 | `LLMResponseDTO`, `SuggestionDTO` | DTO for OpenAI response parsing. Confidence filtering (>=7) |
+| `LLMResponseDTO.swift` | 46 | `LLMResponseDTO`, `SuggestionDTO` | DTO for OpenAI response parsing. Confidence filtering via `LLMConfig.defaultConfidenceThreshold` |
 | `LLMStyleSuggestion.swift` | 21 | `LLMStyleSuggestion` struct | Paragraph-level style suggestion (pre-range-resolution) |
 | `CheckOrchestrator.swift` | 78 | `CheckOrchestrator` actor | Coordinates Harper → LLM pipeline. Callbacks for each phase |
 | `DictionaryStore.swift` | 50 | `DictionaryStoreProtocol`, `DictionaryStore` struct | User dictionary persistence (~Library/Application Support/OpenGram/dictionary.txt) |
@@ -76,7 +76,7 @@ TextContext ──► CheckOrchestrator
 ### Design Notes
 - CheckOrchestrator is an actor — thread-safe for concurrent Harper + LLM
 - LLM task shielded from cancellation via `Task.detached` (prevents orphaned requests)
-- Confidence threshold (>=7) hardcoded in both LLMPrompts and LLMResponseDTO (should be single source)
+- Confidence threshold is centralized in `LLMConfig.defaultConfidenceThreshold`
 - LLMService has 4-step JSON parser: strip markdown → strip preamble → full decode → brace-matching fallback
 - HarperService is thin (~25 lines) — good SRP
 

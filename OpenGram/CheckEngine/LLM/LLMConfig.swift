@@ -20,7 +20,7 @@ struct LLMConfig: Codable, Sendable, Equatable {
     var requestTimeout: TimeInterval
     var confidenceThreshold: Int
 
-    static let defaultConfidenceThreshold = 7
+    static let defaultConfidenceThreshold = 9
 
     static let `default` = LLMConfig(
         baseURL: "http://localhost:1234/v1",

@@ -11,7 +11,7 @@ enum LLMPrompts {
         var prompt = """
         You are a writing assistant that analyzes text for style, grammar, and spelling improvements. You evaluate three dimensions: tone, rephrase, and grammar/spelling. You ONLY suggest improvements that are genuinely meaningful — do not suggest changes for text that is already well-written.
 
-        For each dimension, internally score your confidence (1-10) that the suggestion is a real improvement. Only include suggestions with confidence >= \(confidenceThreshold).
+        For each dimension, internally score your confidence (1-10) that the suggestion is a real improvement. Only include suggestions with confidence >= \(confidenceThreshold). Use 9-10 only for substantial, objective improvements that most readers would prefer. Treat merely acceptable, optional, stylistic, or taste-based rewrites as 8 or below and omit them.
 
         ## Dimensions
 
@@ -31,7 +31,7 @@ enum LLMPrompts {
               "category": "tone",
               "revised_text": "The improved version of the full input text with tone fixes applied.",
               "explanation": "Brief explanation of what was changed and why.",
-              "confidence": 8
+              "confidence": \(confidenceThreshold)
             }
           ]
         }
@@ -44,6 +44,7 @@ enum LLMPrompts {
         - Only include suggestions with confidence >= \(confidenceThreshold).
         - Never include more than one suggestion per category.
         - Do not invent problems. If the text is fine, return an empty array.
+        - Do not suggest changes for clear casual updates, list items, test sentences, or already fluent paragraphs unless there is a concrete writing problem.
         """
 
         if !harperSpans.isEmpty {

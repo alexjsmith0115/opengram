@@ -14,7 +14,7 @@ struct LLMServiceTests {
         {
           "suggestions": [
             {"category": "tone", "revised_text": "We will deliver.", "explanation": "More confident.", "confidence": 9},
-            {"category": "rephrase", "revised_text": "Ship it.", "explanation": "Concise rewrite.", "confidence": 7}
+            {"category": "rephrase", "revised_text": "Ship it.", "explanation": "Concise rewrite.", "confidence": 10}
           ]
         }
         """
@@ -47,7 +47,7 @@ struct LLMServiceTests {
         let service = LLMService()
         let json = """
         ```json
-        {"suggestions": [{"category": "tone", "revised_text": "Be direct.", "explanation": "Hedging removed.", "confidence": 8}]}
+        {"suggestions": [{"category": "tone", "revised_text": "Be direct.", "explanation": "Hedging removed.", "confidence": 9}]}
         ```
         """
         let suggestions = await service.parseJSONContent(json, paragraph: "I think maybe we could be direct.")
@@ -66,14 +66,14 @@ struct LLMServiceTests {
         #expect(suggestions.count == 1)
     }
 
-    @Test("filters suggestions with confidence below 7")
+    @Test("filters suggestions with confidence below default threshold")
     func filtersLowConfidenceSuggestions() async {
         let service = LLMService()
         let json = """
         {
           "suggestions": [
-            {"category": "rephrase", "revised_text": "Clear.", "explanation": "Better.", "confidence": 6},
-            {"category": "tone", "revised_text": "Direct.", "explanation": "Confident.", "confidence": 8}
+            {"category": "rephrase", "revised_text": "Clear.", "explanation": "Better.", "confidence": 8},
+            {"category": "tone", "revised_text": "Direct.", "explanation": "Confident.", "confidence": 9}
           ]
         }
         """
@@ -96,7 +96,7 @@ struct LLMServiceTests {
         ```json
         {"suggestions": [
           {"category": "clarity", "revised_text": "X", "explanation": "E1", "confidence": 9},
-          {"category": "tone", "revised_text": "Y", "explanation": "E2", "confidence": 8}
+          {"category": "tone", "revised_text": "Y", "explanation": "E2", "confidence": 9}
         ]}
         ```
         """
@@ -298,7 +298,7 @@ private let fixtureNext = "Later."
 
 private let cannedOneSuggestionEnvelope: Data = {
     let content = """
-    {"suggestions":[{"category":"tone","revised_text":"Direct version.","explanation":"More confident.","confidence":8}]}
+    {"suggestions":[{"category":"tone","revised_text":"Direct version.","explanation":"More confident.","confidence":9}]}
     """
     let escaped = content
         .replacingOccurrences(of: "\\", with: "\\\\")

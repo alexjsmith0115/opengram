@@ -196,6 +196,28 @@ import os
         }
     }
 
+    @Test func filtersProviderResultsBelowConfigThreshold() async throws {
+        let llm = StubLLM()
+        llm.setCanned([
+            "P1": [
+                LLMStyleSuggestion(category: .tone, originalText: "P1", revisedText: "low", explanation: "", confidence: 8),
+                LLMStyleSuggestion(category: .rephrase, originalText: "P1", revisedText: "high", explanation: "", confidence: 9)
+            ]
+        ])
+        let (q, store) = makeQueue(llm: llm)
+        await q.setStore(store)
+
+        await q.submit(hash: hash("P1"), paragraph: "P1", bundleID: "b")
+        try await wait(until: { !store.deliveries.isEmpty })
+
+        #expect(store.deliveries.count == 1)
+        if case .success(let count) = store.deliveries[0].kind {
+            #expect(count == 1)
+        } else {
+            Issue.record("expected .success, got \(store.deliveries[0].kind)")
+        }
+    }
+
     @Test func cancelUnknownHashIsNoOp() async {
         let llm = StubLLM()
         let (q, _) = makeQueue(llm: llm)

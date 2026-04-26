@@ -99,7 +99,7 @@ actor LLMRequestQueue {
                         harperSpans: []
                     )
                 }
-                result = .success(suggestions)
+                result = .success(suggestions.filter { $0.confidence >= config.confidenceThreshold })
             } catch {
                 result = .failure(error)
             }

@@ -87,7 +87,7 @@ Issues affecting maintainability, DRY, and correctness.
 
 ### F-13: Confidence Threshold Hardcoded in Multiple Places
 **Files:** `CheckEngine/LLMPrompts.swift`, `CheckEngine/LLMResponseDTO.swift`
-**Problem:** Confidence >= 7 threshold appears in both prompt text and DTO filtering. If changed in one place, other becomes inconsistent.
+**Problem:** Confidence threshold appeared in both prompt text and DTO filtering. If changed in one place, other becomes inconsistent.
 **Recommendation:** Define once in `LLMConfig` and reference from both locations.
 
 ### F-14: Silent Error Swallowing Throughout

@@ -15,6 +15,7 @@ struct LLMStyleSuggestion: Sendable, Equatable, Hashable {
     let originalText: String
     let revisedText: String
     let explanation: String
-    /// Confidence score 1–10 as reported by the LLM. Only suggestions >= 7 are surfaced.
+    /// Confidence score 1–10 as reported by the LLM. Only suggestions at or above
+    /// `LLMConfig.defaultConfidenceThreshold` are surfaced by default.
     let confidence: Int
 }

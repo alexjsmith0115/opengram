@@ -11,7 +11,7 @@ import Foundation
         {
             "suggestions": [
                 {"category": "tone", "revised_text": "Consider this", "explanation": "Hedge", "confidence": 9},
-                {"category": "rephrase", "revised_text": "Rewrite it", "explanation": "Flow", "confidence": 7}
+                {"category": "rephrase", "revised_text": "Rewrite it", "explanation": "Flow", "confidence": 10}
             ]
         }
         """
@@ -32,12 +32,12 @@ import Foundation
 
     // MARK: - Confidence filtering
 
-    @Test func filtersSuggestionsWithConfidenceBelowSeven() throws {
+    @Test func filtersSuggestionsWithConfidenceBelowDefaultThreshold() throws {
         let json = """
         {
             "suggestions": [
-                {"category": "rephrase", "revised_text": "Better", "explanation": "Good", "confidence": 6},
-                {"category": "tone", "revised_text": "Nicer", "explanation": "OK", "confidence": 7},
+                {"category": "rephrase", "revised_text": "Better", "explanation": "Good", "confidence": 8},
+                {"category": "tone", "revised_text": "Nicer", "explanation": "OK", "confidence": 9},
                 {"category": "rephrase", "revised_text": "Alt", "explanation": "Fine", "confidence": 5}
             ]
         }
@@ -46,12 +46,12 @@ import Foundation
         let suggestions = try LLMResponseDTO.toModels(from: data, originalText: "text")
         #expect(suggestions.count == 1)
         #expect(suggestions[0].category == .tone)
-        #expect(suggestions[0].confidence == 7)
+        #expect(suggestions[0].confidence == LLMConfig.defaultConfidenceThreshold)
     }
 
-    @Test func confidenceExactlySevenIsKept() throws {
+    @Test func confidenceExactlyDefaultThresholdIsKept() throws {
         let json = """
-        {"suggestions": [{"category": "tone", "revised_text": "R", "explanation": "E", "confidence": 7}]}
+        {"suggestions": [{"category": "tone", "revised_text": "R", "explanation": "E", "confidence": 9}]}
         """
         let data = Data(json.utf8)
         let suggestions = try LLMResponseDTO.toModels(from: data, originalText: "text")
@@ -83,7 +83,7 @@ import Foundation
         {
             "suggestions": [
                 {"category": "unknown_future_category", "revised_text": "X", "explanation": "E", "confidence": 9},
-                {"category": "tone", "revised_text": "Y", "explanation": "E2", "confidence": 8}
+                {"category": "tone", "revised_text": "Y", "explanation": "E2", "confidence": 9}
             ]
         }
         """
@@ -108,7 +108,7 @@ import Foundation
         let json = """
         {
             "suggestions": [
-                {"category": "tone", "revised_text": "Better", "explanation": "Good", "confidence": 8, "future_field": "value", "another": 42}
+                {"category": "tone", "revised_text": "Better", "explanation": "Good", "confidence": 9, "future_field": "value", "another": 42}
             ]
         }
         """
