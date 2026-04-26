@@ -164,6 +164,32 @@ struct UnderlineViewEntryTests {
         view.setHoveredSuggestionID(nil, animated: false)
         #expect(view.hoveredSuggestionID == nil)
     }
+
+    @Test("hover hit testing prefers the underline under the pointer over another text highlight")
+    func hoveredSuggestionPrefersUnderlineHitOverHighlightOnly() {
+        let view = UnderlineView()
+        let redSuggestion = makeSuggestion(category: .spelling)
+        let blueSuggestion = makeSuggestion(category: .grammarPunctuation)
+        let redUnderline = NSRect(x: 10, y: 20, width: 80, height: 2)
+        let blueUnderline = NSRect(x: 10, y: 40, width: 80, height: 2)
+        let redEntry = UnderlineEntry(
+            underlineRect: redUnderline,
+            hitRect: UnderlineView.expandedHitRect(from: redUnderline),
+            suggestion: redSuggestion,
+            highlightRect: NSRect(x: 8, y: 34, width: 84, height: 18)
+        )
+        let blueEntry = UnderlineEntry(
+            underlineRect: blueUnderline,
+            hitRect: UnderlineView.expandedHitRect(from: blueUnderline),
+            suggestion: blueSuggestion,
+            highlightRect: UnderlineView.highlightRect(from: blueUnderline, underlineRect: blueUnderline)
+        )
+        view.entries = [redEntry, blueEntry]
+
+        let pointOnBlueUnderline = NSPoint(x: 50, y: 40)
+        #expect(view.hoveredSuggestionAt(point: pointOnBlueUnderline)?.id == blueSuggestion.id)
+        #expect(view.suggestionAt(point: pointOnBlueUnderline)?.id == blueSuggestion.id)
+    }
 }
 
 @Suite("UnderlineView colorForSuggestion + z-order")
@@ -218,6 +244,33 @@ struct UnderlineViewColorTests {
             paragraphHash: nil
         )
         #expect(UnderlineView.colorForSuggestion(sug) == .systemBlue)
+    }
+
+    @Test("highlightColorForSuggestion uses the underline color with lighter alpha")
+    func highlightColorForSuggestion_usesUnderlineColorWithAlpha() throws {
+        let sug = Suggestion(
+            id: UUID(),
+            range: "x".startIndex..<"x".endIndex,
+            original: "x",
+            primaryReplacement: "y",
+            allReplacements: ["y"],
+            message: "m",
+            category: .grammarPunctuation,
+            source: .harper,
+            priority: 1,
+            paragraphHash: nil
+        )
+        let underline = try #require(
+            UnderlineView.colorForSuggestion(sug).usingColorSpace(.deviceRGB)
+        )
+        let highlight = try #require(
+            UnderlineView.highlightColorForSuggestion(sug).usingColorSpace(.deviceRGB)
+        )
+
+        #expect(highlight.redComponent == underline.redComponent)
+        #expect(highlight.greenComponent == underline.greenComponent)
+        #expect(highlight.blueComponent == underline.blueComponent)
+        #expect(highlight.alphaComponent == 0.16)
     }
 
     @MainActor

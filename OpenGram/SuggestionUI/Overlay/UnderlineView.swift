@@ -99,10 +99,7 @@ final class UnderlineView: NSView {
 
     override func hitTest(_ point: NSPoint) -> NSView? {
         let localPoint = superview?.convert(point, to: self) ?? point
-        for entry in entries where entry.clickRect.contains(localPoint) {
-            return self
-        }
-        return nil
+        return entryAt(point: localPoint) == nil ? nil : self
     }
 
     override func mouseDown(with event: NSEvent) {
@@ -115,11 +112,11 @@ final class UnderlineView: NSView {
     }
 
     func suggestionAt(point: NSPoint) -> Suggestion? {
-        entries.first(where: { $0.clickRect.contains(point) })?.suggestion
+        entryAt(point: point)?.suggestion
     }
 
     func hoveredSuggestionAt(point: NSPoint) -> Suggestion? {
-        entries.first(where: { $0.clickRect.contains(point) })?.suggestion
+        entryAt(point: point)?.suggestion
     }
 
     func setHoveredSuggestionID(_ suggestionID: UUID?, animated: Bool = true) {
@@ -168,6 +165,10 @@ final class UnderlineView: NSView {
         return colorForCategory(suggestion.category)
     }
 
+    nonisolated static func highlightColorForSuggestion(_ suggestion: Suggestion) -> NSColor {
+        colorForSuggestion(suggestion).withAlphaComponent(0.16)
+    }
+
     nonisolated static func highlightRect(from textRect: NSRect, underlineRect: NSRect) -> NSRect {
         let horizontalOutset: CGFloat = 2
         let minimumHeight: CGFloat = 14
@@ -203,9 +204,24 @@ final class UnderlineView: NSView {
                 width: fullRect.width,
                 height: fullRect.height * clampedProgress
             )
-            let color = Self.colorForSuggestion(entry.suggestion).withAlphaComponent(0.16)
+            let color = Self.highlightColorForSuggestion(entry.suggestion)
             color.setFill()
             NSBezierPath(roundedRect: animatedRect, xRadius: 2.5, yRadius: 2.5).fill()
+        }
+    }
+
+    private func entryAt(point: NSPoint) -> UnderlineEntry? {
+        if let underlined = entriesForHitTesting().first(where: { $0.hitRect.contains(point) }) {
+            return underlined
+        }
+        return entriesForHitTesting().first(where: { $0.highlightRect.contains(point) })
+    }
+
+    private func entriesForHitTesting() -> [UnderlineEntry] {
+        entries.sorted { a, b in
+            let aOrder = (a.suggestion.source == .llm) ? 0 : 1
+            let bOrder = (b.suggestion.source == .llm) ? 0 : 1
+            return aOrder > bOrder
         }
     }
 

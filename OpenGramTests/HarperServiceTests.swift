@@ -143,6 +143,108 @@ struct HarperServiceTests {
         }
     }
 
+    @Test("overlapping spelling fallback is dropped when grammar correction covers same token")
+    func overlappingSpellingFallbackDropped() {
+        let text = "overengineering"
+        let spelling = makeSuggestion(
+            in: text,
+            original: "overengineering",
+            replacement: "geoengineering",
+            category: .spelling,
+            range: text.startIndex..<text.endIndex
+        )
+        let grammar = makeSuggestion(
+            in: text,
+            original: "overengineering",
+            replacement: "over engineering",
+            category: .grammarPunctuation,
+            range: text.startIndex..<text.endIndex
+        )
+
+        let filtered = HarperService.resolveExactRangeCategoryConflicts([spelling, grammar])
+
+        #expect(filtered.map(\.id) == [grammar.id])
+    }
+
+    @Test("compound word split beats spelling fallback for same token")
+    func compoundWordSplitBeatsSpellingFallback() async {
+        let service = makeService()
+        let suggestions = await service.check(text: "The cost of overengineering is high.")
+        let matching = suggestions.filter { $0.original.lowercased() == "overengineering" }
+
+        #expect(matching.contains { $0.primaryReplacement == "over engineering" })
+        #expect(!matching.contains { $0.category == .spelling })
+    }
+
+    @Test("same-range spelling wins when split-word suggestion is not closer")
+    func sameRangeSpellingWinsWhenSplitWordIsNotCloser() {
+        let text = "prodcut"
+        let spelling = makeSuggestion(
+            in: text,
+            original: "prodcut",
+            replacement: "product",
+            category: .spelling,
+            range: text.startIndex..<text.endIndex
+        )
+        let grammar = makeSuggestion(
+            in: text,
+            original: "prodcut",
+            replacement: "prod cut",
+            category: .grammarPunctuation,
+            range: text.startIndex..<text.endIndex
+        )
+
+        let filtered = HarperService.resolveExactRangeCategoryConflicts([spelling, grammar])
+
+        #expect(filtered.map(\.id) == [spelling.id])
+    }
+
+    @Test("non-overlapping spelling suggestion is preserved")
+    func nonOverlappingSpellingPreserved() {
+        let text = "prodcut overengineering"
+        let spellingRange = text.range(of: "prodcut")!
+        let grammarRange = text.range(of: "overengineering")!
+        let spelling = makeSuggestion(
+            in: text,
+            original: "prodcut",
+            replacement: "product",
+            category: .spelling,
+            range: spellingRange
+        )
+        let grammar = makeSuggestion(
+            in: text,
+            original: "overengineering",
+            replacement: "over engineer",
+            category: .grammarPunctuation,
+            range: grammarRange
+        )
+
+        let filtered = HarperService.resolveExactRangeCategoryConflicts([spelling, grammar])
+
+        #expect(filtered.map(\.id) == [spelling.id, grammar.id])
+    }
+
+    private func makeSuggestion(
+        in text: String,
+        original: String,
+        replacement: String,
+        category: CheckCategory,
+        range: Range<String.Index>
+    ) -> Suggestion {
+        Suggestion(
+            id: UUID(),
+            range: range,
+            original: original,
+            primaryReplacement: replacement,
+            allReplacements: [replacement],
+            message: "synthetic",
+            category: category,
+            source: .harper,
+            priority: category == .spelling ? 60 : 127,
+            paragraphHash: nil
+        )
+    }
+
     // MARK: - CLAR-08 / CLAR-18: Severity filter (Swift post-processing)
 
     private func makeClaritySuggestion(severity: Severity) -> Suggestion {
