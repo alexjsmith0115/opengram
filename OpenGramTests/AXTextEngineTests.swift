@@ -214,6 +214,29 @@ struct AXTextEngineExtractTests {
         #expect(cache.storeCalls.count == 1)
         #expect(cache.storeCalls.first?.supported == false)
     }
+
+    @Test("extractText bypasses stale unsupported cache for Outlook")
+    @MainActor func extractBypassesCachedUnsupportedForOutlook() {
+        let mock = MockAXAccessor()
+        let cache = StubCapabilityCache()
+        mock.bundleID = "com.microsoft.Outlook"
+        mock.bundleVersion = "16.108"
+        cache.preload(bundleID: "com.microsoft.Outlook", version: "16.108", supported: false)
+
+        mock.attributeValues[kAXFocusedUIElementAttribute] = (.success, dummyElement)
+        mock.attributeValues[kAXValueAttribute] = (.success, "Outlook body text" as CFString)
+        mock.attributeValues[kAXSelectedTextAttribute] = (.success, "" as CFString)
+        mock.attributeSettable[kAXValueAttribute] = (.success, false)
+        mock.attributeSettable[kAXSelectedTextRangeAttribute] = (.success, true)
+        mock.attributeValues[kAXSelectedTextRangeAttribute] = (.attributeUnsupported, nil)
+        mock.attributeValues[kAXPositionAttribute] = (.attributeUnsupported, nil)
+
+        let engine = makeEngine(mock: mock, cache: cache)
+        let context = engine.extractText()
+
+        #expect(context?.text == "Outlook body text")
+        #expect(cache.storeCalls.last?.supported == true)
+    }
 }
 
 @Suite("AXTextEngine capability probe")
@@ -226,6 +249,35 @@ struct AXTextEngineProbeTests {
         let cache = StubCapabilityCache()
         mock.attributeValues[kAXValueAttribute] = (.success, "text" as CFString)
         mock.attributeSettable[kAXValueAttribute] = (.success, true)
+
+        let engine = AXTextEngine(accessor: mock, capabilityCache: cache)
+        let result = engine.probeCapability(element: dummyElement)
+
+        #expect(result == true)
+    }
+
+    @Test("probeCapability returns true when selected text range is settable")
+    @MainActor func probeReturnsTrueForRangeWritableRichEditor() {
+        let mock = MockAXAccessor()
+        let cache = StubCapabilityCache()
+        mock.attributeValues[kAXValueAttribute] = (.success, "text" as CFString)
+        mock.attributeSettable[kAXValueAttribute] = (.success, false)
+        mock.attributeSettable[kAXSelectedTextRangeAttribute] = (.success, true)
+
+        let engine = AXTextEngine(accessor: mock, capabilityCache: cache)
+        let result = engine.probeCapability(element: dummyElement)
+
+        #expect(result == true)
+    }
+
+    @Test("probeCapability returns true when selected text replacement is settable")
+    @MainActor func probeReturnsTrueForSelectedTextWritableRichEditor() {
+        let mock = MockAXAccessor()
+        let cache = StubCapabilityCache()
+        mock.attributeValues[kAXValueAttribute] = (.success, "text" as CFString)
+        mock.attributeSettable[kAXValueAttribute] = (.success, false)
+        mock.attributeSettable[kAXSelectedTextRangeAttribute] = (.success, false)
+        mock.attributeSettable[kAXSelectedTextAttribute] = (.success, true)
 
         let engine = AXTextEngine(accessor: mock, capabilityCache: cache)
         let result = engine.probeCapability(element: dummyElement)

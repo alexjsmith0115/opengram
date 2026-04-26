@@ -136,9 +136,15 @@ final class TextMonitor {
 
     private func installOnFocusedElement() {
         guard let app = NSWorkspace.shared.frontmostApplication,
-              let bundleID = app.bundleIdentifier else { return }
+              let bundleID = app.bundleIdentifier else {
+            Self.logger.warning("installOnFocusedElement aborted: no frontmost app or bundle ID")
+            return
+        }
+
+        Self.logger.info("installOnFocusedElement frontmost name=\(app.localizedName ?? "nil", privacy: .public) bundle=\(bundleID, privacy: .public) pid=\(app.processIdentifier)")
 
         guard appWhitelist.isAllowed(bundleID) else {
+            Self.logger.info("installOnFocusedElement blocked: bundle not whitelisted \(bundleID, privacy: .public)")
             onDismiss?()
             return
         }
@@ -150,17 +156,22 @@ final class TextMonitor {
             systemWide, kAXFocusedUIElementAttribute as CFString, &focusedRef
         )
         guard result == .success, let focusedRef else {
+            Self.logger.warning("installOnFocusedElement aborted: focused element read err=\(result.rawValue)")
             onDismiss?()
             return
         }
         let element = focusedRef as! AXUIElement
 
         guard isTextElement(element) else {
+            Self.logger.info("installOnFocusedElement blocked: focused role is not text-capable bundle=\(bundleID, privacy: .public)")
             onDismiss?()
             return
         }
 
-        if watchdog.shouldSkip(for: bundleID) { return }
+        if watchdog.shouldSkip(for: bundleID) {
+            Self.logger.warning("installOnFocusedElement aborted: AX watchdog is skipping bundle=\(bundleID, privacy: .public)")
+            return
+        }
 
         installObserver(pid: pid, element: element, bundleID: bundleID)
     }
@@ -214,12 +225,16 @@ final class TextMonitor {
         self.observedElement = element
         self.observedPID = pid
         self.observedBundleID = bundleID
+        Self.logger.info("installObserver installed pid=\(pid) bundle=\(bundleID, privacy: .public)")
 
         // Capture current text as baseline for polling diff.
         var valueRef: CFTypeRef?
         if AXUIElementCopyAttributeValue(element, kAXValueAttribute as CFString, &valueRef) == .success,
            let valueRef, CFGetTypeID(valueRef) == CFStringGetTypeID() {
             lastKnownText = (valueRef as! String)
+            Self.logger.info("installObserver baseline value len=\((valueRef as! String).count) sample=\(Self.sample(valueRef as! String), privacy: .public)")
+        } else {
+            Self.logger.info("installObserver baseline value unavailable bundle=\(bundleID, privacy: .public)")
         }
 
         // Decide whether to start poll timer: pre-classified unreliable OR unknown (D-02).
@@ -228,7 +243,10 @@ final class TextMonitor {
         let reliabilityUnknown = capabilityCache.isNotificationReliable(bundleID: bundleID) == nil
 
         if preClassified || runtimeKnownUnreliable || reliabilityUnknown {
+            Self.logger.info("installObserver starting poll timer bundle=\(bundleID, privacy: .public) preClassified=\(preClassified) runtimeKnownUnreliable=\(runtimeKnownUnreliable) reliabilityUnknown=\(reliabilityUnknown)")
             startPollTimer()
+        } else {
+            Self.logger.info("installObserver using AX notifications only bundle=\(bundleID, privacy: .public)")
         }
 
         // PLL-09: eager reconcile on focus install.
@@ -262,6 +280,7 @@ final class TextMonitor {
     // MARK: - Notification handling
 
     func handleValueChanged() {
+        Self.logger.info("handleValueChanged bundle=\(self.observedBundleID ?? "nil", privacy: .public)")
         reliabilityDetector.recordNotification()
         onKeystroke?()
         scheduleDebounce()
@@ -283,22 +302,33 @@ final class TextMonitor {
     // MARK: - Grammar check
 
     private func runCheck() {
-        guard let observedElement else { return }
+        guard let observedElement else {
+            Self.logger.info("runCheck skipped: no observed element")
+            return
+        }
 
         // Verify the *same* element is still focused before extracting text (Pitfall 5 guard).
         let systemWide = AXUIElementCreateSystemWide()
         var currentFocusRef: CFTypeRef?
         guard AXUIElementCopyAttributeValue(
             systemWide, kAXFocusedUIElementAttribute as CFString, &currentFocusRef
-        ) == .success else { return }
+        ) == .success else {
+            Self.logger.warning("runCheck skipped: focused element read failed")
+            return
+        }
 
         let currentElement = currentFocusRef as! AXUIElement
         guard CFEqual(currentElement, observedElement) else {
+            Self.logger.info("runCheck focus changed: reinstalling focused element")
             installOnFocusedElement()
             return
         }
 
-        guard let context = textEngine.extractText(), !context.text.isEmpty else { return }
+        guard let context = textEngine.extractText(), !context.text.isEmpty else {
+            Self.logger.warning("runCheck skipped: extractText returned nil or empty")
+            return
+        }
+        Self.logger.info("runCheck extracted bundle=\(context.bundleID, privacy: .public) len=\(context.text.count) sample=\(Self.sample(context.text), privacy: .public)")
 
         checkTask?.cancel()
         checkTask = Task {
@@ -335,9 +365,15 @@ final class TextMonitor {
 
     private func pollForChanges() {
         guard let element = observedElement,
-              let bundleID = observedBundleID else { return }
+              let bundleID = observedBundleID else {
+            Self.logger.info("pollForChanges skipped: no observed element/bundle")
+            return
+        }
 
-        if watchdog.shouldSkip(for: bundleID) { return }
+        if watchdog.shouldSkip(for: bundleID) {
+            Self.logger.warning("pollForChanges skipped: AX watchdog is skipping bundle=\(bundleID, privacy: .public)")
+            return
+        }
 
         // Validate element is still focused before AX call (F-10 fix).
         let systemWide = AXUIElementCreateSystemWide()
@@ -347,6 +383,7 @@ final class TextMonitor {
         ) == .success, let focusRef {
             let focused = focusRef as! AXUIElement
             guard CFEqual(focused, element) else {
+                Self.logger.info("pollForChanges focus changed: reinstalling focused element")
                 installOnFocusedElement()
                 return
             }
@@ -357,12 +394,14 @@ final class TextMonitor {
         guard result == .success,
               let valueRef,
               CFGetTypeID(valueRef) == CFStringGetTypeID() else {
+            Self.logger.warning("pollForChanges value read failed bundle=\(bundleID, privacy: .public) err=\(result.rawValue) cast=\(valueRef.map { CFGetTypeID($0) == CFStringGetTypeID() } ?? false)")
             reliabilityDetector.reset()
             return
         }
 
         let currentText = valueRef as! String
         let textChanged = currentText != lastKnownText
+        Self.logger.info("pollForChanges bundle=\(bundleID, privacy: .public) textChanged=\(textChanged) len=\(currentText.count) sample=\(Self.sample(currentText), privacy: .public)")
 
         let verdict = reliabilityDetector.evaluatePollTick(textChanged: textChanged)
 
@@ -390,6 +429,7 @@ final class TextMonitor {
         let work = DispatchWorkItem { [weak self] in
             guard let self else { return }
             let newBundleID = app.bundleIdentifier
+            Self.logger.info("app activated name=\(app.localizedName ?? "nil", privacy: .public) bundle=\(newBundleID ?? "nil", privacy: .public) pid=\(app.processIdentifier)")
             if newBundleID == self.observedBundleID { return }
             self.uninstallCurrentObserver()
             self.onDismiss?()
@@ -437,7 +477,10 @@ final class TextMonitor {
     @MainActor
     private func driveStoreOnValueChange() {
         guard let store, let splitter else { return }
-        guard let context = textEngine.extractText(), !context.text.isEmpty else { return }
+        guard let context = textEngine.extractText(), !context.text.isEmpty else {
+            Self.logger.warning("driveStoreOnValueChange skipped: extractText returned nil or empty")
+            return
+        }
         let bundleID = context.bundleID
         let text = context.text
         let caretOffset: Int? = context.selectionRange.map { Int($0.location) }
@@ -458,7 +501,10 @@ final class TextMonitor {
     @MainActor
     private func driveStoreReconcile() {
         guard let store, let splitter else { return }
-        guard let context = textEngine.extractText(), !context.text.isEmpty else { return }
+        guard let context = textEngine.extractText(), !context.text.isEmpty else {
+            Self.logger.warning("driveStoreReconcile skipped: extractText returned nil or empty")
+            return
+        }
         let bundleID = context.bundleID
         let text = context.text
         let caretOffset: Int? = context.selectionRange.map { Int($0.location) }
@@ -487,12 +533,29 @@ final class TextMonitor {
         var roleRef: CFTypeRef?
         guard AXUIElementCopyAttributeValue(element, kAXRoleAttribute as CFString, &roleRef) == .success,
               let roleRef,
-              CFGetTypeID(roleRef) == CFStringGetTypeID() else { return false }
+              CFGetTypeID(roleRef) == CFStringGetTypeID() else {
+            Self.logger.info("isTextElement false: role unavailable")
+            return false
+        }
 
         let role = roleRef as! String
-        return role == kAXTextFieldRole as String
+        let supported = Self.supportsTextRole(role)
+        Self.logger.info("isTextElement role=\(role, privacy: .public) supported=\(supported)")
+        return supported
+    }
+
+    static func supportsTextRole(_ role: String) -> Bool {
+        role == kAXTextFieldRole as String
             || role == kAXTextAreaRole as String
             || role == kAXComboBoxRole as String
+            || role == "AXWebArea"
+    }
+
+    private static func sample(_ text: String) -> String {
+        let oneLine = text
+            .replacingOccurrences(of: "\n", with: "\\n")
+            .replacingOccurrences(of: "\r", with: "\\r")
+        return String(oneLine.prefix(160))
     }
 }
 

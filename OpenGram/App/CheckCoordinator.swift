@@ -70,8 +70,16 @@ final class CheckCoordinator {
 
     func handleHotkeyFired() {
         guard let frontmost = NSWorkspace.shared.frontmostApplication,
-              let bundleID = frontmost.bundleIdentifier,
-              appWhitelist.isAllowed(bundleID) else {
+              let bundleID = frontmost.bundleIdentifier else {
+            Self.logger.warning("hotkey ignored: no frontmost application or bundle ID")
+            statusBarController.flashInactive()
+            return
+        }
+
+        Self.logger.info("hotkey fired frontmost name=\(frontmost.localizedName ?? "nil", privacy: .public) bundle=\(bundleID, privacy: .public) pid=\(frontmost.processIdentifier)")
+
+        guard appWhitelist.isAllowed(bundleID) else {
+            Self.logger.info("hotkey ignored: bundle not whitelisted \(bundleID, privacy: .public)")
             statusBarController.flashInactive()
             return
         }
@@ -82,10 +90,12 @@ final class CheckCoordinator {
         statusBarController.updateStatusText("OpenGram: Checking...")
 
         guard let context = textEngine.extractText() else {
+            Self.logger.warning("hotkey extraction failed bundle=\(bundleID, privacy: .public)")
             statusBarController.triggerSilentFail()
             statusBarController.updateStatusText("OpenGram: Ready")
             return
         }
+        Self.logger.info("hotkey extracted bundle=\(context.bundleID, privacy: .public) len=\(context.text.count) sample=\(Self.sample(context.text), privacy: .public)")
         lastExtractedContext = context
 
         checkTask?.cancel()
@@ -94,6 +104,7 @@ final class CheckCoordinator {
             let harperSuggestions = await orchestrator.harperOnly(text: context.text)
             guard !Task.isCancelled else { return }
             await MainActor.run {
+                Self.logger.info("hotkey check complete suggestions=\(harperSuggestions.count) bundle=\(context.bundleID, privacy: .public)")
                 self.lastSuggestions = harperSuggestions
                 self.accumulatedSuggestions = harperSuggestions
                 if harperSuggestions.isEmpty {
@@ -115,17 +126,23 @@ final class CheckCoordinator {
         lastSuggestions = suggestions
         lastExtractedContext = context
 
+        let config = ConfigManager.currentLLMConfig()
+        Self.logger.info("continuous check complete suggestions=\(suggestions.count) bundle=\(context.bundleID, privacy: .public) llmEnabled=\(config.isEnabled)")
+
         if suggestions.isEmpty {
-            overlayController.dismiss()
-            statusBarController.setState(.idle)
-            statusBarController.updateStatusText("OpenGram: Ready")
+            if config.isEnabled {
+                overlayController.prepareForDeferredSuggestions(context: context)
+            } else {
+                overlayController.dismiss()
+                statusBarController.setState(.idle)
+                statusBarController.updateStatusText("OpenGram: Ready")
+            }
         } else {
             statusBarController.setState(.done)
             statusBarController.updateStatusText("OpenGram: \(suggestions.count) suggestion(s)")
             overlayController.update(suggestions: suggestions, context: context)
         }
 
-        let config = ConfigManager.currentLLMConfig()
         if config.isEnabled {
             statusBarController.setState(.checkingLLM)
             statusBarController.updateStatusText("Checking style\u{2026}")
@@ -159,5 +176,12 @@ final class CheckCoordinator {
             statusBarController.setState(.done)
             statusBarController.updateStatusText("OpenGram: \(accumulatedSuggestions.count) suggestion(s)")
         }
+    }
+
+    private static func sample(_ text: String) -> String {
+        let oneLine = text
+            .replacingOccurrences(of: "\n", with: "\\n")
+            .replacingOccurrences(of: "\r", with: "\\r")
+        return String(oneLine.prefix(160))
     }
 }

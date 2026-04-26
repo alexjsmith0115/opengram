@@ -155,6 +155,33 @@ struct OverlayControllerStoreSubscriptionTests {
         #expect(seen, "controller must receive LLM suggestion via store subscription")
     }
 
+    @Test func deferredContextReceivesStoreSuggestionAfterEmptyHarperPass() async throws {
+        let para = String(repeating: "word ", count: 10) + "here"
+        let fx = await makeFixture(text: para)
+        let context = TextContext(
+            text: para,
+            bundleID: "b",
+            extractionMethod: .axDirectFull,
+            selectionRange: nil,
+            elementBounds: nil,
+            axElement: AXUIElementCreateSystemWide()
+        )
+        fx.controller.textContext = nil
+        fx.controller.prepareForDeferredSuggestions(context: context)
+        fx.llm.setCanned([para: [LLMStyleSuggestion(
+            category: .tone,
+            originalText: para,
+            revisedText: "rewritten version",
+            explanation: "x",
+            confidence: 8
+        )]])
+
+        await fx.store.reconcile(set: makeSet(bundleID: "b", paragraph: para))
+
+        let seen = await waitForLLMSuggestion(controller: fx.controller)
+        #expect(seen, "deferred context must let zero-Harper checks render later LLM suggestions")
+    }
+
     @Test func eventForDifferentBundleIDNoOp() async throws {
         let para = String(repeating: "word ", count: 10) + "here"
         let fx = await makeFixture(text: para, bundleID: "currentApp")

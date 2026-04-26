@@ -26,6 +26,14 @@
 		<true/>
 	</dict>
 
+	<!-- Modern Outlook's compose surface is web-backed and does not consistently
+	     deliver AX value-changed notifications. Keep polling enabled. -->
+	<key>com.microsoft.Outlook</key>
+	<dict>
+		<key>notificationUnreliable</key>
+		<true/>
+	</dict>
+
 	<!-- Apps confirmed to handle CADisplayLink-pumped reposition during scroll
 	     (PERF-07). All other apps default to hideAndSettle. -->
 	<key>com.apple.Notes</key>

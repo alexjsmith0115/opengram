@@ -99,6 +99,12 @@ struct AppQuirksTableScrollModeTests {
         #expect(table.quirk(for: "com.apple.mail")?.scrollMode == .trackFrame)
     }
 
+    @Test("bundled AppQuirks.plist keeps Outlook polling enabled")
+    func bundledOutlookNotificationUnreliable() {
+        let table = AppQuirksTable.shared
+        #expect(table.quirk(for: "com.microsoft.Outlook")?.notificationUnreliable == true)
+    }
+
     @Test("notificationUnreliable apps have nil scrollMode (default hideAndSettle)")
     func chromeHasNoScrollMode() {
         let table = AppQuirksTable.shared

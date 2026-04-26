@@ -779,9 +779,21 @@ final class OverlayController {
         overlayWindow.setFrame(newFrame, display: false)
     }
 
+    /// Hides any current overlay surface while preserving the text context needed by
+    /// deferred store events, such as paragraph LLM responses after Harper returns no
+    /// immediate suggestions.
+    func prepareForDeferredSuggestions(context: TextContext) {
+        tearDownOverlay(notifyDismissAll: false)
+        textContext = context
+    }
+
     /// Dismisses the overlay, closes any open popover, uninstalls the AX observer,
     /// and removes the scroll monitor.
     func dismiss() {
+        tearDownOverlay(notifyDismissAll: true)
+    }
+
+    private func tearDownOverlay(notifyDismissAll: Bool) {
         currentRepositionTask?.cancel()
         // PERF-07/08/09/10/11 scroll-state teardown (D-21). Must run before observer
         // uninstall and before lastKnownRects clear so timer fires don't re-trigger
@@ -813,7 +825,9 @@ final class OverlayController {
         }
         targetAppPID = nil
         lastKnownRects.removeAll()
-        onDismissAll?()
+        if notifyDismissAll {
+            onDismissAll?()
+        }
     }
 
     // MARK: - Store subscription (D-04)

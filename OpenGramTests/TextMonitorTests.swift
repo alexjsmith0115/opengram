@@ -151,6 +151,18 @@ struct TextMonitorTests {
         #expect(!monitor.isTextElement(appElement))
     }
 
+    @Test("supportsTextRole accepts web-backed editor role")
+    @MainActor
+    func supportsTextRoleAcceptsWebArea() async throws {
+        #expect(TextMonitor.supportsTextRole("AXWebArea"))
+    }
+
+    @Test("supportsTextRole rejects non-text roles")
+    @MainActor
+    func supportsTextRoleRejectsGroup() async throws {
+        #expect(!TextMonitor.supportsTextRole(kAXGroupRole as String))
+    }
+
     // MARK: Debounce
 
     @Test("scheduleDebounce cancels prior work item so only the last call fires")

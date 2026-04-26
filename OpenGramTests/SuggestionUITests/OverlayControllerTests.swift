@@ -134,6 +134,29 @@ struct OverlayControllerTests {
         #expect(controller.currentPopoverSuggestion == nil)
     }
 
+    @Test("prepareForDeferredSuggestions clears overlay but preserves context")
+    func prepareForDeferredSuggestionsPreservesContext() {
+        let controller = OverlayController(accessor: MockAXAccessor())
+        let context = TextContext(
+            text: "clean paragraph for style",
+            bundleID: "com.microsoft.Outlook",
+            extractionMethod: .axDirectFull,
+            selectionRange: nil,
+            elementBounds: nil,
+            axElement: AXUIElementCreateSystemWide()
+        )
+        var dismissedAll = false
+        controller.onDismissAll = { dismissedAll = true }
+        controller.suggestions = [makeSuggestion()]
+        controller.textContext = context
+
+        controller.prepareForDeferredSuggestions(context: context)
+
+        #expect(controller.suggestions.isEmpty)
+        #expect(controller.textContext?.bundleID == "com.microsoft.Outlook")
+        #expect(dismissedAll == false)
+    }
+
     @Test("handleDismiss removes suggestion from suggestions array")
     func handleDismissRemovesSuggestion() {
         let controller = OverlayController(accessor: MockAXAccessor())

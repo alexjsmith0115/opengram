@@ -20,6 +20,7 @@ struct AppWhitelistTests {
         #expect(whitelist.bundleIDs.contains("com.apple.Notes"))
         #expect(whitelist.bundleIDs.contains("com.apple.Safari"))
         #expect(whitelist.bundleIDs.contains("com.google.Chrome"))
+        #expect(whitelist.bundleIDs.contains("com.microsoft.Outlook"))
         #expect(whitelist.bundleIDs.contains("com.tinyspeck.slackmacgap"))
     }
 
