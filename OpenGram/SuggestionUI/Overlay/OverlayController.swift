@@ -164,7 +164,11 @@ final class OverlayController {
             }
             let localPoint = view.convert(event.locationInWindow, from: nil)
             if view.suggestionAt(point: localPoint) == nil {
-                self.dismiss()
+                if self.isPopoverVisible {
+                    self.closePopover()
+                } else {
+                    self.dismiss()
+                }
             }
         }
 
@@ -1462,7 +1466,12 @@ final class OverlayController {
 
     @discardableResult
     func handleGlobalMouseDown(screenPoint: NSPoint) -> Bool {
-        guard let suggestion = suggestionAtScreenPoint(screenPoint) else { return false }
+        guard let suggestion = suggestionAtScreenPoint(screenPoint) else {
+            if isPopoverVisible {
+                closePopover()
+            }
+            return false
+        }
         handleUnderlineClick(suggestion)
         return true
     }

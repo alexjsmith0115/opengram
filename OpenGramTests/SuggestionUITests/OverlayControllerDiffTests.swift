@@ -193,6 +193,31 @@ struct OverlayControllerDiffTests {
         #expect(controller.overlayWindow.ignoresMouseEvents == true)
     }
 
+    @Test("global mouse down outside text closes open popover")
+    func globalMouseDownOutsideTextClosesOpenPopover() throws {
+        let text = "Ths is a tset."
+        let controller = OverlayController(accessor: MockAXAccessor())
+        let suggestion = makeDiffSuggestion(in: text, scalarStart: 0, scalarLength: 3, original: "Ths")
+        let view = UnderlineView()
+        view.entries = [
+            UnderlineEntry(
+                underlineRect: NSRect(x: 10, y: 10, width: 80, height: 2),
+                hitRect: UnderlineView.expandedHitRect(from: NSRect(x: 10, y: 10, width: 80, height: 2)),
+                suggestion: suggestion,
+                highlightRect: NSRect(x: 8, y: 10, width: 84, height: 18)
+            )
+        ]
+        controller.underlineView = view
+        controller.overlayWindow.setFrame(NSRect(x: 100, y: 200, width: 120, height: 80), display: false)
+        controller.showPopover(for: suggestion)
+
+        let handled = controller.handleGlobalMouseDown(screenPoint: NSPoint(x: 230, y: 290))
+
+        #expect(handled == false)
+        #expect(controller.isPopoverVisible == false)
+        #expect(controller.currentPopoverSuggestion == nil)
+    }
+
     @Test("global mouse down detects clicks in highlighted text range")
     func globalMouseDownDetectsHighlightRange() throws {
         let text = "Ths is a tset."
