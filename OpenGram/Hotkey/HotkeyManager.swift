@@ -27,7 +27,7 @@ final class HotkeyManager: HotkeyManagerProtocol, @unchecked Sendable {
     private(set) var healthTimer: Timer?
     private var wakeObserver: NSObjectProtocol?
 
-    var onHotkeyFired: (@MainActor @Sendable () -> Void)?
+    var onHotkeyFired: (@MainActor @Sendable (HotkeyAction) -> Void)?
 
     deinit {
         uninstall()
@@ -104,7 +104,7 @@ final class HotkeyManager: HotkeyManagerProtocol, @unchecked Sendable {
         }
 
         if isHotkey(event) {
-            Task { @MainActor in self.onHotkeyFired?() }
+            Task { @MainActor in self.onHotkeyFired?(.check) }
             return nil
         }
 

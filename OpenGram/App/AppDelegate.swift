@@ -73,7 +73,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         self.checkCoordinator = coordinator
         self.textMonitor = textMonitor
 
-        hotkeyManager.onHotkeyFired = { [weak coordinator, weak textMonitor] in
+        hotkeyManager.onHotkeyFired = { [weak coordinator, weak textMonitor] _ in
             textMonitor?.reconcileNow()
             coordinator?.handleHotkeyFired()
         }
