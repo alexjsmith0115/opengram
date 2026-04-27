@@ -7,6 +7,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
     private var textMonitor: TextMonitor?
     private var permissionGuide: PermissionGuide?
     private var checkCoordinator: CheckCoordinator?
+    private var rewriteCoordinator: RewriteCoordinator?
     private var harperService: HarperService?
     private var clarityObserver: NSObjectProtocol?
 
@@ -68,19 +69,32 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
             appWhitelist: AppWhitelist()
         )
 
+        let textReplacer = AXTextReplacer(accessor: SystemAXAccessor())
+
+        let rewriteCoordinator = RewriteCoordinator(
+            textEngine: textEngine,
+            textReplacer: textReplacer,
+            llmService: llmService,
+            configManager: LiveConfigProvider(),
+            statusBar: statusBarController,
+            openSettings: { [weak statusBarController] in
+                statusBarController?.showSettings()
+            }
+        )
+
         self.hotkeyManager = hotkeyManager
         self.permissionGuide = permissionGuide
         self.checkCoordinator = coordinator
+        self.rewriteCoordinator = rewriteCoordinator
         self.textMonitor = textMonitor
 
-        hotkeyManager.onHotkeyFired = { [weak coordinator, weak textMonitor] action in
+        hotkeyManager.onHotkeyFired = { [weak coordinator, weak rewriteCoordinator, weak textMonitor] action in
             switch action {
             case .check:
                 textMonitor?.reconcileNow()
                 coordinator?.handleHotkeyFired()
             case .rewrite:
-                // Wired once RewriteCoordinator exists.
-                break
+                rewriteCoordinator?.handleRewriteHotkey()
             }
         }
 

@@ -47,3 +47,10 @@ extension ConfigManager: RewriteConfigProvider {
     var llmConfig: LLMConfig { ConfigManager.currentLLMConfig() }
     func currentAPIKey() -> String? { ConfigManager.currentAPIKey() }
 }
+
+/// Concrete value-type passed into objects that need `RewriteConfigProvider`.
+/// Delegates to the static `ConfigManager` accessors.
+struct LiveConfigProvider: RewriteConfigProvider, Sendable {
+    var llmConfig: LLMConfig { ConfigManager.currentLLMConfig() }
+    func currentAPIKey() -> String? { ConfigManager.currentAPIKey() }
+}

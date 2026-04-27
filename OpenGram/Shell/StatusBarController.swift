@@ -47,6 +47,10 @@ final class StatusBarController {
         menuBuilder.updateStatusText(text)
     }
 
+    func showSettings() {
+        settingsPanel.show()
+    }
+
     func flashSelectTextHint() {
         flashTransient(message: "Select text first to rewrite")
     }
