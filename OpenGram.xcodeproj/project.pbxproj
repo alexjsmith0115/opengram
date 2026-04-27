@@ -128,6 +128,8 @@
 		B18000010000000000000021 /* AXTextReplacerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28000010000000000000021 /* AXTextReplacerTests.swift */; };
 		A19000010000000000000001 /* AXRangeIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29000010000000000000001 /* AXRangeIndex.swift */; };
 		B19000010000000000000001 /* AXRangeIndexTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29000010000000000000001 /* AXRangeIndexTests.swift */; };
+		A19000010000000000000002 /* WriteBackStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29000010000000000000002 /* WriteBackStrategy.swift */; };
+		B19000010000000000000002 /* WriteBackStrategyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29000010000000000000002 /* WriteBackStrategyTests.swift */; };
 		A18020010000000000000001 /* TextDiff.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28020010000000000000001 /* TextDiff.swift */; };
 		A18020010000000000000002 /* DisplayHeuristic.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28020010000000000000002 /* DisplayHeuristic.swift */; };
 		A18020010000000000000003 /* RephraseComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28020010000000000000003 /* RephraseComposer.swift */; };
@@ -305,6 +307,8 @@
 		B28000010000000000000021 /* AXTextReplacerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXTextReplacerTests.swift; sourceTree = "<group>"; };
 		A29000010000000000000001 /* AXRangeIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXRangeIndex.swift; sourceTree = "<group>"; };
 		B29000010000000000000001 /* AXRangeIndexTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXRangeIndexTests.swift; sourceTree = "<group>"; };
+		A29000010000000000000002 /* WriteBackStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteBackStrategy.swift; sourceTree = "<group>"; };
+		B29000010000000000000002 /* WriteBackStrategyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteBackStrategyTests.swift; sourceTree = "<group>"; };
 		A28020010000000000000001 /* TextDiff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDiff.swift; sourceTree = "<group>"; };
 		A28020010000000000000002 /* DisplayHeuristic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayHeuristic.swift; sourceTree = "<group>"; };
 		A28020010000000000000003 /* RephraseComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RephraseComposer.swift; sourceTree = "<group>"; };
@@ -641,6 +645,7 @@
 				A28050010000000000000002 /* RephraseCardPanelController.swift */,
 				A20000010000000000000070 /* SuggestionDiffEngine.swift */,
 				A20000010000000000000043 /* SuggestionPopoverPanel.swift */,
+				A29000010000000000000002 /* WriteBackStrategy.swift */,
 			);
 			path = Panels;
 			sourceTree = "<group>";
@@ -733,6 +738,7 @@
 			children = (
 				B28000010000000000000021 /* AXTextReplacerTests.swift */,
 				B28050010000000000000002 /* RephraseCardPanelControllerTests.swift */,
+				B29000010000000000000002 /* WriteBackStrategyTests.swift */,
 			);
 			path = Panels;
 			sourceTree = "<group>";
@@ -965,6 +971,7 @@
 				A10000010000000000000601 /* AboutSettingsView.swift in Sources */,
 				A10000010000000000000603 /* ClarityKeys.swift in Sources */,
 				A18000010000000000000021 /* AXTextReplacer.swift in Sources */,
+				A19000010000000000000002 /* WriteBackStrategy.swift in Sources */,
 				A18020010000000000000001 /* TextDiff.swift in Sources */,
 				A18020010000000000000002 /* DisplayHeuristic.swift in Sources */,
 				A18020010000000000000003 /* RephraseComposer.swift in Sources */,
@@ -1043,6 +1050,7 @@
 				B10000010000000000000600 /* ClaritySettingsViewTests.swift in Sources */,
 				B10000010000000000000601 /* AboutSettingsViewTests.swift in Sources */,
 				B18000010000000000000021 /* AXTextReplacerTests.swift in Sources */,
+				B19000010000000000000002 /* WriteBackStrategyTests.swift in Sources */,
 				B18020010000000000000001 /* TextDiffTests.swift in Sources */,
 				B18020010000000000000002 /* DisplayHeuristicTests.swift in Sources */,
 				B18020010000000000000003 /* RephraseComposerTests.swift in Sources */,
