@@ -133,6 +133,8 @@
 		B19000010000000000000002 /* WriteBackStrategyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29000010000000000000002 /* WriteBackStrategyTests.swift */; };
 		A19000010000000000000003 /* RewriteCaptureContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29000010000000000000003 /* RewriteCaptureContext.swift */; };
 		A19000010000000000000004 /* RewriteStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29000010000000000000004 /* RewriteStatus.swift */; };
+		A19000010000000000000005 /* RewriteWindowViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29000010000000000000005 /* RewriteWindowViewModel.swift */; };
+		B19000010000000000000006 /* RewriteWindowViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29000010000000000000006 /* RewriteWindowViewModelTests.swift */; };
 		A18020010000000000000001 /* TextDiff.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28020010000000000000001 /* TextDiff.swift */; };
 		A18020010000000000000002 /* DisplayHeuristic.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28020010000000000000002 /* DisplayHeuristic.swift */; };
 		A18020010000000000000003 /* RephraseComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28020010000000000000003 /* RephraseComposer.swift */; };
@@ -317,6 +319,8 @@
 		B29000010000000000000002 /* WriteBackStrategyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteBackStrategyTests.swift; sourceTree = "<group>"; };
 		A29000010000000000000003 /* RewriteCaptureContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewriteCaptureContext.swift; sourceTree = "<group>"; };
 		A29000010000000000000004 /* RewriteStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewriteStatus.swift; sourceTree = "<group>"; };
+		A29000010000000000000005 /* RewriteWindowViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewriteWindowViewModel.swift; sourceTree = "<group>"; };
+		B29000010000000000000006 /* RewriteWindowViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewriteWindowViewModelTests.swift; sourceTree = "<group>"; };
 		A28020010000000000000001 /* TextDiff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDiff.swift; sourceTree = "<group>"; };
 		A28020010000000000000002 /* DisplayHeuristic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayHeuristic.swift; sourceTree = "<group>"; };
 		A28020010000000000000003 /* RephraseComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RephraseComposer.swift; sourceTree = "<group>"; };
@@ -517,6 +521,7 @@
 				B20000010000000000000041 /* LLMRewriteTests.swift */,
 				B20000010000000000000034 /* LLMServiceTests.swift */,
 				B2000001000000000000003C /* RewriteToneTests.swift */,
+				B29000010000000000000006 /* RewriteWindowViewModelTests.swift */,
 				B20000010000000000000200 /* LMStudioPipelineIntegrationTests.swift */,
 				B20000010000000000000201 /* LMStudioLiveIntegrationTests.swift */,
 				B20000010000000000000002 /* MenuBuilderTests.swift */,
@@ -665,6 +670,7 @@
 			children = (
 				A29000010000000000000003 /* RewriteCaptureContext.swift */,
 				A29000010000000000000004 /* RewriteStatus.swift */,
+				A29000010000000000000005 /* RewriteWindowViewModel.swift */,
 			);
 			path = RewriteWindow;
 			sourceTree = "<group>";
@@ -1012,6 +1018,7 @@
 				A12006010000000000000001 /* ParagraphSuggestionStore.swift in Sources */,
 				A19000010000000000000003 /* RewriteCaptureContext.swift in Sources */,
 				A19000010000000000000004 /* RewriteStatus.swift in Sources */,
+				A19000010000000000000005 /* RewriteWindowViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1064,6 +1071,7 @@
 				B1000001000000000000003A /* LLMResponseDTOTests.swift in Sources */,
 				B1000001000000000000003B /* ParagraphExtractorTests.swift in Sources */,
 				B1000001000000000000003C /* RewriteToneTests.swift in Sources */,
+				B19000010000000000000006 /* RewriteWindowViewModelTests.swift in Sources */,
 				B100000100000000000000A0 /* AppWhitelistTests.swift in Sources */,
 				B100000100000000000000C0 /* PanelPositionerTests.swift in Sources */,
 				B100000100000000000000D0 /* CacheClockTests.swift in Sources */,
