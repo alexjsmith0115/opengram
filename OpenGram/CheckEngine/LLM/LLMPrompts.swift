@@ -82,4 +82,18 @@ enum LLMPrompts {
         \(next)
         """
     }
+
+    // MARK: - Rewrite
+
+    static func rewriteSystemPrompt(tone: RewriteTone) -> String {
+        """
+        \(tone.promptInstruction)
+        Preserve paragraph breaks from the input.
+        Output ONLY the rewritten text — no preamble, no quotes, no commentary.
+        """
+    }
+
+    static func rewriteUserMessage(text: String) -> String {
+        text
+    }
 }

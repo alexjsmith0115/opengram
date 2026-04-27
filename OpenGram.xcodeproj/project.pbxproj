@@ -171,6 +171,7 @@
 		A10000010000000000000024 /* AXCallQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000024 /* AXCallQueue.swift */; };
 		B10000010000000000000040 /* AXCallQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000040 /* AXCallQueueTests.swift */; };
 		B10000010000000000000050 /* SlowMockAXAccessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000050 /* SlowMockAXAccessor.swift */; };
+		B10000010000000000000041 /* LLMRewriteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000041 /* LLMRewriteTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -282,6 +283,7 @@
 		B20000010000000000000201 /* LMStudioLiveIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LMStudioLiveIntegrationTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000202 /* ClarityNotificationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClarityNotificationTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000035 /* LLMPromptsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMPromptsTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000041 /* LLMRewriteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMRewriteTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000036 /* CheckOrchestratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckOrchestratorTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000037 /* LLMSettingsPanelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSettingsPanelTests.swift; sourceTree = "<group>"; };
 		B2000001000000000000003A /* LLMResponseDTOTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMResponseDTOTests.swift; sourceTree = "<group>"; };
@@ -512,6 +514,7 @@
 				B20000010000000000000038 /* HotkeyActionDispatchTests.swift */,
 				B20000010000000000000001 /* IconStateMachineTests.swift */,
 				B20000010000000000000035 /* LLMPromptsTests.swift */,
+				B20000010000000000000041 /* LLMRewriteTests.swift */,
 				B20000010000000000000034 /* LLMServiceTests.swift */,
 				B2000001000000000000003C /* RewriteToneTests.swift */,
 				B20000010000000000000200 /* LMStudioPipelineIntegrationTests.swift */,
@@ -1055,6 +1058,7 @@
 				B10000010000000000000201 /* LMStudioLiveIntegrationTests.swift in Sources */,
 				B10000010000000000000202 /* ClarityNotificationTests.swift in Sources */,
 				B10000010000000000000035 /* LLMPromptsTests.swift in Sources */,
+				B10000010000000000000041 /* LLMRewriteTests.swift in Sources */,
 				B10000010000000000000036 /* CheckOrchestratorTests.swift in Sources */,
 				B10000010000000000000037 /* LLMSettingsPanelTests.swift in Sources */,
 				B1000001000000000000003A /* LLMResponseDTOTests.swift in Sources */,
