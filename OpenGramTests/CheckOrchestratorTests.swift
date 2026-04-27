@@ -13,6 +13,7 @@ extension TextContext {
             extractionMethod: .axDirectFull,
             selectionRange: nil,
             elementBounds: nil,
+            capabilities: AXCapabilities(),
             axElement: AXUIElementCreateSystemWide()
         )
     }

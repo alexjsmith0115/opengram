@@ -81,6 +81,7 @@ struct OverlayControllerWIRE01IntegrationTests {
             extractionMethod: .axDirectSelection,
             selectionRange: nil,
             elementBounds: nil,
+            capabilities: AXCapabilities(),
             axElement: AXUIElementCreateSystemWide()
         )
         overlayCtrl.update(suggestions: merged, context: ctx)

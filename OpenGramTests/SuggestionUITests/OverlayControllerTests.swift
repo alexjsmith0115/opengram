@@ -67,6 +67,7 @@ private func makeTextContext(text: String = "recieve") -> TextContext {
         extractionMethod: .axDirectSelection,
         selectionRange: nil,
         elementBounds: nil,
+        capabilities: AXCapabilities(),
         axElement: AXUIElementCreateSystemWide()
     )
 }
@@ -143,6 +144,7 @@ struct OverlayControllerTests {
             extractionMethod: .axDirectFull,
             selectionRange: nil,
             elementBounds: nil,
+            capabilities: AXCapabilities(),
             axElement: AXUIElementCreateSystemWide()
         )
         var dismissedAll = false

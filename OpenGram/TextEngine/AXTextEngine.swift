@@ -91,6 +91,7 @@ final class AXTextEngine: AXTextEngineProtocol {
 
         let selectionRange = extractSelectionRange(element: element)
         let elementBounds = extractElementBounds(element: element)
+        let capabilities = extractCapabilities(element: element)
 
         Self.logger.info("extractText success bundle=\(bundleID, privacy: .public) method=\(extractionMethod.rawValue, privacy: .public) textLen=\(truncatedText.count) selection=\(Self.describe(selectionRange), privacy: .public) bounds=\(Self.describe(elementBounds), privacy: .public)")
 
@@ -100,6 +101,7 @@ final class AXTextEngine: AXTextEngineProtocol {
             extractionMethod: extractionMethod,
             selectionRange: selectionRange,
             elementBounds: elementBounds,
+            capabilities: capabilities,
             axElement: element
         )
     }
@@ -178,6 +180,23 @@ final class AXTextEngine: AXTextEngineProtocol {
         guard AXValueGetValue(sizeValue as! AXValue, .cgSize, &size) else { return nil }
 
         return CGRect(origin: point, size: size)
+    }
+
+    private func extractCapabilities(element: AXUIElement) -> AXCapabilities {
+        let (_, rangeSettable) = accessor.isAttributeSettable(element, kAXSelectedTextRangeAttribute)
+        let (_, selectedTextSettable) = accessor.isAttributeSettable(element, kAXSelectedTextAttribute)
+        let (_, valueSettable) = accessor.isAttributeSettable(element, kAXValueAttribute)
+
+        let (selReadError, _) = accessor.copyAttributeValue(element, kAXSelectedTextAttribute)
+        let (valReadError, _) = accessor.copyAttributeValue(element, kAXValueAttribute)
+
+        return AXCapabilities(
+            canSetSelectedTextRange: rangeSettable,
+            canSetSelectedText: selectedTextSettable,
+            canReadSelectedText: selReadError == .success || selReadError == .noValue,
+            canSetValue: valueSettable,
+            canReadValue: valReadError == .success || valReadError == .noValue
+        )
     }
 
     private static func shouldReprobeCachedUnsupported(bundleID: String) -> Bool {

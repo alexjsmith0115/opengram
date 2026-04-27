@@ -1392,6 +1392,7 @@ final class OverlayController {
             extractionMethod: context.extractionMethod,
             selectionRange: context.selectionRange,
             elementBounds: context.elementBounds,
+            capabilities: context.capabilities,
             axElement: context.axElement
         )
 

@@ -34,6 +34,7 @@ private func makeTextContext(text: String = "aaa bbb ccc") -> TextContext {
         extractionMethod: .axDirectSelection,
         selectionRange: nil,
         elementBounds: nil,
+        capabilities: AXCapabilities(),
         axElement: AXUIElementCreateSystemWide()
     )
 }
@@ -309,7 +310,7 @@ struct OverlayControllerMirrorTests {
         controller.textContext = TextContext(
             text: text, bundleID: "com.apple.TextEdit",
             extractionMethod: .axDirectSelection, selectionRange: nil,
-            elementBounds: nil, axElement: AXUIElementCreateSystemWide()
+            elementBounds: nil, capabilities: AXCapabilities(), axElement: AXUIElementCreateSystemWide()
         )
 
         // Seed underline view with LOCAL-space entries (what a prior show()/update()

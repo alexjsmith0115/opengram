@@ -329,6 +329,7 @@ struct AXTextEngineWriteBackTests {
             extractionMethod: .axDirectSelection,
             selectionRange: CFRange(location: 0, length: 8),
             elementBounds: nil,
+            capabilities: AXCapabilities(),
             axElement: dummyElement
         )
 
@@ -352,6 +353,7 @@ struct AXTextEngineWriteBackTests {
             extractionMethod: .axDirectSelection,
             selectionRange: CFRange(location: 0, length: 8),
             elementBounds: nil,
+            capabilities: AXCapabilities(),
             axElement: dummyElement
         )
 
