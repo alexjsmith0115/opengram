@@ -307,7 +307,7 @@ actor LLMService: LLMProviderProtocol {
         text: String,
         tone: RewriteTone,
         config: LLMConfig,
-        apiKey: String
+        apiKey: String?
     ) async throws -> String {
         guard let url = config.chatCompletionsURL else {
             throw LLMRewriteError.transport(URLError(.badURL))
@@ -326,7 +326,9 @@ actor LLMService: LLMProviderProtocol {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        if let key = apiKey, !key.isEmpty {
+            request.setValue("Bearer \(key)", forHTTPHeaderField: "Authorization")
+        }
         request.timeoutInterval = config.requestTimeout
         do {
             request.httpBody = try JSONEncoder().encode(payload)

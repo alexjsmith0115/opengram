@@ -111,7 +111,7 @@ final class RewriteCoordinator {
         let llmAdapter = LLMRewriteAdapter(
             service: llmService,
             config: configManager.llmConfig,
-            apiKey: configManager.currentAPIKey() ?? ""
+            apiKey: configManager.currentAPIKey()
         )
         let vm = RewriteWindowViewModel(
             original: ctx.capturedOriginal,
@@ -191,7 +191,7 @@ final class RewriteCoordinator {
 private struct LLMRewriteAdapter: RewriteLLMProvider {
     let service: LLMService
     let config: LLMConfig
-    let apiKey: String
+    let apiKey: String?
 
     func rewrite(text: String, tone: RewriteTone) async throws -> String {
         try await service.rewrite(text: text, tone: tone, config: config, apiKey: apiKey)

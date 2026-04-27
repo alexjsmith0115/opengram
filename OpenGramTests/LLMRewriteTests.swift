@@ -106,6 +106,38 @@ struct LLMServiceRewriteTests {
         #expect(req?.value(forHTTPHeaderField: "Authorization") == "Bearer sk-mykey")
     }
 
+    @Test("omits Authorization header when apiKey is nil (local LLMs)")
+    func omitsAuthHeaderWhenKeyNil() async throws {
+        let session = makeSession(status: 200, body: envelopeData(content: "Rewritten."))
+        let service = LLMService(session: session)
+
+        _ = try await service.rewrite(
+            text: "Hello.",
+            tone: .professional,
+            config: makeConfig(),
+            apiKey: nil
+        )
+
+        let req = RewriteRecordingURLProtocol.receivedRequests.first
+        #expect(req?.value(forHTTPHeaderField: "Authorization") == nil)
+    }
+
+    @Test("omits Authorization header when apiKey is empty string")
+    func omitsAuthHeaderWhenKeyEmpty() async throws {
+        let session = makeSession(status: 200, body: envelopeData(content: "Rewritten."))
+        let service = LLMService(session: session)
+
+        _ = try await service.rewrite(
+            text: "Hello.",
+            tone: .professional,
+            config: makeConfig(),
+            apiKey: ""
+        )
+
+        let req = RewriteRecordingURLProtocol.receivedRequests.first
+        #expect(req?.value(forHTTPHeaderField: "Authorization") == nil)
+    }
+
     @Test("posts to chatCompletionsURL")
     func postsToCorrectURL() async throws {
         let session = makeSession(status: 200, body: envelopeData(content: "Done."))

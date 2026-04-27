@@ -53,11 +53,8 @@ final class RewriteWindowViewModel {
         let myID = generationID
         selectedTone = tone
 
-        guard let apiKey = configManager.currentAPIKey() else {
-            status = .error(.noAPIKey, attemptedTone: nil)
-            return
-        }
-
+        // No API-key gate: local LLMs (LM Studio / Ollama / similar) require no key.
+        // Auth absence surfaces via HTTP 401 from servers that do require auth.
         status = .loading
         let llm = self.llm
         let original = self.original

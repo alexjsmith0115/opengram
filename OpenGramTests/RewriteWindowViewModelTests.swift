@@ -114,17 +114,17 @@ struct RewriteWindowViewModelTests {
         #expect(vm.canApply == false)
     }
 
-    @Test("Missing API key surfaces .noAPIKey with attemptedTone == nil")
-    func noAPIKey() async {
-        let vm = makeVM(apiKey: nil) { _, _ in Issue.record("LLM should not be called"); return "x" }
-        vm.selectTone(.professional)
-
-        guard case .error(let err, let tone) = vm.status,
-              case .noAPIKey = err else {
-            Issue.record("Expected .error(.noAPIKey, ...)")
-            return
+    @Test("Missing API key still fires LLM (local LLMs need no key)")
+    func missingAPIKeyStillFires() async {
+        let vm = makeVM(apiKey: nil) { _, tone in
+            #expect(tone == .professional)
+            return "rewritten"
         }
-        #expect(tone == nil)
+        vm.selectTone(.professional)
+        await vm.waitForCompletion()
+
+        #expect(vm.status == .done)
+        #expect(vm.revised == "rewritten")
     }
 
     @Test("retry replays the failed tone, not any later selection")
