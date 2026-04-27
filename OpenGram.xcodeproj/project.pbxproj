@@ -12,6 +12,7 @@
 		A10000010000000000000003 /* OpenGramApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000003 /* OpenGramApp.swift */; };
 		A10000010000000000000004 /* StatusBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000004 /* StatusBarController.swift */; };
 		A10000010000000000000005 /* HotkeyManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000005 /* HotkeyManagerProtocol.swift */; };
+		A10000010000000000000012 /* HotkeyAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000012 /* HotkeyAction.swift */; };
 		A10000010000000000000006 /* AXTextEngineProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000006 /* AXTextEngineProtocol.swift */; };
 		A10000010000000000000007 /* TextContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000007 /* TextContext.swift */; };
 		A10000010000000000000008 /* EventTapBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000008 /* EventTapBridge.swift */; };
@@ -50,6 +51,7 @@
 		B10000010000000000000001 /* IconStateMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000001 /* IconStateMachineTests.swift */; };
 		B10000010000000000000002 /* MenuBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000002 /* MenuBuilderTests.swift */; };
 		B10000010000000000000003 /* HotkeyManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000003 /* HotkeyManagerTests.swift */; };
+		B10000010000000000000038 /* HotkeyActionDispatchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000038 /* HotkeyActionDispatchTests.swift */; };
 		B10000010000000000000004 /* AXTextEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000004 /* AXTextEngineTests.swift */; };
 		B10000010000000000000005 /* AXCapabilityCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000005 /* AXCapabilityCacheTests.swift */; };
 		B10000010000000000000006 /* TextContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000006 /* TextContextTests.swift */; };
@@ -176,6 +178,7 @@
 		A20000010000000000000003 /* OpenGramApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGramApp.swift; sourceTree = "<group>"; };
 		A20000010000000000000004 /* StatusBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarController.swift; sourceTree = "<group>"; };
 		A20000010000000000000005 /* HotkeyManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManagerProtocol.swift; sourceTree = "<group>"; };
+		A20000010000000000000012 /* HotkeyAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyAction.swift; sourceTree = "<group>"; };
 		A20000010000000000000006 /* AXTextEngineProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXTextEngineProtocol.swift; sourceTree = "<group>"; };
 		A20000010000000000000007 /* TextContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextContext.swift; sourceTree = "<group>"; };
 		A20000010000000000000008 /* EventTapBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventTapBridge.swift; sourceTree = "<group>"; };
@@ -219,6 +222,7 @@
 		B20000010000000000000001 /* IconStateMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconStateMachineTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000002 /* MenuBuilderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBuilderTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000003 /* HotkeyManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManagerTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000038 /* HotkeyActionDispatchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyActionDispatchTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000004 /* AXTextEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXTextEngineTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000005 /* AXCapabilityCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXCapabilityCacheTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000006 /* TextContextTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextContextTests.swift; sourceTree = "<group>"; };
@@ -413,6 +417,7 @@
 			isa = PBXGroup;
 			children = (
 				A20000010000000000000005 /* HotkeyManagerProtocol.swift */,
+				A20000010000000000000012 /* HotkeyAction.swift */,
 				A20000010000000000000008 /* EventTapBridge.swift */,
 				A20000010000000000000010 /* HotkeyManager.swift */,
 			);
@@ -479,6 +484,7 @@
 				B20000010000000000000012 /* HarperServiceTests.swift */,
 				B20000010000000000000015 /* ClarityFFITests.swift */,
 				B20000010000000000000003 /* HotkeyManagerTests.swift */,
+				B20000010000000000000038 /* HotkeyActionDispatchTests.swift */,
 				B20000010000000000000001 /* IconStateMachineTests.swift */,
 				B20000010000000000000035 /* LLMPromptsTests.swift */,
 				B20000010000000000000034 /* LLMServiceTests.swift */,
@@ -880,6 +886,7 @@
 				A10000010000000000000003 /* OpenGramApp.swift in Sources */,
 				A10000010000000000000004 /* StatusBarController.swift in Sources */,
 				A10000010000000000000005 /* HotkeyManagerProtocol.swift in Sources */,
+				A10000010000000000000012 /* HotkeyAction.swift in Sources */,
 				A10000010000000000000006 /* AXTextEngineProtocol.swift in Sources */,
 				A10000010000000000000007 /* TextContext.swift in Sources */,
 				A10000010000000000000008 /* EventTapBridge.swift in Sources */,
@@ -965,6 +972,7 @@
 				B10000010000000000000001 /* IconStateMachineTests.swift in Sources */,
 				B10000010000000000000002 /* MenuBuilderTests.swift in Sources */,
 				B10000010000000000000003 /* HotkeyManagerTests.swift in Sources */,
+				B10000010000000000000038 /* HotkeyActionDispatchTests.swift in Sources */,
 				B10000010000000000000004 /* AXTextEngineTests.swift in Sources */,
 				B10000010000000000000005 /* AXCapabilityCacheTests.swift in Sources */,
 				B10000010000000000000006 /* TextContextTests.swift in Sources */,

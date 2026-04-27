@@ -8,5 +8,5 @@ protocol HotkeyManagerProtocol: AnyObject, Sendable {
     func uninstall()
 
     /// Callback fired on the main actor when the hotkey (Ctrl+Shift+G) is detected.
-    var onHotkeyFired: (@MainActor @Sendable () -> Void)? { get set }
+    var onHotkeyFired: (@MainActor @Sendable (HotkeyAction) -> Void)? { get set }
 }
