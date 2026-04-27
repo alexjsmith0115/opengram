@@ -42,3 +42,8 @@ enum ConfigManager {
         return key
     }
 }
+
+extension ConfigManager: RewriteConfigProvider {
+    var llmConfig: LLMConfig { ConfigManager.currentLLMConfig() }
+    func currentAPIKey() -> String? { ConfigManager.currentAPIKey() }
+}

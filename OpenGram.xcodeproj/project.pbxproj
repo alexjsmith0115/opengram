@@ -113,6 +113,8 @@
 		A100000100000000000000B2 /* ReliabilityDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000B2 /* ReliabilityDetector.swift */; };
 		A100000100000000000000B3 /* CheckCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000B3 /* CheckCoordinator.swift */; };
 		A100000100000000000000B4 /* ConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000B4 /* ConfigManager.swift */; };
+		A100000100000000000000B5 /* RewriteCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000B5 /* RewriteCoordinator.swift */; };
+		B10000010000000000000070 /* RewriteCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000070 /* RewriteCoordinatorTests.swift */; };
 		A100000100000000000000F0 /* MainActorTextBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000F0 /* MainActorTextBox.swift */; };
 		C10000010000000000000001 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = C20000010000000000000001 /* KeychainAccess */; };
 		A100000100000000000000C0 /* Paragraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000C0 /* Paragraph.swift */; };
@@ -303,6 +305,8 @@
 		A200000100000000000000B2 /* ReliabilityDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReliabilityDetector.swift; sourceTree = "<group>"; };
 		A200000100000000000000B3 /* CheckCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckCoordinator.swift; sourceTree = "<group>"; };
 		A200000100000000000000B4 /* ConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigManager.swift; sourceTree = "<group>"; };
+		A200000100000000000000B5 /* RewriteCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewriteCoordinator.swift; sourceTree = "<group>"; };
+		B20000010000000000000070 /* RewriteCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewriteCoordinatorTests.swift; sourceTree = "<group>"; };
 		A200000100000000000000F0 /* MainActorTextBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainActorTextBox.swift; sourceTree = "<group>"; };
 		B200000100000000000000C0 /* PanelPositionerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelPositionerTests.swift; sourceTree = "<group>"; };
 		A200000100000000000000C0 /* Paragraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paragraph.swift; sourceTree = "<group>"; };
@@ -434,6 +438,7 @@
 				A200000100000000000000A0 /* AppWhitelist.swift */,
 				A200000100000000000000B3 /* CheckCoordinator.swift */,
 				A200000100000000000000B4 /* ConfigManager.swift */,
+				A200000100000000000000B5 /* RewriteCoordinator.swift */,
 				A200000100000000000000F0 /* MainActorTextBox.swift */,
 			);
 			path = App;
@@ -513,6 +518,7 @@
 				B400000100000000000000A0 /* App */,
 				B4000001000000000000004C /* Integration */,
 				B20000010000000000000010 /* AppDelegateWiringTests.swift */,
+				B20000010000000000000070 /* RewriteCoordinatorTests.swift */,
 				B20000010000000000000031 /* AppQuirksTests.swift */,
 				B20000010000000000000005 /* AXCapabilityCacheTests.swift */,
 				B20000010000000000000060 /* AXCapabilitiesTests.swift */,
@@ -999,6 +1005,7 @@
 				A100000100000000000000B2 /* ReliabilityDetector.swift in Sources */,
 				A100000100000000000000B3 /* CheckCoordinator.swift in Sources */,
 				A100000100000000000000B4 /* ConfigManager.swift in Sources */,
+				A100000100000000000000B5 /* RewriteCoordinator.swift in Sources */,
 				A100000100000000000000F0 /* MainActorTextBox.swift in Sources */,
 				A100000100000000000000C0 /* Paragraph.swift in Sources */,
 				A100000100000000000000C1 /* CacheClock.swift in Sources */,
@@ -1051,6 +1058,7 @@
 				B10000010000000000000060 /* AXCapabilitiesTests.swift in Sources */,
 				B10000010000000000000006 /* TextContextTests.swift in Sources */,
 				B10000010000000000000010 /* AppDelegateWiringTests.swift in Sources */,
+				B10000010000000000000070 /* RewriteCoordinatorTests.swift in Sources */,
 				B10000010000000000000011 /* DictionaryStoreTests.swift in Sources */,
 				B10000010000000000000012 /* HarperServiceTests.swift in Sources */,
 				B10000010000000000000013 /* SuggestionTests.swift in Sources */,
