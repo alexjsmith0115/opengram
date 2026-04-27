@@ -73,9 +73,15 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         self.checkCoordinator = coordinator
         self.textMonitor = textMonitor
 
-        hotkeyManager.onHotkeyFired = { [weak coordinator, weak textMonitor] _ in
-            textMonitor?.reconcileNow()
-            coordinator?.handleHotkeyFired()
+        hotkeyManager.onHotkeyFired = { [weak coordinator, weak textMonitor] action in
+            switch action {
+            case .check:
+                textMonitor?.reconcileNow()
+                coordinator?.handleHotkeyFired()
+            case .rewrite:
+                // Wired once RewriteCoordinator exists.
+                break
+            }
         }
 
         textMonitor.onCheckComplete = { [weak coordinator] suggestions, context in
