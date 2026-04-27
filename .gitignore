@@ -13,3 +13,5 @@ HarperBridge.xcframework/
 graphify-out/
 .claire/
 build/
+.superpowers/
+docs/superpowers/
