@@ -11,41 +11,41 @@ struct HotkeyManagerTests {
         return event
     }
 
-    // MARK: - isHotkey
+    // MARK: - detectHotkey
 
-    @Test("Ctrl+Shift+G fires hotkey")
-    func isHotkey_ctrlShiftG_returnsTrue() {
+    @Test("Ctrl+Shift+G detects .check")
+    func detectHotkey_ctrlShiftG_returnsCheck() {
         let manager = HotkeyManager()
         let event = makeKeyEvent(keyCode: 0x05, flags: [.maskControl, .maskShift])
-        #expect(manager.isHotkey(event) == true)
+        #expect(manager.detectHotkey(keyCode: event.getIntegerValueField(.keyboardEventKeycode), flags: event.flags) == .check)
     }
 
-    @Test("Ctrl+G without Shift does not fire")
-    func isHotkey_ctrlGOnly_returnsFalse() {
+    @Test("Ctrl+G without Shift returns nil")
+    func detectHotkey_ctrlGOnly_returnsNil() {
         let manager = HotkeyManager()
         let event = makeKeyEvent(keyCode: 0x05, flags: [.maskControl])
-        #expect(manager.isHotkey(event) == false)
+        #expect(manager.detectHotkey(keyCode: event.getIntegerValueField(.keyboardEventKeycode), flags: event.flags) == nil)
     }
 
-    @Test("Ctrl+Shift+Cmd+G does not fire (extra modifier)")
-    func isHotkey_ctrlShiftCmdG_returnsFalse() {
+    @Test("Ctrl+Shift+Cmd+G returns nil (extra modifier)")
+    func detectHotkey_ctrlShiftCmdG_returnsNil() {
         let manager = HotkeyManager()
         let event = makeKeyEvent(keyCode: 0x05, flags: [.maskControl, .maskShift, .maskCommand])
-        #expect(manager.isHotkey(event) == false)
+        #expect(manager.detectHotkey(keyCode: event.getIntegerValueField(.keyboardEventKeycode), flags: event.flags) == nil)
     }
 
-    @Test("Ctrl+Shift+A does not fire (wrong key)")
-    func isHotkey_ctrlShiftA_returnsFalse() {
+    @Test("Ctrl+Shift+A returns nil (wrong key)")
+    func detectHotkey_ctrlShiftA_returnsNil() {
         let manager = HotkeyManager()
         let event = makeKeyEvent(keyCode: 0x00, flags: [.maskControl, .maskShift])
-        #expect(manager.isHotkey(event) == false)
+        #expect(manager.detectHotkey(keyCode: event.getIntegerValueField(.keyboardEventKeycode), flags: event.flags) == nil)
     }
 
-    @Test("Ctrl+Shift+CapsLock+G fires (CapsLock ignored)")
-    func isHotkey_ctrlShiftCapsG_returnsTrue() {
+    @Test("Ctrl+Shift+CapsLock+G detects .check (CapsLock ignored)")
+    func detectHotkey_ctrlShiftCapsG_returnsCheck() {
         let manager = HotkeyManager()
         let event = makeKeyEvent(keyCode: 0x05, flags: [.maskControl, .maskShift, .maskAlphaShift])
-        #expect(manager.isHotkey(event) == true)
+        #expect(manager.detectHotkey(keyCode: event.getIntegerValueField(.keyboardEventKeycode), flags: event.flags) == .check)
     }
 
     // MARK: - Install / Uninstall state management
