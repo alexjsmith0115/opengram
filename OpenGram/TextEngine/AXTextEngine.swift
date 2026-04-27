@@ -158,6 +158,20 @@ final class AXTextEngine: AXTextEngineProtocol {
         return result == .success
     }
 
+    // MARK: - Live read helpers
+
+    @MainActor func readLiveText(at range: CFRange, of element: AXUIElement) -> String? {
+        let (error, ref) = accessor.copyAttributeValue(element, kAXValueAttribute)
+        guard error == .success, let raw = ref as? String else { return nil }
+        return AXRangeIndex.substring(of: raw, at: range)
+    }
+
+    @MainActor func readLiveSelectedText(of element: AXUIElement) -> String? {
+        let (error, ref) = accessor.copyAttributeValue(element, kAXSelectedTextAttribute)
+        guard error == .success, let raw = ref as? String else { return nil }
+        return raw
+    }
+
     // MARK: - Private helpers
 
     private func extractSelectionRange(element: AXUIElement) -> CFRange? {
