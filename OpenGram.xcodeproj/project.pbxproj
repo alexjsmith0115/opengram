@@ -130,6 +130,8 @@
 		B19000010000000000000001 /* AXRangeIndexTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29000010000000000000001 /* AXRangeIndexTests.swift */; };
 		A19000010000000000000002 /* WriteBackStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29000010000000000000002 /* WriteBackStrategy.swift */; };
 		B19000010000000000000002 /* WriteBackStrategyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29000010000000000000002 /* WriteBackStrategyTests.swift */; };
+		A19000010000000000000003 /* RewriteCaptureContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29000010000000000000003 /* RewriteCaptureContext.swift */; };
+		A19000010000000000000004 /* RewriteStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29000010000000000000004 /* RewriteStatus.swift */; };
 		A18020010000000000000001 /* TextDiff.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28020010000000000000001 /* TextDiff.swift */; };
 		A18020010000000000000002 /* DisplayHeuristic.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28020010000000000000002 /* DisplayHeuristic.swift */; };
 		A18020010000000000000003 /* RephraseComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28020010000000000000003 /* RephraseComposer.swift */; };
@@ -309,6 +311,8 @@
 		B29000010000000000000001 /* AXRangeIndexTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXRangeIndexTests.swift; sourceTree = "<group>"; };
 		A29000010000000000000002 /* WriteBackStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteBackStrategy.swift; sourceTree = "<group>"; };
 		B29000010000000000000002 /* WriteBackStrategyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteBackStrategyTests.swift; sourceTree = "<group>"; };
+		A29000010000000000000003 /* RewriteCaptureContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewriteCaptureContext.swift; sourceTree = "<group>"; };
+		A29000010000000000000004 /* RewriteStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewriteStatus.swift; sourceTree = "<group>"; };
 		A28020010000000000000001 /* TextDiff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDiff.swift; sourceTree = "<group>"; };
 		A28020010000000000000002 /* DisplayHeuristic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayHeuristic.swift; sourceTree = "<group>"; };
 		A28020010000000000000003 /* RephraseComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RephraseComposer.swift; sourceTree = "<group>"; };
@@ -606,6 +610,7 @@
 				A4000001000000000000C003 /* Overlay */,
 				A4000001000000000000C004 /* Panels */,
 				A4000001000000000000C009 /* RephraseCard */,
+				A4000001000000000000C008 /* RewriteWindow */,
 				A4000001000000000000C006 /* Settings */,
 			);
 			path = SuggestionUI;
@@ -648,6 +653,15 @@
 				A29000010000000000000002 /* WriteBackStrategy.swift */,
 			);
 			path = Panels;
+			sourceTree = "<group>";
+		};
+		A4000001000000000000C008 /* RewriteWindow */ = {
+			isa = PBXGroup;
+			children = (
+				A29000010000000000000003 /* RewriteCaptureContext.swift */,
+				A29000010000000000000004 /* RewriteStatus.swift */,
+			);
+			path = RewriteWindow;
 			sourceTree = "<group>";
 		};
 		A4000001000000000000C005 /* Accessibility */ = {
@@ -990,6 +1004,8 @@
 				A12005010000000000000001 /* LLMRequestQueue.swift in Sources */,
 				A12005010000000000000002 /* LLMRequestQueueStoreProtocol.swift in Sources */,
 				A12006010000000000000001 /* ParagraphSuggestionStore.swift in Sources */,
+				A19000010000000000000003 /* RewriteCaptureContext.swift in Sources */,
+				A19000010000000000000004 /* RewriteStatus.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
