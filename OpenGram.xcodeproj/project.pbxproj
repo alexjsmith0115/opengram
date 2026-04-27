@@ -126,6 +126,7 @@
 		B100000100000000000000F1 /* AdvancedSettingsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000F1 /* AdvancedSettingsViewTests.swift */; };
 		A18000010000000000000021 /* AXTextReplacer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28000010000000000000021 /* AXTextReplacer.swift */; };
 		B18000010000000000000021 /* AXTextReplacerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28000010000000000000021 /* AXTextReplacerTests.swift */; };
+		B19000010000000000000005 /* AXTextReplacerStrategyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29000010000000000000005 /* AXTextReplacerStrategyTests.swift */; };
 		A19000010000000000000001 /* AXRangeIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29000010000000000000001 /* AXRangeIndex.swift */; };
 		B19000010000000000000001 /* AXRangeIndexTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29000010000000000000001 /* AXRangeIndexTests.swift */; };
 		A19000010000000000000002 /* WriteBackStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29000010000000000000002 /* WriteBackStrategy.swift */; };
@@ -307,6 +308,7 @@
 		B200000100000000000000F1 /* AdvancedSettingsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSettingsViewTests.swift; sourceTree = "<group>"; };
 		A28000010000000000000021 /* AXTextReplacer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXTextReplacer.swift; sourceTree = "<group>"; };
 		B28000010000000000000021 /* AXTextReplacerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXTextReplacerTests.swift; sourceTree = "<group>"; };
+		B29000010000000000000005 /* AXTextReplacerStrategyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXTextReplacerStrategyTests.swift; sourceTree = "<group>"; };
 		A29000010000000000000001 /* AXRangeIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXRangeIndex.swift; sourceTree = "<group>"; };
 		B29000010000000000000001 /* AXRangeIndexTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXRangeIndexTests.swift; sourceTree = "<group>"; };
 		A29000010000000000000002 /* WriteBackStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteBackStrategy.swift; sourceTree = "<group>"; };
@@ -751,6 +753,7 @@
 			isa = PBXGroup;
 			children = (
 				B28000010000000000000021 /* AXTextReplacerTests.swift */,
+				B29000010000000000000005 /* AXTextReplacerStrategyTests.swift */,
 				B28050010000000000000002 /* RephraseCardPanelControllerTests.swift */,
 				B29000010000000000000002 /* WriteBackStrategyTests.swift */,
 			);
@@ -1066,6 +1069,7 @@
 				B10000010000000000000600 /* ClaritySettingsViewTests.swift in Sources */,
 				B10000010000000000000601 /* AboutSettingsViewTests.swift in Sources */,
 				B18000010000000000000021 /* AXTextReplacerTests.swift in Sources */,
+				B19000010000000000000005 /* AXTextReplacerStrategyTests.swift in Sources */,
 				B19000010000000000000002 /* WriteBackStrategyTests.swift in Sources */,
 				B18020010000000000000001 /* TextDiffTests.swift in Sources */,
 				B18020010000000000000002 /* DisplayHeuristicTests.swift in Sources */,

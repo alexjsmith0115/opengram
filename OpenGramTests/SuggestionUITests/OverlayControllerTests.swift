@@ -60,14 +60,14 @@ private func makeAXRectValue(_ rect: CGRect = CGRect(x: 100, y: 200, width: 50, 
     return AXValueCreate(.cgRect, &r)!
 }
 
-private func makeTextContext(text: String = "recieve") -> TextContext {
+private func makeTextContext(text: String = "recieve", capabilities: AXCapabilities = AXCapabilities()) -> TextContext {
     TextContext(
         text: text,
         bundleID: "com.apple.TextEdit",
         extractionMethod: .axDirectSelection,
         selectionRange: nil,
         elementBounds: nil,
-        capabilities: AXCapabilities(),
+        capabilities: capabilities,
         axElement: AXUIElementCreateSystemWide()
     )
 }
@@ -262,42 +262,39 @@ struct OverlayControllerAcceptTests {
 
         let controller = OverlayController(accessor: mock)
         let text = "recieve"
-        let context = makeTextContext(text: text)
+        // Caps: no range-write, but value read/write available → valueSplice strategy.
+        let caps = AXCapabilities(canSetSelectedTextRange: false, canSetSelectedText: false,
+                                  canReadSelectedText: false, canSetValue: true, canReadValue: true)
+        let context = makeTextContext(text: text, capabilities: caps)
         let suggestion = makeSuggestion(in: text, scalarStart: 0, scalarLength: 7,
                                         primaryReplacement: "receive")
         controller.suggestions = [suggestion]
         controller.acceptSuggestion(suggestion, context: context)
 
-        // Fallback: must write kAXValueAttribute
+        // valueSplice: must write kAXValueAttribute
         let valueWritten = mock.setAttributeCalls.contains { $0.attribute == kAXValueAttribute }
         #expect(valueWritten)
     }
 
-    @Test("rangeTargetedWriteFallsBackWhenSelectionSetFails")
-    func rangeTargetedWriteFallsBackWhenSelectionSetFails() {
+    @Test("rangeTargetedWriteReturnsFalseWhenRangeSetFails")
+    func rangeTargetedWriteReturnsFalseWhenRangeSetFails() {
         let mock = MockAXAccessor()
-        // isAttributeSettable says yes, but the actual set call fails
-        mock.attributeSettable[kAXSelectedTextRangeAttribute] = (.success, true)
+        // range set fails; no auto-fallback in strategy-driven path
+        mock.setAttributeResultsByCall = { _ in .failure }
         mock.attributeValues[kAXValueAttribute] = (.success, "recieve" as CFString)
-
-        // First setAttributeValue call (range set) fails, second (full write) succeeds
-        var callCount = 0
-        mock.setAttributeResultsByCall = { _ in
-            callCount += 1
-            return callCount == 1 ? .failure : .success
-        }
 
         let controller = OverlayController(accessor: mock)
         let text = "recieve"
-        let context = makeTextContext(text: text)
+        let caps = AXCapabilities(canSetSelectedTextRange: true, canSetSelectedText: true,
+                                  canReadSelectedText: false, canSetValue: false, canReadValue: false)
+        let context = makeTextContext(text: text, capabilities: caps)
         let suggestion = makeSuggestion(in: text, scalarStart: 0, scalarLength: 7,
                                         primaryReplacement: "receive")
         controller.suggestions = [suggestion]
         controller.acceptSuggestion(suggestion, context: context)
 
-        // Should have fallen back to full write
-        let valueWritten = mock.setAttributeCalls.contains { $0.attribute == kAXValueAttribute }
-        #expect(valueWritten)
+        // Strategy returns false → suggestion stays
+        #expect(controller.suggestions.count == 1)
     }
 
     @Test("acceptSuggestion removes accepted suggestion from suggestions array on success")
@@ -485,13 +482,16 @@ struct OverlayControllerAcceptTests {
 
         let controller = OverlayController(accessor: mock)
         let text = "recieve the tset"
-        let context = makeTextContext(text: text)
+        // valueSplice caps: no range-write, but value read/write available.
+        let caps = AXCapabilities(canSetSelectedTextRange: false, canSetSelectedText: false,
+                                  canReadSelectedText: false, canSetValue: true, canReadValue: true)
+        let context = makeTextContext(text: text, capabilities: caps)
         let suggestion = makeSuggestion(in: text, scalarStart: 0, scalarLength: 7,
                                         primaryReplacement: "receive")
         controller.suggestions = [suggestion]
         controller.acceptSuggestion(suggestion, context: context)
 
-        // Should write kAXValueAttribute with the replaced text
+        // valueSplice: writes kAXValueAttribute with the spliced result
         let valueCalls = mock.setAttributeCalls.filter { $0.attribute == kAXValueAttribute }
         #expect(valueCalls.count == 1)
         let written = valueCalls[0].value as? String
@@ -507,7 +507,10 @@ struct OverlayControllerAcceptTests {
 
         let controller = OverlayController(accessor: mock)
         let text = "recieve"
-        let context = makeTextContext(text: text)
+        // valueSplice caps: read will fail → strategy returns false → suggestion stays.
+        let caps = AXCapabilities(canSetSelectedTextRange: false, canSetSelectedText: false,
+                                  canReadSelectedText: false, canSetValue: true, canReadValue: true)
+        let context = makeTextContext(text: text, capabilities: caps)
         let suggestion = makeSuggestion(in: text, scalarStart: 0, scalarLength: 7,
                                         primaryReplacement: "receive")
         controller.suggestions = [suggestion]

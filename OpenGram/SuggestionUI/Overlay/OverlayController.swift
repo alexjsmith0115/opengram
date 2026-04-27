@@ -989,7 +989,10 @@ final class OverlayController {
             self.rephraseCardPanelController.hide()
             self.hideCardAndRestore()
             let replacer = AXTextReplacer(accessor: self.accessor)
-            let ok = replacer.replace(text: composedRephrase, in: writeRange, of: ax)
+            let writeRange_cfrange = CFRange(location: writeRange.scalarStart, length: writeRange.scalarLength)
+            let strategy = WriteBackStrategy.choose(range: writeRange_cfrange, caps: context.capabilities)
+                ?? .rangeAndSelectedText(writeRange_cfrange)
+            let ok = replacer.replace(strategy: strategy, replacement: composedRephrase, element: ax)
             OverlayController.logger.info("AXTextReplacer.replace returned \(ok)")
         }
         let dismissClosure: @MainActor () -> Void = { [weak self, storeRef = self.store] in
@@ -1303,11 +1306,10 @@ final class OverlayController {
         let offset = suggestionScalarOffsets[offsetIndex]
 
         let replacer = AXTextReplacer(accessor: accessor)
-        let writeSucceeded = replacer.replace(
-            text: replacement,
-            in: (scalarStart: offset.scalarStart, scalarLength: offset.scalarLength),
-            of: context.axElement
-        )
+        let offsetRange = CFRange(location: offset.scalarStart, length: offset.scalarLength)
+        let strategy = WriteBackStrategy.choose(range: offsetRange, caps: context.capabilities)
+            ?? .rangeAndSelectedText(offsetRange)
+        let writeSucceeded = replacer.replace(strategy: strategy, replacement: replacement, element: context.axElement)
 
         guard writeSucceeded else { return }
 
