@@ -88,6 +88,8 @@
 		A10000010000000000000098 /* ParagraphExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000098 /* ParagraphExtractor.swift */; };
 		A10000010000000000000094 /* CheckOrchestrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000094 /* CheckOrchestrator.swift */; };
 		A10000010000000000000095 /* LLMSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000095 /* LLMSettingsView.swift */; };
+		A10000010000000000000099 /* RewriteTone.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000099 /* RewriteTone.swift */; };
+		B1000001000000000000003C /* RewriteToneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000001000000000000003C /* RewriteToneTests.swift */; };
 		B10000010000000000000032 /* TextMonitorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000032 /* TextMonitorTests.swift */; };
 		B10000010000000000000033 /* OverlayControllerDiffTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000033 /* OverlayControllerDiffTests.swift */; };
 		B10000010000000000000034 /* LLMServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000034 /* LLMServiceTests.swift */; };
@@ -260,6 +262,8 @@
 		A20000010000000000000098 /* ParagraphExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphExtractor.swift; sourceTree = "<group>"; };
 		A20000010000000000000094 /* CheckOrchestrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckOrchestrator.swift; sourceTree = "<group>"; };
 		A20000010000000000000095 /* LLMSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSettingsView.swift; sourceTree = "<group>"; };
+		A20000010000000000000099 /* RewriteTone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewriteTone.swift; sourceTree = "<group>"; };
+		B2000001000000000000003C /* RewriteToneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewriteToneTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000032 /* TextMonitorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextMonitorTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000033 /* OverlayControllerDiffTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayControllerDiffTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000034 /* LLMServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMServiceTests.swift; sourceTree = "<group>"; };
@@ -488,6 +492,7 @@
 				B20000010000000000000001 /* IconStateMachineTests.swift */,
 				B20000010000000000000035 /* LLMPromptsTests.swift */,
 				B20000010000000000000034 /* LLMServiceTests.swift */,
+				B2000001000000000000003C /* RewriteToneTests.swift */,
 				B20000010000000000000200 /* LMStudioPipelineIntegrationTests.swift */,
 				B20000010000000000000201 /* LMStudioLiveIntegrationTests.swift */,
 				B20000010000000000000002 /* MenuBuilderTests.swift */,
@@ -574,6 +579,7 @@
 				A20000010000000000000097 /* LLMResponseDTO.swift */,
 				A20000010000000000000093 /* LLMService.swift */,
 				A20000010000000000000096 /* LLMStyleSuggestion.swift */,
+				A20000010000000000000099 /* RewriteTone.swift */,
 			);
 			path = LLM;
 			sourceTree = "<group>";
@@ -923,6 +929,7 @@
 				A10000010000000000000093 /* LLMService.swift in Sources */,
 				A10000010000000000000096 /* LLMStyleSuggestion.swift in Sources */,
 				A10000010000000000000097 /* LLMResponseDTO.swift in Sources */,
+				A10000010000000000000099 /* RewriteTone.swift in Sources */,
 				A10000010000000000000098 /* ParagraphExtractor.swift in Sources */,
 				A10000010000000000000094 /* CheckOrchestrator.swift in Sources */,
 				A10000010000000000000095 /* LLMSettingsView.swift in Sources */,
@@ -1010,6 +1017,7 @@
 				B10000010000000000000037 /* LLMSettingsPanelTests.swift in Sources */,
 				B1000001000000000000003A /* LLMResponseDTOTests.swift in Sources */,
 				B1000001000000000000003B /* ParagraphExtractorTests.swift in Sources */,
+				B1000001000000000000003C /* RewriteToneTests.swift in Sources */,
 				B100000100000000000000A0 /* AppWhitelistTests.swift in Sources */,
 				B100000100000000000000C0 /* PanelPositionerTests.swift in Sources */,
 				B100000100000000000000D0 /* CacheClockTests.swift in Sources */,
