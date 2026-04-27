@@ -126,6 +126,8 @@
 		B100000100000000000000F1 /* AdvancedSettingsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000F1 /* AdvancedSettingsViewTests.swift */; };
 		A18000010000000000000021 /* AXTextReplacer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28000010000000000000021 /* AXTextReplacer.swift */; };
 		B18000010000000000000021 /* AXTextReplacerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28000010000000000000021 /* AXTextReplacerTests.swift */; };
+		A19000010000000000000001 /* AXRangeIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29000010000000000000001 /* AXRangeIndex.swift */; };
+		B19000010000000000000001 /* AXRangeIndexTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29000010000000000000001 /* AXRangeIndexTests.swift */; };
 		A18020010000000000000001 /* TextDiff.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28020010000000000000001 /* TextDiff.swift */; };
 		A18020010000000000000002 /* DisplayHeuristic.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28020010000000000000002 /* DisplayHeuristic.swift */; };
 		A18020010000000000000003 /* RephraseComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28020010000000000000003 /* RephraseComposer.swift */; };
@@ -301,6 +303,8 @@
 		B200000100000000000000F1 /* AdvancedSettingsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSettingsViewTests.swift; sourceTree = "<group>"; };
 		A28000010000000000000021 /* AXTextReplacer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXTextReplacer.swift; sourceTree = "<group>"; };
 		B28000010000000000000021 /* AXTextReplacerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXTextReplacerTests.swift; sourceTree = "<group>"; };
+		A29000010000000000000001 /* AXRangeIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXRangeIndex.swift; sourceTree = "<group>"; };
+		B29000010000000000000001 /* AXRangeIndexTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXRangeIndexTests.swift; sourceTree = "<group>"; };
 		A28020010000000000000001 /* TextDiff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDiff.swift; sourceTree = "<group>"; };
 		A28020010000000000000002 /* DisplayHeuristic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayHeuristic.swift; sourceTree = "<group>"; };
 		A28020010000000000000003 /* RephraseComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RephraseComposer.swift; sourceTree = "<group>"; };
@@ -443,6 +447,7 @@
 				A20000010000000000000022 /* AXTextEngine.swift */,
 				A20000010000000000000023 /* AXCapabilityCache.swift */,
 				A20000010000000000000025 /* AXCapabilities.swift */,
+				A29000010000000000000001 /* AXRangeIndex.swift */,
 			);
 			path = TextEngine;
 			sourceTree = "<group>";
@@ -783,6 +788,7 @@
 			isa = PBXGroup;
 			children = (
 				B20000010000000000000040 /* AXCallQueueTests.swift */,
+				B29000010000000000000001 /* AXRangeIndexTests.swift */,
 			);
 			path = TextEngineTests;
 			sourceTree = "<group>";
@@ -912,6 +918,7 @@
 				A10000010000000000000022 /* AXTextEngine.swift in Sources */,
 				A10000010000000000000023 /* AXCapabilityCache.swift in Sources */,
 				A10000010000000000000025 /* AXCapabilities.swift in Sources */,
+				A19000010000000000000001 /* AXRangeIndex.swift in Sources */,
 				A10000010000000000000030 /* GrammarCheckerProtocol.swift in Sources */,
 				A10000010000000000000031 /* Suggestion.swift in Sources */,
 				A10000010000000000000032 /* DictionaryStore.swift in Sources */,
@@ -998,6 +1005,7 @@
 				B10000010000000000000015 /* ClarityFFITests.swift in Sources */,
 				B10000010000000000000020 /* AXCallWatchdogTests.swift in Sources */,
 				B10000010000000000000040 /* AXCallQueueTests.swift in Sources */,
+				B19000010000000000000001 /* AXRangeIndexTests.swift in Sources */,
 				B10000010000000000000021 /* BoundsForRangeTests.swift in Sources */,
 				B10000010000000000000022 /* BoundsValidatorTests.swift in Sources */,
 				B10000010000000000000023 /* OverlayControllerTests.swift in Sources */,
