@@ -141,9 +141,11 @@ final class RewriteWindowController {
             panel.contentView?.layoutSubtreeIfNeeded()
             if attemptFocusAssignment() { return }
         }
+        // Spec §6: emit an error if the controller is still live after retries
+        // exhaust — but do NOT close the panel. The panel is visible; the user
+        // can click into the textarea manually. Closing it silently confuses.
         guard isLive else { return }
-        Self.logger.error("Focus assignment exhausted retries; tearing down")
-        teardownForFailedShow()
+        Self.logger.error("Focus assignment exhausted retries; panel left open for manual focus")
     }
 
     /// Idempotent — the assignment itself is the guard; no flag needed.

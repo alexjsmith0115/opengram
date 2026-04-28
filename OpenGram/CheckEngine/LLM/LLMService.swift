@@ -393,7 +393,7 @@ actor LLMService: LLMProviderProtocol {
 
 // MARK: -
 
-public enum LLMRewriteError: Error, Sendable {
+enum LLMRewriteError: Error, Sendable {
     case emptyResponse
     case decodingFailure
     case http(status: Int)

@@ -9,6 +9,15 @@ struct RewriteWindowView: View {
     var onOriginalMounted: (NSTextView) -> Void
     var onRevisedMounted:  (NSTextView) -> Void
 
+    /// Last tone the user picked. Persisted across sessions; pre-selected
+    /// visually on next open but does NOT auto-fire the LLM.
+    @AppStorage("lastRewriteTone") private var lastRewriteToneRaw: String = RewriteTone.friendly.rawValue
+
+    private var visuallySelectedTone: RewriteTone? {
+        if let tone = viewModel.selectedTone { return tone }
+        return RewriteTone(rawValue: lastRewriteToneRaw)
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             sectionLabel("Original")
@@ -85,6 +94,7 @@ struct RewriteWindowView: View {
                 ForEach(RewriteTone.allCases, id: \.self) { tone in
                     Button {
                         viewModel.selectTone(tone)
+                        lastRewriteToneRaw = tone.rawValue
                     } label: {
                         Text(tone.displayName)
                             .padding(.vertical, 4)
@@ -92,7 +102,7 @@ struct RewriteWindowView: View {
                     }
                     .buttonStyle(.bordered)
                     .controlSize(.small)
-                    .tint(viewModel.selectedTone == tone ? .accentColor : .secondary)
+                    .tint(visuallySelectedTone == tone ? .accentColor : .secondary)
                     .disabled(isLoading)
                 }
             }
@@ -121,9 +131,6 @@ struct RewriteWindowView: View {
                 Spacer()
                 if attemptedTone != nil {
                     Button("Retry") { viewModel.retry() }.controlSize(.small)
-                }
-                if case .noAPIKey = err {
-                    Button("Settings…", action: onOpenSettings).controlSize(.small)
                 }
             }
             .padding(8)
