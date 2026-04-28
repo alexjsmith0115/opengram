@@ -20,6 +20,7 @@ final class RephraseCardPanelController {
     private var clickOutsideMonitors: [Any] = []
 
     private static let verticalSafeMargin: CGFloat = 40
+    private static let minPanelHeight: CGFloat = 140
 
     /// Test-only hook. Internal (not public) — `@testable import OpenGramLib` grants access
     /// to D-11 test cases that need to inspect panel.contentView type and panel.frame size.
@@ -78,14 +79,11 @@ final class RephraseCardPanelController {
         newPanel.collectionBehavior = [.canJoinAllSpaces]
         newPanel.isMovableByWindowBackground = true
         newPanel.becomesKeyOnlyIfNeeded = true
-        newPanel.backgroundColor = .clear
-        newPanel.isOpaque = false
-        // Match SuggestionPopoverPanel: SwiftUI renders the rounded card and AppKit
-        // contributes the system panel shadow.
-        newPanel.hasShadow = true
+        SuggestionPopoverCardChrome.configurePanel(newPanel)
 
         // Attach hosting to panel before layout so SwiftUI has a window context for fittingSize.
         newPanel.contentView = hosting
+        SuggestionPopoverCardChrome.configureHostedContent(hosting)
         hosting.layoutSubtreeIfNeeded()
         // testHookFittingSize lets tests force the overflow branch; headless NSHostingView always
         // returns idealHeight so real text-length-driven overflow cannot be observed without a display.
@@ -93,9 +91,9 @@ final class RephraseCardPanelController {
 
         // Defensive floor guards against fittingSize glitches returning 0 while
         // keeping the AI card compact like the Harper suggestion popover.
-        let flooredSize = NSSize(
-            width: max(fitting.width, 320),
-            height: max(fitting.height, 140)
+        let flooredSize = SuggestionPopoverCardChrome.panelContentSize(
+            for: fitting,
+            minHeight: Self.minPanelHeight
         )
 
         // D-09: cap height at visibleFrame.height - verticalSafeMargin before positioning.

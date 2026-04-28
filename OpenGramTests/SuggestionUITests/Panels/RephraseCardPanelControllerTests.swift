@@ -124,6 +124,9 @@ struct RephraseCardPanelControllerTests {
         let panel = ctrl.testHookPanel
         #expect(panel != nil)
         #expect(panel?.contentView is NSHostingView<RephraseCardView>)
+        #expect(panel?.backgroundColor == .clear)
+        #expect(panel?.isOpaque == false)
+        #expect(panel?.hasShadow == false)
 
         let visibleFrame = screen.visibleFrame
         #expect((panel?.frame.height ?? 0) >= 140)

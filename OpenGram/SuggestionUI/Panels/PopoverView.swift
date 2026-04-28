@@ -7,6 +7,33 @@ enum SuggestionPopoverCardChrome {
     static let shadowRadius: CGFloat = 8
     static let shadowX: CGFloat = 0
     static let shadowY: CGFloat = 4
+    static let shadowPadding: CGFloat = 14
+    static let minCardWidth: CGFloat = 280
+    static let maxCardWidth: CGFloat = 360
+    static let minPanelWidth: CGFloat = minCardWidth + shadowPadding * 2
+    static let maxPanelWidth: CGFloat = maxCardWidth + shadowPadding * 2
+
+    @MainActor
+    static func configurePanel(_ panel: NSPanel) {
+        panel.backgroundColor = .clear
+        panel.isOpaque = false
+        // The system window shadow follows the rectangular NSPanel frame. SwiftUI
+        // draws the rounded card shadow inside transparent panel padding instead.
+        panel.hasShadow = false
+    }
+
+    @MainActor
+    static func configureHostedContent(_ view: NSView) {
+        view.wantsLayer = true
+        view.layer?.backgroundColor = NSColor.clear.cgColor
+    }
+
+    static func panelContentSize(for fittingSize: NSSize, minHeight: CGFloat) -> NSSize {
+        NSSize(
+            width: min(max(fittingSize.width, minPanelWidth), maxPanelWidth),
+            height: max(fittingSize.height, minHeight)
+        )
+    }
 }
 
 extension View {
@@ -74,8 +101,9 @@ struct PopoverView: View {
             footerRow
         }
         .padding(16)
+        .frame(minWidth: SuggestionPopoverCardChrome.minCardWidth, maxWidth: SuggestionPopoverCardChrome.maxCardWidth)
         .suggestionPopoverCardChrome()
-        .frame(minWidth: 280, maxWidth: 360)
+        .padding(SuggestionPopoverCardChrome.shadowPadding)
         .scaleEffect(animationState.isVisible ? 1.0 : 0.95)
         .opacity(animationState.isVisible ? 1.0 : 0.0)
         .onAppear {

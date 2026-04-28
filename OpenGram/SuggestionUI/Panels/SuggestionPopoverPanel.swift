@@ -4,6 +4,7 @@ import AppKit
 /// Borderless panel (no .hudWindow) — SwiftUI renders the full opaque card background (D-06).
 @MainActor
 final class SuggestionPopoverPanel: NSPanel {
+    private static let minHeight: CGFloat = 120
 
     init() {
         super.init(
@@ -17,10 +18,7 @@ final class SuggestionPopoverPanel: NSPanel {
         collectionBehavior = [.canJoinAllSpaces]
         isMovableByWindowBackground = true
         becomesKeyOnlyIfNeeded = true
-        // SwiftUI renders the background via RoundedRectangle; panel is transparent beneath it.
-        backgroundColor = .clear
-        // Belt-and-suspenders: NSPanel system shadow in addition to SwiftUI shadow.
-        hasShadow = true
+        SuggestionPopoverCardChrome.configurePanel(self)
     }
 
     override var canBecomeKey: Bool { false }
@@ -30,8 +28,8 @@ final class SuggestionPopoverPanel: NSPanel {
     /// Clamps to screen visible frame to prevent panel from going off-screen.
     func showNear(underlineRect: NSRect, on screen: NSScreen) {
         let size = NSSize(
-            width: min(max(frame.width, 280), 360),
-            height: frame.height
+            width: min(max(frame.width, SuggestionPopoverCardChrome.minPanelWidth), SuggestionPopoverCardChrome.maxPanelWidth),
+            height: max(frame.height, Self.minHeight)
         )
         let origin = PanelPositioner.origin(for: size, near: underlineRect, on: screen)
         setFrame(NSRect(origin: origin, size: size), display: false)
@@ -40,5 +38,13 @@ final class SuggestionPopoverPanel: NSPanel {
 
     func setContent(_ view: NSView) {
         contentView = view
+        SuggestionPopoverCardChrome.configureHostedContent(view)
+        view.layoutSubtreeIfNeeded()
+
+        let fitting = view.fittingSize
+        guard fitting.width > 0, fitting.height > 0 else { return }
+
+        let contentSize = SuggestionPopoverCardChrome.panelContentSize(for: fitting, minHeight: Self.minHeight)
+        setContentSize(contentSize)
     }
 }

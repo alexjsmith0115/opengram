@@ -15,8 +15,13 @@ struct RephraseCardView: View {
             footerRow
         }
         .padding(16)
+        .frame(
+            minWidth: SuggestionPopoverCardChrome.minCardWidth,
+            idealWidth: 320,
+            maxWidth: SuggestionPopoverCardChrome.maxCardWidth
+        )
         .suggestionPopoverCardChrome()
-        .frame(minWidth: 280, idealWidth: 320, maxWidth: 360)
+        .padding(SuggestionPopoverCardChrome.shadowPadding)
     }
 
     private var primaryIssue: LLMStyleSuggestion? {
