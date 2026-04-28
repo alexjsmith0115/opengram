@@ -297,6 +297,80 @@ actor LLMService: LLMProviderProtocol {
         return results
     }
 
+    // MARK: - Rewrite
+
+    /// Stateless rewrite call. Does NOT touch `currentTask` or any single-flight state.
+    /// Caller owns the Task lifecycle; concurrent analyze() calls are unaffected.
+    /// Returns the raw model output so meaningful whitespace and paragraph breaks are preserved.
+    /// Throws `LLMRewriteError.emptyResponse` when the trimmed content is blank.
+    func rewrite(
+        text: String,
+        tone: RewriteTone,
+        config: LLMConfig,
+        apiKey: String?
+    ) async throws -> String {
+        guard let url = config.chatCompletionsURL else {
+            throw LLMRewriteError.transport(URLError(.badURL))
+        }
+
+        let payload = ChatRequest(
+            model: config.model,
+            messages: [
+                ChatMessage(role: "system", content: LLMPrompts.rewriteSystemPrompt(tone: tone)),
+                ChatMessage(role: "user", content: LLMPrompts.rewriteUserMessage(text: text))
+            ],
+            temperature: config.temperature,
+            maxTokens: config.maxTokens
+        )
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        if let key = apiKey, !key.isEmpty {
+            request.setValue("Bearer \(key)", forHTTPHeaderField: "Authorization")
+        }
+        request.timeoutInterval = config.requestTimeout
+        do {
+            request.httpBody = try JSONEncoder().encode(payload)
+        } catch {
+            throw LLMRewriteError.transport(error)
+        }
+
+        let data: Data
+        let response: URLResponse
+        do {
+            (data, response) = try await session.data(for: request)
+        } catch {
+            throw LLMRewriteError.transport(error)
+        }
+
+        guard let http = response as? HTTPURLResponse else {
+            throw LLMRewriteError.transport(URLError(.badServerResponse))
+        }
+        guard (200..<300).contains(http.statusCode) else {
+            throw LLMRewriteError.http(status: http.statusCode)
+        }
+
+        struct RewriteCompletion: Decodable {
+            struct Choice: Decodable {
+                struct Message: Decodable { let content: String? }
+                let message: Message
+            }
+            let choices: [Choice]
+        }
+
+        guard let completion = try? JSONDecoder().decode(RewriteCompletion.self, from: data),
+              let content = completion.choices.first?.message.content else {
+            throw LLMRewriteError.decodingFailure
+        }
+
+        guard !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw LLMRewriteError.emptyResponse
+        }
+
+        return content
+    }
+
     // MARK: - Request Types
 
     private struct ChatRequest: Encodable, Sendable {
@@ -315,4 +389,13 @@ actor LLMService: LLMProviderProtocol {
         let role: String
         let content: String
     }
+}
+
+// MARK: -
+
+enum LLMRewriteError: Error, Sendable {
+    case emptyResponse
+    case decodingFailure
+    case http(status: Int)
+    case transport(Error)
 }

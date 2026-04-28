@@ -103,6 +103,7 @@ struct OverlayControllerStoreSubscriptionTests {
             extractionMethod: .axDirectFull,
             selectionRange: nil,
             elementBounds: nil,
+            capabilities: AXCapabilities(),
             axElement: AXUIElementCreateSystemWide()
         )
         return Fixture(controller: controller, store: store, llm: llm, textBox: textBox)
@@ -164,6 +165,7 @@ struct OverlayControllerStoreSubscriptionTests {
             extractionMethod: .axDirectFull,
             selectionRange: nil,
             elementBounds: nil,
+            capabilities: AXCapabilities(),
             axElement: AXUIElementCreateSystemWide()
         )
         fx.controller.textContext = nil

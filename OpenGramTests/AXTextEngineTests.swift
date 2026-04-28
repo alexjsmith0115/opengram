@@ -329,6 +329,7 @@ struct AXTextEngineWriteBackTests {
             extractionMethod: .axDirectSelection,
             selectionRange: CFRange(location: 0, length: 8),
             elementBounds: nil,
+            capabilities: AXCapabilities(),
             axElement: dummyElement
         )
 
@@ -352,6 +353,7 @@ struct AXTextEngineWriteBackTests {
             extractionMethod: .axDirectSelection,
             selectionRange: CFRange(location: 0, length: 8),
             elementBounds: nil,
+            capabilities: AXCapabilities(),
             axElement: dummyElement
         )
 
@@ -368,5 +370,50 @@ struct AXTextEngineWriteBackTests {
             $0.attribute == kAXValueAttribute
         }
         #expect(valueWrites.isEmpty)
+    }
+}
+
+@Suite("AXTextEngine.readLiveText / readLiveSelectedText")
+struct AXTextEngineLiveReadTests {
+    let dummyElement = AXUIElementCreateSystemWide()
+
+    private func makeEngine(mock: MockAXAccessor) -> AXTextEngine {
+        AXTextEngine(accessor: mock, capabilityCache: StubCapabilityCache())
+    }
+
+    @Test("readLiveText returns substring at range from kAXValueAttribute")
+    @MainActor func readLiveText_returnsSubstring() {
+        let mock = MockAXAccessor()
+        mock.attributeValues[kAXValueAttribute] = (.success, "the quick brown fox" as CFString)
+        let engine = makeEngine(mock: mock)
+        let result = engine.readLiveText(at: CFRange(location: 4, length: 5), of: dummyElement)
+        #expect(result == "quick")
+    }
+
+    @Test("readLiveText returns nil when AX read fails")
+    @MainActor func readLiveText_returnsNilOnError() {
+        let mock = MockAXAccessor()
+        mock.attributeValues[kAXValueAttribute] = (.failure, nil)
+        let engine = makeEngine(mock: mock)
+        let result = engine.readLiveText(at: CFRange(location: 0, length: 3), of: dummyElement)
+        #expect(result == nil)
+    }
+
+    @Test("readLiveSelectedText returns selected text from kAXSelectedTextAttribute")
+    @MainActor func readLiveSelectedText_returnsText() {
+        let mock = MockAXAccessor()
+        mock.attributeValues[kAXSelectedTextAttribute] = (.success, "hello" as CFString)
+        let engine = makeEngine(mock: mock)
+        let result = engine.readLiveSelectedText(of: dummyElement)
+        #expect(result == "hello")
+    }
+
+    @Test("readLiveSelectedText returns nil on AX error")
+    @MainActor func readLiveSelectedText_returnsNilOnError() {
+        let mock = MockAXAccessor()
+        mock.attributeValues[kAXSelectedTextAttribute] = (.failure, nil)
+        let engine = makeEngine(mock: mock)
+        let result = engine.readLiveSelectedText(of: dummyElement)
+        #expect(result == nil)
     }
 }

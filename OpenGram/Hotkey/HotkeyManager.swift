@@ -19,7 +19,6 @@ final class HotkeyManager: HotkeyManagerProtocol, @unchecked Sendable {
         return .doNothing
     }
 
-    private static let kVK_ANSI_G: CGKeyCode = 0x05
     private static let logger = Log.logger(for: "HotkeyManager")
 
     private(set) var eventTap: CFMachPort?
@@ -27,7 +26,7 @@ final class HotkeyManager: HotkeyManagerProtocol, @unchecked Sendable {
     private(set) var healthTimer: Timer?
     private var wakeObserver: NSObjectProtocol?
 
-    var onHotkeyFired: (@MainActor @Sendable () -> Void)?
+    var onHotkeyFired: (@MainActor @Sendable (HotkeyAction) -> Void)?
 
     deinit {
         uninstall()
@@ -103,22 +102,26 @@ final class HotkeyManager: HotkeyManagerProtocol, @unchecked Sendable {
             return Unmanaged.passUnretained(event)
         }
 
-        if isHotkey(event) {
-            Task { @MainActor in self.onHotkeyFired?() }
+        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
+        let flags = event.flags
+        if let action = detectHotkey(keyCode: keyCode, flags: flags) {
+            Task { @MainActor in self.onHotkeyFired?(action) }
             return nil
         }
 
         return Unmanaged.passUnretained(event)
     }
 
-    nonisolated func isHotkey(_ event: CGEvent) -> Bool {
-        guard event.getIntegerValueField(.keyboardEventKeycode) == Self.kVK_ANSI_G else {
-            return false
-        }
-        let flags = event.flags
-        let required: CGEventFlags = [.maskControl, .maskShift]
+    nonisolated func detectHotkey(keyCode: Int64, flags: CGEventFlags) -> HotkeyAction? {
+        guard flags.contains(.maskControl), flags.contains(.maskShift) else { return nil }
         let relevant = flags.intersection([.maskControl, .maskShift, .maskAlternate, .maskCommand])
-        return relevant == required
+        let required: CGEventFlags = [.maskControl, .maskShift]
+        guard relevant == required else { return nil }
+        switch keyCode {
+        case 0x05: return .check    // kVK_ANSI_G
+        case 0x0F: return .rewrite  // kVK_ANSI_R
+        default:   return nil
+        }
     }
 
     // MARK: - Health Check

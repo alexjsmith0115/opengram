@@ -7,6 +7,7 @@ protocol HotkeyManagerProtocol: AnyObject, Sendable {
     /// Remove the CGEventTap and stop listening.
     func uninstall()
 
-    /// Callback fired on the main actor when the hotkey (Ctrl+Shift+G) is detected.
-    var onHotkeyFired: (@MainActor @Sendable () -> Void)? { get set }
+    /// Callback fired on the main actor when a configured hotkey is detected,
+    /// tagged with a `HotkeyAction` discriminator for dispatch.
+    var onHotkeyFired: (@MainActor @Sendable (HotkeyAction) -> Void)? { get set }
 }

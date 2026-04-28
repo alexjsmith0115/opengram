@@ -17,6 +17,7 @@ struct TextContext: Sendable {
     let extractionMethod: ExtractionMethod
     let selectionRange: CFRange?
     let elementBounds: CGRect?
+    let capabilities: AXCapabilities
 
     // AXUIElement is a CoreFoundation IPC proxy -- thread-safe but not marked Sendable
     nonisolated(unsafe) let axElement: AXUIElement

@@ -379,6 +379,7 @@ struct TextMonitorStoreIntegrationTests {
             extractionMethod: .axDirectFull,
             selectionRange: selRange,
             elementBounds: nil,
+            capabilities: AXCapabilities(),
             axElement: AXUIElementCreateSystemWide()
         )
 
@@ -551,6 +552,7 @@ struct TextMonitorStoreIntegrationTests {
             extractionMethod: .axDirectFull,
             selectionRange: nil,
             elementBounds: nil,
+            capabilities: AXCapabilities(),
             axElement: AXUIElementCreateSystemWide()
         )
         let cache = TMockCapabilityCache()

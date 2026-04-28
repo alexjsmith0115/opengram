@@ -40,6 +40,7 @@ private func makeContext(text: String) -> TextContext {
         extractionMethod: .axDirectSelection,
         selectionRange: nil,
         elementBounds: nil,
+        capabilities: AXCapabilities(),
         axElement: AXUIElementCreateSystemWide()
     )
 }
@@ -374,6 +375,7 @@ struct OverlayControllerDiffTests {
             extractionMethod: .axDirectSelection,
             selectionRange: nil,
             elementBounds: nil,
+            capabilities: AXCapabilities(),
             axElement: AXUIElementCreateSystemWide()
         )
         let s1b = makeDiffSuggestion(in: text, scalarStart: 0, scalarLength: 3, original: "Ths")

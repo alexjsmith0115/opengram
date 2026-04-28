@@ -47,6 +47,29 @@ final class StatusBarController {
         menuBuilder.updateStatusText(text)
     }
 
+    func showSettings() {
+        settingsPanel.show()
+    }
+
+    func flashSelectTextHint() {
+        flashTransient(message: "Select text first to rewrite")
+    }
+
+    func flashError(_ message: String) {
+        flashTransient(message: message)
+    }
+
+    private func flashTransient(message: String) {
+        guard let button = statusItem.button else { return }
+        let oldImage = button.image
+        button.image = nil
+        button.title = "⚠ \(message)"
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.6) { [weak button] in
+            button?.title = ""
+            button?.image = oldImage
+        }
+    }
+
     private func setupButton() {
         guard let button = statusItem.button else { return }
         let image = NSImage(systemSymbolName: AppState.idle.sfSymbolName, accessibilityDescription: "OpenGram")

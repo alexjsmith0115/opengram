@@ -18,6 +18,7 @@ import Testing
             extractionMethod: .axDirectSelection,
             selectionRange: CFRange(location: selectionStart, length: 17),
             elementBounds: nil,
+            capabilities: AXCapabilities(),
             axElement: dummyElement
         )
         #expect(ParagraphExtractor.extract(from: context) == "Second paragraph.")
@@ -34,6 +35,7 @@ import Testing
             extractionMethod: .axDirectFull,
             selectionRange: CFRange(location: 14, length: 0),
             elementBounds: nil,
+            capabilities: AXCapabilities(),
             axElement: dummyElement
         )
         #expect(ParagraphExtractor.extract(from: context) == "Second line.")
@@ -47,6 +49,7 @@ import Testing
             extractionMethod: .axDirectFull,
             selectionRange: CFRange(location: 0, length: 0),
             elementBounds: nil,
+            capabilities: AXCapabilities(),
             axElement: dummyElement
         )
         #expect(ParagraphExtractor.extract(from: context) == "First paragraph.")
@@ -61,6 +64,7 @@ import Testing
             extractionMethod: .axDirectFull,
             selectionRange: CFRange(location: cursorOffset, length: 0),
             elementBounds: nil,
+            capabilities: AXCapabilities(),
             axElement: dummyElement
         )
         #expect(ParagraphExtractor.extract(from: context) == "Second paragraph.")
@@ -74,6 +78,7 @@ import Testing
             extractionMethod: .axDirectFull,
             selectionRange: CFRange(location: 5, length: 0),
             elementBounds: nil,
+            capabilities: AXCapabilities(),
             axElement: dummyElement
         )
         #expect(ParagraphExtractor.extract(from: context) == text)
@@ -90,6 +95,7 @@ import Testing
             extractionMethod: .axDirectFull,
             selectionRange: nil,
             elementBounds: nil,
+            capabilities: AXCapabilities(),
             axElement: dummyElement
         )
         let result = ParagraphExtractor.extract(from: context)
@@ -103,6 +109,7 @@ import Testing
             extractionMethod: .axDirectFull,
             selectionRange: nil,
             elementBounds: nil,
+            capabilities: AXCapabilities(),
             axElement: dummyElement
         )
         #expect(ParagraphExtractor.extract(from: context) == "")

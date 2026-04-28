@@ -91,6 +91,7 @@ final class AXTextEngine: AXTextEngineProtocol {
 
         let selectionRange = extractSelectionRange(element: element)
         let elementBounds = extractElementBounds(element: element)
+        let capabilities = extractCapabilities(element: element)
 
         Self.logger.info("extractText success bundle=\(bundleID, privacy: .public) method=\(extractionMethod.rawValue, privacy: .public) textLen=\(truncatedText.count) selection=\(Self.describe(selectionRange), privacy: .public) bounds=\(Self.describe(elementBounds), privacy: .public)")
 
@@ -100,6 +101,7 @@ final class AXTextEngine: AXTextEngineProtocol {
             extractionMethod: extractionMethod,
             selectionRange: selectionRange,
             elementBounds: elementBounds,
+            capabilities: capabilities,
             axElement: element
         )
     }
@@ -156,6 +158,20 @@ final class AXTextEngine: AXTextEngineProtocol {
         return result == .success
     }
 
+    // MARK: - Live read helpers
+
+    @MainActor func readLiveText(at range: CFRange, of element: AXUIElement) -> String? {
+        let (error, ref) = accessor.copyAttributeValue(element, kAXValueAttribute)
+        guard error == .success, let raw = ref as? String else { return nil }
+        return AXRangeIndex.substring(of: raw, at: range)
+    }
+
+    @MainActor func readLiveSelectedText(of element: AXUIElement) -> String? {
+        let (error, ref) = accessor.copyAttributeValue(element, kAXSelectedTextAttribute)
+        guard error == .success, let raw = ref as? String else { return nil }
+        return raw
+    }
+
     // MARK: - Private helpers
 
     private func extractSelectionRange(element: AXUIElement) -> CFRange? {
@@ -178,6 +194,23 @@ final class AXTextEngine: AXTextEngineProtocol {
         guard AXValueGetValue(sizeValue as! AXValue, .cgSize, &size) else { return nil }
 
         return CGRect(origin: point, size: size)
+    }
+
+    private func extractCapabilities(element: AXUIElement) -> AXCapabilities {
+        let (_, rangeSettable) = accessor.isAttributeSettable(element, kAXSelectedTextRangeAttribute)
+        let (_, selectedTextSettable) = accessor.isAttributeSettable(element, kAXSelectedTextAttribute)
+        let (_, valueSettable) = accessor.isAttributeSettable(element, kAXValueAttribute)
+
+        let (selReadError, _) = accessor.copyAttributeValue(element, kAXSelectedTextAttribute)
+        let (valReadError, _) = accessor.copyAttributeValue(element, kAXValueAttribute)
+
+        return AXCapabilities(
+            canSetSelectedTextRange: rangeSettable,
+            canSetSelectedText: selectedTextSettable,
+            canReadSelectedText: selReadError == .success || selReadError == .noValue,
+            canSetValue: valueSettable,
+            canReadValue: valReadError == .success || valReadError == .noValue
+        )
     }
 
     private static func shouldReprobeCachedUnsupported(bundleID: String) -> Bool {

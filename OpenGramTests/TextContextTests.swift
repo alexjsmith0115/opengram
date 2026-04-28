@@ -18,6 +18,7 @@ struct TextContextTests {
             extractionMethod: .axDirectSelection,
             selectionRange: range,
             elementBounds: bounds,
+            capabilities: AXCapabilities(),
             axElement: dummyElement
         )
 
@@ -52,6 +53,7 @@ struct TextContextTests {
             extractionMethod: .axDirectFull,
             selectionRange: nil,
             elementBounds: nil,
+            capabilities: AXCapabilities(),
             axElement: dummyElement
         )
 

@@ -23,6 +23,7 @@ struct OverlayControllerScrollModeTests {
             extractionMethod: .axDirectSelection,
             selectionRange: nil,
             elementBounds: CGRect(x: 0, y: 0, width: 400, height: 300),
+            capabilities: AXCapabilities(),
             axElement: AXUIElementCreateSystemWide()
         )
     }

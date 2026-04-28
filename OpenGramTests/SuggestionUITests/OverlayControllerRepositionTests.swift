@@ -41,6 +41,7 @@ private func makeTextContext(text: String = "recieve") -> TextContext {
         extractionMethod: .axDirectSelection,
         selectionRange: nil,
         elementBounds: nil,
+        capabilities: AXCapabilities(),
         axElement: AXUIElementCreateSystemWide()
     )
 }

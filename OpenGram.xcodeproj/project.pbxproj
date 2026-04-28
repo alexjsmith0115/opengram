@@ -12,6 +12,7 @@
 		A10000010000000000000003 /* OpenGramApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000003 /* OpenGramApp.swift */; };
 		A10000010000000000000004 /* StatusBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000004 /* StatusBarController.swift */; };
 		A10000010000000000000005 /* HotkeyManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000005 /* HotkeyManagerProtocol.swift */; };
+		A10000010000000000000012 /* HotkeyAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000012 /* HotkeyAction.swift */; };
 		A10000010000000000000006 /* AXTextEngineProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000006 /* AXTextEngineProtocol.swift */; };
 		A10000010000000000000007 /* TextContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000007 /* TextContext.swift */; };
 		A10000010000000000000008 /* EventTapBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000008 /* EventTapBridge.swift */; };
@@ -23,6 +24,7 @@
 		A10000010000000000000021 /* AXCapabilityCacheProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000021 /* AXCapabilityCacheProtocol.swift */; };
 		A10000010000000000000022 /* AXTextEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000022 /* AXTextEngine.swift */; };
 		A10000010000000000000023 /* AXCapabilityCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000023 /* AXCapabilityCache.swift */; };
+		A10000010000000000000025 /* AXCapabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000025 /* AXCapabilities.swift */; };
 		A10000010000000000000030 /* GrammarCheckerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000030 /* GrammarCheckerProtocol.swift */; };
 		A10000010000000000000031 /* Suggestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000031 /* Suggestion.swift */; };
 		A10000010000000000000032 /* DictionaryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000032 /* DictionaryStore.swift */; };
@@ -50,8 +52,10 @@
 		B10000010000000000000001 /* IconStateMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000001 /* IconStateMachineTests.swift */; };
 		B10000010000000000000002 /* MenuBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000002 /* MenuBuilderTests.swift */; };
 		B10000010000000000000003 /* HotkeyManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000003 /* HotkeyManagerTests.swift */; };
+		B10000010000000000000038 /* HotkeyActionDispatchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000038 /* HotkeyActionDispatchTests.swift */; };
 		B10000010000000000000004 /* AXTextEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000004 /* AXTextEngineTests.swift */; };
 		B10000010000000000000005 /* AXCapabilityCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000005 /* AXCapabilityCacheTests.swift */; };
+		B10000010000000000000060 /* AXCapabilitiesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000060 /* AXCapabilitiesTests.swift */; };
 		B10000010000000000000006 /* TextContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000006 /* TextContextTests.swift */; };
 		B10000010000000000000010 /* AppDelegateWiringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000010 /* AppDelegateWiringTests.swift */; };
 		B10000010000000000000011 /* DictionaryStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000011 /* DictionaryStoreTests.swift */; };
@@ -86,6 +90,8 @@
 		A10000010000000000000098 /* ParagraphExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000098 /* ParagraphExtractor.swift */; };
 		A10000010000000000000094 /* CheckOrchestrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000094 /* CheckOrchestrator.swift */; };
 		A10000010000000000000095 /* LLMSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000095 /* LLMSettingsView.swift */; };
+		A10000010000000000000099 /* RewriteTone.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000099 /* RewriteTone.swift */; };
+		B1000001000000000000003C /* RewriteToneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000001000000000000003C /* RewriteToneTests.swift */; };
 		B10000010000000000000032 /* TextMonitorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000032 /* TextMonitorTests.swift */; };
 		B10000010000000000000033 /* OverlayControllerDiffTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000033 /* OverlayControllerDiffTests.swift */; };
 		B10000010000000000000034 /* LLMServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000034 /* LLMServiceTests.swift */; };
@@ -107,6 +113,8 @@
 		A100000100000000000000B2 /* ReliabilityDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000B2 /* ReliabilityDetector.swift */; };
 		A100000100000000000000B3 /* CheckCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000B3 /* CheckCoordinator.swift */; };
 		A100000100000000000000B4 /* ConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000B4 /* ConfigManager.swift */; };
+		A100000100000000000000B5 /* RewriteCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000B5 /* RewriteCoordinator.swift */; };
+		B10000010000000000000070 /* RewriteCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000070 /* RewriteCoordinatorTests.swift */; };
 		A100000100000000000000F0 /* MainActorTextBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000F0 /* MainActorTextBox.swift */; };
 		C10000010000000000000001 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = C20000010000000000000001 /* KeychainAccess */; };
 		A100000100000000000000C0 /* Paragraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000100000000000000C0 /* Paragraph.swift */; };
@@ -120,6 +128,19 @@
 		B100000100000000000000F1 /* AdvancedSettingsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000100000000000000F1 /* AdvancedSettingsViewTests.swift */; };
 		A18000010000000000000021 /* AXTextReplacer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28000010000000000000021 /* AXTextReplacer.swift */; };
 		B18000010000000000000021 /* AXTextReplacerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28000010000000000000021 /* AXTextReplacerTests.swift */; };
+		B19000010000000000000005 /* AXTextReplacerStrategyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29000010000000000000005 /* AXTextReplacerStrategyTests.swift */; };
+		A19000010000000000000001 /* AXRangeIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29000010000000000000001 /* AXRangeIndex.swift */; };
+		B19000010000000000000001 /* AXRangeIndexTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29000010000000000000001 /* AXRangeIndexTests.swift */; };
+		A19000010000000000000002 /* WriteBackStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29000010000000000000002 /* WriteBackStrategy.swift */; };
+		B19000010000000000000002 /* WriteBackStrategyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29000010000000000000002 /* WriteBackStrategyTests.swift */; };
+		A19000010000000000000003 /* RewriteCaptureContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29000010000000000000003 /* RewriteCaptureContext.swift */; };
+		A19000010000000000000004 /* RewriteStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29000010000000000000004 /* RewriteStatus.swift */; };
+		A19000010000000000000005 /* RewriteWindowViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29000010000000000000005 /* RewriteWindowViewModel.swift */; };
+		A19000010000000000000006 /* RewriteHostPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29000010000000000000006 /* RewriteHostPanel.swift */; };
+		A19000010000000000000007 /* RewriteTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29000010000000000000007 /* RewriteTextView.swift */; };
+		A19000010000000000000008 /* RewriteWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29000010000000000000008 /* RewriteWindowView.swift */; };
+		A19000010000000000000009 /* RewriteWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29000010000000000000009 /* RewriteWindowController.swift */; };
+		B19000010000000000000006 /* RewriteWindowViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29000010000000000000006 /* RewriteWindowViewModelTests.swift */; };
 		A18020010000000000000001 /* TextDiff.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28020010000000000000001 /* TextDiff.swift */; };
 		A18020010000000000000002 /* DisplayHeuristic.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28020010000000000000002 /* DisplayHeuristic.swift */; };
 		A18020010000000000000003 /* RephraseComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28020010000000000000003 /* RephraseComposer.swift */; };
@@ -158,6 +179,7 @@
 		A10000010000000000000024 /* AXCallQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000024 /* AXCallQueue.swift */; };
 		B10000010000000000000040 /* AXCallQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000040 /* AXCallQueueTests.swift */; };
 		B10000010000000000000050 /* SlowMockAXAccessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000050 /* SlowMockAXAccessor.swift */; };
+		B10000010000000000000041 /* LLMRewriteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000041 /* LLMRewriteTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -176,6 +198,7 @@
 		A20000010000000000000003 /* OpenGramApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGramApp.swift; sourceTree = "<group>"; };
 		A20000010000000000000004 /* StatusBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarController.swift; sourceTree = "<group>"; };
 		A20000010000000000000005 /* HotkeyManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManagerProtocol.swift; sourceTree = "<group>"; };
+		A20000010000000000000012 /* HotkeyAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyAction.swift; sourceTree = "<group>"; };
 		A20000010000000000000006 /* AXTextEngineProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXTextEngineProtocol.swift; sourceTree = "<group>"; };
 		A20000010000000000000007 /* TextContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextContext.swift; sourceTree = "<group>"; };
 		A20000010000000000000008 /* EventTapBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventTapBridge.swift; sourceTree = "<group>"; };
@@ -189,6 +212,7 @@
 		A20000010000000000000021 /* AXCapabilityCacheProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXCapabilityCacheProtocol.swift; sourceTree = "<group>"; };
 		A20000010000000000000022 /* AXTextEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXTextEngine.swift; sourceTree = "<group>"; };
 		A20000010000000000000023 /* AXCapabilityCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXCapabilityCache.swift; sourceTree = "<group>"; };
+		A20000010000000000000025 /* AXCapabilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXCapabilities.swift; sourceTree = "<group>"; };
 		A20000010000000000000024 /* AXCallQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXCallQueue.swift; sourceTree = "<group>"; };
 		B20000010000000000000040 /* AXCallQueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXCallQueueTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000050 /* SlowMockAXAccessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlowMockAXAccessor.swift; sourceTree = "<group>"; };
@@ -219,8 +243,10 @@
 		B20000010000000000000001 /* IconStateMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconStateMachineTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000002 /* MenuBuilderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBuilderTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000003 /* HotkeyManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManagerTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000038 /* HotkeyActionDispatchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyActionDispatchTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000004 /* AXTextEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXTextEngineTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000005 /* AXCapabilityCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXCapabilityCacheTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000060 /* AXCapabilitiesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXCapabilitiesTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000006 /* TextContextTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextContextTests.swift; sourceTree = "<group>"; };
 		B2000001000000000000000F /* OpenGramTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OpenGramTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B20000010000000000000010 /* AppDelegateWiringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegateWiringTests.swift; sourceTree = "<group>"; };
@@ -256,6 +282,8 @@
 		A20000010000000000000098 /* ParagraphExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParagraphExtractor.swift; sourceTree = "<group>"; };
 		A20000010000000000000094 /* CheckOrchestrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckOrchestrator.swift; sourceTree = "<group>"; };
 		A20000010000000000000095 /* LLMSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSettingsView.swift; sourceTree = "<group>"; };
+		A20000010000000000000099 /* RewriteTone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewriteTone.swift; sourceTree = "<group>"; };
+		B2000001000000000000003C /* RewriteToneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewriteToneTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000032 /* TextMonitorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextMonitorTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000033 /* OverlayControllerDiffTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayControllerDiffTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000034 /* LLMServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMServiceTests.swift; sourceTree = "<group>"; };
@@ -263,6 +291,7 @@
 		B20000010000000000000201 /* LMStudioLiveIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LMStudioLiveIntegrationTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000202 /* ClarityNotificationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClarityNotificationTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000035 /* LLMPromptsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMPromptsTests.swift; sourceTree = "<group>"; };
+		B20000010000000000000041 /* LLMRewriteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMRewriteTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000036 /* CheckOrchestratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckOrchestratorTests.swift; sourceTree = "<group>"; };
 		B20000010000000000000037 /* LLMSettingsPanelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSettingsPanelTests.swift; sourceTree = "<group>"; };
 		B2000001000000000000003A /* LLMResponseDTOTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMResponseDTOTests.swift; sourceTree = "<group>"; };
@@ -276,6 +305,8 @@
 		A200000100000000000000B2 /* ReliabilityDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReliabilityDetector.swift; sourceTree = "<group>"; };
 		A200000100000000000000B3 /* CheckCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckCoordinator.swift; sourceTree = "<group>"; };
 		A200000100000000000000B4 /* ConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigManager.swift; sourceTree = "<group>"; };
+		A200000100000000000000B5 /* RewriteCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewriteCoordinator.swift; sourceTree = "<group>"; };
+		B20000010000000000000070 /* RewriteCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewriteCoordinatorTests.swift; sourceTree = "<group>"; };
 		A200000100000000000000F0 /* MainActorTextBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainActorTextBox.swift; sourceTree = "<group>"; };
 		B200000100000000000000C0 /* PanelPositionerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelPositionerTests.swift; sourceTree = "<group>"; };
 		A200000100000000000000C0 /* Paragraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paragraph.swift; sourceTree = "<group>"; };
@@ -289,6 +320,19 @@
 		B200000100000000000000F1 /* AdvancedSettingsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSettingsViewTests.swift; sourceTree = "<group>"; };
 		A28000010000000000000021 /* AXTextReplacer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXTextReplacer.swift; sourceTree = "<group>"; };
 		B28000010000000000000021 /* AXTextReplacerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXTextReplacerTests.swift; sourceTree = "<group>"; };
+		B29000010000000000000005 /* AXTextReplacerStrategyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXTextReplacerStrategyTests.swift; sourceTree = "<group>"; };
+		A29000010000000000000001 /* AXRangeIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXRangeIndex.swift; sourceTree = "<group>"; };
+		B29000010000000000000001 /* AXRangeIndexTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXRangeIndexTests.swift; sourceTree = "<group>"; };
+		A29000010000000000000002 /* WriteBackStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteBackStrategy.swift; sourceTree = "<group>"; };
+		B29000010000000000000002 /* WriteBackStrategyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteBackStrategyTests.swift; sourceTree = "<group>"; };
+		A29000010000000000000003 /* RewriteCaptureContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewriteCaptureContext.swift; sourceTree = "<group>"; };
+		A29000010000000000000004 /* RewriteStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewriteStatus.swift; sourceTree = "<group>"; };
+		A29000010000000000000005 /* RewriteWindowViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewriteWindowViewModel.swift; sourceTree = "<group>"; };
+		A29000010000000000000006 /* RewriteHostPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewriteHostPanel.swift; sourceTree = "<group>"; };
+		A29000010000000000000007 /* RewriteTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewriteTextView.swift; sourceTree = "<group>"; };
+		A29000010000000000000008 /* RewriteWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewriteWindowView.swift; sourceTree = "<group>"; };
+		A29000010000000000000009 /* RewriteWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewriteWindowController.swift; sourceTree = "<group>"; };
+		B29000010000000000000006 /* RewriteWindowViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewriteWindowViewModelTests.swift; sourceTree = "<group>"; };
 		A28020010000000000000001 /* TextDiff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDiff.swift; sourceTree = "<group>"; };
 		A28020010000000000000002 /* DisplayHeuristic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayHeuristic.swift; sourceTree = "<group>"; };
 		A28020010000000000000003 /* RephraseComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RephraseComposer.swift; sourceTree = "<group>"; };
@@ -394,6 +438,7 @@
 				A200000100000000000000A0 /* AppWhitelist.swift */,
 				A200000100000000000000B3 /* CheckCoordinator.swift */,
 				A200000100000000000000B4 /* ConfigManager.swift */,
+				A200000100000000000000B5 /* RewriteCoordinator.swift */,
 				A200000100000000000000F0 /* MainActorTextBox.swift */,
 			);
 			path = App;
@@ -413,6 +458,7 @@
 			isa = PBXGroup;
 			children = (
 				A20000010000000000000005 /* HotkeyManagerProtocol.swift */,
+				A20000010000000000000012 /* HotkeyAction.swift */,
 				A20000010000000000000008 /* EventTapBridge.swift */,
 				A20000010000000000000010 /* HotkeyManager.swift */,
 			);
@@ -429,6 +475,8 @@
 				A20000010000000000000021 /* AXCapabilityCacheProtocol.swift */,
 				A20000010000000000000022 /* AXTextEngine.swift */,
 				A20000010000000000000023 /* AXCapabilityCache.swift */,
+				A20000010000000000000025 /* AXCapabilities.swift */,
+				A29000010000000000000001 /* AXRangeIndex.swift */,
 			);
 			path = TextEngine;
 			sourceTree = "<group>";
@@ -470,8 +518,10 @@
 				B400000100000000000000A0 /* App */,
 				B4000001000000000000004C /* Integration */,
 				B20000010000000000000010 /* AppDelegateWiringTests.swift */,
+				B20000010000000000000070 /* RewriteCoordinatorTests.swift */,
 				B20000010000000000000031 /* AppQuirksTests.swift */,
 				B20000010000000000000005 /* AXCapabilityCacheTests.swift */,
+				B20000010000000000000060 /* AXCapabilitiesTests.swift */,
 				B20000010000000000000004 /* AXTextEngineTests.swift */,
 				B20000010000000000000036 /* CheckOrchestratorTests.swift */,
 				B20000010000000000000037 /* LLMSettingsPanelTests.swift */,
@@ -479,9 +529,13 @@
 				B20000010000000000000012 /* HarperServiceTests.swift */,
 				B20000010000000000000015 /* ClarityFFITests.swift */,
 				B20000010000000000000003 /* HotkeyManagerTests.swift */,
+				B20000010000000000000038 /* HotkeyActionDispatchTests.swift */,
 				B20000010000000000000001 /* IconStateMachineTests.swift */,
 				B20000010000000000000035 /* LLMPromptsTests.swift */,
+				B20000010000000000000041 /* LLMRewriteTests.swift */,
 				B20000010000000000000034 /* LLMServiceTests.swift */,
+				B2000001000000000000003C /* RewriteToneTests.swift */,
+				B29000010000000000000006 /* RewriteWindowViewModelTests.swift */,
 				B20000010000000000000200 /* LMStudioPipelineIntegrationTests.swift */,
 				B20000010000000000000201 /* LMStudioLiveIntegrationTests.swift */,
 				B20000010000000000000002 /* MenuBuilderTests.swift */,
@@ -568,6 +622,7 @@
 				A20000010000000000000097 /* LLMResponseDTO.swift */,
 				A20000010000000000000093 /* LLMService.swift */,
 				A20000010000000000000096 /* LLMStyleSuggestion.swift */,
+				A20000010000000000000099 /* RewriteTone.swift */,
 			);
 			path = LLM;
 			sourceTree = "<group>";
@@ -579,6 +634,7 @@
 				A4000001000000000000C003 /* Overlay */,
 				A4000001000000000000C004 /* Panels */,
 				A4000001000000000000C009 /* RephraseCard */,
+				A4000001000000000000C008 /* RewriteWindow */,
 				A4000001000000000000C006 /* Settings */,
 			);
 			path = SuggestionUI;
@@ -618,8 +674,23 @@
 				A28050010000000000000002 /* RephraseCardPanelController.swift */,
 				A20000010000000000000070 /* SuggestionDiffEngine.swift */,
 				A20000010000000000000043 /* SuggestionPopoverPanel.swift */,
+				A29000010000000000000002 /* WriteBackStrategy.swift */,
 			);
 			path = Panels;
+			sourceTree = "<group>";
+		};
+		A4000001000000000000C008 /* RewriteWindow */ = {
+			isa = PBXGroup;
+			children = (
+				A29000010000000000000003 /* RewriteCaptureContext.swift */,
+				A29000010000000000000004 /* RewriteStatus.swift */,
+				A29000010000000000000005 /* RewriteWindowViewModel.swift */,
+				A29000010000000000000006 /* RewriteHostPanel.swift */,
+				A29000010000000000000007 /* RewriteTextView.swift */,
+				A29000010000000000000008 /* RewriteWindowView.swift */,
+				A29000010000000000000009 /* RewriteWindowController.swift */,
+			);
+			path = RewriteWindow;
 			sourceTree = "<group>";
 		};
 		A4000001000000000000C005 /* Accessibility */ = {
@@ -709,7 +780,9 @@
 			isa = PBXGroup;
 			children = (
 				B28000010000000000000021 /* AXTextReplacerTests.swift */,
+				B29000010000000000000005 /* AXTextReplacerStrategyTests.swift */,
 				B28050010000000000000002 /* RephraseCardPanelControllerTests.swift */,
+				B29000010000000000000002 /* WriteBackStrategyTests.swift */,
 			);
 			path = Panels;
 			sourceTree = "<group>";
@@ -765,6 +838,7 @@
 			isa = PBXGroup;
 			children = (
 				B20000010000000000000040 /* AXCallQueueTests.swift */,
+				B29000010000000000000001 /* AXRangeIndexTests.swift */,
 			);
 			path = TextEngineTests;
 			sourceTree = "<group>";
@@ -880,6 +954,7 @@
 				A10000010000000000000003 /* OpenGramApp.swift in Sources */,
 				A10000010000000000000004 /* StatusBarController.swift in Sources */,
 				A10000010000000000000005 /* HotkeyManagerProtocol.swift in Sources */,
+				A10000010000000000000012 /* HotkeyAction.swift in Sources */,
 				A10000010000000000000006 /* AXTextEngineProtocol.swift in Sources */,
 				A10000010000000000000007 /* TextContext.swift in Sources */,
 				A10000010000000000000008 /* EventTapBridge.swift in Sources */,
@@ -892,6 +967,8 @@
 				A10000010000000000000021 /* AXCapabilityCacheProtocol.swift in Sources */,
 				A10000010000000000000022 /* AXTextEngine.swift in Sources */,
 				A10000010000000000000023 /* AXCapabilityCache.swift in Sources */,
+				A10000010000000000000025 /* AXCapabilities.swift in Sources */,
+				A19000010000000000000001 /* AXRangeIndex.swift in Sources */,
 				A10000010000000000000030 /* GrammarCheckerProtocol.swift in Sources */,
 				A10000010000000000000031 /* Suggestion.swift in Sources */,
 				A10000010000000000000032 /* DictionaryStore.swift in Sources */,
@@ -916,6 +993,7 @@
 				A10000010000000000000093 /* LLMService.swift in Sources */,
 				A10000010000000000000096 /* LLMStyleSuggestion.swift in Sources */,
 				A10000010000000000000097 /* LLMResponseDTO.swift in Sources */,
+				A10000010000000000000099 /* RewriteTone.swift in Sources */,
 				A10000010000000000000098 /* ParagraphExtractor.swift in Sources */,
 				A10000010000000000000094 /* CheckOrchestrator.swift in Sources */,
 				A10000010000000000000095 /* LLMSettingsView.swift in Sources */,
@@ -927,6 +1005,7 @@
 				A100000100000000000000B2 /* ReliabilityDetector.swift in Sources */,
 				A100000100000000000000B3 /* CheckCoordinator.swift in Sources */,
 				A100000100000000000000B4 /* ConfigManager.swift in Sources */,
+				A100000100000000000000B5 /* RewriteCoordinator.swift in Sources */,
 				A100000100000000000000F0 /* MainActorTextBox.swift in Sources */,
 				A100000100000000000000C0 /* Paragraph.swift in Sources */,
 				A100000100000000000000C1 /* CacheClock.swift in Sources */,
@@ -937,6 +1016,7 @@
 				A10000010000000000000601 /* AboutSettingsView.swift in Sources */,
 				A10000010000000000000603 /* ClarityKeys.swift in Sources */,
 				A18000010000000000000021 /* AXTextReplacer.swift in Sources */,
+				A19000010000000000000002 /* WriteBackStrategy.swift in Sources */,
 				A18020010000000000000001 /* TextDiff.swift in Sources */,
 				A18020010000000000000002 /* DisplayHeuristic.swift in Sources */,
 				A18020010000000000000003 /* RephraseComposer.swift in Sources */,
@@ -955,6 +1035,13 @@
 				A12005010000000000000001 /* LLMRequestQueue.swift in Sources */,
 				A12005010000000000000002 /* LLMRequestQueueStoreProtocol.swift in Sources */,
 				A12006010000000000000001 /* ParagraphSuggestionStore.swift in Sources */,
+				A19000010000000000000003 /* RewriteCaptureContext.swift in Sources */,
+				A19000010000000000000004 /* RewriteStatus.swift in Sources */,
+				A19000010000000000000005 /* RewriteWindowViewModel.swift in Sources */,
+				A19000010000000000000006 /* RewriteHostPanel.swift in Sources */,
+				A19000010000000000000007 /* RewriteTextView.swift in Sources */,
+				A19000010000000000000008 /* RewriteWindowView.swift in Sources */,
+				A19000010000000000000009 /* RewriteWindowController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -965,16 +1052,20 @@
 				B10000010000000000000001 /* IconStateMachineTests.swift in Sources */,
 				B10000010000000000000002 /* MenuBuilderTests.swift in Sources */,
 				B10000010000000000000003 /* HotkeyManagerTests.swift in Sources */,
+				B10000010000000000000038 /* HotkeyActionDispatchTests.swift in Sources */,
 				B10000010000000000000004 /* AXTextEngineTests.swift in Sources */,
 				B10000010000000000000005 /* AXCapabilityCacheTests.swift in Sources */,
+				B10000010000000000000060 /* AXCapabilitiesTests.swift in Sources */,
 				B10000010000000000000006 /* TextContextTests.swift in Sources */,
 				B10000010000000000000010 /* AppDelegateWiringTests.swift in Sources */,
+				B10000010000000000000070 /* RewriteCoordinatorTests.swift in Sources */,
 				B10000010000000000000011 /* DictionaryStoreTests.swift in Sources */,
 				B10000010000000000000012 /* HarperServiceTests.swift in Sources */,
 				B10000010000000000000013 /* SuggestionTests.swift in Sources */,
 				B10000010000000000000015 /* ClarityFFITests.swift in Sources */,
 				B10000010000000000000020 /* AXCallWatchdogTests.swift in Sources */,
 				B10000010000000000000040 /* AXCallQueueTests.swift in Sources */,
+				B19000010000000000000001 /* AXRangeIndexTests.swift in Sources */,
 				B10000010000000000000021 /* BoundsForRangeTests.swift in Sources */,
 				B10000010000000000000022 /* BoundsValidatorTests.swift in Sources */,
 				B10000010000000000000023 /* OverlayControllerTests.swift in Sources */,
@@ -998,10 +1089,13 @@
 				B10000010000000000000201 /* LMStudioLiveIntegrationTests.swift in Sources */,
 				B10000010000000000000202 /* ClarityNotificationTests.swift in Sources */,
 				B10000010000000000000035 /* LLMPromptsTests.swift in Sources */,
+				B10000010000000000000041 /* LLMRewriteTests.swift in Sources */,
 				B10000010000000000000036 /* CheckOrchestratorTests.swift in Sources */,
 				B10000010000000000000037 /* LLMSettingsPanelTests.swift in Sources */,
 				B1000001000000000000003A /* LLMResponseDTOTests.swift in Sources */,
 				B1000001000000000000003B /* ParagraphExtractorTests.swift in Sources */,
+				B1000001000000000000003C /* RewriteToneTests.swift in Sources */,
+				B19000010000000000000006 /* RewriteWindowViewModelTests.swift in Sources */,
 				B100000100000000000000A0 /* AppWhitelistTests.swift in Sources */,
 				B100000100000000000000C0 /* PanelPositionerTests.swift in Sources */,
 				B100000100000000000000D0 /* CacheClockTests.swift in Sources */,
@@ -1011,6 +1105,8 @@
 				B10000010000000000000600 /* ClaritySettingsViewTests.swift in Sources */,
 				B10000010000000000000601 /* AboutSettingsViewTests.swift in Sources */,
 				B18000010000000000000021 /* AXTextReplacerTests.swift in Sources */,
+				B19000010000000000000005 /* AXTextReplacerStrategyTests.swift in Sources */,
+				B19000010000000000000002 /* WriteBackStrategyTests.swift in Sources */,
 				B18020010000000000000001 /* TextDiffTests.swift in Sources */,
 				B18020010000000000000002 /* DisplayHeuristicTests.swift in Sources */,
 				B18020010000000000000003 /* RephraseComposerTests.swift in Sources */,

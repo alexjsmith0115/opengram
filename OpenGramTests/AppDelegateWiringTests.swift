@@ -100,6 +100,7 @@ struct AppDelegateWiringTests {
             extractionMethod: .axDirectSelection,
             selectionRange: nil,
             elementBounds: nil,
+            capabilities: AXCapabilities(),
             axElement: AXUIElementCreateSystemWide()
         )
         var isIdle = false
@@ -158,6 +159,7 @@ struct AppDelegateWiringTests {
             extractionMethod: .axDirectSelection,
             selectionRange: nil,
             elementBounds: nil,
+            capabilities: AXCapabilities(),
             axElement: AXUIElementCreateSystemWide()
         )
         // AX bounds queries will fail (no real element), so entries will be empty
